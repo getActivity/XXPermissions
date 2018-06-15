@@ -7,3 +7,7 @@
 /build
 /captures
 /.idea
+
+/app/*.pro
+
+/library/*.pro
