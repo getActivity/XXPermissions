@@ -7,7 +7,7 @@
 #### 集成步骤
 
     dependencies {
-        compile 'com.hjq:xxpermissions:1.2'
+        compile 'com.hjq:xxpermissions:1.3'
     }
 
 #### 一句代码搞定权限请求，从未如此简单
