@@ -31,11 +31,22 @@ public final class PermissionUtils {
      * @param context           上下文对象
      */
     public static void gotoPermissionSettings(Context context) {
+        gotoPermissionSettings(context, false);
+    }
+
+    /**
+     * 跳转到应用权限设置页面
+     *
+     * @param context           上下文对象
+     * @param newTask           是否使用新的任务栈启动
+     */
+    public static void gotoPermissionSettings(Context context, boolean newTask) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        //创建一个新栈存放，用户点击授予权限，会导致返回后不会重新创建Activity
-        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Uri uri = Uri.fromParts("package", context.getPackageName(), null);
-        intent.setData(uri);
+        //创建一个新栈存放，用户在系统设置授予权限后，会导致返回后不会重新创建当前Activity，不推荐这种做法
+        if (newTask) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        intent.setData(Uri.fromParts("package", context.getPackageName(), null));
         context.startActivity(intent);
     }
 

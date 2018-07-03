@@ -61,7 +61,9 @@ public final class XXPermissions {
         //如果没有指定请求的权限，就使用清单注册的权限进行请求
         if (mPermissions == null || mPermissions.length == 0) this.mPermissions = PermissionUtils.getPermissions(mActivity);
         if (mPermissions == null || mPermissions.length == 0) throw new IllegalArgumentException("The requested permission cannot be empty");
-        if (mActivity == null || mActivity.isFinishing()) throw new IllegalArgumentException("Illegal Activity was passed in");
+        //使用isFinishing方法Activity在熄屏状态下会导致崩溃
+        //if (mActivity == null || mActivity.isFinishing()) throw new IllegalArgumentException("Illegal Activity was passed in");
+        if (mActivity == null) throw new IllegalArgumentException("The activity is empty");
         if (call == null) throw new IllegalArgumentException("The permission request callback interface must be implemented");
 
         int requestCode;

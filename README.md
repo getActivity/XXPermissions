@@ -2,24 +2,12 @@
 
 ![](XXPermissions.gif)
 
-#### 集成步骤
+>[点击此处下载Demo](https://raw.githubusercontent.com/getActivity/XXPermissions/master/XXPermissions.apk)
 
-> 在Module工程的build.gradle文件中添加依赖
+#### 集成步骤
 
     dependencies {
         compile 'com.hjq:xxpermissions:1.0'
-    }
-
-> 如果导入失败，请检查在Project工程的build.gradle文件的配置
-
-    allprojects {
-
-        repositories {
-            //添加对JCenter仓库的支持
-            jcenter()
-            ......
-        }
-        ......
     }
 
 #### 一句代码搞定权限请求，从未如此简单
@@ -34,9 +22,8 @@
                 }
 
                 @Override
-                public void noPermission(List<String> denied, boolean permanent) {
+                public void noPermission(List<String> denied, boolean quick) {
                     
                 }
             });
-
 
