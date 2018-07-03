@@ -54,6 +54,7 @@ public final class Permission {
     public static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
 
     public static final class Group {
+
         public static final String[] CALENDAR = new String[]{
                 Permission.READ_CALENDAR,
                 Permission.WRITE_CALENDAR};

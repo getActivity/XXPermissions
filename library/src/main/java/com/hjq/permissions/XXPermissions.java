@@ -1,8 +1,8 @@
 package com.hjq.permissions;
 
 import android.app.Activity;
+import android.content.Context;
 import android.util.SparseArray;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -89,6 +89,35 @@ public final class XXPermissions {
             //申请没有授予过的权限
             PermissionFragment.newInstant(failPermissions, requestCode).request(mActivity.getFragmentManager());
         }
+    }
+
+    /**
+     * 检查某些权限是否全部授予了
+     *
+     * @param context           上下文对象
+     * @param permissions       需要请求的权限组
+     */
+    public static boolean isHasPermission(Context context, String... permissions) {
+        return PermissionUtils.getFailPermissions(context, permissions).isEmpty();
+    }
+
+    /**
+     * 跳转到应用权限设置页面
+     *
+     * @param context           上下文对象
+     */
+    public static void gotoPermissionSettings(Context context) {
+        gotoPermissionSettings(context, false);
+    }
+
+    /**
+     * 跳转到应用权限设置页面
+     *
+     * @param context           上下文对象
+     * @param newTask           是否使用新的任务栈启动
+     */
+    public static void gotoPermissionSettings(Context context, boolean newTask) {
+        PermissionUtils.gotoPermissionSettings(context, newTask);
     }
 
     /**

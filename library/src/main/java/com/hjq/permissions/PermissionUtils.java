@@ -7,32 +7,14 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-
-import static android.R.attr.permission;
 
 /**
  * Created by HJQ on 2018-6-15.
  */
-public final class PermissionUtils {
-
-    /**
-     * 不能被实例化
-     */
-    private PermissionUtils() {}
-
-    /**
-     * 跳转到应用权限设置页面
-     *
-     * @param context           上下文对象
-     */
-    public static void gotoPermissionSettings(Context context) {
-        gotoPermissionSettings(context, false);
-    }
+final class PermissionUtils {
 
     /**
      * 跳转到应用权限设置页面
@@ -40,7 +22,7 @@ public final class PermissionUtils {
      * @param context           上下文对象
      * @param newTask           是否使用新的任务栈启动
      */
-    public static void gotoPermissionSettings(Context context, boolean newTask) {
+    static void gotoPermissionSettings(Context context, boolean newTask) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         //创建一个新栈存放，用户在系统设置授予权限后，会导致返回后不会重新创建当前Activity，不推荐这种做法
         if (newTask) {
@@ -51,19 +33,9 @@ public final class PermissionUtils {
     }
 
     /**
-     * 检查某些权限是否全部授予了
-     *
-     * @param context           上下文对象
-     * @param permissions       需要请求的权限组
-     */
-    public static boolean isHasPermission(Context context, String... permissions) {
-        return getFailPermissions(context, permissions).isEmpty();
-    }
-
-    /**
      * 返回应用程序在清单文件中注册的权限
      */
-    public static String[] getPermissions(Context context) {
+    static String[] getPermissions(Context context) {
         PackageManager pm = context.getPackageManager();
         try {
             return pm.getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS).requestedPermissions;
@@ -75,7 +47,7 @@ public final class PermissionUtils {
     /**
      * 是否是6.0以上版本
      */
-    public static boolean isOverMarshmallow() {
+    static boolean isOverMarshmallow() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     }
 

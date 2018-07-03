@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import com.hjq.permissions.OnPermission;
 import com.hjq.permissions.Permission;
-import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.XXPermissions;
 
 import java.util.List;
@@ -27,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void hasPermission(List<String> granted) {
-                        Toast.makeText(MainActivity.this, "获取SD卡读取写入权限成功", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "获取权限成功", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -35,23 +34,23 @@ public class MainActivity extends AppCompatActivity {
                         if(quick) {
                             Toast.makeText(MainActivity.this, "被永久拒绝授权，请手动授予权限", Toast.LENGTH_SHORT).show();
                             //如果是被永久拒绝就跳转到应用权限系统设置页面
-                            PermissionUtils.gotoPermissionSettings(MainActivity.this);
+                            XXPermissions.gotoPermissionSettings(MainActivity.this);
                         }else {
-                            Toast.makeText(MainActivity.this, "获取SD卡读取写入权限失败", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "获取权限失败", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
 
     public void isHasPermission(View view) {
-        if (PermissionUtils.isHasPermission(MainActivity.this, Permission.Group.STORAGE)) {
-            Toast.makeText(MainActivity.this, "已经获取到SD卡读写权限，不需要再次申请了", Toast.LENGTH_SHORT).show();
+        if (XXPermissions.isHasPermission(MainActivity.this, Permission.Group.STORAGE)) {
+            Toast.makeText(MainActivity.this, "已经获取到权限，不需要再次申请了", Toast.LENGTH_SHORT).show();
         }else {
-            Toast.makeText(MainActivity.this, "还没有获取到SD卡读写权限", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "还没有获取到权限", Toast.LENGTH_SHORT).show();
         }
     }
 
     public void gotoPermissionSettings(View view) {
-        PermissionUtils.gotoPermissionSettings(MainActivity.this);
+        XXPermissions.gotoPermissionSettings(MainActivity.this);
     }
 }

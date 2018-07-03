@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:onClick="requestPermission"
-            android:text="请求存储权限" />
+            android:text="请求运行时权限" />
 
         <Button
             android:layout_width="match_parent"
