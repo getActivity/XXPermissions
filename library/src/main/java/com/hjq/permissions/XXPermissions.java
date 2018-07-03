@@ -13,9 +13,8 @@ import java.util.Random;
  */
 public final class XXPermissions {
 
-    private final static SparseArray<OnPermission> mContainer = new SparseArray<>();
-
-    private static long requestTime;
+    private final static SparseArray<OnPermission> sContainer = new SparseArray<>();
+    private static long sRequestTime;
 
     private Activity mActivity;
     private String[] mPermissions;
@@ -72,7 +71,7 @@ public final class XXPermissions {
         do {
             //requestCode = new Random().nextInt(65535);//Studio编译的APK请求码必须小于65536
             requestCode = new Random().nextInt(255);//Eclipse编译的APK请求码必须小于256
-        } while (mContainer.get(requestCode) != null);
+        } while (sContainer.get(requestCode) != null);
 
         ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(mActivity, mPermissions);
 
@@ -81,9 +80,9 @@ public final class XXPermissions {
             call.hasPermission(Arrays.asList(mPermissions));
         } else {
             //将当前的请求码和对象添加到集合中
-            mContainer.put(requestCode, call);
+            sContainer.put(requestCode, call);
             //记录本次申请时间
-            requestTime = System.currentTimeMillis();
+            sRequestTime = System.currentTimeMillis();
             //检测权限有没有在清单文件中注册
             PermissionUtils.checkPermissions(mActivity, mPermissions);
             //申请没有授予过的权限
@@ -107,7 +106,7 @@ public final class XXPermissions {
      * @param context           上下文对象
      */
     public static void gotoPermissionSettings(Context context) {
-        gotoPermissionSettings(context, false);
+        PermissionUtils.gotoPermissionSettings(context, false);
     }
 
     /**
@@ -125,20 +124,22 @@ public final class XXPermissions {
      */
     static void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
-        OnPermission call = mContainer.get(requestCode);
+        OnPermission call = sContainer.get(requestCode);
 
         //根据请求码取出的对象为空，就直接返回不处理
         if (call == null) return;
 
+        //获取授予权限
         List<String> succeedPermissions = PermissionUtils.getSucceedPermissions(permissions, grantResults);
-        List<String> failPermissions = PermissionUtils.getFailPermissions(permissions, grantResults);
         //如果请求成功的权限集合大小和请求的数组一样大时证明权限已经全部授予
         if (succeedPermissions.size() == permissions.length) {
             //代表申请的所有的权限都授予了
             call.hasPermission(succeedPermissions);
         }else {
+            //获取拒绝权限
+            List<String> failPermissions = PermissionUtils.getFailPermissions(permissions, grantResults);
             //代表申请的权限中有不同意授予的，如果拒绝的时间过快证明是系统自动拒绝
-            call.noPermission(failPermissions, System.currentTimeMillis() - requestTime < 200);
+            call.noPermission(failPermissions, System.currentTimeMillis() - sRequestTime < 200);
             //证明还有一部分权限被成功授予，回调成功接口
             if (!succeedPermissions.isEmpty()) {
                 call.hasPermission(succeedPermissions);
@@ -146,6 +147,6 @@ public final class XXPermissions {
         }
 
         //权限回调结束后要删除集合中的对象，避免重复请求
-        mContainer.remove(requestCode);
+        sContainer.remove(requestCode);
     }
 }

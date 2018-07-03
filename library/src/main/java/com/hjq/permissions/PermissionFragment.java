@@ -11,13 +11,13 @@ import java.util.ArrayList;
  */
 public final class PermissionFragment extends Fragment {
 
-    private static final String PERMISSIONS = "permissions";
+    private static final String PERMISSION_GROUP = "permission_group";
     private static final String REQUEST_CODE ="request_code";
 
     public static PermissionFragment newInstant(ArrayList<String> permissions, int requestCode) {
         PermissionFragment fragment = new PermissionFragment();
         Bundle bundle = new Bundle();
-        bundle.putStringArrayList(PERMISSIONS, permissions);
+        bundle.putStringArrayList(PERMISSION_GROUP, permissions);
         bundle.putInt(REQUEST_CODE, requestCode);
         fragment.setArguments(bundle);
         return fragment;
@@ -27,7 +27,7 @@ public final class PermissionFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (PermissionUtils.isOverMarshmallow()) {
-            ArrayList<String> permissions = getArguments().getStringArrayList(PERMISSIONS);
+            ArrayList<String> permissions = getArguments().getStringArrayList(PERMISSION_GROUP);
             requestPermissions(permissions.toArray(new String[permissions.size() - 1]), getArguments().getInt(REQUEST_CODE));
         }
     }
