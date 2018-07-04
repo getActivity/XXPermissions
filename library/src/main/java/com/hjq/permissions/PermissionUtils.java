@@ -55,19 +55,22 @@ final class PermissionUtils {
      * 获取没有授予的权限
      *
      * @param context               上下文对象
-     * @param permissions    需要请求的权限组
+     * @param permissions           需要请求的权限组
      */
     static ArrayList<String> getFailPermissions(Context context, String[] permissions) {
 
-        //如果是安卓6.0以下版本就返回一个长度为零的数组
+        //如果是安卓6.0以下版本就返回null
         if(!PermissionUtils.isOverMarshmallow()) {
-            return new ArrayList<>();
+            return null;
         }
 
-        ArrayList<String> failPermissions = new ArrayList<>();
+        ArrayList<String> failPermissions = null;
         for (String permission : permissions) {
             //把没有授予过的权限加入到集合中
-            if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED){
+            if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED) {
+                if (failPermissions == null) {
+                    failPermissions = new ArrayList<>();
+                }
                 failPermissions.add(permission);
             }
         }

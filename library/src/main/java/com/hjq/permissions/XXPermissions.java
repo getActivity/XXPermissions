@@ -54,6 +54,14 @@ public final class XXPermissions {
     }
 
     /**
+     * 设置权限组
+     */
+    public XXPermissions permission(List<String> permissions){
+        this.mPermissions = permissions.toArray(new String[permissions.size() - 1]);
+        return this;
+    }
+
+    /**
      * 请求权限
      */
     public void request(OnPermission call) {
@@ -75,9 +83,9 @@ public final class XXPermissions {
 
         ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(mActivity, mPermissions);
 
-        if (failPermissions.isEmpty()) {
+        if (failPermissions == null) {
             //证明权限已经全部授予过
-            call.hasPermission(Arrays.asList(mPermissions));
+            call.hasPermission(Arrays.asList(mPermissions), true);
         } else {
             //将当前的请求码和对象添加到集合中
             sContainer.put(requestCode, call);
@@ -97,7 +105,21 @@ public final class XXPermissions {
      * @param permissions       需要请求的权限组
      */
     public static boolean isHasPermission(Context context, String... permissions) {
-        return PermissionUtils.getFailPermissions(context, permissions).isEmpty();
+        return PermissionUtils.getFailPermissions(context, permissions) == null;
+    }
+
+    /**
+     * 检查某些权限是否全部授予了
+     *
+     * @param context           上下文对象
+     * @param permissions       需要请求的权限组
+     */
+    public static boolean isHasPermission(Context context, String[]... permissions) {
+        List<String> permissionList = new ArrayList<>();
+        for (String[] group : permissions) {
+            permissionList.addAll(Arrays.asList(group));
+        }
+        return PermissionUtils.getFailPermissions(context, permissionList.toArray(new String[permissionList.size() - 1])) == null;
     }
 
     /**
@@ -134,7 +156,7 @@ public final class XXPermissions {
         //如果请求成功的权限集合大小和请求的数组一样大时证明权限已经全部授予
         if (succeedPermissions.size() == permissions.length) {
             //代表申请的所有的权限都授予了
-            call.hasPermission(succeedPermissions);
+            call.hasPermission(succeedPermissions, true);
         }else {
             //获取拒绝权限
             List<String> failPermissions = PermissionUtils.getFailPermissions(permissions, grantResults);
@@ -142,7 +164,7 @@ public final class XXPermissions {
             call.noPermission(failPermissions, System.currentTimeMillis() - sRequestTime < 200);
             //证明还有一部分权限被成功授予，回调成功接口
             if (!succeedPermissions.isEmpty()) {
-                call.hasPermission(succeedPermissions);
+                call.hasPermission(succeedPermissions, false);
             }
         }
 

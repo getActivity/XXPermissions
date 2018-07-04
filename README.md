@@ -7,19 +7,19 @@
 #### 集成步骤
 
     dependencies {
-        compile 'com.hjq:xxpermissions:1.3'
+        compile 'com.hjq:xxpermissions:1.5'
     }
 
 #### 一句代码搞定权限请求，从未如此简单
 
-> 若不指定请求的权限，会自动获取清单文件中的危险权限进行请求
+> 支持多个权限组进行请求，若不指定请求的权限，会自动获取清单文件中的危险权限进行请求
 
     XXPermissions.with(this)
             .permission(Permission.Group.STORAGE)
             .request(new OnPermission() {
 
                 @Override
-                public void hasPermission(List<String> granted) {
+                public void hasPermission(List<String> granted, boolean isAll) {
                     
                 }
 

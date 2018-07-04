@@ -10,18 +10,18 @@ android {
     defaultConfig {
         minSdkVersion 11
         targetSdkVersion 23
-        versionCode 5
-        versionName "1.3"
+        versionCode 10
+        versionName "1.5"
     }
 }
 
 def siteUrl = 'https://github.com/getActivity/XXPermissions' //项目在github中的地址
 def gitUrl = siteUrl + ".git" //项目在github中的地址
 
-//compile 'com.hjq:xxpermissions:1.3'
+//compile 'com.hjq:xxpermissions:1.5'
 def groupId = 'com.hjq' //定义的maven group id最终引用形式
 def artifactId = 'xxpermissions'//maven的artifact id，不要带大写，可以用“-”代替
-def versionName = '1.3'//maven 上发布版本号
+def versionName = '1.5'//maven 上发布版本号
 
 def repositoryName = 'maven' //自己创建的仓库名，直接在bintray账号下创建的
 def repositoryDesc = 'Android 6.0 permissions adaptation framework' //仓库描述，自己定义

@@ -21,12 +21,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void requestPermission(View view) {
         XXPermissions.with(this)
-                .permission(Permission.Group.STORAGE)
+                .permission(Permission.Group.STORAGE, Permission.Group.CAMERA)
                 .request(new OnPermission() {
 
                     @Override
-                    public void hasPermission(List<String> granted) {
-                        Toast.makeText(MainActivity.this, "获取权限成功", Toast.LENGTH_SHORT).show();
+                    public void hasPermission(List<String> granted, boolean isAll) {
+                        if (isAll) {
+                            Toast.makeText(MainActivity.this, "获取权限成功", Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(MainActivity.this, "获取权限成功，部分权限未正常授予", Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
@@ -43,10 +47,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void isHasPermission(View view) {
-        if (XXPermissions.isHasPermission(MainActivity.this, Permission.Group.STORAGE)) {
+        if (XXPermissions.isHasPermission(MainActivity.this, Permission.Group.STORAGE, Permission.Group.CAMERA)) {
             Toast.makeText(MainActivity.this, "已经获取到权限，不需要再次申请了", Toast.LENGTH_SHORT).show();
         }else {
-            Toast.makeText(MainActivity.this, "还没有获取到权限", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "还没有获取到权限或者部分权限未授予", Toast.LENGTH_SHORT).show();
         }
     }
 
