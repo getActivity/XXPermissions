@@ -1,7 +1,6 @@
 //文件开头配置
 apply plugin: 'com.android.library'
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 23
@@ -10,93 +9,24 @@ android {
     defaultConfig {
         minSdkVersion 11
         targetSdkVersion 23
-        versionCode 10
-        versionName "1.5"
+        versionCode 20
+        versionName "2.0"
     }
 }
 
-def siteUrl = 'https://github.com/getActivity/XXPermissions' //项目在github中的地址
-def gitUrl = siteUrl + ".git" //项目在github中的地址
-
-//compile 'com.hjq:xxpermissions:1.5'
-def groupId = 'com.hjq' //定义的maven group id最终引用形式
-def artifactId = 'xxpermissions'//maven的artifact id，不要带大写，可以用“-”代替
-def versionName = '1.5'//maven 上发布版本号
-
-def repositoryName = 'maven' //自己创建的仓库名，直接在bintray账号下创建的
-def repositoryDesc = 'Android 6.0 permissions adaptation framework' //仓库描述，自己定义
-def packageName = 'XXPermissions' //在仓库创建的包名称，在maven jcenter上显示的名字,最终引用的名字
-
-def idName = 'getactivity' //填写bintray用户名，注意大小写
-def orgName = idName //自己的organization（组织）名称，这里的组织直接就是自己的用户名
-def developerName = 'huangjinqun' //开发者姓名
-def developerEmail = 'jinqun0730@gmail.com' //开发者邮箱
-
-def licensesName = 'Apache-2.0' //不能随便写，只能是仓库创建时选择的license type
-def licensesUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt' //协议地址
-
-def codedFormat = 'UTF-8'//如果你的项目里面有中文注释的话，必须将格式设置为UTF-8，不然会出现乱码
-def packagingType = 'aar'//打包类型，可以打包成aar也可以打包成jar，本质上都是zip包
-
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-//Gradle配置
-version = versionName
-group = groupId
-bintray {
-    user = properties.getProperty('bintray.user')
-    key = properties.getProperty('bintray.apikey')
-    pkg {
-        repo = repositoryName
-        name = packageName
-        websiteUrl = siteUrl
-        vcsUrl = gitUrl
-        licenses = [licensesName]
-        userOrg = orgName
-        publish = true // 是否是公开项目，公开别人可以引用
-        version {
-            name = versionName
-            desc = repositoryDesc
-            released = new Date()
-            vcsTag = 'v1.0'
-            attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
-        }
-    }
-    configurations = ['archives']
+publish {
+    userOrg = 'getactivity'//填写bintray用户名，注意大小写
+    groupId = 'com.hjq'//定义的maven group id最终引用形式
+    artifactId = 'xxpermissions'//maven的artifact id
+    version = '2.0'//maven 上发布版本号
+    description = 'Android 6.0 permissions adaptation framework'//描述，自己定义
+    website = "https://github.com/getActivity/XXPermissions"//项目在github中的地址
 }
 
-install {
-    repositories.mavenInstaller {
-        // This generates POM.xml with proper parameters
-        pom {
-            project {
-                packaging packagingType
-                name artifactId
-                description repositoryDesc
-                url siteUrl
-                // Set your license
-                licenses {
-                    license {
-                        name licensesName
-                        url licensesUrl
-                    }
-                }
-                developers {
-                    developer {
-                        id idName
-                        name developerName
-                        email developerEmail
-                    }
-                }
-                scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
-                }
-            }
-        }
-    }
+tasks.withType(Javadoc) {//防止编码问题
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
 }
 
 task sourcesJar(type: Jar) {
@@ -105,7 +35,6 @@ task sourcesJar(type: Jar) {
 }
 
 task javadoc(type: Javadoc) {
-    failOnError false //必须添加以免出错
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
@@ -118,14 +47,4 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives javadocJar
     archives sourcesJar
-}
-
-javadoc {
-    options {
-        encoding codedFormat
-        charSet codedFormat
-        author true
-        version true
-        links 'http://docs.oracle.com/javase/7/docs/api'
-    }
 }

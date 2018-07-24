@@ -7,7 +7,7 @@
 #### 集成步骤
 
     dependencies {
-        compile 'com.hjq:xxpermissions:1.5'
+        compile 'com.hjq:xxpermissions:2.0'
     }
 
 #### 一句代码搞定权限请求，从未如此简单
@@ -38,3 +38,31 @@
 #### 跳转到设置页面
 
     XXPermissions.gotoPermissionSettings(this);
+
+#### 框架亮点
+
+* 简洁易用，采用链式调用的方式，使用只需一句代码
+
+* 不指定权限就自动获取清单文件上的危险权限进行申请
+
+* 如果动态申请的权限没有在清单文件中注册会抛出异常
+
+* 支持大部分国产手机直接跳转到具体的权限设置页面
+
+## License
+
+```text
+Copyright 2018 Huang Jinqun
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```

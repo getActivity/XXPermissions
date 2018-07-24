@@ -1,5 +1,6 @@
 package com.hjq.permissions;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -34,15 +35,11 @@ public final class PermissionFragment extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        getFragmentManager().beginTransaction().remove(this).commit();
         XXPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.remove(this);
-        ft.commit();
     }
 
-    public void request(FragmentManager manager) {
-        FragmentTransaction ft = manager.beginTransaction();
-        ft.add(this, this.getClass().getName());
-        ft.commit();
+    public void requestPermission(Activity activity) {
+        activity.getFragmentManager().beginTransaction().add(this, activity.getClass().getName()).commit();
     }
 }

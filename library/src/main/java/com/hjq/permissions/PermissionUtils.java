@@ -2,11 +2,9 @@ package com.hjq.permissions;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
-import android.provider.Settings;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,25 +15,9 @@ import java.util.List;
 final class PermissionUtils {
 
     /**
-     * 跳转到应用权限设置页面
-     *
-     * @param context           上下文对象
-     * @param newTask           是否使用新的任务栈启动
-     */
-    static void gotoPermissionSettings(Context context, boolean newTask) {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        //创建一个新栈存放，用户在系统设置授予权限后，会导致返回后不会重新创建当前Activity，不推荐这种做法
-        if (newTask) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
-        intent.setData(Uri.fromParts("package", context.getPackageName(), null));
-        context.startActivity(intent);
-    }
-
-    /**
      * 返回应用程序在清单文件中注册的权限
      */
-    static String[] getPermissions(Context context) {
+    static String[] getManifestPermissions(Context context) {
         PackageManager pm = context.getPackageManager();
         try {
             return pm.getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS).requestedPermissions;
@@ -121,16 +103,16 @@ final class PermissionUtils {
      * @param requestPermissions        请求的权限组
      */
     static void checkPermissions(Activity activity, String[] requestPermissions) {
-        String[] permissions = PermissionUtils.getPermissions(activity);
+        String[] permissions = PermissionUtils.getManifestPermissions(activity);
         if (permissions != null && permissions.length != 0) {
             List<String> manifest = Arrays.asList(permissions);
             for (String permission : requestPermissions) {
                 if (!manifest.contains(permission)) {
-                    throw new IllegalArgumentException(permission + ": Permissions are not registered in the manifest file");
+                    throw new ManifestPermissionException(permission);
                 }
             }
         }else {
-            throw new IllegalArgumentException("Permissions are not registered in the manifest file");
+            throw new ManifestPermissionException(null);
         }
     }
 }

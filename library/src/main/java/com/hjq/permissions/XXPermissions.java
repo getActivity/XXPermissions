@@ -66,7 +66,7 @@ public final class XXPermissions {
      */
     public void request(OnPermission call) {
         //如果没有指定请求的权限，就使用清单注册的权限进行请求
-        if (mPermissions == null || mPermissions.length == 0) this.mPermissions = PermissionUtils.getPermissions(mActivity);
+        if (mPermissions == null || mPermissions.length == 0) this.mPermissions = PermissionUtils.getManifestPermissions(mActivity);
         if (mPermissions == null || mPermissions.length == 0) throw new IllegalArgumentException("The requested permission cannot be empty");
         //使用isFinishing方法Activity在熄屏状态下会导致崩溃
         //if (mActivity == null || mActivity.isFinishing()) throw new IllegalArgumentException("Illegal Activity was passed in");
@@ -94,7 +94,7 @@ public final class XXPermissions {
             //检测权限有没有在清单文件中注册
             PermissionUtils.checkPermissions(mActivity, mPermissions);
             //申请没有授予过的权限
-            PermissionFragment.newInstant(failPermissions, requestCode).request(mActivity.getFragmentManager());
+            PermissionFragment.newInstant(failPermissions, requestCode).requestPermission(mActivity);
         }
     }
 
@@ -128,7 +128,7 @@ public final class XXPermissions {
      * @param context           上下文对象
      */
     public static void gotoPermissionSettings(Context context) {
-        PermissionUtils.gotoPermissionSettings(context, false);
+        PermissionSettingPage.start(context, false);
     }
 
     /**
@@ -138,7 +138,7 @@ public final class XXPermissions {
      * @param newTask           是否使用新的任务栈启动
      */
     public static void gotoPermissionSettings(Context context, boolean newTask) {
-        PermissionUtils.gotoPermissionSettings(context, newTask);
+        PermissionSettingPage.start(context, newTask);
     }
 
     /**
