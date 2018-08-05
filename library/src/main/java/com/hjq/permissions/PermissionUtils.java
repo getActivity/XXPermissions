@@ -1,10 +1,14 @@
 package com.hjq.permissions;
 
 import android.app.Activity;
+import android.app.AppOpsManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.provider.Settings;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -15,22 +19,45 @@ import java.util.List;
 final class PermissionUtils {
 
     /**
+     * 是否是6.0以上版本
+     */
+    static boolean isOverMarshmallow() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+    }
+
+    /**
+     * 是否是8.0以上版本
+     */
+    static boolean isOverOreo() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    }
+
+    /**
      * 返回应用程序在清单文件中注册的权限
      */
-    static String[] getManifestPermissions(Context context) {
+    static List<String> getManifestPermissions(Context context) {
         PackageManager pm = context.getPackageManager();
         try {
-            return pm.getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS).requestedPermissions;
-        } catch (PackageManager.NameNotFoundException e) {
+            return Arrays.asList(pm.getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS).requestedPermissions);
+        } catch (Exception e) {
             return null;
         }
     }
 
     /**
-     * 是否是6.0以上版本
+     * 是否有安装权限
      */
-    static boolean isOverMarshmallow() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+    public static boolean isHasInstallPermission(Context context) {
+        if (isOverOreo()) {
+
+            //必须设置目标SDK为26及以上才能请求安装权限
+            if (context.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.O) {
+                throw new RuntimeException("The targetSdkVersion SDK must be 26 or more");
+            }
+
+            return context.getPackageManager().canRequestPackageInstalls();
+        }
+        return true;
     }
 
     /**
@@ -39,7 +66,7 @@ final class PermissionUtils {
      * @param context               上下文对象
      * @param permissions           需要请求的权限组
      */
-    static ArrayList<String> getFailPermissions(Context context, String[] permissions) {
+    static ArrayList<String> getFailPermissions(Context context, List<String> permissions) {
 
         //如果是安卓6.0以下版本就返回null
         if(!PermissionUtils.isOverMarshmallow()) {
@@ -48,6 +75,17 @@ final class PermissionUtils {
 
         ArrayList<String> failPermissions = null;
         for (String permission : permissions) {
+
+            //检测安装权限
+            if (permission.equals(Permission.REQUEST_INSTALL_PACKAGES) && !isHasInstallPermission(context)) {
+
+                if (failPermissions == null) {
+                    failPermissions = new ArrayList<>();
+                }
+                failPermissions.add(permission);
+                continue;
+            }
+
             //把没有授予过的权限加入到集合中
             if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED) {
                 if (failPermissions == null) {
@@ -56,6 +94,7 @@ final class PermissionUtils {
                 failPermissions.add(permission);
             }
         }
+
         return failPermissions;
     }
 
@@ -102,10 +141,9 @@ final class PermissionUtils {
      * @param activity                  Activity对象
      * @param requestPermissions        请求的权限组
      */
-    static void checkPermissions(Activity activity, String[] requestPermissions) {
-        String[] permissions = PermissionUtils.getManifestPermissions(activity);
-        if (permissions != null && permissions.length != 0) {
-            List<String> manifest = Arrays.asList(permissions);
+    static void checkPermissions(Activity activity, List<String> requestPermissions) {
+        List<String> manifest = PermissionUtils.getManifestPermissions(activity);
+        if (manifest != null && manifest.size() != 0) {
             for (String permission : requestPermissions) {
                 if (!manifest.contains(permission)) {
                     throw new ManifestPermissionException(permission);

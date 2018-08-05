@@ -7,15 +7,14 @@
 #### 集成步骤
 
     dependencies {
-        compile 'com.hjq:xxpermissions:2.0'
+        compile 'com.hjq:xxpermissions:2.2'
     }
 
 #### 一句代码搞定权限请求，从未如此简单
 
-> 支持多个权限组进行请求，若不指定请求的权限，会自动获取清单文件中的危险权限进行请求
-
     XXPermissions.with(this)
-            .permission(Permission.Group.STORAGE)
+            //.constantRequest() //可设置被拒绝后继续申请，直到用户授权或者永久拒绝
+            .permission(Permission.Group.STORAGE) //支持多个权限组进行请求，不指定则默以清单文件中的危险权限进行请求
             .request(new OnPermission() {
 
                 @Override
@@ -43,11 +42,19 @@
 
 * 简洁易用，采用链式调用的方式，使用只需一句代码
 
-* 不指定权限就自动获取清单文件上的危险权限进行申请
+* 不指定权限则自动获取清单文件上的危险权限进行申请
 
 * 如果动态申请的权限没有在清单文件中注册会抛出异常
 
 * 支持大部分国产手机直接跳转到具体的权限设置页面
+
+* 可设置被拒绝后继续申请，直到用户授权或者永久拒绝
+
+* 本框架不依赖AppCompatSupport库，兼容Eclipse和Studio
+
+#### 混淆规则
+
+    -dontwarn com.hjq.permissions.**
 
 ## License
 
