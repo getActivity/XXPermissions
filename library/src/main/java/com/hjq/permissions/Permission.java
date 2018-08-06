@@ -40,6 +40,8 @@ public final class Permission {
 
     public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES";
 
+    public static final String SYSTEM_ALERT_WINDOW = "android.permission.SYSTEM_ALERT_WINDOW";
+
     public static final class Group {
 
         public static final String[] CALENDAR = new String[]{
@@ -82,5 +84,7 @@ public final class Permission {
                 Permission.WRITE_EXTERNAL_STORAGE};
 
         public static final String[] INSTALL = new String[]{Permission.REQUEST_INSTALL_PACKAGES};
+
+        public static final String[] WINDOW = new String[]{Permission.SYSTEM_ALERT_WINDOW};
     }
 }

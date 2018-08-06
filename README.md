@@ -7,13 +7,14 @@
 #### 集成步骤
 
     dependencies {
-        compile 'com.hjq:xxpermissions:2.2'
+        implementation 'com.hjq:xxpermissions:3.0'
     }
 
 #### 一句代码搞定权限请求，从未如此简单
 
     XXPermissions.with(this)
             //.constantRequest() //可设置被拒绝后继续申请，直到用户授权或者永久拒绝
+            //.permission(Permission.REQUEST_INSTALL_PACKAGES, Permission.SYSTEM_ALERT_WINDOW) //支持请求安装权限和悬浮窗权限
             .permission(Permission.Group.STORAGE) //支持多个权限组进行请求，不指定则默以清单文件中的危险权限进行请求
             .request(new OnPermission() {
 
@@ -49,6 +50,8 @@
 * 支持大部分国产手机直接跳转到具体的权限设置页面
 
 * 可设置被拒绝后继续申请，直到用户授权或者永久拒绝
+
+* 支持请求6.0以上的悬浮窗权限以及8.0以上的安装权限
 
 * 本框架不依赖AppCompatSupport库，兼容Eclipse和Studio
 

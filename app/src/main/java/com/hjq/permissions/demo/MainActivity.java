@@ -1,6 +1,5 @@
 package com.hjq.permissions.demo;
 
-import android.Manifest;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -23,8 +22,8 @@ public class MainActivity extends AppCompatActivity {
     public void requestPermission(View view) {
         XXPermissions.with(this)
                 //.constantRequest() //可设置被拒绝后继续申请，直到用户授权或者永久拒绝
-//                .permission(Permission.Group.STORAGE, Permission.Group.CAMERA)
-                .permission(Permission.REQUEST_INSTALL_PACKAGES, Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE)
+                //.permission(Permission.REQUEST_INSTALL_PACKAGES, Permission.SYSTEM_ALERT_WINDOW) //支持请求安装权限和悬浮窗权限
+                .permission(Permission.Group.STORAGE, Permission.Group.CAMERA)
                 .request(new OnPermission() {
 
                     @Override

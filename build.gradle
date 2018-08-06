@@ -17,6 +17,15 @@ allprojects {
         google()
         maven {url "https://jitpack.io"}
     }
+
+    //解决app:mockableAndroidJar错误的问题
+    gradle.taskGraph.whenReady {
+        tasks.each { task ->
+            if (task.name.equals('mockableAndroidJar')) {
+                task.enabled = false
+            }
+        }
+    }
 }
 
 task clean(type: Delete) {

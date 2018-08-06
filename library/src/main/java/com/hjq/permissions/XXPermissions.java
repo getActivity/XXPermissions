@@ -2,9 +2,6 @@ package com.hjq.permissions;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
-import android.provider.Settings;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +33,7 @@ public final class XXPermissions {
     /**
      * 设置权限组
      */
-    public XXPermissions permission(String... permissions){
+    public XXPermissions permission(String... permissions) {
         mPermissions = Arrays.asList(permissions);
         return this;
     }
@@ -44,7 +41,7 @@ public final class XXPermissions {
     /**
      * 设置权限组
      */
-    public XXPermissions permission(String[]... permissions){
+    public XXPermissions permission(String[]... permissions) {
         mPermissions = new ArrayList<>();
         for (String[] group : permissions) {
             mPermissions.addAll(Arrays.asList(group));
@@ -55,7 +52,7 @@ public final class XXPermissions {
     /**
      * 设置权限组
      */
-    public XXPermissions permission(List<String> permissions){
+    public XXPermissions permission(List<String> permissions) {
         mPermissions = permissions;
         return this;
     }
@@ -73,12 +70,15 @@ public final class XXPermissions {
      */
     public void request(OnPermission call) {
         //如果没有指定请求的权限，就使用清单注册的权限进行请求
-        if (mPermissions == null || mPermissions.size() == 0) mPermissions = PermissionUtils.getManifestPermissions(mActivity);
-        if (mPermissions == null || mPermissions.size() == 0) throw new IllegalArgumentException("The requested permission cannot be empty");
+        if (mPermissions == null || mPermissions.size() == 0)
+            mPermissions = PermissionUtils.getManifestPermissions(mActivity);
+        if (mPermissions == null || mPermissions.size() == 0)
+            throw new IllegalArgumentException("The requested permission cannot be empty");
         //使用isFinishing方法Activity在熄屏状态下会导致崩溃
         //if (mActivity == null || mActivity.isFinishing()) throw new IllegalArgumentException("Illegal Activity was passed in");
         if (mActivity == null) throw new IllegalArgumentException("The activity is empty");
-        if (call == null) throw new IllegalArgumentException("The permission request callback interface must be implemented");
+        if (call == null)
+            throw new IllegalArgumentException("The permission request callback interface must be implemented");
 
         ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(mActivity, mPermissions);
 
@@ -96,8 +96,8 @@ public final class XXPermissions {
     /**
      * 检查某些权限是否全部授予了
      *
-     * @param context           上下文对象
-     * @param permissions       需要请求的权限组
+     * @param context     上下文对象
+     * @param permissions 需要请求的权限组
      */
     public static boolean isHasPermission(Context context, String... permissions) {
         return PermissionUtils.getFailPermissions(context, Arrays.asList(permissions)) == null;
@@ -106,8 +106,8 @@ public final class XXPermissions {
     /**
      * 检查某些权限是否全部授予了
      *
-     * @param context           上下文对象
-     * @param permissions       需要请求的权限组
+     * @param context     上下文对象
+     * @param permissions 需要请求的权限组
      */
     public static boolean isHasPermission(Context context, String[]... permissions) {
         List<String> permissionList = new ArrayList<>();
@@ -120,7 +120,7 @@ public final class XXPermissions {
     /**
      * 跳转到应用权限设置页面
      *
-     * @param context           上下文对象
+     * @param context 上下文对象
      */
     public static void gotoPermissionSettings(Context context) {
         PermissionSettingPage.start(context, false);
@@ -129,8 +129,8 @@ public final class XXPermissions {
     /**
      * 跳转到应用权限设置页面
      *
-     * @param context           上下文对象
-     * @param newTask           是否使用新的任务栈启动
+     * @param context 上下文对象
+     * @param newTask 是否使用新的任务栈启动
      */
     public static void gotoPermissionSettings(Context context, boolean newTask) {
         PermissionSettingPage.start(context, newTask);

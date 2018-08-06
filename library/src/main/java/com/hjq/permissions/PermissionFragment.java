@@ -10,7 +10,6 @@ import android.provider.Settings;
 import android.util.SparseArray;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -20,15 +19,12 @@ import java.util.Random;
 public final class PermissionFragment extends Fragment {
 
     private static final String PERMISSION_GROUP = "permission_group";//请求的权限
-    private static final String REQUEST_CODE ="request_code";
-    private static final String REQUEST_CONSTANT ="request_constant";
+    private static final String REQUEST_CODE = "request_code";
+    private static final String REQUEST_CONSTANT = "request_constant";
 
     private final static SparseArray<OnPermission> sContainer = new SparseArray<>();
     private final static int TIME_DELAY = 200;//延迟时间，用于是否是系统拒绝的
     private static long sRequestTime;//请求的时间
-
-    private boolean requestInstall;//是否请求安装权限
-    private boolean isInstallPermission;//是否有安装权限
 
     public static PermissionFragment newInstant(ArrayList<String> permissions, boolean constant) {
         PermissionFragment fragment = new PermissionFragment();
@@ -62,18 +58,29 @@ public final class PermissionFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         ArrayList<String> permissions = getArguments().getStringArrayList(PERMISSION_GROUP);
-        if (permissions.contains(Permission.REQUEST_INSTALL_PACKAGES)) {
-            isInstallPermission = PermissionUtils.isHasInstallPermission(getActivity());
-            requestInstall = !isInstallPermission;
-            if (isInstallPermission) {
-                handleInstallPermission();
-            }else {
-                //跳转到允许安装未知来源页面
+
+        if ((permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.isHasInstallPermission(getActivity()))
+                || (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.isHasOverlaysPermission(getActivity()))) {
+
+            if (permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.isHasInstallPermission(getActivity())) {
+                //跳转到允许安装未知来源设置页面
                 Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getActivity().getPackageName()));
                 startActivityForResult(intent, getArguments().getInt(REQUEST_CODE));
             }
-        }else {
+
+            if (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.isHasOverlaysPermission(getActivity())) {
+                //跳转到悬浮窗设置页面
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getActivity().getPackageName()));
+                startActivityForResult(intent, getArguments().getInt(REQUEST_CODE));
+            }
+
+            //记录本次申请时间
+            sRequestTime = System.currentTimeMillis();
+
+        } else {
             requestPermission();
+            //记录本次申请时间
+            sRequestTime = System.currentTimeMillis();
         }
     }
 
@@ -82,8 +89,6 @@ public final class PermissionFragment extends Fragment {
      */
     public void requestPermission() {
         if (PermissionUtils.isOverMarshmallow()) {
-            //记录本次申请时间
-            sRequestTime = System.currentTimeMillis();
             ArrayList<String> permissions = getArguments().getStringArrayList(PERMISSION_GROUP);
             requestPermissions(permissions.toArray(new String[permissions.size() - 1]), getArguments().getInt(REQUEST_CODE));
         }
@@ -97,24 +102,23 @@ public final class PermissionFragment extends Fragment {
         //根据请求码取出的对象为空，就直接返回不处理
         if (call == null) return;
 
-        //是否请求了安装权限
-        if (requestInstall) {
+        for (int i = 0; i < permissions.length; i++) {
 
-            String[] s = new String[permissions.length + 1];
-            System.arraycopy(permissions, 0, s, 0, permissions.length);
-            s[s.length - 1] = Permission.REQUEST_INSTALL_PACKAGES;
-
-            int[] i = new int[grantResults.length + 1];
-            System.arraycopy(grantResults, 0, i, 0, grantResults.length);
-            //有请求安装权限并且被用户授予了
-            if (isInstallPermission) {
-                i[i.length - 1] = PackageManager.PERMISSION_GRANTED;
-            }else {
-                i[i.length - 1] = PackageManager.PERMISSION_DENIED;
+            if (Permission.REQUEST_INSTALL_PACKAGES.equals(permissions[i])) {
+                if (PermissionUtils.isHasInstallPermission(getActivity())) {
+                    grantResults[i] = PackageManager.PERMISSION_GRANTED;
+                } else {
+                    grantResults[i] = PackageManager.PERMISSION_DENIED;
+                }
             }
 
-            permissions = s;
-            grantResults = i;
+            if (Permission.SYSTEM_ALERT_WINDOW.equals(permissions[i])) {
+                if (PermissionUtils.isHasOverlaysPermission(getActivity())) {
+                    grantResults[i] = PackageManager.PERMISSION_GRANTED;
+                } else {
+                    grantResults[i] = PackageManager.PERMISSION_DENIED;
+                }
+            }
         }
 
         //获取授予权限
@@ -123,7 +127,7 @@ public final class PermissionFragment extends Fragment {
         if (succeedPermissions.size() == permissions.length) {
             //代表申请的所有的权限都授予了
             call.hasPermission(succeedPermissions, true);
-        }else {
+        } else {
             if (getArguments().getBoolean(REQUEST_CONSTANT) && System.currentTimeMillis() - sRequestTime > TIME_DELAY) {
                 requestPermission();
                 return;
@@ -144,37 +148,13 @@ public final class PermissionFragment extends Fragment {
         getFragmentManager().beginTransaction().remove(this).commit();
     }
 
+    private boolean isBackCall;//是否已经回调了，避免安装权限和悬浮窗同时请求导致的重复回调
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
-        if (PermissionUtils.isOverOreo() && requestCode == getArguments().getInt(REQUEST_CODE)) {
-            handleInstallPermission();
-        }
-    }
-
-    private void handleInstallPermission() {
-
-        isInstallPermission = PermissionUtils.isHasInstallPermission(getActivity());
-
-        ArrayList<String> permissions = getArguments().getStringArrayList(PERMISSION_GROUP);
-        permissions.remove(Permission.REQUEST_INSTALL_PACKAGES);
-        if (permissions.size() == 0) {
-            OnPermission call = sContainer.get(getArguments().getInt(REQUEST_CODE));
-
-            //根据请求码取出的对象为空，就直接返回不处理
-            if (call == null) return;
-            if (isInstallPermission) {
-                //只请求了安装权限并且被授予了
-                call.hasPermission(Arrays.asList(Permission.REQUEST_INSTALL_PACKAGES), true);
-            }else {
-                //只请求了安装权限并且被拒绝了
-                call.noPermission(Arrays.asList(Permission.REQUEST_INSTALL_PACKAGES), false);
-            }
-
-            //权限回调结束后要删除集合中的对象，避免重复请求
-            sContainer.remove(getArguments().getInt(REQUEST_CODE));
-            getFragmentManager().beginTransaction().remove(this).commit();
-        }else {
+        if (!isBackCall && requestCode == getArguments().getInt(REQUEST_CODE) ) {
+            isBackCall = true;
             //请求其他危险权限
             requestPermission();
         }

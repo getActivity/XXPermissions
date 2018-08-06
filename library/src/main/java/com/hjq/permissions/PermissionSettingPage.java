@@ -18,8 +18,8 @@ final class PermissionSettingPage {
     /**
      * 跳转到应用权限设置页面
      *
-     * @param context           上下文对象
-     * @param newTask           是否使用新的任务栈启动
+     * @param context 上下文对象
+     * @param newTask 是否使用新的任务栈启动
      */
     static void start(Context context, boolean newTask) {
 
