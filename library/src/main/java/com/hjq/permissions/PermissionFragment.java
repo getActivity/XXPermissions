@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.SparseArray;
 
@@ -155,8 +156,14 @@ public final class PermissionFragment extends Fragment {
         //super.onActivityResult(requestCode, resultCode, data);
         if (!isBackCall && requestCode == getArguments().getInt(REQUEST_CODE) ) {
             isBackCall = true;
-            //请求其他危险权限
-            requestPermission();
+            //延迟执行
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //请求其他危险权限
+                    requestPermission();
+                }
+            }, 500);
         }
     }
 }

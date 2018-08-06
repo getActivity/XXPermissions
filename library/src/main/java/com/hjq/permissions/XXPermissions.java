@@ -82,7 +82,7 @@ public final class XXPermissions {
 
         ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(mActivity, mPermissions);
 
-        if (failPermissions == null) {
+        if (failPermissions == null || failPermissions.size() == 0) {
             //证明权限已经全部授予过
             call.hasPermission(mPermissions, true);
         } else {
@@ -100,7 +100,8 @@ public final class XXPermissions {
      * @param permissions 需要请求的权限组
      */
     public static boolean isHasPermission(Context context, String... permissions) {
-        return PermissionUtils.getFailPermissions(context, Arrays.asList(permissions)) == null;
+        ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(context, Arrays.asList(permissions));
+        return failPermissions == null || failPermissions.size() == 0;
     }
 
     /**
@@ -114,7 +115,8 @@ public final class XXPermissions {
         for (String[] group : permissions) {
             permissionList.addAll(Arrays.asList(group));
         }
-        return PermissionUtils.getFailPermissions(context, permissionList) == null;
+        ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(context, permissionList);
+        return failPermissions == null || failPermissions.size() == 0;
     }
 
     /**
