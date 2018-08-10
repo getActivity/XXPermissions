@@ -8,17 +8,17 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by HJQ on 2018-6-15.
+ *    author : HJQ
+ *    github : https://github.com/getActivity/XXPermissions
+ *    time   : 2018/06/15
+ *    desc   : Android 危险权限请求类
  */
 public final class XXPermissions {
 
     private Activity mActivity;
-    private List<String> mPermissions;
+    private List<String> mPermissions = new ArrayList<>();
     private boolean mConstant;
 
-    /**
-     * 不能被外部实例化
-     */
     private XXPermissions(Activity activity) {
         mActivity = activity;
     }
@@ -34,7 +34,7 @@ public final class XXPermissions {
      * 设置权限组
      */
     public XXPermissions permission(String... permissions) {
-        mPermissions = Arrays.asList(permissions);
+        mPermissions.addAll(Arrays.asList(permissions));
         return this;
     }
 
@@ -42,7 +42,6 @@ public final class XXPermissions {
      * 设置权限组
      */
     public XXPermissions permission(String[]... permissions) {
-        mPermissions = new ArrayList<>();
         for (String[] group : permissions) {
             mPermissions.addAll(Arrays.asList(group));
         }
@@ -53,7 +52,7 @@ public final class XXPermissions {
      * 设置权限组
      */
     public XXPermissions permission(List<String> permissions) {
-        mPermissions = permissions;
+        mPermissions.addAll(permissions);
         return this;
     }
 
@@ -70,15 +69,12 @@ public final class XXPermissions {
      */
     public void request(OnPermission call) {
         //如果没有指定请求的权限，就使用清单注册的权限进行请求
-        if (mPermissions == null || mPermissions.size() == 0)
-            mPermissions = PermissionUtils.getManifestPermissions(mActivity);
-        if (mPermissions == null || mPermissions.size() == 0)
-            throw new IllegalArgumentException("The requested permission cannot be empty");
+        if (mPermissions == null || mPermissions.size() == 0) mPermissions = PermissionUtils.getManifestPermissions(mActivity);
+        if (mPermissions == null || mPermissions.size() == 0) throw new IllegalArgumentException("The requested permission cannot be empty");
         //使用isFinishing方法Activity在熄屏状态下会导致崩溃
         //if (mActivity == null || mActivity.isFinishing()) throw new IllegalArgumentException("Illegal Activity was passed in");
         if (mActivity == null) throw new IllegalArgumentException("The activity is empty");
-        if (call == null)
-            throw new IllegalArgumentException("The permission request callback interface must be implemented");
+        if (call == null) throw new IllegalArgumentException("The permission request callback interface must be implemented");
 
         ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(mActivity, mPermissions);
 

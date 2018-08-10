@@ -15,7 +15,10 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Created by HJQ on 2018-6-15.
+ *    author : HJQ
+ *    github : https://github.com/getActivity/XXPermissions
+ *    time   : 2018/06/15
+ *    desc   : 权限请求处理类
  */
 public final class PermissionFragment extends Fragment {
 
@@ -156,8 +159,9 @@ public final class PermissionFragment extends Fragment {
         //super.onActivityResult(requestCode, resultCode, data);
         if (!isBackCall && requestCode == getArguments().getInt(REQUEST_CODE) ) {
             isBackCall = true;
-            //延迟执行
+            //需要延迟执行，不然有些华为机型授权了但是获取不到权限
             new Handler().postDelayed(new Runnable() {
+
                 @Override
                 public void run() {
                     //请求其他危险权限

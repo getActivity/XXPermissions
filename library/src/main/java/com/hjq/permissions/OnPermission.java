@@ -3,7 +3,10 @@ package com.hjq.permissions;
 import java.util.List;
 
 /**
- * Created by HJQ on 2018-6-15.
+ *    author : HJQ
+ *    github : https://github.com/getActivity/XXPermissions
+ *    time   : 2018/06/15
+ *    desc   : 权限请求结果回调接口
  */
 public interface OnPermission {
 

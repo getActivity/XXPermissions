@@ -11,7 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by HJQ on 2018-6-15.
+ *    author : HJQ
+ *    github : https://github.com/getActivity/XXPermissions
+ *    time   : 2018/06/15
+ *    desc   : 权限请求工具类
  */
 final class PermissionUtils {
 
@@ -44,7 +47,7 @@ final class PermissionUtils {
     /**
      * 是否有安装权限
      */
-    public static boolean isHasInstallPermission(Context context) {
+    static boolean isHasInstallPermission(Context context) {
         if (isOverOreo()) {
 
             //必须设置目标SDK为26及以上才能正常检测安装权限
@@ -60,7 +63,7 @@ final class PermissionUtils {
     /**
      * 是否有悬浮窗权限
      */
-    public static boolean isHasOverlaysPermission(Context context) {
+    static boolean isHasOverlaysPermission(Context context) {
 
         if (isOverMarshmallow()) {
 
@@ -82,28 +85,37 @@ final class PermissionUtils {
      */
     static ArrayList<String> getFailPermissions(Context context, List<String> permissions) {
 
+        //必须设置目标SDK为23及以上才能正常检测安装权限
+        if (context.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.M) {
+            throw new RuntimeException("The targetSdkVersion SDK must be 23 or more");
+        }
+
         //如果是安卓6.0以下版本就返回null
         if (!PermissionUtils.isOverMarshmallow()) {
             return null;
         }
 
-        ArrayList<String> failPermissions = new ArrayList<>();
+        ArrayList<String> failPermissions = null;
+
         for (String permission : permissions) {
 
             //检测安装权限
             if (permission.equals(Permission.REQUEST_INSTALL_PACKAGES) && !isHasInstallPermission(context)) {
+                if (failPermissions == null) failPermissions = new ArrayList<>();
                 failPermissions.add(permission);
                 continue;
             }
 
             //检查悬浮窗权限
             if (permission.equals(Permission.SYSTEM_ALERT_WINDOW) && !isHasOverlaysPermission(context)) {
+                if (failPermissions == null) failPermissions = new ArrayList<>();
                 failPermissions.add(permission);
                 continue;
             }
 
             //把没有授予过的权限加入到集合中
             if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED) {
+                if (failPermissions == null) failPermissions = new ArrayList<>();
                 failPermissions.add(permission);
             }
         }
@@ -159,11 +171,11 @@ final class PermissionUtils {
         if (manifest != null && manifest.size() != 0) {
             for (String permission : requestPermissions) {
                 if (!manifest.contains(permission)) {
-                    throw new ManifestPermissionException(permission);
+                    throw new ManifestRegisterException(permission);
                 }
             }
         } else {
-            throw new ManifestPermissionException(null);
+            throw new ManifestRegisterException(null);
         }
     }
 }

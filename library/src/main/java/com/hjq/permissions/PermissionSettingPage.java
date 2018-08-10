@@ -9,7 +9,10 @@ import android.os.Build;
 import android.provider.Settings;
 
 /**
- * Created by HJQ on 2018-7-18.
+ *    author : HJQ
+ *    github : https://github.com/getActivity/XXPermissions
+ *    time   : 2018/07/18
+ *    desc   : 权限设置页（支持大部分国产手机）
  */
 final class PermissionSettingPage {
 
