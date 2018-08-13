@@ -99,15 +99,9 @@ final class PermissionUtils {
 
         for (String permission : permissions) {
 
-            //检测安装权限
-            if (permission.equals(Permission.REQUEST_INSTALL_PACKAGES) && !isHasInstallPermission(context)) {
-                if (failPermissions == null) failPermissions = new ArrayList<>();
-                failPermissions.add(permission);
-                continue;
-            }
-
-            //检查悬浮窗权限
-            if (permission.equals(Permission.SYSTEM_ALERT_WINDOW) && !isHasOverlaysPermission(context)) {
+            //检测安装权限和悬浮窗权限
+            if ((permission.equals(Permission.REQUEST_INSTALL_PACKAGES) && !isHasInstallPermission(context)) ||
+                    (permission.equals(Permission.SYSTEM_ALERT_WINDOW) && !isHasOverlaysPermission(context))) {
                 if (failPermissions == null) failPermissions = new ArrayList<>();
                 failPermissions.add(permission);
                 continue;
@@ -121,6 +115,32 @@ final class PermissionUtils {
         }
 
         return failPermissions;
+    }
+
+    /**
+     * 检查某个权限是否被永久拒绝
+     *
+     * @param activity              Activity对象
+     * @param permissions            请求的权限
+     */
+    static boolean checkPermissionPermanentDenied(Activity activity, List<String> permissions) {
+
+        for (String permission : permissions) {
+
+            //安装权限和浮窗权限不算在内
+            if (permission.equals(Permission.REQUEST_INSTALL_PACKAGES) || permission.equals(Permission.SYSTEM_ALERT_WINDOW)) {
+                continue;
+            }
+
+            if (PermissionUtils.isOverMarshmallow()) {
+                if (activity.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED) {
+                    if (!activity.shouldShowRequestPermissionRationale(permission)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**

@@ -27,7 +27,6 @@ public final class PermissionFragment extends Fragment {
     private static final String REQUEST_CONSTANT = "request_constant";
 
     private final static SparseArray<OnPermission> sContainer = new SparseArray<>();
-    private final static int TIME_DELAY = 200;//延迟时间，用于是否是系统拒绝的
     private static long sRequestTime;//请求的时间
 
     public static PermissionFragment newInstant(ArrayList<String> permissions, boolean constant) {
@@ -132,15 +131,19 @@ public final class PermissionFragment extends Fragment {
             //代表申请的所有的权限都授予了
             call.hasPermission(succeedPermissions, true);
         } else {
-            if (getArguments().getBoolean(REQUEST_CONSTANT) && System.currentTimeMillis() - sRequestTime > TIME_DELAY) {
+
+            //获取拒绝权限
+            List<String> failPermissions = PermissionUtils.getFailPermissions(permissions, grantResults);
+
+            if (getArguments().getBoolean(REQUEST_CONSTANT) && PermissionUtils.checkPermissionPermanentDenied(getActivity(), failPermissions)) {
+                //继续请求权限直到用户授权或者永久拒绝
                 requestPermission();
                 return;
             }
 
-            //获取拒绝权限
-            List<String> failPermissions = PermissionUtils.getFailPermissions(permissions, grantResults);
             //代表申请的权限中有不同意授予的，如果拒绝的时间过快证明是系统自动拒绝
-            call.noPermission(failPermissions, System.currentTimeMillis() - sRequestTime < TIME_DELAY);
+            call.noPermission(failPermissions, PermissionUtils.checkPermissionPermanentDenied(getActivity(), failPermissions));
+
             //证明还有一部分权限被成功授予，回调成功接口
             if (!succeedPermissions.isEmpty()) {
                 call.hasPermission(succeedPermissions, false);
