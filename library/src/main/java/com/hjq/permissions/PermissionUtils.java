@@ -99,11 +99,23 @@ final class PermissionUtils {
 
         for (String permission : permissions) {
 
-            //检测安装权限和悬浮窗权限
-            if ((permission.equals(Permission.REQUEST_INSTALL_PACKAGES) && !isHasInstallPermission(context)) ||
-                    (permission.equals(Permission.SYSTEM_ALERT_WINDOW) && !isHasOverlaysPermission(context))) {
-                if (failPermissions == null) failPermissions = new ArrayList<>();
-                failPermissions.add(permission);
+            //检测安装权限
+            if (permission.equals(Permission.REQUEST_INSTALL_PACKAGES)) {
+
+                if (!isHasInstallPermission(context)) {
+                    if (failPermissions == null) failPermissions = new ArrayList<>();
+                    failPermissions.add(permission);
+                }
+                continue;
+            }
+
+            //检测悬浮窗权限
+            if (permission.equals(Permission.SYSTEM_ALERT_WINDOW)) {
+
+                if (!isHasOverlaysPermission(context)) {
+                    if (failPermissions == null) failPermissions = new ArrayList<>();
+                    failPermissions.add(permission);
+                }
                 continue;
             }
 
