@@ -27,7 +27,6 @@ public final class PermissionFragment extends Fragment {
     private static final String REQUEST_CONSTANT = "request_constant";
 
     private final static SparseArray<OnPermission> sContainer = new SparseArray<>();
-    private static long sRequestTime;//请求的时间
 
     public static PermissionFragment newInstant(ArrayList<String> permissions, boolean constant) {
         PermissionFragment fragment = new PermissionFragment();
@@ -62,6 +61,8 @@ public final class PermissionFragment extends Fragment {
 
         ArrayList<String> permissions = getArguments().getStringArrayList(PERMISSION_GROUP);
 
+        if (permissions == null) return;
+
         if ((permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.isHasInstallPermission(getActivity()))
                 || (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.isHasOverlaysPermission(getActivity()))) {
 
@@ -77,13 +78,8 @@ public final class PermissionFragment extends Fragment {
                 startActivityForResult(intent, getArguments().getInt(REQUEST_CODE));
             }
 
-            //记录本次申请时间
-            sRequestTime = System.currentTimeMillis();
-
         } else {
             requestPermission();
-            //记录本次申请时间
-            sRequestTime = System.currentTimeMillis();
         }
     }
 

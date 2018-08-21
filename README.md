@@ -7,15 +7,16 @@
 #### 集成步骤
 
     dependencies {
-        implementation 'com.hjq:xxpermissions:3.6'
+        implementation 'com.hjq:xxpermissions:3.8'
     }
 
 #### 一句代码搞定权限请求，从未如此简单
 
     XXPermissions.with(this)
             //.constantRequest() //可设置被拒绝后继续申请，直到用户授权或者永久拒绝
-            //.permission(Permission.REQUEST_INSTALL_PACKAGES, Permission.SYSTEM_ALERT_WINDOW) //支持请求安装权限和悬浮窗权限
-            .permission(Permission.Group.STORAGE) //支持多个权限组进行请求，不指定则默以清单文件中的危险权限进行请求
+            //.permission(Permission.REQUEST_INSTALL_PACKAGES) //支持8.0及以上请求安装权限
+            //.permission(Permission.SYSTEM_ALERT_WINDOW) //支持请求6.0及以上悬浮窗权限
+            .permission(Permission.Group.STORAGE) //不指定权限则自动获取清单中的危险权限
             .request(new OnPermission() {
 
                 @Override
@@ -51,7 +52,7 @@
 
 * 可设置被拒绝后继续申请，直到用户授权或者永久拒绝
 
-* 支持请求6.0以上的悬浮窗权限以及8.0以上的安装权限
+* 支持请求6.0及以上的悬浮窗权限和8.0及以上的安装权限
 
 * 本框架不依赖AppCompatSupport库，兼容Eclipse和Studio
 

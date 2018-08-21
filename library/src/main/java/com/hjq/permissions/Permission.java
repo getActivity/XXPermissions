@@ -8,9 +8,9 @@ package com.hjq.permissions;
  */
 public final class Permission {
 
-    public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES"; // 8.0应用安装权限
+    public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES"; // 8.0及以上应用安装权限
 
-    public static final String SYSTEM_ALERT_WINDOW = "android.permission.SYSTEM_ALERT_WINDOW"; // 6.0悬浮窗权限
+    public static final String SYSTEM_ALERT_WINDOW = "android.permission.SYSTEM_ALERT_WINDOW"; // 6.0及以上悬浮窗权限
 
     public static final String READ_CALENDAR = "android.permission.READ_CALENDAR"; // 读取日程提醒
     public static final String WRITE_CALENDAR = "android.permission.WRITE_CALENDAR"; // 写入日程提醒
@@ -47,19 +47,10 @@ public final class Permission {
 
     public static final class Group {
 
-        // 安装
-        public static final String[] INSTALL = new String[]{Permission.REQUEST_INSTALL_PACKAGES};
-
-        // 悬浮窗
-        public static final String[] WINDOW = new String[]{Permission.SYSTEM_ALERT_WINDOW};
-
         // 日历
         public static final String[] CALENDAR = new String[]{
                 Permission.READ_CALENDAR,
                 Permission.WRITE_CALENDAR};
-
-        // 摄像头
-        public static final String[] CAMERA = new String[]{Permission.CAMERA};
 
         // 联系人
         public static final String[] CONTACTS = new String[]{
@@ -71,30 +62,6 @@ public final class Permission {
         public static final String[] LOCATION = new String[]{
                 Permission.ACCESS_FINE_LOCATION,
                 Permission.ACCESS_COARSE_LOCATION};
-
-        // 话筒
-        public static final String[] MICROPHONE = new String[]{Permission.RECORD_AUDIO};
-
-        // 电话
-        public static final String[] PHONE = new String[]{
-                Permission.READ_PHONE_STATE,
-                Permission.CALL_PHONE,
-                Permission.READ_CALL_LOG,
-                Permission.WRITE_CALL_LOG,
-                Permission.ADD_VOICEMAIL,
-                Permission.USE_SIP,
-                Permission.PROCESS_OUTGOING_CALLS};
-
-        // 传感器
-        public static final String[] SENSORS = new String[]{Permission.BODY_SENSORS};
-
-        // 短信
-        public static final String[] SMS = new String[]{
-                Permission.SEND_SMS,
-                Permission.RECEIVE_SMS,
-                Permission.READ_SMS,
-                Permission.RECEIVE_WAP_PUSH,
-                Permission.RECEIVE_MMS};
 
         // 存储
         public static final String[] STORAGE = new String[]{

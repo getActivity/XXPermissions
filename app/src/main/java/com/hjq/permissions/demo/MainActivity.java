@@ -22,8 +22,9 @@ public class MainActivity extends AppCompatActivity {
     public void requestPermission(View view) {
         XXPermissions.with(this)
                 //.constantRequest() //可设置被拒绝后继续申请，直到用户授权或者永久拒绝
-                //.permission(Permission.REQUEST_INSTALL_PACKAGES, Permission.SYSTEM_ALERT_WINDOW) //支持请求安装权限和悬浮窗权限
-                .permission(Permission.Group.STORAGE, Permission.Group.CAMERA)
+                //.permission(Permission.REQUEST_INSTALL_PACKAGES) //支持8.0及以上请求安装权限
+                //.permission(Permission.SYSTEM_ALERT_WINDOW) //支持请求6.0及以上悬浮窗权限
+                .permission(Permission.Group.STORAGE) //不指定权限则自动获取清单中的危险权限
                 .request(new OnPermission() {
 
                     @Override
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void isHasPermission(View view) {
-        if (XXPermissions.isHasPermission(MainActivity.this, Permission.Group.STORAGE, Permission.Group.CAMERA)) {
+        if (XXPermissions.isHasPermission(MainActivity.this, Permission.Group.STORAGE)) {
             Toast.makeText(MainActivity.this, "已经获取到权限，不需要再次申请了", Toast.LENGTH_SHORT).show();
         }else {
             Toast.makeText(MainActivity.this, "还没有获取到权限或者部分权限未授予", Toast.LENGTH_SHORT).show();
