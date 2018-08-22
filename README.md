@@ -60,6 +60,8 @@
 
     -dontwarn com.hjq.permissions.**
 
+#### Android技术讨论Q群：78797078
+
 ## License
 
 ```text
