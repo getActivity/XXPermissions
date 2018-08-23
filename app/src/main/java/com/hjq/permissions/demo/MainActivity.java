@@ -22,9 +22,8 @@ public class MainActivity extends AppCompatActivity {
     public void requestPermission(View view) {
         XXPermissions.with(this)
                 //.constantRequest() //可设置被拒绝后继续申请，直到用户授权或者永久拒绝
-                //.permission(Permission.REQUEST_INSTALL_PACKAGES) //支持8.0及以上请求安装权限
-                //.permission(Permission.SYSTEM_ALERT_WINDOW) //支持请求6.0及以上悬浮窗权限
-                .permission(Permission.Group.STORAGE) //不指定权限则自动获取清单中的危险权限
+                //.permission(Permission.SYSTEM_ALERT_WINDOW, Permission.REQUEST_INSTALL_PACKAGES) //支持请求6.0悬浮窗权限8.0请求安装权限
+                .permission(Permission.Group.STORAGE, Permission.Group.CALENDAR) //不指定权限则自动获取清单中的危险权限
                 .request(new OnPermission() {
 
                     @Override
