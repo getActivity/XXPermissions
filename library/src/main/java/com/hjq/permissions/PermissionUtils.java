@@ -130,25 +130,55 @@ final class PermissionUtils {
     }
 
     /**
-     * 检查某个权限是否被永久拒绝
+     * 是否还能继续申请没有授予的权限
+     *
+     * @param activity              Activity对象
+     * @param failPermissions       失败的权限
+     */
+    static boolean isRequestDeniedPermission(Activity activity, List<String> failPermissions) {
+        for (String permission : failPermissions) {
+            //检查是否还有权限还能继续申请的（这里指没有被授予的权限但是也没有被永久拒绝的）
+            if (!checkSinglePermissionPermanentDenied(activity, permission)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 在权限组检查某个权限是否被永久拒绝
      *
      * @param activity              Activity对象
      * @param permissions            请求的权限
      */
-    static boolean checkPermissionPermanentDenied(Activity activity, List<String> permissions) {
+    static boolean checkMorePermissionPermanentDenied(Activity activity, List<String> permissions) {
 
         for (String permission : permissions) {
 
-            //安装权限和浮窗权限不算在内
-            if (permission.equals(Permission.REQUEST_INSTALL_PACKAGES) || permission.equals(Permission.SYSTEM_ALERT_WINDOW)) {
-                continue;
+            if (checkSinglePermissionPermanentDenied(activity, permission)) {
+                return true;
             }
+        }
+        return false;
+    }
 
-            if (PermissionUtils.isOverMarshmallow()) {
-                if (activity.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED) {
-                    if (!activity.shouldShowRequestPermissionRationale(permission)) {
-                        return true;
-                    }
+    /**
+     * 检查某个权限是否被永久拒绝
+     *
+     * @param activity              Activity对象
+     * @param permission            请求的权限
+     */
+    static boolean checkSinglePermissionPermanentDenied(Activity activity, String permission) {
+
+        //安装权限和浮窗权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回false
+        if (permission.equals(Permission.REQUEST_INSTALL_PACKAGES) || permission.equals(Permission.SYSTEM_ALERT_WINDOW)) {
+            return false;
+        }
+
+        if (PermissionUtils.isOverMarshmallow()) {
+            if (activity.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED) {
+                if (!activity.shouldShowRequestPermissionRationale(permission)) {
+                    return true;
                 }
             }
         }

@@ -131,14 +131,17 @@ public final class PermissionFragment extends Fragment {
             //获取拒绝权限
             List<String> failPermissions = PermissionUtils.getFailPermissions(permissions, grantResults);
 
-            if (getArguments().getBoolean(REQUEST_CONSTANT) && PermissionUtils.checkPermissionPermanentDenied(getActivity(), failPermissions)) {
-                //继续请求权限直到用户授权或者永久拒绝
+            //检查是否开启了继续申请模式，如果是则检查没有授予的权限是否还能继续申请
+            if (getArguments().getBoolean(REQUEST_CONSTANT)
+                    && PermissionUtils.isRequestDeniedPermission(getActivity(), failPermissions)) {
+
+                //如果有的话就继续申请权限，直到用户授权或者永久拒绝
                 requestPermission();
                 return;
             }
 
-            //代表申请的权限中有不同意授予的，如果拒绝的时间过快证明是系统自动拒绝
-            call.noPermission(failPermissions, PermissionUtils.checkPermissionPermanentDenied(getActivity(), failPermissions));
+            //代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回true给开发人员，让开发者引导用户去设置界面开启权限
+            call.noPermission(failPermissions, PermissionUtils.checkMorePermissionPermanentDenied(getActivity(), failPermissions));
 
             //证明还有一部分权限被成功授予，回调成功接口
             if (!succeedPermissions.isEmpty()) {
