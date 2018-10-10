@@ -76,6 +76,8 @@ public final class XXPermissions {
         if (mActivity == null) throw new IllegalArgumentException("The activity is empty");
         if (call == null) throw new IllegalArgumentException("The permission request callback interface must be implemented");
 
+        PermissionUtils.checkTargetSdkVersion(mActivity, mPermissions);
+
         ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(mActivity, mPermissions);
 
         if (failPermissions == null || failPermissions.size() == 0) {

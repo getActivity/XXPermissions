@@ -3,11 +3,12 @@ package com.hjq.permissions.demo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
 import com.hjq.permissions.OnPermission;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
+import com.hjq.toast.ToastUtils;
+import com.hjq.toast.ToastWhiteStyle;
 
 import java.util.List;
 
@@ -17,6 +18,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //使用吐司白底黑字样式
+        ToastUtils.initStyle(new ToastWhiteStyle());
+        //初始化吐司工具类
+        ToastUtils.init(getApplicationContext());
     }
 
     public void requestPermission(View view) {
@@ -29,20 +34,20 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void hasPermission(List<String> granted, boolean isAll) {
                         if (isAll) {
-                            Toast.makeText(MainActivity.this, "获取权限成功", Toast.LENGTH_SHORT).show();
+                            ToastUtils.show("获取权限成功");
                         }else {
-                            Toast.makeText(MainActivity.this, "获取权限成功，部分权限未正常授予", Toast.LENGTH_SHORT).show();
+                            ToastUtils.show("获取权限成功，部分权限未正常授予");
                         }
                     }
 
                     @Override
                     public void noPermission(List<String> denied, boolean quick) {
                         if(quick) {
-                            Toast.makeText(MainActivity.this, "被永久拒绝授权，请手动授予权限", Toast.LENGTH_SHORT).show();
+                            ToastUtils.show("被永久拒绝授权，请手动授予权限");
                             //如果是被永久拒绝就跳转到应用权限系统设置页面
                             XXPermissions.gotoPermissionSettings(MainActivity.this);
                         }else {
-                            Toast.makeText(MainActivity.this, "获取权限失败", Toast.LENGTH_SHORT).show();
+                            ToastUtils.show("获取权限失败");
                         }
                     }
                 });
@@ -50,9 +55,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void isHasPermission(View view) {
         if (XXPermissions.isHasPermission(MainActivity.this, Permission.Group.STORAGE)) {
-            Toast.makeText(MainActivity.this, "已经获取到权限，不需要再次申请了", Toast.LENGTH_SHORT).show();
+            ToastUtils.show("已经获取到权限，不需要再次申请了");
         }else {
-            Toast.makeText(MainActivity.this, "还没有获取到权限或者部分权限未授予", Toast.LENGTH_SHORT).show();
+            ToastUtils.show("还没有获取到权限或者部分权限未授予");
         }
     }
 

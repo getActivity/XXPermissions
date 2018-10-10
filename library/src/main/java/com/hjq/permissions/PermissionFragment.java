@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.util.SparseArray;
 
@@ -20,7 +19,7 @@ import java.util.Random;
  *    time   : 2018/06/15
  *    desc   : 权限请求处理类
  */
-public final class PermissionFragment extends Fragment {
+public final class PermissionFragment extends Fragment implements Runnable {
 
     private static final String PERMISSION_GROUP = "permission_group";//请求的权限
     private static final String REQUEST_CODE = "request_code";
@@ -103,6 +102,7 @@ public final class PermissionFragment extends Fragment {
 
         for (int i = 0; i < permissions.length; i++) {
 
+            //重新检查安装权限
             if (Permission.REQUEST_INSTALL_PACKAGES.equals(permissions[i])) {
                 if (PermissionUtils.isHasInstallPermission(getActivity())) {
                     grantResults[i] = PackageManager.PERMISSION_GRANTED;
@@ -111,11 +111,21 @@ public final class PermissionFragment extends Fragment {
                 }
             }
 
+            //重新检查悬浮窗权限
             if (Permission.SYSTEM_ALERT_WINDOW.equals(permissions[i])) {
                 if (PermissionUtils.isHasOverlaysPermission(getActivity())) {
                     grantResults[i] = PackageManager.PERMISSION_GRANTED;
                 } else {
                     grantResults[i] = PackageManager.PERMISSION_DENIED;
+                }
+            }
+
+            //重新检查8.0的两个新权限
+            if (permissions[i].equals(Permission.ANSWER_PHONE_CALLS) || permissions[i].equals(Permission.READ_PHONE_NUMBERS)) {
+
+                //检查当前的安卓版本是否符合要求
+                if (!PermissionUtils.isOverOreo()) {
+                    grantResults[i] = PackageManager.PERMISSION_GRANTED;
                 }
             }
         }
@@ -162,14 +172,16 @@ public final class PermissionFragment extends Fragment {
         if (!isBackCall && requestCode == getArguments().getInt(REQUEST_CODE) ) {
             isBackCall = true;
             //需要延迟执行，不然有些华为机型授权了但是获取不到权限
-            new Handler().postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    //请求其他危险权限
-                    requestPermission();
-                }
-            }, 500);
+            getActivity().getWindow().getDecorView().postDelayed(this, 500);
         }
+    }
+
+    /**
+     * {@link Runnable#run()}
+     */
+    @Override
+    public void run() {
+        //请求其他危险权限
+        requestPermission();
     }
 }

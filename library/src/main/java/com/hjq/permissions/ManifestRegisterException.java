@@ -6,7 +6,7 @@ package com.hjq.permissions;
  *    time   : 2018/07/18
  *    desc   : 动态申请的权限没有在清单文件中注册会抛出的异常
  */
-class ManifestRegisterException extends RuntimeException {
+final class ManifestRegisterException extends RuntimeException {
 
     ManifestRegisterException(String permission) {
         super(permission == null ?

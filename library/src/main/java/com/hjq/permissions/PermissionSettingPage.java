@@ -26,7 +26,7 @@ final class PermissionSettingPage {
      */
     static void start(Context context, boolean newTask) {
 
-        Intent intent;
+        Intent intent = null;
         if (MARK.contains("huawei")) {
             intent = huawei(context);
         } else if (MARK.contains("xiaomi")) {
@@ -37,7 +37,9 @@ final class PermissionSettingPage {
             intent = vivo(context);
         } else if (MARK.contains("meizu")) {
             intent = meizu(context);
-        } else {
+        }
+
+        if (intent == null || !hasIntent(context, intent)) {
             intent = google(context);
         }
 
@@ -47,7 +49,7 @@ final class PermissionSettingPage {
 
         try {
             context.startActivity(intent);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             intent = google(context);
             context.startActivity(intent);
         }

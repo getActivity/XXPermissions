@@ -49,12 +49,6 @@ final class PermissionUtils {
      */
     static boolean isHasInstallPermission(Context context) {
         if (isOverOreo()) {
-
-            //必须设置目标SDK为26及以上才能正常检测安装权限
-            if (context.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.O) {
-                throw new RuntimeException("The targetSdkVersion SDK must be 26 or more");
-            }
-
             return context.getPackageManager().canRequestPackageInstalls();
         }
         return true;
@@ -64,14 +58,7 @@ final class PermissionUtils {
      * 是否有悬浮窗权限
      */
     static boolean isHasOverlaysPermission(Context context) {
-
         if (isOverMarshmallow()) {
-
-            //必须设置目标SDK为23及以上才能正常检测安装权限
-            if (context.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.M) {
-                throw new RuntimeException("The targetSdkVersion SDK must be 23 or more");
-            }
-
             return Settings.canDrawOverlays(context);
         }
         return true;
@@ -80,15 +67,10 @@ final class PermissionUtils {
     /**
      * 获取没有授予的权限
      *
-     * @param context     上下文对象
-     * @param permissions 需要请求的权限组
+     * @param context               上下文对象
+     * @param permissions           需要请求的权限组
      */
     static ArrayList<String> getFailPermissions(Context context, List<String> permissions) {
-
-        //必须设置目标SDK为23及以上才能正常检测安装权限
-        if (context.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.M) {
-            throw new RuntimeException("The targetSdkVersion SDK must be 23 or more");
-        }
 
         //如果是安卓6.0以下版本就返回null
         if (!PermissionUtils.isOverMarshmallow()) {
@@ -119,6 +101,15 @@ final class PermissionUtils {
                 continue;
             }
 
+            //检测8.0的两个新权限
+            if (permission.equals(Permission.ANSWER_PHONE_CALLS) || permission.equals(Permission.READ_PHONE_NUMBERS)) {
+
+                //检查当前的安卓版本是否符合要求
+                if (!isOverOreo()) {
+                    continue;
+                }
+            }
+
             //把没有授予过的权限加入到集合中
             if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED) {
                 if (failPermissions == null) failPermissions = new ArrayList<>();
@@ -146,7 +137,7 @@ final class PermissionUtils {
     }
 
     /**
-     * 在权限组检查某个权限是否被永久拒绝
+     * 在权限组中检查是否有某个权限是否被永久拒绝
      *
      * @param activity              Activity对象
      * @param permissions            请求的权限
@@ -175,11 +166,19 @@ final class PermissionUtils {
             return false;
         }
 
+        //检测8.0的两个新权限
+        if (permission.equals(Permission.ANSWER_PHONE_CALLS) || permission.equals(Permission.READ_PHONE_NUMBERS)) {
+
+            //检查当前的安卓版本是否符合要求
+            if (!isOverOreo()) {
+                return false;
+            }
+        }
+
         if (PermissionUtils.isOverMarshmallow()) {
-            if (activity.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED) {
-                if (!activity.shouldShowRequestPermissionRationale(permission)) {
-                    return true;
-                }
+            if (activity.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED  &&
+                    !activity.shouldShowRequestPermissionRationale(permission)) {
+                return true;
             }
         }
         return false;
@@ -188,8 +187,8 @@ final class PermissionUtils {
     /**
      * 获取没有授予的权限
      *
-     * @param permissions  需要请求的权限组
-     * @param grantResults 允许结果组
+     * @param permissions           需要请求的权限组
+     * @param grantResults          允许结果组
      */
     static List<String> getFailPermissions(String[] permissions, int[] grantResults) {
         List<String> failPermissions = new ArrayList<>();
@@ -206,8 +205,8 @@ final class PermissionUtils {
     /**
      * 获取已授予的权限
      *
-     * @param permissions  需要请求的权限组
-     * @param grantResults 允许结果组
+     * @param permissions       需要请求的权限组
+     * @param grantResults      允许结果组
      */
     static List<String> getSucceedPermissions(String[] permissions, int[] grantResults) {
 
@@ -225,8 +224,8 @@ final class PermissionUtils {
     /**
      * 检测权限有没有在清单文件中注册
      *
-     * @param activity           Activity对象
-     * @param requestPermissions 请求的权限组
+     * @param activity              Activity对象
+     * @param requestPermissions    请求的权限组
      */
     static void checkPermissions(Activity activity, List<String> requestPermissions) {
         List<String> manifest = PermissionUtils.getManifestPermissions(activity);
@@ -238,6 +237,29 @@ final class PermissionUtils {
             }
         } else {
             throw new ManifestRegisterException(null);
+        }
+    }
+
+    /**
+     * 检查targetSdkVersion是否符合要求
+     *
+     * @param context                   上下文对象
+     * @param requestPermissions       请求的权限组
+     */
+    static void checkTargetSdkVersion(Context context, List<String> requestPermissions) {
+        //检查是否包含了8.0的权限
+        if (requestPermissions.contains(Permission.REQUEST_INSTALL_PACKAGES)
+                || requestPermissions.contains(Permission.ANSWER_PHONE_CALLS)
+                || requestPermissions.contains(Permission.READ_PHONE_NUMBERS)) {
+            //必须设置 targetSdkVersion >= 26 才能正常检测权限
+            if (context.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.O) {
+                throw new RuntimeException("The targetSdkVersion SDK must be 26 or more");
+            }
+        }else {
+            //必须设置 targetSdkVersion >= 23 才能正常检测权限
+            if (context.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.M) {
+                throw new RuntimeException("The targetSdkVersion SDK must be 23 or more");
+            }
         }
     }
 }
