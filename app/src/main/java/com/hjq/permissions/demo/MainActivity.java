@@ -8,20 +8,25 @@ import com.hjq.permissions.OnPermission;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.toast.ToastUtils;
-import com.hjq.toast.ToastWhiteStyle;
+import com.hjq.toast.style.ToastWhiteStyle;
 
 import java.util.List;
 
+/**
+ *    author : Android 轮子哥
+ *    github : https://github.com/getActivity/XXPermissions
+ *    time   : 2018/06/15
+ *    desc   : XXPermissions 权限请求框架使用案例
+ */
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //使用吐司白底黑字样式
-        ToastUtils.initStyle(new ToastWhiteStyle());
+
         //初始化吐司工具类
-        ToastUtils.init(getApplicationContext());
+        ToastUtils.init(getApplication(), new ToastWhiteStyle());
     }
 
     public void requestPermission(View view) {

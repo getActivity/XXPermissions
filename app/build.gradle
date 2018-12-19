@@ -23,5 +23,5 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':library')
     implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.hjq:toast:2.2'
+    implementation 'com.hjq:toast:5.0'
 }

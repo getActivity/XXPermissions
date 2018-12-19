@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- *    author : HJQ
+ *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2018/06/15
  *    desc   : 权限请求工具类

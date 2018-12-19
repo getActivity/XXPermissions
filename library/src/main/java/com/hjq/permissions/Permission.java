@@ -1,7 +1,7 @@
 package com.hjq.permissions;
 
 /**
- *    author : HJQ
+ *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2018/06/15
  *    desc   : 权限请求实体类
