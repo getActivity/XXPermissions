@@ -79,6 +79,8 @@
 
 ![](pay_ali.png) ![](pay_wechat.png)
 
+![](pay_bonus.png)
+
 ## License
 
 ```text
