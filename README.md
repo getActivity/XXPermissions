@@ -9,7 +9,7 @@
 #### 集成步骤
 
     dependencies {
-        implementation 'com.hjq:xxpermissions:5.2'
+        implementation 'com.hjq:xxpermissions:5.3'
     }
 
 #### 一句代码搞定权限请求，从未如此简单
@@ -63,7 +63,7 @@
 
 #### 混淆规则
 
-    -dontwarn com.hjq.permissions.**
+    -keep class com.hjq.permissions.** {*;}
 
 #### 常见问题
 
@@ -73,18 +73,26 @@
 
 > 框架会先调用noPermission方法，再调用hasPermission方法。其中我们可以通过hasPermission方法中的isAll参数来判断权限是否全部授予了。如果想知道回调中的某个权限是否被授权或者拒绝，可以调用List集合类中的contains(Permission.XXX)方法来判断这个集合中是否包含了这个权限。
 
+#### 作者的其他开源项目
+
+* 架构工程：[AndroidProject](https://github.com/getActivity/AndroidProject)
+
+* 吐司框架：[ToastUtils](https://github.com/getActivity/ToastUtils)
+
+* 悬浮窗框架：[XToast](https://github.com/getActivity/XToast)
+
+* 标题栏框架：[TitleBar](https://github.com/getActivity/TitleBar)
+
 #### Android技术讨论Q群：78797078
 
 #### 如果您觉得我的开源库帮你节省了大量的开发时间，请扫描下方的二维码随意打赏，要是能打赏个 10.24 :monkey_face:就太:thumbsup:了。您的支持将鼓励我继续创作:octocat:
 
 ![](pay_ali.png) ![](pay_wechat.png)
 
-![](pay_bonus.png)
-
 ## License
 
 ```text
-Copyright 2018 Huang Jinqun
+Copyright 2018 Huang JinQun
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

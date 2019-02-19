@@ -36,10 +36,10 @@ final class PermissionUtils {
      * 返回应用程序在清单文件中注册的权限
      */
     static List<String> getManifestPermissions(Context context) {
-        PackageManager pm = context.getPackageManager();
         try {
-            return Arrays.asList(pm.getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS).requestedPermissions);
-        } catch (Exception e) {
+            return Arrays.asList(context.getPackageManager().getPackageInfo(context.getPackageName(),
+                    PackageManager.GET_PERMISSIONS).requestedPermissions);
+        } catch (PackageManager.NameNotFoundException ignored) {
             return null;
         }
     }
@@ -72,7 +72,7 @@ final class PermissionUtils {
      */
     static ArrayList<String> getFailPermissions(Context context, List<String> permissions) {
 
-        //如果是安卓6.0以下版本就返回null
+        // 如果是安卓6.0以下版本就返回null
         if (!PermissionUtils.isOverMarshmallow()) {
             return null;
         }
@@ -81,7 +81,7 @@ final class PermissionUtils {
 
         for (String permission : permissions) {
 
-            //检测安装权限
+            // 检测安装权限
             if (permission.equals(Permission.REQUEST_INSTALL_PACKAGES)) {
 
                 if (!isHasInstallPermission(context)) {
@@ -91,7 +91,7 @@ final class PermissionUtils {
                 continue;
             }
 
-            //检测悬浮窗权限
+            // 检测悬浮窗权限
             if (permission.equals(Permission.SYSTEM_ALERT_WINDOW)) {
 
                 if (!isHasOverlaysPermission(context)) {
@@ -101,16 +101,16 @@ final class PermissionUtils {
                 continue;
             }
 
-            //检测8.0的两个新权限
+            // 检测8.0的两个新权限
             if (permission.equals(Permission.ANSWER_PHONE_CALLS) || permission.equals(Permission.READ_PHONE_NUMBERS)) {
 
-                //检查当前的安卓版本是否符合要求
+                // 检查当前的安卓版本是否符合要求
                 if (!isOverOreo()) {
                     continue;
                 }
             }
 
-            //把没有授予过的权限加入到集合中
+            // 把没有授予过的权限加入到集合中
             if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED) {
                 if (failPermissions == null) failPermissions = new ArrayList<>();
                 failPermissions.add(permission);
@@ -128,7 +128,7 @@ final class PermissionUtils {
      */
     static boolean isRequestDeniedPermission(Activity activity, List<String> failPermissions) {
         for (String permission : failPermissions) {
-            //检查是否还有权限还能继续申请的（这里指没有被授予的权限但是也没有被永久拒绝的）
+            // 检查是否还有权限还能继续申请的（这里指没有被授予的权限但是也没有被永久拒绝的）
             if (!checkSinglePermissionPermanentDenied(activity, permission)) {
                 return true;
             }
@@ -161,15 +161,15 @@ final class PermissionUtils {
      */
     static boolean checkSinglePermissionPermanentDenied(Activity activity, String permission) {
 
-        //安装权限和浮窗权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回false
+        // 安装权限和浮窗权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回false
         if (permission.equals(Permission.REQUEST_INSTALL_PACKAGES) || permission.equals(Permission.SYSTEM_ALERT_WINDOW)) {
             return false;
         }
 
-        //检测8.0的两个新权限
+        // 检测8.0的两个新权限
         if (permission.equals(Permission.ANSWER_PHONE_CALLS) || permission.equals(Permission.READ_PHONE_NUMBERS)) {
 
-            //检查当前的安卓版本是否符合要求
+            // 检查当前的安卓版本是否符合要求
             if (!isOverOreo()) {
                 return false;
             }
@@ -194,7 +194,7 @@ final class PermissionUtils {
         List<String> failPermissions = new ArrayList<>();
         for (int i = 0; i < grantResults.length; i++) {
 
-            //把没有授予过的权限加入到集合中，-1表示没有授予，0表示已经授予
+            // 把没有授予过的权限加入到集合中，-1表示没有授予，0表示已经授予
             if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
                 failPermissions.add(permissions[i]);
             }
@@ -213,7 +213,7 @@ final class PermissionUtils {
         List<String> succeedPermissions = new ArrayList<>();
         for (int i = 0; i < grantResults.length; i++) {
 
-            //把授予过的权限加入到集合中，-1表示没有授予，0表示已经授予
+            // 把授予过的权限加入到集合中，-1表示没有授予，0表示已经授予
             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                 succeedPermissions.add(permissions[i]);
             }
@@ -228,10 +228,10 @@ final class PermissionUtils {
      * @param requestPermissions    请求的权限组
      */
     static void checkPermissions(Activity activity, List<String> requestPermissions) {
-        List<String> manifest = PermissionUtils.getManifestPermissions(activity);
-        if (manifest != null && manifest.size() != 0) {
+        List<String> manifestPermissions = PermissionUtils.getManifestPermissions(activity);
+        if (manifestPermissions != null && !manifestPermissions.isEmpty()) {
             for (String permission : requestPermissions) {
-                if (!manifest.contains(permission)) {
+                if (!manifestPermissions.contains(permission)) {
                     throw new ManifestRegisterException(permission);
                 }
             }
@@ -247,16 +247,16 @@ final class PermissionUtils {
      * @param requestPermissions       请求的权限组
      */
     static void checkTargetSdkVersion(Context context, List<String> requestPermissions) {
-        //检查是否包含了8.0的权限
+        // 检查是否包含了8.0的权限
         if (requestPermissions.contains(Permission.REQUEST_INSTALL_PACKAGES)
                 || requestPermissions.contains(Permission.ANSWER_PHONE_CALLS)
                 || requestPermissions.contains(Permission.READ_PHONE_NUMBERS)) {
-            //必须设置 targetSdkVersion >= 26 才能正常检测权限
+            // 必须设置 targetSdkVersion >= 26 才能正常检测权限
             if (context.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.O) {
                 throw new RuntimeException("The targetSdkVersion SDK must be 26 or more");
             }
         }else {
-            //必须设置 targetSdkVersion >= 23 才能正常检测权限
+            // 必须设置 targetSdkVersion >= 23 才能正常检测权限
             if (context.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.M) {
                 throw new RuntimeException("The targetSdkVersion SDK must be 23 or more");
             }

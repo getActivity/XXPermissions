@@ -12,7 +12,7 @@ import android.provider.Settings;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2018/07/18
- *    desc   : 权限设置页（支持大部分国产手机）
+ *    desc   : 权限设置页（兼容大部分国产手机）
  */
 final class PermissionSettingPage {
 
@@ -117,6 +117,6 @@ final class PermissionSettingPage {
     }
 
     private static boolean hasIntent(Context context, Intent intent) {
-        return context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).size() > 0;
+        return !context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
     }
 }

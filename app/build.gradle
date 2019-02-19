@@ -7,8 +7,8 @@ android {
         applicationId "com.hjq.permissions.demo"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 52
-        versionName "5.2"
+        versionCode 53
+        versionName "5.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -23,5 +23,5 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':library')
     implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.hjq:toast:5.0'
+    implementation 'com.hjq:toast:5.5'
 }

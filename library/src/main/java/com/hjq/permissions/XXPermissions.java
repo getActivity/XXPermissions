@@ -16,9 +16,12 @@ import java.util.List;
 public final class XXPermissions {
 
     private Activity mActivity;
-    private List<String> mPermissions = new ArrayList<>();
+    private List<String> mPermissions;
     private boolean mConstant;
 
+    /**
+     * 私有化构造函数
+     */
     private XXPermissions(Activity activity) {
         mActivity = activity;
     }
@@ -34,6 +37,9 @@ public final class XXPermissions {
      * 设置权限组
      */
     public XXPermissions permission(String... permissions) {
+        if (mPermissions == null) {
+            mPermissions = new ArrayList<>(permissions.length);
+        }
         mPermissions.addAll(Arrays.asList(permissions));
         return this;
     }
@@ -42,6 +48,13 @@ public final class XXPermissions {
      * 设置权限组
      */
     public XXPermissions permission(String[]... permissions) {
+        if (mPermissions == null) {
+            int length = 0;
+            for (String[] permission : permissions) {
+                length += permission.length;
+            }
+            mPermissions = new ArrayList<>(length);
+        }
         for (String[] group : permissions) {
             mPermissions.addAll(Arrays.asList(group));
         }
@@ -52,7 +65,11 @@ public final class XXPermissions {
      * 设置权限组
      */
     public XXPermissions permission(List<String> permissions) {
-        mPermissions.addAll(permissions);
+        if (mPermissions == null) {
+            mPermissions = permissions;
+        }else {
+            mPermissions.addAll(permissions);
+        }
         return this;
     }
 
@@ -68,11 +85,11 @@ public final class XXPermissions {
      * 请求权限
      */
     public void request(OnPermission call) {
-        //如果没有指定请求的权限，就使用清单注册的权限进行请求
-        if (mPermissions == null || mPermissions.size() == 0) mPermissions = PermissionUtils.getManifestPermissions(mActivity);
-        if (mPermissions == null || mPermissions.size() == 0) throw new IllegalArgumentException("The requested permission cannot be empty");
-        //使用isFinishing方法Activity在熄屏状态下会导致崩溃
-        //if (mActivity == null || mActivity.isFinishing()) throw new IllegalArgumentException("Illegal Activity was passed in");
+        // 如果没有指定请求的权限，就使用清单注册的权限进行请求
+        if (mPermissions == null || mPermissions.isEmpty()) mPermissions = PermissionUtils.getManifestPermissions(mActivity);
+        if (mPermissions == null || mPermissions.isEmpty()) throw new IllegalArgumentException("The requested permission cannot be empty");
+        // 使用isFinishing方法Activity在熄屏状态下会导致崩溃
+        // if (mActivity == null || mActivity.isFinishing()) throw new IllegalArgumentException("Illegal Activity was passed in");
         if (mActivity == null) throw new IllegalArgumentException("The activity is empty");
         if (call == null) throw new IllegalArgumentException("The permission request callback interface must be implemented");
 
@@ -80,13 +97,13 @@ public final class XXPermissions {
 
         ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(mActivity, mPermissions);
 
-        if (failPermissions == null || failPermissions.size() == 0) {
-            //证明权限已经全部授予过
+        if (failPermissions == null || failPermissions.isEmpty()) {
+            // 证明权限已经全部授予过
             call.hasPermission(mPermissions, true);
         } else {
-            //检测权限有没有在清单文件中注册
+            // 检测权限有没有在清单文件中注册
             PermissionUtils.checkPermissions(mActivity, mPermissions);
-            //申请没有授予过的权限
+            // 申请没有授予过的权限
             PermissionFragment.newInstant((new ArrayList<>(mPermissions)), mConstant).prepareRequest(mActivity, call);
         }
     }
@@ -99,7 +116,7 @@ public final class XXPermissions {
      */
     public static boolean isHasPermission(Context context, String... permissions) {
         ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(context, Arrays.asList(permissions));
-        return failPermissions == null || failPermissions.size() == 0;
+        return failPermissions == null || failPermissions.isEmpty();
     }
 
     /**
@@ -114,7 +131,7 @@ public final class XXPermissions {
             permissionList.addAll(Arrays.asList(group));
         }
         ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(context, permissionList);
-        return failPermissions == null || failPermissions.size() == 0;
+        return failPermissions == null || failPermissions.isEmpty();
     }
 
     /**
