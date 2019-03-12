@@ -128,6 +128,11 @@ final class PermissionUtils {
      */
     static boolean isRequestDeniedPermission(Activity activity, List<String> failPermissions) {
         for (String permission : failPermissions) {
+            // 安装权限和浮窗权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回false
+            if (permission.equals(Permission.REQUEST_INSTALL_PACKAGES) || permission.equals(Permission.SYSTEM_ALERT_WINDOW)) {
+                continue;
+            }
+
             // 检查是否还有权限还能继续申请的（这里指没有被授予的权限但是也没有被永久拒绝的）
             if (!checkSinglePermissionPermanentDenied(activity, permission)) {
                 return true;
@@ -143,9 +148,11 @@ final class PermissionUtils {
      * @param permissions            请求的权限
      */
     static boolean checkMorePermissionPermanentDenied(Activity activity, List<String> permissions) {
-
         for (String permission : permissions) {
-
+            // 安装权限和浮窗权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回false
+            if (permission.equals(Permission.REQUEST_INSTALL_PACKAGES) || permission.equals(Permission.SYSTEM_ALERT_WINDOW)) {
+                continue;
+            }
             if (checkSinglePermissionPermanentDenied(activity, permission)) {
                 return true;
             }
@@ -161,10 +168,10 @@ final class PermissionUtils {
      */
     static boolean checkSinglePermissionPermanentDenied(Activity activity, String permission) {
 
-        // 安装权限和浮窗权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回false
-        if (permission.equals(Permission.REQUEST_INSTALL_PACKAGES) || permission.equals(Permission.SYSTEM_ALERT_WINDOW)) {
-            return false;
-        }
+//        // 安装权限和浮窗权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回false
+//        if (permission.equals(Permission.REQUEST_INSTALL_PACKAGES) || permission.equals(Permission.SYSTEM_ALERT_WINDOW)) {
+//            return false;
+//        }
 
         // 检测8.0的两个新权限
         if (permission.equals(Permission.ANSWER_PHONE_CALLS) || permission.equals(Permission.READ_PHONE_NUMBERS)) {

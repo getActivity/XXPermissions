@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "27.0.3"
+
     defaultConfig {
         applicationId "com.hjq.permissions.demo"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 53
-        versionName "5.3"
+        versionCode 55
+        versionName "5.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -23,5 +23,5 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':library')
     implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.hjq:toast:5.5'
+    implementation 'com.hjq:toast:5.8'
 }

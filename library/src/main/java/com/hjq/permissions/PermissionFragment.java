@@ -29,7 +29,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
     private final static SparseArray<OnPermission> sContainer = new SparseArray<>();
 
-    public static PermissionFragment newInstant(ArrayList<String> permissions, boolean constant) {
+    public static PermissionFragment newInstance(ArrayList<String> permissions, boolean constant) {
         PermissionFragment fragment = new PermissionFragment();
         Bundle bundle = new Bundle();
 

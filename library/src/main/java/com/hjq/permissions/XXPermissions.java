@@ -104,7 +104,7 @@ public final class XXPermissions {
             // 检测权限有没有在清单文件中注册
             PermissionUtils.checkPermissions(mActivity, mPermissions);
             // 申请没有授予过的权限
-            PermissionFragment.newInstant((new ArrayList<>(mPermissions)), mConstant).prepareRequest(mActivity, call);
+            PermissionFragment.newInstance((new ArrayList<>(mPermissions)), mConstant).prepareRequest(mActivity, call);
         }
     }
 
