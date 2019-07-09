@@ -53,7 +53,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
     public void prepareRequest(Activity activity, OnPermission call) {
         // 将当前的请求码和对象添加到集合中
         sContainer.put(getArguments().getInt(REQUEST_CODE), call);
-        activity.getFragmentManager().beginTransaction().add(this, activity.getClass().getName()).commit();
+        activity.getFragmentManager().beginTransaction().add(this, activity.getClass().getName()).commitAllowingStateLoss();
     }
 
     @Override
