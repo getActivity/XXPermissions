@@ -86,12 +86,22 @@ public final class XXPermissions {
      */
     public void request(OnPermission call) {
         // 如果没有指定请求的权限，就使用清单注册的权限进行请求
-        if (mPermissions == null || mPermissions.isEmpty()) mPermissions = PermissionUtils.getManifestPermissions(mActivity);
-        if (mPermissions == null || mPermissions.isEmpty()) throw new IllegalArgumentException("The requested permission cannot be empty");
-        // 使用isFinishing方法Activity在熄屏状态下会导致崩溃
-        // if (mActivity == null || mActivity.isFinishing()) throw new IllegalArgumentException("Illegal Activity was passed in");
-        if (mActivity == null) throw new IllegalArgumentException("The activity is empty");
-        if (call == null) throw new IllegalArgumentException("The permission request callback interface must be implemented");
+        if (mPermissions == null || mPermissions.isEmpty()) {
+            mPermissions = PermissionUtils.getManifestPermissions(mActivity);
+        }
+        if (mPermissions == null || mPermissions.isEmpty()) {
+            throw new IllegalArgumentException("The requested permission cannot be empty");
+        }
+        // 使用isFinishing方法 Activity 在熄屏状态下会导致崩溃
+//        if (mActivity == null || mActivity.isFinishing()) {
+//            throw new IllegalArgumentException("Illegal Activity was passed in");
+//        }
+        if (mActivity == null) {
+            throw new IllegalArgumentException("The activity is empty");
+        }
+        if (call == null) {
+            throw new IllegalArgumentException("The permission request callback interface must be implemented");
+        }
 
         PermissionUtils.checkTargetSdkVersion(mActivity, mPermissions);
 
@@ -115,7 +125,11 @@ public final class XXPermissions {
      * @param permissions 需要请求的权限组
      */
     public static boolean isHasPermission(Context context, String... permissions) {
-        ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(context, Arrays.asList(permissions));
+        return isHasPermission(context, Arrays.asList(permissions));
+    }
+
+    public static boolean isHasPermission(Context context, List<String> permissions) {
+        ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(context, permissions);
         return failPermissions == null || failPermissions.isEmpty();
     }
 

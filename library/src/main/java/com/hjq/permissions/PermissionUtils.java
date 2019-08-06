@@ -85,7 +85,9 @@ final class PermissionUtils {
             if (permission.equals(Permission.REQUEST_INSTALL_PACKAGES)) {
 
                 if (!isHasInstallPermission(context)) {
-                    if (failPermissions == null) failPermissions = new ArrayList<>();
+                    if (failPermissions == null) {
+                        failPermissions = new ArrayList<>();
+                    }
                     failPermissions.add(permission);
                 }
                 continue;
@@ -95,7 +97,9 @@ final class PermissionUtils {
             if (permission.equals(Permission.SYSTEM_ALERT_WINDOW)) {
 
                 if (!isHasOverlaysPermission(context)) {
-                    if (failPermissions == null) failPermissions = new ArrayList<>();
+                    if (failPermissions == null) {
+                        failPermissions = new ArrayList<>();
+                    }
                     failPermissions.add(permission);
                 }
                 continue;
@@ -112,7 +116,9 @@ final class PermissionUtils {
 
             // 把没有授予过的权限加入到集合中
             if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED) {
-                if (failPermissions == null) failPermissions = new ArrayList<>();
+                if (failPermissions == null) {
+                    failPermissions = new ArrayList<>();
+                }
                 failPermissions.add(permission);
             }
         }
@@ -166,7 +172,7 @@ final class PermissionUtils {
      * @param activity              Activity对象
      * @param permission            请求的权限
      */
-    static boolean checkSinglePermissionPermanentDenied(Activity activity, String permission) {
+    private static boolean checkSinglePermissionPermanentDenied(Activity activity, String permission) {
 
 //        // 安装权限和浮窗权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回false
 //        if (permission.equals(Permission.REQUEST_INSTALL_PACKAGES) || permission.equals(Permission.SYSTEM_ALERT_WINDOW)) {
@@ -248,10 +254,10 @@ final class PermissionUtils {
     }
 
     /**
-     * 检查targetSdkVersion是否符合要求
+     * 检查targetSdkVersion 是否符合要求
      *
      * @param context                   上下文对象
-     * @param requestPermissions       请求的权限组
+     * @param requestPermissions        请求的权限组
      */
     static void checkTargetSdkVersion(Context context, List<String> requestPermissions) {
         // 检查是否包含了8.0的权限

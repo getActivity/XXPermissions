@@ -44,6 +44,7 @@ final class PermissionSettingPage {
         }
 
         if (newTask) {
+            // 如果用户在权限设置界面改动了权限，请求权限 Activity 会被重启，加入这个 Flag 就可以避免
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
 
@@ -63,24 +64,41 @@ final class PermissionSettingPage {
 
     private static Intent huawei(Context context) {
         Intent intent = new Intent();
+
+        intent.setClassName("com.huawei.systemmanager", "com.huawei.permissionmanager.ui.SingleAppActivity");
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
+
+        intent.setComponent(new ComponentName("com.android.packageinstaller", "com.android.packageinstaller.permission.ui.ManagePermissionsActivity"));
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
+
         intent.setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.permissionmanager.ui.MainActivity"));
-        if (hasIntent(context, intent)) return intent;
-        intent.setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.systemmanager.addviewmonitor.AddViewMonitorActivity"));
-        if (hasIntent(context, intent)) return intent;
-        intent.setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.notificationmanager.ui.NotificationManagmentActivity"));
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
+
         return intent;
     }
 
     private static Intent xiaomi(Context context) {
         Intent intent = new Intent("miui.intent.action.APP_PERM_EDITOR");
         intent.putExtra("extra_pkgname", context.getPackageName());
-        if (hasIntent(context, intent)) return intent;
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
 
         intent.setPackage("com.miui.securitycenter");
-        if (hasIntent(context, intent)) return intent;
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
 
         intent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.AppPermissionsEditorActivity");
-        if (hasIntent(context, intent)) return intent;
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
 
         intent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
         return intent;
@@ -89,21 +107,61 @@ final class PermissionSettingPage {
     private static Intent oppo(Context context) {
         Intent intent = new Intent();
         intent.putExtra("packageName", context.getPackageName());
-        intent.setClassName("com.color.safecenter", "com.color.safecenter.permission.floatwindow.FloatWindowListActivity");
-        if (hasIntent(context, intent)) return intent;
 
-        intent.setClassName("com.coloros.safecenter", "com.coloros.safecenter.sysfloatwindow.FloatWindowListActivity");
-        if (hasIntent(context, intent)) return intent;
+        intent.setClassName("com.color.safecenter", "com.color.safecenter.permission.PermissionManagerActivity");
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
+
+        intent.setClassName("com.coloros.safecenter", "com.coloros.safecenter.permission.PermissionManagerActivity");
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
+
+        intent.setClassName("com.coloros.securitypermission", "com.coloros.securitypermission.permission.PermissionGroupsActivity");
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
+
+        intent.setClassName("com.coloros.securitypermission", "com.coloros.securitypermission.permission.PermissionManagerActivity");
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
 
         intent.setClassName("com.oppo.safe", "com.oppo.safe.permission.PermissionAppListActivity");
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
         return intent;
     }
 
     private static Intent vivo(Context context) {
         Intent intent = new Intent();
-        intent.setClassName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.FloatWindowManager");
         intent.putExtra("packagename", context.getPackageName());
-        if (hasIntent(context, intent)) return intent;
+
+        // vivo x7 Y67 Y85
+        intent.setClassName("com.iqoo.secure", "com.iqoo.secure.safeguard.SoftPermissionDetailActivity");
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
+
+        // vivo Y66 x20 x9
+        intent.setClassName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.SoftPermissionDetailActivity");
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
+
+        // Y85
+        intent.setClassName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.PurviewTabActivity");
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
+
+        // 跳转会报 java.lang.SecurityException: Permission Denial
+        intent.setClassName("com.android.packageinstaller", "com.android.packageinstaller.permission.ui.ManagePermissionsActivity");
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
 
         intent.setComponent(new ComponentName("com.iqoo.secure", "com.iqoo.secure.safeguard.SoftPermissionDetailActivity"));
         return intent;

@@ -23,11 +23,16 @@ import java.util.Random;
  */
 public final class PermissionFragment extends Fragment implements Runnable {
 
-    private static final String PERMISSION_GROUP = "permission_group"; // 请求的权限
-    private static final String REQUEST_CODE = "request_code"; // 请求码（自动生成）
-    private static final String REQUEST_CONSTANT = "request_constant"; // 是否不断请求
-
-    private final static SparseArray<OnPermission> sContainer = new SparseArray<>();
+    /** 全局的 Handler 对象 */
+    private static final Handler HANDLER = new Handler(Looper.getMainLooper());
+    /** 请求的权限 */
+    private static final String PERMISSION_GROUP = "permission_group";
+    /** 请求码（自动生成） */
+    private static final String REQUEST_CODE = "request_code";
+    /** 是否不断请求 */
+    private static final String REQUEST_CONSTANT = "request_constant";
+    /** 回调对象存放 */
+    private final static SparseArray<OnPermission> PERMISSION_ARRAY = new SparseArray<>();
 
     public static PermissionFragment newInstance(ArrayList<String> permissions, boolean constant) {
         PermissionFragment fragment = new PermissionFragment();
@@ -36,9 +41,10 @@ public final class PermissionFragment extends Fragment implements Runnable {
         int requestCode;
         // 请求码随机生成，避免随机产生之前的请求码，必须进行循环判断
         do {
-            // requestCode = new Random().nextInt(65535); // Studio编译的APK请求码必须小于65536
-            requestCode = new Random().nextInt(255); // Eclipse编译的APK请求码必须小于256
-        } while (sContainer.get(requestCode) != null);
+            // Studio编译的APK请求码必须小于65536
+            // Eclipse编译的APK请求码必须小于256
+            requestCode = new Random().nextInt(255);
+        } while (PERMISSION_ARRAY.get(requestCode) != null);
 
         bundle.putInt(REQUEST_CODE, requestCode);
         bundle.putStringArrayList(PERMISSION_GROUP, permissions);
@@ -52,8 +58,8 @@ public final class PermissionFragment extends Fragment implements Runnable {
      */
     public void prepareRequest(Activity activity, OnPermission call) {
         // 将当前的请求码和对象添加到集合中
-        sContainer.put(getArguments().getInt(REQUEST_CODE), call);
-        activity.getFragmentManager().beginTransaction().add(this, activity.getClass().getName()).commit();
+        PERMISSION_ARRAY.put(getArguments().getInt(REQUEST_CODE), call);
+        activity.getFragmentManager().beginTransaction().add(this, activity.getClass().getName()).commitAllowingStateLoss();
     }
 
     @Override
@@ -62,24 +68,27 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
         ArrayList<String> permissions = getArguments().getStringArrayList(PERMISSION_GROUP);
 
-        if (permissions == null) return;
+        if (permissions == null) {
+            return;
+        }
 
-        if ((permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.isHasInstallPermission(getActivity()))
-                || (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.isHasOverlaysPermission(getActivity()))) {
+        boolean isRequestPermission = false;
+        if (permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.isHasInstallPermission(getActivity())) {
+            // 跳转到允许安装未知来源设置页面
+            Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getActivity().getPackageName()));
+            startActivityForResult(intent, getArguments().getInt(REQUEST_CODE));
+            isRequestPermission = true;
+        }
 
-            if (permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.isHasInstallPermission(getActivity())) {
-                // 跳转到允许安装未知来源设置页面
-                Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getActivity().getPackageName()));
-                startActivityForResult(intent, getArguments().getInt(REQUEST_CODE));
-            }
+        if (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.isHasOverlaysPermission(getActivity())) {
+            // 跳转到悬浮窗设置页面
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getActivity().getPackageName()));
+            startActivityForResult(intent, getArguments().getInt(REQUEST_CODE));
+            isRequestPermission = true;
+        }
 
-            if (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.isHasOverlaysPermission(getActivity())) {
-                // 跳转到悬浮窗设置页面
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getActivity().getPackageName()));
-                startActivityForResult(intent, getArguments().getInt(REQUEST_CODE));
-            }
-
-        } else {
+        // 当前必须没有跳转到悬浮窗或者安装权限界面
+        if (!isRequestPermission) {
             requestPermission();
         }
     }
@@ -97,10 +106,12 @@ public final class PermissionFragment extends Fragment implements Runnable {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
-        OnPermission call = sContainer.get(requestCode);
+        OnPermission call = PERMISSION_ARRAY.get(requestCode);
 
         // 根据请求码取出的对象为空，就直接返回不处理
-        if (call == null) return;
+        if (call == null) {
+            return;
+        }
 
         for (int i = 0; i < permissions.length; i++) {
 
@@ -162,28 +173,28 @@ public final class PermissionFragment extends Fragment implements Runnable {
         }
 
         // 权限回调结束后要删除集合中的对象，避免重复请求
-        sContainer.remove(requestCode);
+        PERMISSION_ARRAY.remove(requestCode);
         getFragmentManager().beginTransaction().remove(this).commit();
     }
 
-    private boolean isBackCall; // 是否已经回调了，避免安装权限和悬浮窗同时请求导致的重复回调
+    /** 是否已经回调了，避免安装权限和悬浮窗同时请求导致的重复回调 */
+    private boolean isBackCall;
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // super.onActivityResult(requestCode, resultCode, data);
         if (!isBackCall && requestCode == getArguments().getInt(REQUEST_CODE) ) {
             isBackCall = true;
             // 需要延迟执行，不然有些华为机型授权了但是获取不到权限
-            new Handler(Looper.getMainLooper()).postDelayed(this, 500);
+            HANDLER.postDelayed(this, 500);
         }
     }
 
-    /**
-     * {@link Runnable#run()}
-     */
     @Override
     public void run() {
-        // 请求其他危险权限
-        requestPermission();
+        // 如果用户离开太久，会导致 Activity 被回收掉，所以这里要判断当前 Fragment 是否有被添加到 Activity（可在开发者模式中开启不保留活动复现崩溃的 Bug）
+        if (isAdded()) {
+            // 请求其他危险权限
+            requestPermission();
+        }
     }
 }
