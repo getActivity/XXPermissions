@@ -9,7 +9,7 @@
 #### 集成步骤
 
     dependencies {
-        implementation 'com.hjq:xxpermissions:5.5'
+        implementation 'com.hjq:xxpermissions:6.0'
     }
 
 #### 一句代码搞定权限请求，从未如此简单
