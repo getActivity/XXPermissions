@@ -1,5 +1,7 @@
 package com.hjq.permissions;
 
+import android.annotation.NonNull;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
@@ -37,15 +39,13 @@ public final class PermissionFragment extends Fragment implements Runnable {
     public static PermissionFragment newInstance(ArrayList<String> permissions, boolean constant) {
         PermissionFragment fragment = new PermissionFragment();
         Bundle bundle = new Bundle();
-
         int requestCode;
         // 请求码随机生成，避免随机产生之前的请求码，必须进行循环判断
         do {
-            // Studio编译的APK请求码必须小于65536
-            // Eclipse编译的APK请求码必须小于256
+            // Studio编译的APK请求码必须小于 65536
+            // Eclipse编译的APK请求码必须小于 256
             requestCode = new Random().nextInt(255);
         } while (PERMISSION_ARRAY.get(requestCode) != null);
-
         bundle.putInt(REQUEST_CODE, requestCode);
         bundle.putStringArrayList(PERMISSION_GROUP, permissions);
         bundle.putBoolean(REQUEST_CONSTANT, constant);
@@ -56,12 +56,13 @@ public final class PermissionFragment extends Fragment implements Runnable {
     /**
      * 准备请求
      */
-    public void prepareRequest(Activity activity, OnPermission call) {
+    public void prepareRequest(Activity activity, OnPermission callback) {
         // 将当前的请求码和对象添加到集合中
-        PERMISSION_ARRAY.put(getArguments().getInt(REQUEST_CODE), call);
+        PERMISSION_ARRAY.put(getArguments().getInt(REQUEST_CODE), callback);
         activity.getFragmentManager().beginTransaction().add(this, activity.getClass().getName()).commitAllowingStateLoss();
     }
 
+    @SuppressLint("InlinedApi")
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -75,14 +76,14 @@ public final class PermissionFragment extends Fragment implements Runnable {
         boolean isRequestPermission = false;
         if (permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.isHasInstallPermission(getActivity())) {
             // 跳转到允许安装未知来源设置页面
-            Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getActivity().getPackageName()));
+            Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getContext().getPackageName()));
             startActivityForResult(intent, getArguments().getInt(REQUEST_CODE));
             isRequestPermission = true;
         }
 
         if (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.isHasOverlaysPermission(getActivity())) {
             // 跳转到悬浮窗设置页面
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getActivity().getPackageName()));
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getContext().getPackageName()));
             startActivityForResult(intent, getArguments().getInt(REQUEST_CODE));
             isRequestPermission = true;
         }
@@ -99,17 +100,19 @@ public final class PermissionFragment extends Fragment implements Runnable {
     public void requestPermission() {
         if (PermissionUtils.isOverMarshmallow()) {
             ArrayList<String> permissions = getArguments().getStringArrayList(PERMISSION_GROUP);
-            requestPermissions(permissions.toArray(new String[permissions.size() - 1]), getArguments().getInt(REQUEST_CODE));
+            if (permissions != null && permissions.size() > 0) {
+                requestPermissions(permissions.toArray(new String[permissions.size() - 1]), getArguments().getInt(REQUEST_CODE));
+            }
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        OnPermission call = PERMISSION_ARRAY.get(requestCode);
+        OnPermission callback = PERMISSION_ARRAY.get(requestCode);
 
         // 根据请求码取出的对象为空，就直接返回不处理
-        if (call == null) {
+        if (callback == null) {
             return;
         }
 
@@ -134,7 +137,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
             }
 
             // 重新检查8.0的两个新权限
-            if (permissions[i].equals(Permission.ANSWER_PHONE_CALLS) || permissions[i].equals(Permission.READ_PHONE_NUMBERS)) {
+            if (Permission.ANSWER_PHONE_CALLS.equals(permissions[i]) || Permission.READ_PHONE_NUMBERS.equals(permissions[i])) {
 
                 // 检查当前的安卓版本是否符合要求
                 if (!PermissionUtils.isOverOreo()) {
@@ -148,7 +151,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
         // 如果请求成功的权限集合大小和请求的数组一样大时证明权限已经全部授予
         if (succeedPermissions.size() == permissions.length) {
             // 代表申请的所有的权限都授予了
-            call.hasPermission(succeedPermissions, true);
+            callback.hasPermission(succeedPermissions, true);
         } else {
 
             // 获取拒绝权限
@@ -164,11 +167,11 @@ public final class PermissionFragment extends Fragment implements Runnable {
             }
 
             // 代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回true给开发人员，让开发者引导用户去设置界面开启权限
-            call.noPermission(failPermissions, PermissionUtils.checkMorePermissionPermanentDenied(getActivity(), failPermissions));
+            callback.noPermission(failPermissions, PermissionUtils.checkMorePermissionPermanentDenied(getActivity(), failPermissions));
 
             // 证明还有一部分权限被成功授予，回调成功接口
             if (!succeedPermissions.isEmpty()) {
-                call.hasPermission(succeedPermissions, false);
+                callback.hasPermission(succeedPermissions, false);
             }
         }
 
@@ -178,12 +181,12 @@ public final class PermissionFragment extends Fragment implements Runnable {
     }
 
     /** 是否已经回调了，避免安装权限和悬浮窗同时请求导致的重复回调 */
-    private boolean isBackCall;
+    private boolean mCallback;
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!isBackCall && requestCode == getArguments().getInt(REQUEST_CODE) ) {
-            isBackCall = true;
+        if (!mCallback && requestCode == getArguments().getInt(REQUEST_CODE) ) {
+            mCallback = true;
             // 需要延迟执行，不然有些华为机型授权了但是获取不到权限
             HANDLER.postDelayed(this, 500);
         }

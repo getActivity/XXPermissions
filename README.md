@@ -1,6 +1,6 @@
 # 权限请求框架
 
->[点击此处下载Demo](https://raw.githubusercontent.com/getActivity/XXPermissions/master/XXPermissions.apk)，[博文地址：一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
+> [点击此处下载Demo](https://raw.githubusercontent.com/getActivity/XXPermissions/master/XXPermissions.apk)，[博文地址：一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
 
 > 另外想对Android 6.0权限需要深入了解的，可以看这篇文章[Android 6.0运行权限解析（高级篇）](https://www.jianshu.com/p/6a4dff744031)
 
@@ -9,7 +9,7 @@
 #### 集成步骤
 
     dependencies {
-        implementation 'com.hjq:xxpermissions:6.0'
+        implementation 'com.hjq:xxpermissions:6.2'
     }
 
 #### 一句代码搞定权限请求，从未如此简单
@@ -26,7 +26,7 @@
             .request(new OnPermission() {
 
                 @Override
-                public void hasPermission(List<String> granted, boolean isAll) {
+                public void hasPermission(List<String> granted, boolean all) {
                     
                 }
 
@@ -74,23 +74,31 @@
 
 > 但是还有一种情况，如果在请求多种权限的情况下，这些权限不是被全部授予或者全部拒绝了，而是部分授权部分拒绝这种情况，框架会如何处理回调呢？
 
-> 框架会先调用noPermission方法，再调用hasPermission方法。其中我们可以通过hasPermission方法中的isAll参数来判断权限是否全部授予了。如果想知道回调中的某个权限是否被授权或者拒绝，可以调用List集合类中的contains(Permission.XXX)方法来判断这个集合中是否包含了这个权限。
+> 框架会先调用noPermission方法，再调用hasPermission方法。其中我们可以通过hasPermission方法中的 all 参数来判断权限是否全部授予了。如果想知道回调中的某个权限是否被授权或者拒绝，可以调用List集合类中的contains(Permission.XXX)方法来判断这个集合中是否包含了这个权限。
 
 #### 作者的其他开源项目
 
 * 架构工程：[AndroidProject](https://github.com/getActivity/AndroidProject)
 
+* 网络框架：[EasyHttp](https://github.com/getActivity/EasyHttp)
+
+* 日志框架：[Logcat](https://github.com/getActivity/Logcat)
+
 * 吐司框架：[ToastUtils](https://github.com/getActivity/ToastUtils)
 
-* 悬浮窗框架：[XToast](https://github.com/getActivity/XToast)
-
 * 标题栏框架：[TitleBar](https://github.com/getActivity/TitleBar)
+
+* 国际化框架：[MultiLanguages](https://github.com/getActivity/MultiLanguages)
+
+* 悬浮窗框架：[XToast](https://github.com/getActivity/XToast)
 
 #### Android技术讨论Q群：78797078
 
 #### 如果您觉得我的开源库帮你节省了大量的开发时间，请扫描下方的二维码随意打赏，要是能打赏个 10.24 :monkey_face:就太:thumbsup:了。您的支持将鼓励我继续创作:octocat:
 
-![](pay_ali.png) ![](pay_wechat.png)
+![](https://raw.githubusercontent.com/getActivity/Donate/master/picture/pay_ali.png) ![](https://raw.githubusercontent.com/getActivity/Donate/master/picture/pay_wechat.png)
+
+#### [点击查看捐赠列表](https://github.com/getActivity/Donate)
 
 ## License
 

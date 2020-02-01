@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //初始化吐司工具类
-        ToastUtils.init(getApplication(), new ToastWhiteStyle());
+        ToastUtils.init(getApplication(), new ToastWhiteStyle(getApplicationContext()));
     }
 
     public void requestPermission(View view) {
@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
                 .request(new OnPermission() {
 
                     @Override
-                    public void hasPermission(List<String> granted, boolean isAll) {
-                        if (isAll) {
+                    public void hasPermission(List<String> granted, boolean all) {
+                        if (all) {
                             ToastUtils.show("获取权限成功");
                         }else {
                             ToastUtils.show("获取权限成功，部分权限未正常授予");
@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
                             XXPermissions.gotoPermissionSettings(MainActivity.this);
                         }else {
                             ToastUtils.show("获取权限失败");
+                            System.out.println("测试失败了");
                         }
                     }
                 });

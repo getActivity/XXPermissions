@@ -2,6 +2,7 @@ package com.hjq.permissions;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -84,7 +85,7 @@ public final class XXPermissions {
     /**
      * 请求权限
      */
-    public void request(OnPermission call) {
+    public void request(OnPermission callback) {
         // 如果没有指定请求的权限，就使用清单注册的权限进行请求
         if (mPermissions == null || mPermissions.isEmpty()) {
             mPermissions = PermissionUtils.getManifestPermissions(mActivity);
@@ -92,14 +93,16 @@ public final class XXPermissions {
         if (mPermissions == null || mPermissions.isEmpty()) {
             throw new IllegalArgumentException("The requested permission cannot be empty");
         }
-        // 使用isFinishing方法 Activity 在熄屏状态下会导致崩溃
-//        if (mActivity == null || mActivity.isFinishing()) {
-//            throw new IllegalArgumentException("Illegal Activity was passed in");
-//        }
         if (mActivity == null) {
             throw new IllegalArgumentException("The activity is empty");
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mActivity.isDestroyed()){
+                throw new IllegalStateException("The event has been destroyed");
+            } else if (mActivity.isFinishing()) {
+                throw new IllegalStateException("The event has been finish");
+            }
         }
-        if (call == null) {
+        if (callback == null) {
             throw new IllegalArgumentException("The permission request callback interface must be implemented");
         }
 
@@ -109,12 +112,12 @@ public final class XXPermissions {
 
         if (failPermissions == null || failPermissions.isEmpty()) {
             // 证明权限已经全部授予过
-            call.hasPermission(mPermissions, true);
+            callback.hasPermission(mPermissions, true);
         } else {
             // 检测权限有没有在清单文件中注册
             PermissionUtils.checkPermissions(mActivity, mPermissions);
             // 申请没有授予过的权限
-            PermissionFragment.newInstance((new ArrayList<>(mPermissions)), mConstant).prepareRequest(mActivity, call);
+            PermissionFragment.newInstance((new ArrayList<>(mPermissions)), mConstant).prepareRequest(mActivity, callback);
         }
     }
 
