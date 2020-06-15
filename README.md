@@ -1,15 +1,17 @@
 # 权限请求框架
 
-> [点击此处下载Demo](https://raw.githubusercontent.com/getActivity/XXPermissions/master/XXPermissions.apk)，[博文地址：一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
+> 码云地址：[Gitee](https://gitee.com/getActivity/XXPermissions)
 
-> 另外想对Android 6.0权限需要深入了解的，可以看这篇文章[Android 6.0运行权限解析（高级篇）](https://www.jianshu.com/p/6a4dff744031)
+> [点击此处下载Demo](XXPermissions.apk)，[博文地址：一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
+
+> 另外想对 Android 6.0 权限需要深入了解的，可以看这篇文章[Android 6.0 运行权限解析（高级篇）](https://www.jianshu.com/p/6a4dff744031)
 
 ![](XXPermissions.gif)
 
 #### 集成步骤
 
     dependencies {
-        implementation 'com.hjq:xxpermissions:6.2'
+        implementation 'com.hjq:xxpermissions:6.5'
     }
 
 #### 一句代码搞定权限请求，从未如此简单
@@ -38,13 +40,13 @@
 
 #### 是否有这个权限
 
-    if (XXPermissions.isHasPermission(this, Permission.Group.STORAGE)) {
+    if (XXPermissions.hasPermission(this, Permission.Group.STORAGE)) {
 		
     }
 
 #### 跳转到设置页面
 
-    XXPermissions.gotoPermissionSettings(this);
+    XXPermissions.startPermissionActivity(this);
 
 #### 框架亮点
 
@@ -60,9 +62,9 @@
 
 * 可设置被拒绝后继续申请，直到用户授权或者永久拒绝
 
-* 支持请求6.0及以上的悬浮窗权限和8.0及以上的安装权限
+* 支持请求 6.0 的悬浮窗权限和 8.0 的应用安装权限
 
-* 本框架不依赖AppCompatSupport库，兼容Eclipse和Studio
+* 本框架不依赖 Support 库，兼容 Eclipse 和 Studio
 
 #### 混淆规则
 

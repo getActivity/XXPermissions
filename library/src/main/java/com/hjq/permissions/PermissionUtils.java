@@ -19,14 +19,14 @@ import java.util.List;
 final class PermissionUtils {
 
     /**
-     * 是否是6.0以上版本
+     * 是否是 6.0 以上版本
      */
     static boolean isOverMarshmallow() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     }
 
     /**
-     * 是否是8.0以上版本
+     * 是否是 8.0 以上版本
      */
     static boolean isOverOreo() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
@@ -73,7 +73,7 @@ final class PermissionUtils {
     static ArrayList<String> getFailPermissions(Context context, List<String> permissions) {
 
         // 如果是安卓6.0以下版本就返回null
-        if (!PermissionUtils.isOverMarshmallow()) {
+        if (!isOverMarshmallow()) {
             return null;
         }
 
@@ -188,7 +188,7 @@ final class PermissionUtils {
             }
         }
 
-        if (PermissionUtils.isOverMarshmallow()) {
+        if (isOverMarshmallow()) {
             if (activity.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED  &&
                     !activity.shouldShowRequestPermissionRationale(permission)) {
                 return true;
@@ -241,7 +241,7 @@ final class PermissionUtils {
      * @param requestPermissions    请求的权限组
      */
     static void checkPermissions(Activity activity, List<String> requestPermissions) {
-        List<String> manifestPermissions = PermissionUtils.getManifestPermissions(activity);
+        List<String> manifestPermissions = getManifestPermissions(activity);
         if (manifestPermissions != null && !manifestPermissions.isEmpty()) {
             for (String permission : requestPermissions) {
                 if (!manifestPermissions.contains(permission)) {
@@ -268,7 +268,7 @@ final class PermissionUtils {
             if (context.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.O) {
                 throw new RuntimeException("The targetSdkVersion SDK must be 26 or more");
             }
-        }else {
+        } else {
             // 必须设置 targetSdkVersion >= 23 才能正常检测权限
             if (context.getApplicationInfo().targetSdkVersion < Build.VERSION_CODES.M) {
                 throw new RuntimeException("The targetSdkVersion SDK must be 23 or more");

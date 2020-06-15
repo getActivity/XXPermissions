@@ -8,10 +8,10 @@ package com.hjq.permissions;
  */
 public final class Permission {
 
-    /** 8.0及以上应用安装权限 */
+    /** 应用安装权限（需要 8.0 及以上） */
     public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES";
 
-    /** 6.0及以上悬浮窗权限 */
+    /** 悬浮窗权限（需要 6.0 及以上） */
     public static final String SYSTEM_ALERT_WINDOW = "android.permission.SYSTEM_ALERT_WINDOW";
 
     /** 读取日程提醒 */

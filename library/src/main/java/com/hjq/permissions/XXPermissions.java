@@ -124,14 +124,17 @@ public final class XXPermissions {
     /**
      * 检查某些权限是否全部授予了
      *
-     * @param context     上下文对象
      * @param permissions 需要请求的权限组
      */
-    public static boolean isHasPermission(Context context, String... permissions) {
-        return isHasPermission(context, Arrays.asList(permissions));
+    public static boolean hasPermission(Context context, String... permissions) {
+        if (permissions == null || permissions.length == 0) {
+            return hasPermission(context, PermissionUtils.getManifestPermissions(context));
+        } else {
+            return hasPermission(context, Arrays.asList(permissions));
+        }
     }
 
-    public static boolean isHasPermission(Context context, List<String> permissions) {
+    public static boolean hasPermission(Context context, List<String> permissions) {
         ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(context, permissions);
         return failPermissions == null || failPermissions.isEmpty();
     }
@@ -139,10 +142,9 @@ public final class XXPermissions {
     /**
      * 检查某些权限是否全部授予了
      *
-     * @param context     上下文对象
      * @param permissions 需要请求的权限组
      */
-    public static boolean isHasPermission(Context context, String[]... permissions) {
+    public static boolean hasPermission(Context context, String[]... permissions) {
         List<String> permissionList = new ArrayList<>();
         for (String[] group : permissions) {
             permissionList.addAll(Arrays.asList(group));
@@ -153,20 +155,17 @@ public final class XXPermissions {
 
     /**
      * 跳转到应用权限设置页面
-     *
-     * @param context 上下文对象
      */
-    public static void gotoPermissionSettings(Context context) {
+    public static void startPermissionActivity(Context context) {
         PermissionSettingPage.start(context, false);
     }
 
     /**
      * 跳转到应用权限设置页面
      *
-     * @param context 上下文对象
-     * @param newTask 是否使用新的任务栈启动
+     * @param newTask       是否使用新的任务栈启动
      */
-    public static void gotoPermissionSettings(Context context, boolean newTask) {
+    public static void startPermissionActivity(Context context, boolean newTask) {
         PermissionSettingPage.start(context, newTask);
     }
 }

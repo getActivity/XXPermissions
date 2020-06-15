@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:onClick="isHasPermission"
+            android:onClick="hasPermission"
             android:text="权限是否已经获取" />
 
         <Button
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:onClick="gotoPermissionSettings"
+            android:onClick="startPermissionPage"
             android:text="应用权限设置页面" />
 
     </LinearLayout>

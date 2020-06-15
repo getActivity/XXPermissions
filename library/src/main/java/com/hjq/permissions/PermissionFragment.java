@@ -1,6 +1,5 @@
 package com.hjq.permissions;
 
-import android.annotation.NonNull;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
@@ -13,6 +12,7 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.util.SparseArray;
 
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -34,7 +34,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
     /** 是否不断请求 */
     private static final String REQUEST_CONSTANT = "request_constant";
     /** 回调对象存放 */
-    private final static SparseArray<OnPermission> PERMISSION_ARRAY = new SparseArray<>();
+    private final static SparseArray<SoftReference<OnPermission>> CALLBACKS = new SparseArray<>();
 
     public static PermissionFragment newInstance(ArrayList<String> permissions, boolean constant) {
         PermissionFragment fragment = new PermissionFragment();
@@ -45,7 +45,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
             // Studio编译的APK请求码必须小于 65536
             // Eclipse编译的APK请求码必须小于 256
             requestCode = new Random().nextInt(255);
-        } while (PERMISSION_ARRAY.get(requestCode) != null);
+        } while (CALLBACKS.get(requestCode) != null);
         bundle.putInt(REQUEST_CODE, requestCode);
         bundle.putStringArrayList(PERMISSION_GROUP, permissions);
         bundle.putBoolean(REQUEST_CONSTANT, constant);
@@ -58,7 +58,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
      */
     public void prepareRequest(Activity activity, OnPermission callback) {
         // 将当前的请求码和对象添加到集合中
-        PERMISSION_ARRAY.put(getArguments().getInt(REQUEST_CODE), callback);
+        CALLBACKS.put(getArguments().getInt(REQUEST_CODE), new SoftReference<>(callback));
         activity.getFragmentManager().beginTransaction().add(this, activity.getClass().getName()).commitAllowingStateLoss();
     }
 
@@ -107,10 +107,12 @@ public final class PermissionFragment extends Fragment implements Runnable {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        OnPermission callback = PERMISSION_ARRAY.get(requestCode);
-
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        SoftReference<OnPermission> reference = CALLBACKS.get(requestCode);
+        if (reference == null) {
+            return;
+        }
+        OnPermission callback = reference.get();
         // 根据请求码取出的对象为空，就直接返回不处理
         if (callback == null) {
             return;
@@ -176,7 +178,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
         }
 
         // 权限回调结束后要删除集合中的对象，避免重复请求
-        PERMISSION_ARRAY.remove(requestCode);
+        CALLBACKS.remove(requestCode);
         getFragmentManager().beginTransaction().remove(this).commit();
     }
 

@@ -1,6 +1,5 @@
 package com.hjq.permissions;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -70,12 +69,12 @@ final class PermissionSettingPage {
             return intent;
         }
 
-        intent.setComponent(new ComponentName("com.android.packageinstaller", "com.android.packageinstaller.permission.ui.ManagePermissionsActivity"));
+        intent.setClassName("com.android.packageinstaller", "com.android.packageinstaller.permission.ui.ManagePermissionsActivity");
         if (hasIntent(context, intent)) {
             return intent;
         }
 
-        intent.setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.permissionmanager.ui.MainActivity"));
+        intent.setClassName("com.huawei.systemmanager", "com.huawei.permissionmanager.ui.MainActivity");
         if (hasIntent(context, intent)) {
             return intent;
         }
@@ -163,14 +162,14 @@ final class PermissionSettingPage {
             return intent;
         }
 
-        intent.setComponent(new ComponentName("com.iqoo.secure", "com.iqoo.secure.safeguard.SoftPermissionDetailActivity"));
+        intent.setClassName("com.iqoo.secure", "com.iqoo.secure.safeguard.SoftPermissionDetailActivity");
         return intent;
     }
 
     private static Intent meizu(Context context) {
         Intent intent = new Intent("com.meizu.safe.security.SHOW_APPSEC");
         intent.putExtra("packageName", context.getPackageName());
-        intent.setComponent(new ComponentName("com.meizu.safe", "com.meizu.safe.security.AppSecActivity"));
+        intent.setClassName("com.meizu.safe", "com.meizu.safe.security.AppSecActivity");
         return intent;
     }
 

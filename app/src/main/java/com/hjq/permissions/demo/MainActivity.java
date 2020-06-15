@@ -53,24 +53,23 @@ public class MainActivity extends AppCompatActivity {
                         if(quick) {
                             ToastUtils.show("被永久拒绝授权，请手动授予权限");
                             //如果是被永久拒绝就跳转到应用权限系统设置页面
-                            XXPermissions.gotoPermissionSettings(MainActivity.this);
-                        }else {
+                            XXPermissions.startPermissionActivity(MainActivity.this);
+                        } else {
                             ToastUtils.show("获取权限失败");
-                            System.out.println("测试失败了");
                         }
                     }
                 });
     }
 
-    public void isHasPermission(View view) {
-        if (XXPermissions.isHasPermission(MainActivity.this, Permission.Group.STORAGE)) {
+    public void hasPermission(View view) {
+        if (XXPermissions.hasPermission(MainActivity.this, Permission.Group.STORAGE)) {
             ToastUtils.show("已经获取到权限，不需要再次申请了");
         }else {
             ToastUtils.show("还没有获取到权限或者部分权限未授予");
         }
     }
 
-    public void gotoPermissionSettings(View view) {
-        XXPermissions.gotoPermissionSettings(MainActivity.this);
+    public void startPermissionPage(View view) {
+        XXPermissions.startPermissionActivity(MainActivity.this);
     }
 }
