@@ -1,12 +1,16 @@
 package com.hjq.permissions;
 
+import android.Manifest;
+
 /**
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2018/06/15
- *    desc   : 权限请求实体类
+ *    desc   : 权限请求实体类，参考 {@link Manifest.permission}
  */
 public final class Permission {
+
+    private Permission() {}
 
     /** 应用安装权限（需要 8.0 及以上） */
     public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES";
@@ -51,9 +55,9 @@ public final class Permission {
     public static final String USE_SIP = "android.permission.USE_SIP";
     /** 处理拨出电话 */
     public static final String PROCESS_OUTGOING_CALLS = "android.permission.PROCESS_OUTGOING_CALLS";
-    /** 8.0危险权限：允许您的应用通过编程方式接听呼入电话。要在您的应用中处理呼入电话，您可以使用 acceptRingingCall() 函数 */
+    /** 8.0 危险权限：允许您的应用通过编程方式接听呼入电话。要在您的应用中处理呼入电话，您可以使用 acceptRingingCall() 函数 */
     public static final String ANSWER_PHONE_CALLS = "android.permission.ANSWER_PHONE_CALLS";
-    /** 8.0危险权限：权限允许您的应用读取设备中存储的电话号码 */
+    /** 8.0 危险权限：权限允许您的应用读取设备中存储的电话号码 */
     public static final String READ_PHONE_NUMBERS = "android.permission.READ_PHONE_NUMBERS";
 
     /** 传感器 */
@@ -72,6 +76,7 @@ public final class Permission {
 
     /** 读取外部存储 */
     public static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
+
     /** 写入外部存储 */
     public static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
 

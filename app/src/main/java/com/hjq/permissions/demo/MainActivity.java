@@ -1,8 +1,9 @@
 package com.hjq.permissions.demo;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.hjq.permissions.OnPermission;
 import com.hjq.permissions.Permission;
@@ -33,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
         XXPermissions.with(this)
                 // 可设置被拒绝后继续申请，直到用户授权或者永久拒绝
                 //.constantRequest()
-                // 支持请求6.0悬浮窗权限8.0请求安装权限
+                // 支持请求 6.0 悬浮窗权限 8.0 请求安装权限
+                //.permission(Permission.SYSTEM_ALERT_WINDOW)
                 //.permission(Permission.REQUEST_INSTALL_PACKAGES)
                 // 不指定权限则自动获取清单中的危险权限
                 .permission(Permission.Group.STORAGE, Permission.Group.CALENDAR)
@@ -43,14 +45,14 @@ public class MainActivity extends AppCompatActivity {
                     public void hasPermission(List<String> granted, boolean all) {
                         if (all) {
                             ToastUtils.show("获取权限成功");
-                        }else {
+                        } else {
                             ToastUtils.show("获取权限成功，部分权限未正常授予");
                         }
                     }
 
                     @Override
                     public void noPermission(List<String> denied, boolean quick) {
-                        if(quick) {
+                        if (quick) {
                             ToastUtils.show("被永久拒绝授权，请手动授予权限");
                             //如果是被永久拒绝就跳转到应用权限系统设置页面
                             XXPermissions.startPermissionActivity(MainActivity.this);
@@ -64,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     public void hasPermission(View view) {
         if (XXPermissions.hasPermission(MainActivity.this, Permission.Group.STORAGE)) {
             ToastUtils.show("已经获取到权限，不需要再次申请了");
-        }else {
+        } else {
             ToastUtils.show("还没有获取到权限或者部分权限未授予");
         }
     }

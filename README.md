@@ -11,7 +11,7 @@
 #### 集成步骤
 
     dependencies {
-        implementation 'com.hjq:xxpermissions:6.5'
+        implementation 'com.hjq:xxpermissions:6.8'
     }
 
 #### 一句代码搞定权限请求，从未如此简单
@@ -65,10 +65,6 @@
 * 支持请求 6.0 的悬浮窗权限和 8.0 的应用安装权限
 
 * 本框架不依赖 Support 库，兼容 Eclipse 和 Studio
-
-#### 混淆规则
-
-    -keep class com.hjq.permissions.** {*;}
 
 #### 常见问题
 

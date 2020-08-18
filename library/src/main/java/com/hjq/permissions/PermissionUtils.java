@@ -37,8 +37,15 @@ final class PermissionUtils {
      */
     static List<String> getManifestPermissions(Context context) {
         try {
-            return Arrays.asList(context.getPackageManager().getPackageInfo(context.getPackageName(),
-                    PackageManager.GET_PERMISSIONS).requestedPermissions);
+            String[] requestedPermissions = context.getPackageManager().getPackageInfo(context.getPackageName(),
+                    PackageManager.GET_PERMISSIONS).requestedPermissions;
+            // 当清单文件没有注册任何权限的时候，那么这个数组对象就是空的
+            // https://github.com/getActivity/XXPermissions/issues/35
+            if (requestedPermissions != null) {
+                return Arrays.asList(requestedPermissions);
+            } else {
+                return null;
+            }
         } catch (PackageManager.NameNotFoundException ignored) {
             return null;
         }
@@ -47,7 +54,7 @@ final class PermissionUtils {
     /**
      * 是否有安装权限
      */
-    static boolean isHasInstallPermission(Context context) {
+    static boolean hasInstallPermission(Context context) {
         if (isOverOreo()) {
             return context.getPackageManager().canRequestPackageInstalls();
         }
@@ -57,7 +64,7 @@ final class PermissionUtils {
     /**
      * 是否有悬浮窗权限
      */
-    static boolean isHasOverlaysPermission(Context context) {
+    static boolean hasOverlaysPermission(Context context) {
         if (isOverMarshmallow()) {
             return Settings.canDrawOverlays(context);
         }
@@ -72,7 +79,7 @@ final class PermissionUtils {
      */
     static ArrayList<String> getFailPermissions(Context context, List<String> permissions) {
 
-        // 如果是安卓6.0以下版本就返回null
+        // 如果是安卓 6.0 以下版本就返回null
         if (!isOverMarshmallow()) {
             return null;
         }
@@ -84,7 +91,7 @@ final class PermissionUtils {
             // 检测安装权限
             if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission)) {
 
-                if (!isHasInstallPermission(context)) {
+                if (!hasInstallPermission(context)) {
                     if (failPermissions == null) {
                         failPermissions = new ArrayList<>();
                     }
@@ -96,7 +103,7 @@ final class PermissionUtils {
             // 检测悬浮窗权限
             if (Permission.SYSTEM_ALERT_WINDOW.equals(permission)) {
 
-                if (!isHasOverlaysPermission(context)) {
+                if (!hasOverlaysPermission(context)) {
                     if (failPermissions == null) {
                         failPermissions = new ArrayList<>();
                     }
@@ -105,7 +112,7 @@ final class PermissionUtils {
                 continue;
             }
 
-            // 检测8.0的两个新权限
+            // 检测 8.0 的两个新权限
             if (Permission.ANSWER_PHONE_CALLS.equals(permission) || Permission.READ_PHONE_NUMBERS.equals(permission)) {
 
                 // 检查当前的安卓版本是否符合要求
@@ -174,10 +181,10 @@ final class PermissionUtils {
      */
     private static boolean checkSinglePermissionPermanentDenied(Activity activity, String permission) {
 
-//        // 安装权限和浮窗权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回false
-//        if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission) || Permission.SYSTEM_ALERT_WINDOW.equals(permission)) {
-//            return false;
-//        }
+        // 安装权限和浮窗权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回false
+        //if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission) || Permission.SYSTEM_ALERT_WINDOW.equals(permission)) {
+        //    return false;
+        //}
 
         // 检测8.0的两个新权限
         if (Permission.ANSWER_PHONE_CALLS.equals(permission) || Permission.READ_PHONE_NUMBERS.equals(permission)) {

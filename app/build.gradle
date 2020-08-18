@@ -7,8 +7,8 @@ android {
         applicationId "com.hjq.permissions.demo"
         minSdkVersion 14
         targetSdkVersion 28
-        versionCode 65
-        versionName "6.5"
+        versionCode 68
+        versionName "6.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -22,10 +22,13 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':library')
-    implementation 'com.android.support:appcompat-v7:28.0.0'
+
+    // 谷歌兼容库：https://developer.android.google.cn/jetpack/androidx/releases/appcompat?hl=zh-cn
+    implementation 'androidx.appcompat:appcompat:1.3.0-alpha01'
+    implementation 'com.google.android.material:material:1.3.0-alpha01'
 
     // 吐司工具类：https://github.com/getActivity/ToastUtils
-    implementation 'com.hjq:toast:8.2'
+    implementation 'com.hjq:toast:8.6'
     // 内存泄漏捕捉：https://github.com/square/leakcanary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
 }

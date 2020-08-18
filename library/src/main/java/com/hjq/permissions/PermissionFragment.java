@@ -42,8 +42,8 @@ public final class PermissionFragment extends Fragment implements Runnable {
         int requestCode;
         // 请求码随机生成，避免随机产生之前的请求码，必须进行循环判断
         do {
-            // Studio编译的APK请求码必须小于 65536
-            // Eclipse编译的APK请求码必须小于 256
+            // Studio 编译的 APK 请求码必须小于 65536
+            // Eclipse 编译的 APK 请求码必须小于 256
             requestCode = new Random().nextInt(255);
         } while (CALLBACKS.get(requestCode) != null);
         bundle.putInt(REQUEST_CODE, requestCode);
@@ -73,23 +73,23 @@ public final class PermissionFragment extends Fragment implements Runnable {
             return;
         }
 
-        boolean isRequestPermission = false;
-        if (permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.isHasInstallPermission(getActivity())) {
+        boolean requestPermission = false;
+        if (permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.hasInstallPermission(getActivity())) {
             // 跳转到允许安装未知来源设置页面
             Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getContext().getPackageName()));
             startActivityForResult(intent, getArguments().getInt(REQUEST_CODE));
-            isRequestPermission = true;
+            requestPermission = true;
         }
 
-        if (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.isHasOverlaysPermission(getActivity())) {
+        if (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.hasOverlaysPermission(getActivity())) {
             // 跳转到悬浮窗设置页面
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getContext().getPackageName()));
             startActivityForResult(intent, getArguments().getInt(REQUEST_CODE));
-            isRequestPermission = true;
+            requestPermission = true;
         }
 
         // 当前必须没有跳转到悬浮窗或者安装权限界面
-        if (!isRequestPermission) {
+        if (!requestPermission) {
             requestPermission();
         }
     }
@@ -122,7 +122,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
             // 重新检查安装权限
             if (Permission.REQUEST_INSTALL_PACKAGES.equals(permissions[i])) {
-                if (PermissionUtils.isHasInstallPermission(getActivity())) {
+                if (PermissionUtils.hasInstallPermission(getActivity())) {
                     grantResults[i] = PackageManager.PERMISSION_GRANTED;
                 } else {
                     grantResults[i] = PackageManager.PERMISSION_DENIED;
@@ -131,14 +131,14 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
             // 重新检查悬浮窗权限
             if (Permission.SYSTEM_ALERT_WINDOW.equals(permissions[i])) {
-                if (PermissionUtils.isHasOverlaysPermission(getActivity())) {
+                if (PermissionUtils.hasOverlaysPermission(getActivity())) {
                     grantResults[i] = PackageManager.PERMISSION_GRANTED;
                 } else {
                     grantResults[i] = PackageManager.PERMISSION_DENIED;
                 }
             }
 
-            // 重新检查8.0的两个新权限
+            // 重新检查 8.0 的两个新权限
             if (Permission.ANSWER_PHONE_CALLS.equals(permissions[i]) || Permission.READ_PHONE_NUMBERS.equals(permissions[i])) {
 
                 // 检查当前的安卓版本是否符合要求

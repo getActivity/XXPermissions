@@ -38,7 +38,7 @@ final class PermissionSettingPage {
             intent = meizu(context);
         }
 
-        if (intent == null || !hasIntent(context, intent)) {
+        if (intent == null) {
             intent = google(context);
         }
 
@@ -53,12 +53,6 @@ final class PermissionSettingPage {
             intent = google(context);
             context.startActivity(intent);
         }
-    }
-
-    private static Intent google(Context context) {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        intent.setData(Uri.fromParts("package", context.getPackageName(), null));
-        return intent;
     }
 
     private static Intent huawei(Context context) {
@@ -79,7 +73,7 @@ final class PermissionSettingPage {
             return intent;
         }
 
-        return intent;
+        return null;
     }
 
     private static Intent xiaomi(Context context) {
@@ -100,7 +94,11 @@ final class PermissionSettingPage {
         }
 
         intent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
-        return intent;
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
+
+        return null;
     }
 
     private static Intent oppo(Context context) {
@@ -131,7 +129,8 @@ final class PermissionSettingPage {
         if (hasIntent(context, intent)) {
             return intent;
         }
-        return intent;
+
+        return null;
     }
 
     private static Intent vivo(Context context) {
@@ -163,16 +162,34 @@ final class PermissionSettingPage {
         }
 
         intent.setClassName("com.iqoo.secure", "com.iqoo.secure.safeguard.SoftPermissionDetailActivity");
-        return intent;
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
+
+        return null;
     }
 
     private static Intent meizu(Context context) {
         Intent intent = new Intent("com.meizu.safe.security.SHOW_APPSEC");
         intent.putExtra("packageName", context.getPackageName());
         intent.setClassName("com.meizu.safe", "com.meizu.safe.security.AppSecActivity");
+
+        if (hasIntent(context, intent)) {
+            return intent;
+        }
+
+        return null;
+    }
+
+    private static Intent google(Context context) {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.setData(Uri.fromParts("package", context.getPackageName(), null));
         return intent;
     }
 
+    /**
+     * 判断是否有这种意图
+     */
     private static boolean hasIntent(Context context, Intent intent) {
         return !context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
     }

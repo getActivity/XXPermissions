@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 11
         targetSdkVersion 26
-        versionCode 65
-        versionName "6.5"
+        versionCode 68
+        versionName "6.8"
     }
 }
 
@@ -16,7 +16,7 @@ publish {
     userOrg = 'getactivity'
     groupId = 'com.hjq'
     artifactId = 'xxpermissions'
-    version = '6.5'
+    version = '6.8'
     description = 'Android 6.0 permissions adaptation framework'
     website = "https://github.com/getActivity/XXPermissions"
 }
