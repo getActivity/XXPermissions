@@ -2,13 +2,13 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 30
 
     defaultConfig {
         minSdkVersion 11
-        targetSdkVersion 26
-        versionCode 68
-        versionName "6.8"
+        targetSdkVersion 23
+        versionCode 82
+        versionName "8.2"
     }
 }
 
@@ -16,7 +16,7 @@ publish {
     userOrg = 'getactivity'
     groupId = 'com.hjq'
     artifactId = 'xxpermissions'
-    version = '6.8'
+    version = '8.2'
     description = 'Android 6.0 permissions adaptation framework'
     website = "https://github.com/getActivity/XXPermissions"
 }

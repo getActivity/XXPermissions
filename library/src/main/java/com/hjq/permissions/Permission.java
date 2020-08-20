@@ -12,11 +12,25 @@ public final class Permission {
 
     private Permission() {}
 
-    /** 应用安装权限（需要 8.0 及以上） */
+    /** 外部存储权限（特殊权限，需要 Android 11 及以上） */
+    public static final String MANAGE_EXTERNAL_STORAGE = "android.permission.MANAGE_EXTERNAL_STORAGE";
+
+    /** 应用安装权限（特殊权限，需要 Android 8.0 及以上） */
     public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES";
 
-    /** 悬浮窗权限（需要 6.0 及以上） */
+    /** 通知栏权限（特殊权限，需要 Android 7.0 及以上） */
+    public static final String NOTIFICATION_SERVICE = "android.permission.ACCESS_NOTIFICATION_POLICY";
+
+    /** 悬浮窗权限（特殊权限，需要 Android 6.0 及以上） */
     public static final String SYSTEM_ALERT_WINDOW = "android.permission.SYSTEM_ALERT_WINDOW";
+
+    /** 修改系统设置权限（特殊权限，需要 Android 6.0 及以上） */
+    public static final String WRITE_SETTINGS = "android.permission.WRITE_SETTINGS";
+
+    /** 允许您的应用通过编程方式接听呼入电话。要在您的应用中处理呼入电话，您可以使用 acceptRingingCall() 函数（危险权限，需要 Android 8.0 及以上） */
+    public static final String ANSWER_PHONE_CALLS = "android.permission.ANSWER_PHONE_CALLS";
+    /** 权限允许您的应用读取设备中存储的电话号码（危险权限，需要 Android 8.0 及以上） */
+    public static final String READ_PHONE_NUMBERS = "android.permission.READ_PHONE_NUMBERS";
 
     /** 读取日程提醒 */
     public static final String READ_CALENDAR = "android.permission.READ_CALENDAR";
@@ -55,10 +69,6 @@ public final class Permission {
     public static final String USE_SIP = "android.permission.USE_SIP";
     /** 处理拨出电话 */
     public static final String PROCESS_OUTGOING_CALLS = "android.permission.PROCESS_OUTGOING_CALLS";
-    /** 8.0 危险权限：允许您的应用通过编程方式接听呼入电话。要在您的应用中处理呼入电话，您可以使用 acceptRingingCall() 函数 */
-    public static final String ANSWER_PHONE_CALLS = "android.permission.ANSWER_PHONE_CALLS";
-    /** 8.0 危险权限：权限允许您的应用读取设备中存储的电话号码 */
-    public static final String READ_PHONE_NUMBERS = "android.permission.READ_PHONE_NUMBERS";
 
     /** 传感器 */
     public static final String BODY_SENSORS = "android.permission.BODY_SENSORS";
@@ -74,31 +84,47 @@ public final class Permission {
     /** 接收彩信 */
     public static final String RECEIVE_MMS = "android.permission.RECEIVE_MMS";
 
-    /** 读取外部存储 */
+    /**
+     * 读取外部存储
+     *
+     * @deprecated         已过时，请使用{@link Permission#MANAGE_EXTERNAL_STORAGE}
+     */
+    @Deprecated
     public static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
-
-    /** 写入外部存储 */
+    /**
+     * 写入外部存储
+     *
+     * @deprecated         已过时，请使用{@link Permission#MANAGE_EXTERNAL_STORAGE}
+     */
     public static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
 
+    /**
+     * 权限组
+     */
     public static final class Group {
 
-        /** 日历 */
+        /** 日历权限 */
         public static final String[] CALENDAR = new String[]{
                 Permission.READ_CALENDAR,
                 Permission.WRITE_CALENDAR};
 
-        /** 联系人 */
+        /** 联系人权限 */
         public static final String[] CONTACTS = new String[]{
                 Permission.READ_CONTACTS,
                 Permission.WRITE_CONTACTS,
                 Permission.GET_ACCOUNTS};
 
-        /** 位置 */
+        /** 位置权限 */
         public static final String[] LOCATION = new String[]{
                 Permission.ACCESS_FINE_LOCATION,
                 Permission.ACCESS_COARSE_LOCATION};
 
-        /** 存储 */
+        /**
+         * 存储权限
+         *
+         * @deprecated         已过时，请使用{@link Permission#MANAGE_EXTERNAL_STORAGE}
+         */
+        @Deprecated
         public static final String[] STORAGE = new String[]{
                 Permission.READ_EXTERNAL_STORAGE,
                 Permission.WRITE_EXTERNAL_STORAGE};

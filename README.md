@@ -6,47 +6,60 @@
 
 > 另外想对 Android 6.0 权限需要深入了解的，可以看这篇文章[Android 6.0 运行权限解析（高级篇）](https://www.jianshu.com/p/6a4dff744031)
 
-![](XXPermissions.gif)
+![](picture/1.jpg) ![](picture/2.jpg) ![](picture/3.jpg)
+![](picture/4.jpg) ![](picture/5.jpg) ![](picture/6.jpg)
 
 #### 集成步骤
 
-    dependencies {
-        implementation 'com.hjq:xxpermissions:6.8'
-    }
+```groovy
+dependencies {
+    implementation 'com.hjq:xxpermissions:8.2'
+}
+```
 
 #### 一句代码搞定权限请求，从未如此简单
 
 > [点此查看完整的示例代码](https://github.com/getActivity/XXPermissions/blob/master/app/src/main/java/com/hjq/permissions/demo/MainActivity.java)
 
-    XXPermissions.with(this)
-            // 可设置被拒绝后继续申请，直到用户授权或者永久拒绝
-            //.constantRequest()
-            // 支持请求6.0悬浮窗权限8.0请求安装权限
-            //.permission(Permission.SYSTEM_ALERT_WINDOW, Permission.REQUEST_INSTALL_PACKAGES)
-            // 不指定权限则自动获取清单中的危险权限
-            .permission(Permission.Group.STORAGE, Permission.Group.CALENDAR)
-            .request(new OnPermission() {
+```java
+XXPermissions.with(this)
+        // 可设置被拒绝后继续申请，直到用户授权或者永久拒绝
+        //.constantRequest()
+        // 申请安装包权限
+        //.permission(Permission.REQUEST_INSTALL_PACKAGES)
+        // 申请悬浮窗权限
+        //.permission(Permission.SYSTEM_ALERT_WINDOW)
+        // 申请通知栏权限
+        //.permission(Permission.NOTIFICATION_SERVICE)
+        // 申请系统设置权限
+        //.permission(Permission.WRITE_SETTINGS)
+        // 申请单个权限
+        .permission(Permission.CAMERA)
+        // 申请多个权限
+        .permission(Permission.Group.STORAGE)
+        .request(new OnPermission() {
 
-                @Override
-                public void hasPermission(List<String> granted, boolean all) {
-                    
+            @Override
+            public void hasPermission(List<String> granted, boolean all) {
+                if (all) {
+                    ToastUtils.show("获取存储和拍照权限成功");
+                } else {
+                    ToastUtils.show("获取权限成功，部分权限未正常授予");
                 }
+            }
 
-                @Override
-                public void noPermission(List<String> denied, boolean quick) {
-                    
+            @Override
+            public void noPermission(List<String> denied, boolean quick) {
+                if (quick) {
+                    ToastUtils.show("被永久拒绝授权，请手动授予存储和拍照权限");
+                    // 如果是被永久拒绝就跳转到应用权限系统设置页面
+                    XXPermissions.startPermissionActivity(MainActivity.this, denied);
+                } else {
+                    ToastUtils.show("获取存储和拍照权限失败");
                 }
-            });
-
-#### 是否有这个权限
-
-    if (XXPermissions.hasPermission(this, Permission.Group.STORAGE)) {
-		
-    }
-
-#### 跳转到设置页面
-
-    XXPermissions.startPermissionActivity(this);
+            }
+        });
+```
 
 #### 框架亮点
 
@@ -66,13 +79,88 @@
 
 * 本框架不依赖 Support 库，兼容 Eclipse 和 Studio
 
-#### 常见问题
+#### Android 11 存储适配
+
+* 如果你的项目需要适配 Android 11 存储权限，那么需要先将 targetSdkVersion 进行升级
+
+```java
+android 
+    defaultConfig {
+        targetSdkVersion 30
+    }
+}
+```
+
+* 再添加 Android 11 存储权限注册到清单文件中
+
+```xml
+<uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+```
+
+* 需要注意的是，旧版的存储权限也需要在清单文件中注册，因为在低于 Android 11 的环境下申请存储权限，框架会自动切换到旧版的申请方式
+
+```xml
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+```
+    
+* 最后直接调用下面这句代码
+
+```java
+XXPermissions.with(MainActivity.this)
+        // 不适配 Android 11 可以这样写
+        //.permission(Permission.Group.STORAGE)
+        // 适配 Android 11 需要这样写，这里无需再写 Permission.Group.STORAGE
+        .permission(Permission.MANAGE_EXTERNAL_STORAGE)
+        .request(new OnPermission() {
+
+            @Override
+            public void hasPermission(List<String> granted, boolean all) {
+                if (all) {
+                    ToastUtils.show("获取存储权限成功");
+                }
+            }
+
+            @Override
+            public void noPermission(List<String> denied, boolean quick) {
+                if (quick) {
+                    ToastUtils.show("被永久拒绝授权，请手动授予存储权限");
+                    // 如果是被永久拒绝就跳转到应用权限系统设置页面
+                    XXPermissions.startPermissionActivity(MainActivity.this, denied);
+                } else {
+                    ToastUtils.show("获取存储权限失败");
+                }
+            }
+        });
+```
+
+![](picture/7.jpg)
+
+#### 监听回调问题
 
 > 我们都知道，如果用户全部授予只会调用hasPermission方法，如果用户全部拒绝只会调用noPermission方法。
 
 > 但是还有一种情况，如果在请求多种权限的情况下，这些权限不是被全部授予或者全部拒绝了，而是部分授权部分拒绝这种情况，框架会如何处理回调呢？
 
 > 框架会先调用noPermission方法，再调用hasPermission方法。其中我们可以通过hasPermission方法中的 all 参数来判断权限是否全部授予了。如果想知道回调中的某个权限是否被授权或者拒绝，可以调用List集合类中的contains(Permission.XXX)方法来判断这个集合中是否包含了这个权限。
+
+#### 不同权限请求框架之间对比
+
+|     功能及细节对比    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) | [PermissionX](https://github.com/guolindev/PermissionX) 
+| :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
+|    aar 包大小  |  [17 KB](https://bintray.com/getactivity/maven/xxpermissions#files/com/hjq/xxpermissions)  | [127 KB](https://mvnrepository.com/artifact/com.yanzhenjie/permission)  |  [28 KB](https://jitpack.io/#com.github.tbruyelle/rxpermissions)  |   [22 KB](https://bintray.com/hotchemi/org.permissionsdispatcher/permissionsdispatcher#files/org/permissionsdispatcher/permissionsdispatcher)  |  [48 KB](https://bintray.com/easygoogle/EasyPermissions/easypermissions#files/pub/devrel/easypermissions)   |   [32 KB](https://bintray.com/guolindev/maven/permissionx#files/com/permissionx/guolindev/permissionx)  |
+|    minSdk 要求  |  API 11+ |  API 14+  |  API 14+   |   API 14+   |  API 14+   |  API 15+    |
+|    targetSdk 要求  |  API 23+ |  API 29+  |  API 29+   |   API 29+  |  API 30+   |  API 30+   |
+|    class 文件数量  |  8 个  | 110 个  |  3 个  |   37 个  |   15 个  |  16 个   |
+|   是否有依赖  |  无任何依赖  | 依赖 Support  |  依赖 RxJava |  依赖 AndroidX   |   依赖 AndroidX  |   依赖 AndroidX  |
+|   安装包权限   |  支持  |  支持  |  不支持  |  不支持   |  不支持   |  不支持   |
+|   悬浮窗权限   |  支持  |  支持  |  不支持  |  不支持   |  不支持   |  不支持   |
+|   通知栏权限   |  支持  |  支持  |  不支持  |  不支持   |   不支持  |  不支持   |
+|   系统设置权限   |  支持  |  支持  |  不支持  |  不支持   |   不支持  |  不支持   |
+|   国产手机权限设置界面   |  已适配  |  已适配 |  未适配  |  未适配   |  未适配   |  未适配   |
+|   Android 11 存储权限   |  已适配  |  未适配  |  未适配  |   未适配  |  未适配   |   未适配  |
+|   判断权限被永久拒绝   |  支持  |  不支持  |  不支持  |   不支持  |  不支持   |  不支持   |
+|   不断请求权限直到永久拒绝   |  支持  |  不支持  |  不支持  |  不支持   |  不支持   |   不支持  |
 
 #### 作者的其他开源项目
 

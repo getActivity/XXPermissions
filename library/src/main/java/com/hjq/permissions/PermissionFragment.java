@@ -5,11 +5,9 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.util.SparseArray;
 
 import java.lang.ref.SoftReference;
@@ -34,7 +32,10 @@ public final class PermissionFragment extends Fragment implements Runnable {
     /** 是否不断请求 */
     private static final String REQUEST_CONSTANT = "request_constant";
     /** 回调对象存放 */
-    private final static SparseArray<SoftReference<OnPermission>> CALLBACKS = new SparseArray<>();
+    private static SparseArray<SoftReference<OnPermission>> sCallbacks = new SparseArray<>();
+
+    /** 是否已经回调了，避免安装权限和悬浮窗同时请求导致的重复回调 */
+    private boolean mCallback;
 
     public static PermissionFragment newInstance(ArrayList<String> permissions, boolean constant) {
         PermissionFragment fragment = new PermissionFragment();
@@ -45,7 +46,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
             // Studio 编译的 APK 请求码必须小于 65536
             // Eclipse 编译的 APK 请求码必须小于 256
             requestCode = new Random().nextInt(255);
-        } while (CALLBACKS.get(requestCode) != null);
+        } while (sCallbacks.get(requestCode) != null);
         bundle.putInt(REQUEST_CODE, requestCode);
         bundle.putStringArrayList(PERMISSION_GROUP, permissions);
         bundle.putBoolean(REQUEST_CONSTANT, constant);
@@ -58,7 +59,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
      */
     public void prepareRequest(Activity activity, OnPermission callback) {
         // 将当前的请求码和对象添加到集合中
-        CALLBACKS.put(getArguments().getInt(REQUEST_CODE), new SoftReference<>(callback));
+        sCallbacks.put(getArguments().getInt(REQUEST_CODE), new SoftReference<>(callback));
         activity.getFragmentManager().beginTransaction().add(this, activity.getClass().getName()).commitAllowingStateLoss();
     }
 
@@ -67,29 +68,47 @@ public final class PermissionFragment extends Fragment implements Runnable {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        ArrayList<String> permissions = getArguments().getStringArrayList(PERMISSION_GROUP);
+        List<String> permissions = getArguments().getStringArrayList(PERMISSION_GROUP);
 
         if (permissions == null) {
             return;
         }
 
-        boolean requestPermission = false;
-        if (permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.hasInstallPermission(getActivity())) {
-            // 跳转到允许安装未知来源设置页面
-            Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getContext().getPackageName()));
-            startActivityForResult(intent, getArguments().getInt(REQUEST_CODE));
-            requestPermission = true;
+        // 是否有特殊权限
+        boolean specialPermission = false;
+
+        if (permissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) && !PermissionUtils.hasStoragePermission()) {
+            // 跳转到存储权限设置界面
+            startActivityForResult(PermissionSettingPage.getStoragePermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
+            specialPermission = true;
         }
 
-        if (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.hasOverlaysPermission(getActivity())) {
+        if (permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.hasInstallPermission(getActivity())) {
+            // 跳转到安装权限设置界面
+            startActivityForResult(PermissionSettingPage.getInstallPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
+            specialPermission = true;
+        }
+
+        if (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.hasWindowPermission(getActivity())) {
             // 跳转到悬浮窗设置页面
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getContext().getPackageName()));
-            startActivityForResult(intent, getArguments().getInt(REQUEST_CODE));
-            requestPermission = true;
+            startActivityForResult(PermissionSettingPage.getWindowPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
+            specialPermission = true;
+        }
+
+        if (permissions.contains(Permission.NOTIFICATION_SERVICE) && !PermissionUtils.hasNotifyPermission(getActivity())) {
+            // 跳转到通知栏权限设置页面
+            startActivityForResult(PermissionSettingPage.getNotifyPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
+            specialPermission = true;
+        }
+
+        if (permissions.contains(Permission.WRITE_SETTINGS) && !PermissionUtils.hasSettingPermission(getActivity())) {
+            // 跳转到系统设置权限设置页面
+            startActivityForResult(PermissionSettingPage.getSettingPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
+            specialPermission = true;
         }
 
         // 当前必须没有跳转到悬浮窗或者安装权限界面
-        if (!requestPermission) {
+        if (!specialPermission) {
             requestPermission();
         }
     }
@@ -98,7 +117,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
      * 请求权限
      */
     public void requestPermission() {
-        if (PermissionUtils.isOverMarshmallow()) {
+        if (PermissionUtils.isAndroid6()) {
             ArrayList<String> permissions = getArguments().getStringArrayList(PERMISSION_GROUP);
             if (permissions != null && permissions.size() > 0) {
                 requestPermissions(permissions.toArray(new String[permissions.size() - 1]), getArguments().getInt(REQUEST_CODE));
@@ -108,7 +127,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        SoftReference<OnPermission> reference = CALLBACKS.get(requestCode);
+        SoftReference<OnPermission> reference = sCallbacks.get(requestCode);
         if (reference == null) {
             return;
         }
@@ -120,30 +139,36 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
         for (int i = 0; i < permissions.length; i++) {
 
-            // 重新检查安装权限
-            if (Permission.REQUEST_INSTALL_PACKAGES.equals(permissions[i])) {
-                if (PermissionUtils.hasInstallPermission(getActivity())) {
-                    grantResults[i] = PackageManager.PERMISSION_GRANTED;
-                } else {
-                    grantResults[i] = PackageManager.PERMISSION_DENIED;
+            String permission = permissions[i];
+            
+            if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission)) {
+                // 重新检查安装权限
+                grantResults[i] = PermissionUtils.hasInstallPermission(getActivity()) ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
+            } else if (Permission.SYSTEM_ALERT_WINDOW.equals(permission)) {
+                // 重新检查悬浮窗权限
+                grantResults[i] = PermissionUtils.hasWindowPermission(getActivity()) ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
+            } else if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
+                // 重新检查通知栏权限
+                grantResults[i] = PermissionUtils.hasNotifyPermission(getActivity()) ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
+            } else if (Permission.WRITE_SETTINGS.equals(permission)) {
+                // 重新检查系统设置权限
+                grantResults[i] = PermissionUtils.hasSettingPermission(getActivity()) ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
+            } else {
+                // 重新检查 Android 11 的存储新权限
+                if (PermissionUtils.isAndroid11() && PermissionUtils.containsPermission(permissions, Permission.MANAGE_EXTERNAL_STORAGE)) {
+                    if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) || Permission.READ_EXTERNAL_STORAGE.equals(permission) || Permission.WRITE_EXTERNAL_STORAGE.equals(permission)) {
+                        grantResults[i] = PermissionUtils.hasStoragePermission() ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
+                    }
+                } else if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) {
+                    grantResults[i] = XXPermissions.hasPermission(getActivity(), Permission.Group.STORAGE) ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
                 }
-            }
 
-            // 重新检查悬浮窗权限
-            if (Permission.SYSTEM_ALERT_WINDOW.equals(permissions[i])) {
-                if (PermissionUtils.hasOverlaysPermission(getActivity())) {
-                    grantResults[i] = PackageManager.PERMISSION_GRANTED;
-                } else {
-                    grantResults[i] = PackageManager.PERMISSION_DENIED;
-                }
-            }
-
-            // 重新检查 8.0 的两个新权限
-            if (Permission.ANSWER_PHONE_CALLS.equals(permissions[i]) || Permission.READ_PHONE_NUMBERS.equals(permissions[i])) {
-
-                // 检查当前的安卓版本是否符合要求
-                if (!PermissionUtils.isOverOreo()) {
-                    grantResults[i] = PackageManager.PERMISSION_GRANTED;
+                // 重新检查 Android 8.0 的两个新权限
+                if (!PermissionUtils.isAndroid8()) {
+                    if (Permission.ANSWER_PHONE_CALLS.equals(permission) || Permission.READ_PHONE_NUMBERS.equals(permission)) {
+                        // 检查当前的安卓版本是否符合要求，如果不符合要求，那么默认没有权限
+                        grantResults[i] = PackageManager.PERMISSION_DENIED;
+                    }
                 }
             }
         }
@@ -178,12 +203,9 @@ public final class PermissionFragment extends Fragment implements Runnable {
         }
 
         // 权限回调结束后要删除集合中的对象，避免重复请求
-        CALLBACKS.remove(requestCode);
+        sCallbacks.remove(requestCode);
         getFragmentManager().beginTransaction().remove(this).commit();
     }
-
-    /** 是否已经回调了，避免安装权限和悬浮窗同时请求导致的重复回调 */
-    private boolean mCallback;
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
