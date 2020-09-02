@@ -7,8 +7,8 @@ android {
         applicationId "com.hjq.permissions.demo"
         minSdkVersion 14
         targetSdkVersion 30
-        versionCode 82
-        versionName "8.2"
+        versionCode 86
+        versionName "8.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -20,12 +20,15 @@ android {
 }
 
 dependencies {
+    // 依赖 libs 目录下所有的 jar 和 aar 包
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.aar'], dir: 'libs')
+
     implementation project(':library')
 
     // 谷歌兼容库：https://developer.android.google.cn/jetpack/androidx/releases/appcompat?hl=zh-cn
-    implementation 'androidx.appcompat:appcompat:1.3.0-alpha01'
-    implementation 'com.google.android.material:material:1.3.0-alpha01'
+    implementation 'androidx.appcompat:appcompat:1.3.0-alpha02'
+    implementation 'com.google.android.material:material:1.3.0-alpha02'
 
     // 吐司工具类：https://github.com/getActivity/ToastUtils
     implementation 'com.hjq:toast:8.6'

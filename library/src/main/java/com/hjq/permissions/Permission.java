@@ -7,6 +7,7 @@ import android.Manifest;
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2018/06/15
  *    desc   : 权限请求实体类，参考 {@link Manifest.permission}
+ *    doc    : https://developer.android.google.cn/reference/android/Manifest.permission?hl=zh_cn
  */
 public final class Permission {
 
@@ -24,25 +25,36 @@ public final class Permission {
     /** 悬浮窗权限（特殊权限，需要 Android 6.0 及以上） */
     public static final String SYSTEM_ALERT_WINDOW = "android.permission.SYSTEM_ALERT_WINDOW";
 
-    /** 修改系统设置权限（特殊权限，需要 Android 6.0 及以上） */
+    /** 系统设置权限（特殊权限，需要 Android 6.0 及以上） */
     public static final String WRITE_SETTINGS = "android.permission.WRITE_SETTINGS";
 
-    /** 允许您的应用通过编程方式接听呼入电话。要在您的应用中处理呼入电话，您可以使用 acceptRingingCall() 函数（危险权限，需要 Android 8.0 及以上） */
-    public static final String ANSWER_PHONE_CALLS = "android.permission.ANSWER_PHONE_CALLS";
-    /** 权限允许您的应用读取设备中存储的电话号码（危险权限，需要 Android 8.0 及以上） */
-    public static final String READ_PHONE_NUMBERS = "android.permission.READ_PHONE_NUMBERS";
+    /**
+     * 读取外部存储
+     *
+     * @deprecated         在 Android 11 已经废弃，请直接使用 {@link Permission#MANAGE_EXTERNAL_STORAGE}
+     */
+    @Deprecated
+    public static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
 
-    /** 读取日程提醒 */
+    /**
+     * 写入外部存储
+     *
+     * @deprecated         在 Android 11 已经废弃，请直接使用 {@link Permission#MANAGE_EXTERNAL_STORAGE}
+     */
+    @Deprecated
+    public static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
+
+    /** 读取日历 */
     public static final String READ_CALENDAR = "android.permission.READ_CALENDAR";
-    /** 写入日程提醒 */
+    /** 修改日历 */
     public static final String WRITE_CALENDAR = "android.permission.WRITE_CALENDAR";
 
-    /** 拍照权限 */
+    /** 相机权限 */
     public static final String CAMERA = "android.permission.CAMERA";
 
     /** 读取联系人 */
     public static final String READ_CONTACTS = "android.permission.READ_CONTACTS";
-    /** 写入联系人 */
+    /** 修改联系人 */
     public static final String WRITE_CONTACTS = "android.permission.WRITE_CONTACTS";
     /** 访问账户列表 */
     public static final String GET_ACCOUNTS = "android.permission.GET_ACCOUNTS";
@@ -51,6 +63,11 @@ public final class Permission {
     public static final String ACCESS_FINE_LOCATION = "android.permission.ACCESS_FINE_LOCATION";
     /** 获取粗略位置 */
     public static final String ACCESS_COARSE_LOCATION = "android.permission.ACCESS_COARSE_LOCATION";
+    /** 在后台获取位置（需要 Android 10.0 及以上） */
+    public static final String ACCESS_BACKGROUND_LOCATION = "android.permission.ACCESS_BACKGROUND_LOCATION";
+
+    /** 读取照片中的地理位置（需要 Android 10.0 及以上）*/
+    public static final String ACCESS_MEDIA_LOCATION = "android.permission.ACCESS_MEDIA_LOCATION";
 
     /** 录音权限 */
     public static final String RECORD_AUDIO = "android.permission.RECORD_AUDIO";
@@ -61,17 +78,27 @@ public final class Permission {
     public static final String CALL_PHONE = "android.permission.CALL_PHONE";
     /** 读取通话记录 */
     public static final String READ_CALL_LOG = "android.permission.READ_CALL_LOG";
-    /** 写入通话记录 */
+    /** 修改通话记录 */
     public static final String WRITE_CALL_LOG = "android.permission.WRITE_CALL_LOG";
     /** 添加语音邮件 */
     public static final String ADD_VOICEMAIL = "com.android.voicemail.permission.ADD_VOICEMAIL";
     /** 使用SIP视频 */
     public static final String USE_SIP = "android.permission.USE_SIP";
-    /** 处理拨出电话 */
+    /**
+     * 处理拨出电话
+     *
+     * @deprecated         在 Android 10 已经废弃，请直接使用 {@link Permission#ANSWER_PHONE_CALLS}
+     */
     public static final String PROCESS_OUTGOING_CALLS = "android.permission.PROCESS_OUTGOING_CALLS";
+    /** 接听电话（需要 Android 8.0 及以上） */
+    public static final String ANSWER_PHONE_CALLS = "android.permission.ANSWER_PHONE_CALLS";
+    /** 读取手机号码（需要 Android 8.0 及以上） */
+    public static final String READ_PHONE_NUMBERS = "android.permission.READ_PHONE_NUMBERS";
 
-    /** 传感器 */
+    /** 使用传感器 */
     public static final String BODY_SENSORS = "android.permission.BODY_SENSORS";
+    /** 获取活动步数（需要 Android 10.0 及以上） */
+    public static final String ACTIVITY_RECOGNITION = "android.permission.ACTIVITY_RECOGNITION";
 
     /** 发送短信 */
     public static final String SEND_SMS = "android.permission.SEND_SMS";
@@ -79,29 +106,34 @@ public final class Permission {
     public static final String RECEIVE_SMS = "android.permission.RECEIVE_SMS";
     /** 读取短信 */
     public static final String READ_SMS = "android.permission.READ_SMS";
-    /** 接收 WAP PUSH 信息 */
+    /** 接收 WAP 推送消息 */
     public static final String RECEIVE_WAP_PUSH = "android.permission.RECEIVE_WAP_PUSH";
     /** 接收彩信 */
     public static final String RECEIVE_MMS = "android.permission.RECEIVE_MMS";
 
-    /**
-     * 读取外部存储
-     *
-     * @deprecated         已过时，请使用{@link Permission#MANAGE_EXTERNAL_STORAGE}
-     */
-    @Deprecated
-    public static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
-    /**
-     * 写入外部存储
-     *
-     * @deprecated         已过时，请使用{@link Permission#MANAGE_EXTERNAL_STORAGE}
-     */
-    public static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
+    ///** 允许呼叫应用继续在另一个应用中启动的呼叫（需要 Android 9.0 及以上，极其少见，所以不做适配） */
+    //public static final String ACCEPT_HANDOVER = "android.permission.ACCEPT_HANDOVER";
 
     /**
      * 权限组
      */
     public static final class Group {
+
+        /**
+         * 存储权限
+         *
+         * @deprecated         在 Android 11 已经废弃，请使用{@link Permission#MANAGE_EXTERNAL_STORAGE}
+         */
+        @Deprecated
+        public static final String[] STORAGE = new String[]{
+                Permission.READ_EXTERNAL_STORAGE,
+                Permission.WRITE_EXTERNAL_STORAGE};
+
+        /** 位置权限 */
+        public static final String[] LOCATION = new String[]{
+                Permission.ACCESS_FINE_LOCATION,
+                Permission.ACCESS_COARSE_LOCATION,
+                Permission.ACCESS_BACKGROUND_LOCATION};
 
         /** 日历权限 */
         public static final String[] CALENDAR = new String[]{
@@ -114,19 +146,9 @@ public final class Permission {
                 Permission.WRITE_CONTACTS,
                 Permission.GET_ACCOUNTS};
 
-        /** 位置权限 */
-        public static final String[] LOCATION = new String[]{
-                Permission.ACCESS_FINE_LOCATION,
-                Permission.ACCESS_COARSE_LOCATION};
-
-        /**
-         * 存储权限
-         *
-         * @deprecated         已过时，请使用{@link Permission#MANAGE_EXTERNAL_STORAGE}
-         */
-        @Deprecated
-        public static final String[] STORAGE = new String[]{
-                Permission.READ_EXTERNAL_STORAGE,
-                Permission.WRITE_EXTERNAL_STORAGE};
+        /** 传感器权限 */
+        public static final String[] SENSORS = new String[] {
+                Permission.BODY_SENSORS,
+                Permission.ACTIVITY_RECOGNITION};
     }
 }

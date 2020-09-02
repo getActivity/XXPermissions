@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.Settings;
 
+import java.util.List;
+
 /**
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
@@ -12,6 +14,47 @@ import android.provider.Settings;
  *    desc   : 权限设置页
  */
 final class PermissionSettingPage {
+
+    /**
+     * 根据传入的权限自动选择最合适的权限设置页
+     */
+    static Intent getSmartPermissionIntent(Context context, List<String> deniedPermissions) {
+        if (deniedPermissions == null || deniedPermissions.isEmpty()) {
+            return PermissionSettingPage.getApplicationDetailsIntent(context);
+        }
+
+        // 如果失败的权限里面包含了特殊权限
+        if (PermissionUtils.containsSpecialPermission(deniedPermissions)) {
+            // 如果当前只有一个权限被拒绝了
+            if (deniedPermissions.size() == 1) {
+                String permission = deniedPermissions.get(0);
+                if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) {
+                    return getStoragePermissionIntent(context);
+                } else if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission)) {
+                    return getInstallPermissionIntent(context);
+                } else if (Permission.SYSTEM_ALERT_WINDOW.equals(permission)) {
+                    return getWindowPermissionIntent(context);
+                } else if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
+                    return getNotifyPermissionIntent(context);
+                } else if (Permission.WRITE_SETTINGS.equals(permission)) {
+                    return getSettingPermissionIntent(context);
+                } else {
+                    return getApplicationDetailsIntent(context);
+                }
+            } else {
+                // 跳转到应用详情界面
+                return PermissionSettingPage.getApplicationDetailsIntent(context);
+            }
+        } else {
+            // 跳转到具体的权限设置界面
+            Intent intent = PermissionDetailsPage.getIntent(context);
+
+            if (intent == null) {
+                intent = PermissionSettingPage.getApplicationDetailsIntent(context);
+            }
+            return intent;
+        }
+    }
 
     /**
      * 获取应用详情界面意图
@@ -31,7 +74,7 @@ final class PermissionSettingPage {
             intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
             intent.setData(Uri.parse("package:" + context.getPackageName()));
         }
-        if (intent == null || !PermissionUtils.hasIntent(context, intent)) {
+        if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;
@@ -47,7 +90,7 @@ final class PermissionSettingPage {
             intent.setData(Uri.parse("package:" + context.getPackageName()));
         }
 
-        if (intent == null || !PermissionUtils.hasIntent(context, intent)) {
+        if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;
@@ -63,7 +106,7 @@ final class PermissionSettingPage {
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
             //intent.putExtra(Settings.EXTRA_CHANNEL_ID, context.getApplicationInfo().uid);
         }
-        if (intent == null || !PermissionUtils.hasIntent(context, intent)) {
+        if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;
@@ -78,7 +121,7 @@ final class PermissionSettingPage {
             intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
             intent.setData(Uri.parse("package:" + context.getPackageName()));
         }
-        if (intent == null || !PermissionUtils.hasIntent(context, intent)) {
+        if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;
@@ -92,7 +135,7 @@ final class PermissionSettingPage {
         if (PermissionUtils.isAndroid11()) {
             intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
         }
-        if (intent == null || !PermissionUtils.hasIntent(context, intent)) {
+        if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;

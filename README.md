@@ -13,18 +13,14 @@
 
 ```groovy
 dependencies {
-    implementation 'com.hjq:xxpermissions:8.2'
+    implementation 'com.hjq:xxpermissions:8.6'
 }
 ```
 
 #### 一句代码搞定权限请求，从未如此简单
 
-> [点此查看完整的示例代码](https://github.com/getActivity/XXPermissions/blob/master/app/src/main/java/com/hjq/permissions/demo/MainActivity.java)
-
 ```java
 XXPermissions.with(this)
-        // 可设置被拒绝后继续申请，直到用户授权或者永久拒绝
-        //.constantRequest()
         // 申请安装包权限
         //.permission(Permission.REQUEST_INSTALL_PACKAGES)
         // 申请悬浮窗权限
@@ -34,9 +30,9 @@ XXPermissions.with(this)
         // 申请系统设置权限
         //.permission(Permission.WRITE_SETTINGS)
         // 申请单个权限
-        .permission(Permission.CAMERA)
+        .permission(Permission.RECORD_AUDIO)
         // 申请多个权限
-        .permission(Permission.Group.STORAGE)
+        .permission(Permission.Group.CALENDAR)
         .request(new OnPermission() {
 
             @Override
@@ -49,8 +45,8 @@ XXPermissions.with(this)
             }
 
             @Override
-            public void noPermission(List<String> denied, boolean quick) {
-                if (quick) {
+            public void noPermission(List<String> denied, boolean never) {
+                if (never) {
                     ToastUtils.show("被永久拒绝授权，请手动授予存储和拍照权限");
                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
                     XXPermissions.startPermissionActivity(MainActivity.this, denied);
@@ -63,27 +59,31 @@ XXPermissions.with(this)
 
 #### 框架亮点
 
+* 第一款适配 Android 11 存储权限的框架，适配过程几乎零成本
+
 * 简洁易用，采用链式调用的方式，使用只需一句代码
 
 * 支持单个权限、多个权限、单个权限组、多个权限组请求
 
-* 不指定权限则自动获取清单文件上的危险权限进行申请
-
-* 如果动态申请的权限没有在清单文件中注册会抛出异常
-
 * 支持大部分国产手机直接跳转到具体的权限设置页面
 
-* 可设置被拒绝后继续申请，直到用户授权或者永久拒绝
+* 支持申请安装包、悬浮窗、通知栏、系统设置权限
 
-* 支持请求 6.0 的悬浮窗权限和 8.0 的应用安装权限
+* 支持所有危险权限的申请，包含 6.0 之后出现的新权限
 
-* 本框架不依赖 Support 库，兼容 Eclipse 和 Studio
+* 向下兼容属性，新权限在旧系统可以正常申请，无需调用者适配
+
+* 本框架不依赖任何第三方库，整个框架大小不到 20 kb（在同类框架中排名第一）
+
+* 如果申请的权限没有在清单文件中注册会抛出异常（仅在 Debug 模式下判断）
+
+* 如果申请的权限和项目 targetSdkVersion 不符合要求会抛出异常（仅在 Debug 模式下判断）
 
 #### Android 11 存储适配
 
 * 如果你的项目需要适配 Android 11 存储权限，那么需要先将 targetSdkVersion 进行升级
 
-```java
+```groovy
 android 
     defaultConfig {
         targetSdkVersion 30
@@ -102,6 +102,13 @@ android
 ```xml
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+```
+
+* 还需要在清单文件中加上这个属性，否则在 Android 10 的设备上将无法正常读写外部存储上的文件
+
+```xml
+<application
+    android:requestLegacyExternalStorage="true">
 ```
     
 * 最后直接调用下面这句代码
@@ -122,8 +129,8 @@ XXPermissions.with(MainActivity.this)
             }
 
             @Override
-            public void noPermission(List<String> denied, boolean quick) {
-                if (quick) {
+            public void noPermission(List<String> denied, boolean never) {
+                if (never) {
                     ToastUtils.show("被永久拒绝授权，请手动授予存储权限");
                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
                     XXPermissions.startPermissionActivity(MainActivity.this, denied);
@@ -148,7 +155,7 @@ XXPermissions.with(MainActivity.this)
 
 |     功能及细节对比    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) | [PermissionX](https://github.com/guolindev/PermissionX) 
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    aar 包大小  |  [17 KB](https://bintray.com/getactivity/maven/xxpermissions#files/com/hjq/xxpermissions)  | [127 KB](https://mvnrepository.com/artifact/com.yanzhenjie/permission)  |  [28 KB](https://jitpack.io/#com.github.tbruyelle/rxpermissions)  |   [22 KB](https://bintray.com/hotchemi/org.permissionsdispatcher/permissionsdispatcher#files/org/permissionsdispatcher/permissionsdispatcher)  |  [48 KB](https://bintray.com/easygoogle/EasyPermissions/easypermissions#files/pub/devrel/easypermissions)   |   [32 KB](https://bintray.com/guolindev/maven/permissionx#files/com/permissionx/guolindev/permissionx)  |
+|    aar 包大小  |  [18 KB](https://bintray.com/getactivity/maven/xxpermissions#files/com/hjq/xxpermissions)  | [127 KB](https://mvnrepository.com/artifact/com.yanzhenjie/permission)  |  [28 KB](https://jitpack.io/#com.github.tbruyelle/rxpermissions)  |   [22 KB](https://bintray.com/hotchemi/org.permissionsdispatcher/permissionsdispatcher#files/org/permissionsdispatcher/permissionsdispatcher)  |  [48 KB](https://bintray.com/easygoogle/EasyPermissions/easypermissions#files/pub/devrel/easypermissions)   |   [32 KB](https://bintray.com/guolindev/maven/permissionx#files/com/permissionx/guolindev/permissionx)  |
 |    minSdk 要求  |  API 11+ |  API 14+  |  API 14+   |   API 14+   |  API 14+   |  API 15+    |
 |    targetSdk 要求  |  API 23+ |  API 29+  |  API 29+   |   API 29+  |  API 30+   |  API 30+   |
 |    class 文件数量  |  8 个  | 110 个  |  3 个  |   37 个  |   15 个  |  16 个   |
@@ -157,10 +164,10 @@ XXPermissions.with(MainActivity.this)
 |   悬浮窗权限   |  支持  |  支持  |  不支持  |  不支持   |  不支持   |  不支持   |
 |   通知栏权限   |  支持  |  支持  |  不支持  |  不支持   |   不支持  |  不支持   |
 |   系统设置权限   |  支持  |  支持  |  不支持  |  不支持   |   不支持  |  不支持   |
+|   Android 8.0 两个新危险权限   |  已适配  |  已适配  |  未适配  |   已适配  |  未适配   |   已适配  |
+|   Android 10.0 三个新危险权限   |  已适配  |  部分适配  |  未适配  |   已适配  |  未适配   |   已适配  |
+|   Android 11 新版存储权限   |  已适配  |  未适配  |  未适配  |   未适配  |  未适配   |   未适配  |
 |   国产手机权限设置界面   |  已适配  |  已适配 |  未适配  |  未适配   |  未适配   |  未适配   |
-|   Android 11 存储权限   |  已适配  |  未适配  |  未适配  |   未适配  |  未适配   |   未适配  |
-|   判断权限被永久拒绝   |  支持  |  不支持  |  不支持  |   不支持  |  不支持   |  不支持   |
-|   不断请求权限直到永久拒绝   |  支持  |  不支持  |  不支持  |  不支持   |  不支持   |   不支持  |
 
 #### 作者的其他开源项目
 

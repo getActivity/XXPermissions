@@ -46,34 +46,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()) {
             case R.id.btn_main_request_1:
                 XXPermissions.with(this)
-                        .permission(Permission.Group.STORAGE, Permission.Group.CALENDAR)
-                        .request(new OnPermission() {
-
-                            @Override
-                            public void hasPermission(List<String> granted, boolean all) {
-                                if (all) {
-                                    ToastUtils.show("获取存储和日历权限成功");
-                                } else {
-                                    ToastUtils.show("获取权限成功，部分权限未正常授予");
-                                }
-                            }
-
-                            @Override
-                            public void noPermission(List<String> denied, boolean quick) {
-                                if (quick) {
-                                    ToastUtils.show("被永久拒绝授权，请手动授予存储和日历权限");
-                                    // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                                    XXPermissions.startPermissionActivity(MainActivity.this, denied);
-                                } else {
-                                    ToastUtils.show("获取存储和日历权限失败");
-                                }
-                            }
-                        });
-                break;
-            case R.id.btn_main_request_2:
-                XXPermissions.with(this)
-                        // 可设置被拒绝后继续申请，直到用户授权或者永久拒绝
-                        .constantRequest()
                         .permission(Permission.CAMERA)
                         .request(new OnPermission() {
 
@@ -85,8 +57,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public void noPermission(List<String> denied, boolean quick) {
-                                if (quick) {
+                            public void noPermission(List<String> denied, boolean never) {
+                                if (never) {
                                     ToastUtils.show("被永久拒绝授权，请手动授予拍照权限");
                                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
                                     XXPermissions.startPermissionActivity(MainActivity.this, denied);
@@ -96,9 +68,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         });
                 break;
+            case R.id.btn_main_request_2:
+                XXPermissions.with(this)
+                        .permission(Permission.RECORD_AUDIO)
+                        .permission(Permission.Group.CALENDAR)
+                        .request(new OnPermission() {
+
+                            @Override
+                            public void hasPermission(List<String> granted, boolean all) {
+                                if (all) {
+                                    ToastUtils.show("获取录音和日历权限成功");
+                                } else {
+                                    ToastUtils.show("获取权限成功，部分权限未正常授予");
+                                }
+                            }
+
+                            @Override
+                            public void noPermission(List<String> denied, boolean never) {
+                                if (never) {
+                                    ToastUtils.show("被永久拒绝授权，请手动授予录音和日历权限");
+                                    // 如果是被永久拒绝就跳转到应用权限系统设置页面
+                                    XXPermissions.startPermissionActivity(MainActivity.this, denied);
+                                } else {
+                                    ToastUtils.show("获取录音和日历权限失败");
+                                }
+                            }
+                        });
+                break;
             case R.id.btn_main_request_3:
                 long delayMillis = 0;
-                if (Build.VERSION.SDK_INT < 30) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
                     delayMillis = 2000;
                     ToastUtils.show("当前版本不是 Android 11 以上，会自动变更为旧版的请求方式");
                 }
@@ -122,8 +121,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     }
 
                                     @Override
-                                    public void noPermission(List<String> denied, boolean quick) {
-                                        if (quick) {
+                                    public void noPermission(List<String> denied, boolean never) {
+                                        if (never) {
                                             ToastUtils.show("被永久拒绝授权，请手动授予存储权限");
                                             // 如果是被永久拒绝就跳转到应用权限系统设置页面
                                             XXPermissions.startPermissionActivity(MainActivity.this, denied);
@@ -146,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public void noPermission(List<String> denied, boolean quick) {
+                            public void noPermission(List<String> denied, boolean never) {
                                 ToastUtils.show("获取安装包权限失败，请手动授予权限");
                             }
                         });
@@ -162,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public void noPermission(List<String> denied, boolean quick) {
+                            public void noPermission(List<String> denied, boolean never) {
                                 ToastUtils.show("获取悬浮窗权限失败，请手动授予权限");
                             }
                         });
@@ -178,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public void noPermission(List<String> denied, boolean quick) {
+                            public void noPermission(List<String> denied, boolean never) {
                                 ToastUtils.show("获取通知栏权限失败，请手动授予权限");
                             }
                         });
@@ -194,13 +193,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public void noPermission(List<String> denied, boolean quick) {
+                            public void noPermission(List<String> denied, boolean never) {
                                 ToastUtils.show("获取系统设置权限失败，请手动授予权限");
                             }
                         });
                 break;
             case R.id.btn_main_app_details:
-                XXPermissions.startApplicationDetails(MainActivity.this);
+                XXPermissions.startApplicationDetails(this);
                 break;
             default:
                 break;

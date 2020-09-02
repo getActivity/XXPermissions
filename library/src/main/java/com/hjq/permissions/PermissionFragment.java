@@ -13,7 +13,6 @@ import android.util.SparseArray;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  *    author : Android 轮子哥
@@ -43,9 +42,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
         int requestCode;
         // 请求码随机生成，避免随机产生之前的请求码，必须进行循环判断
         do {
-            // Studio 编译的 APK 请求码必须小于 65536
-            // Eclipse 编译的 APK 请求码必须小于 256
-            requestCode = new Random().nextInt(255);
+            requestCode = PermissionUtils.getRandomRequestCode();
         } while (sCallbacks.get(requestCode) != null);
         bundle.putInt(REQUEST_CODE, requestCode);
         bundle.putStringArrayList(PERMISSION_GROUP, permissions);
@@ -74,41 +71,48 @@ public final class PermissionFragment extends Fragment implements Runnable {
             return;
         }
 
-        // 是否有特殊权限
-        boolean specialPermission = false;
+        // 是否需要申请特殊权限
+        boolean requestSpecialPermission = false;
 
-        if (permissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) && !PermissionUtils.hasStoragePermission()) {
-            // 跳转到存储权限设置界面
-            startActivityForResult(PermissionSettingPage.getStoragePermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
-            specialPermission = true;
-        }
+        // 判断当前是否包含特殊权限
+        if (PermissionUtils.containsSpecialPermission(permissions)) {
 
-        if (permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.hasInstallPermission(getActivity())) {
-            // 跳转到安装权限设置界面
-            startActivityForResult(PermissionSettingPage.getInstallPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
-            specialPermission = true;
-        }
+            if (permissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) && !PermissionUtils.hasStoragePermission(getActivity())) {
+                // 当前必须是 Android 11 及以上版本，因为 hasStoragePermission 在旧版本上是拿旧权限做的判断，所以这里需要多判断一次版本
+                if (PermissionUtils.isAndroid11()) {
+                    // 跳转到存储权限设置界面
+                    startActivityForResult(PermissionSettingPage.getStoragePermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
+                    requestSpecialPermission = true;
+                }
+            }
 
-        if (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.hasWindowPermission(getActivity())) {
-            // 跳转到悬浮窗设置页面
-            startActivityForResult(PermissionSettingPage.getWindowPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
-            specialPermission = true;
-        }
+            if (permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.hasInstallPermission(getActivity())) {
+                // 跳转到安装权限设置界面
+                startActivityForResult(PermissionSettingPage.getInstallPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
+                requestSpecialPermission = true;
+            }
 
-        if (permissions.contains(Permission.NOTIFICATION_SERVICE) && !PermissionUtils.hasNotifyPermission(getActivity())) {
-            // 跳转到通知栏权限设置页面
-            startActivityForResult(PermissionSettingPage.getNotifyPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
-            specialPermission = true;
-        }
+            if (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.hasWindowPermission(getActivity())) {
+                // 跳转到悬浮窗设置页面
+                startActivityForResult(PermissionSettingPage.getWindowPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
+                requestSpecialPermission = true;
+            }
 
-        if (permissions.contains(Permission.WRITE_SETTINGS) && !PermissionUtils.hasSettingPermission(getActivity())) {
-            // 跳转到系统设置权限设置页面
-            startActivityForResult(PermissionSettingPage.getSettingPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
-            specialPermission = true;
+            if (permissions.contains(Permission.NOTIFICATION_SERVICE) && !PermissionUtils.hasNotifyPermission(getActivity())) {
+                // 跳转到通知栏权限设置页面
+                startActivityForResult(PermissionSettingPage.getNotifyPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
+                requestSpecialPermission = true;
+            }
+
+            if (permissions.contains(Permission.WRITE_SETTINGS) && !PermissionUtils.hasSettingPermission(getActivity())) {
+                // 跳转到系统设置权限设置页面
+                startActivityForResult(PermissionSettingPage.getSettingPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
+                requestSpecialPermission = true;
+            }
         }
 
         // 当前必须没有跳转到悬浮窗或者安装权限界面
-        if (!specialPermission) {
+        if (!requestSpecialPermission) {
             requestPermission();
         }
     }
@@ -140,41 +144,35 @@ public final class PermissionFragment extends Fragment implements Runnable {
         for (int i = 0; i < permissions.length; i++) {
 
             String permission = permissions[i];
-            
-            if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission)) {
-                // 重新检查安装权限
-                grantResults[i] = PermissionUtils.hasInstallPermission(getActivity()) ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
-            } else if (Permission.SYSTEM_ALERT_WINDOW.equals(permission)) {
-                // 重新检查悬浮窗权限
-                grantResults[i] = PermissionUtils.hasWindowPermission(getActivity()) ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
-            } else if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
-                // 重新检查通知栏权限
-                grantResults[i] = PermissionUtils.hasNotifyPermission(getActivity()) ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
-            } else if (Permission.WRITE_SETTINGS.equals(permission)) {
-                // 重新检查系统设置权限
-                grantResults[i] = PermissionUtils.hasSettingPermission(getActivity()) ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
-            } else {
-                // 重新检查 Android 11 的存储新权限
-                if (PermissionUtils.isAndroid11() && PermissionUtils.containsPermission(permissions, Permission.MANAGE_EXTERNAL_STORAGE)) {
-                    if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) || Permission.READ_EXTERNAL_STORAGE.equals(permission) || Permission.WRITE_EXTERNAL_STORAGE.equals(permission)) {
-                        grantResults[i] = PermissionUtils.hasStoragePermission() ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
-                    }
-                } else if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) {
-                    grantResults[i] = XXPermissions.hasPermission(getActivity(), Permission.Group.STORAGE) ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
-                }
 
-                // 重新检查 Android 8.0 的两个新权限
+            if (PermissionUtils.isSpecialPermission(permission)) {
+                // 如果这个权限是特殊权限，那么就重新进行权限检测
+                grantResults[i] = PermissionUtils.isPermissionGranted(getActivity(), permission) ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
+            } else {
+                if (!PermissionUtils.isAndroid10()) {
+                    // 重新检查 Android 10.0 的三个新权限
+                    if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission) ||
+                            Permission.ACTIVITY_RECOGNITION.equals(permission) ||
+                            Permission.ACCESS_MEDIA_LOCATION.equals(permission)) {
+                        // 如果当前版本不符合最低要求，那么就重新进行权限检测
+                        grantResults[i] = PermissionUtils.isPermissionGranted(getActivity(), permission) ?
+                                PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
+                    }
+                }
                 if (!PermissionUtils.isAndroid8()) {
-                    if (Permission.ANSWER_PHONE_CALLS.equals(permission) || Permission.READ_PHONE_NUMBERS.equals(permission)) {
-                        // 检查当前的安卓版本是否符合要求，如果不符合要求，那么默认没有权限
-                        grantResults[i] = PackageManager.PERMISSION_DENIED;
+                    // 重新检查 Android 8.0 的两个新权限
+                    if (Permission.ANSWER_PHONE_CALLS.equals(permission) ||
+                            Permission.READ_PHONE_NUMBERS.equals(permission)) {
+                        // 如果当前版本不符合最低要求，那么就重新进行权限检测
+                        grantResults[i] = PermissionUtils.isPermissionGranted(getActivity(), permission) ?
+                                PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
                     }
                 }
             }
         }
 
         // 获取授予权限
-        List<String> succeedPermissions = PermissionUtils.getSucceedPermissions(permissions, grantResults);
+        List<String> succeedPermissions = PermissionUtils.getGrantedPermission(permissions, grantResults);
         // 如果请求成功的权限集合大小和请求的数组一样大时证明权限已经全部授予
         if (succeedPermissions.size() == permissions.length) {
             // 代表申请的所有的权限都授予了
@@ -182,7 +180,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
         } else {
 
             // 获取拒绝权限
-            List<String> failPermissions = PermissionUtils.getFailPermissions(permissions, grantResults);
+            List<String> failPermissions = PermissionUtils.getDeniedPermission(permissions, grantResults);
 
             // 检查是否开启了继续申请模式，如果是则检查没有授予的权限是否还能继续申请
             if (getArguments().getBoolean(REQUEST_CONSTANT)
@@ -194,7 +192,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
             }
 
             // 代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回true给开发人员，让开发者引导用户去设置界面开启权限
-            callback.noPermission(failPermissions, PermissionUtils.checkMorePermissionPermanentDenied(getActivity(), failPermissions));
+            callback.noPermission(failPermissions, PermissionUtils.isPermissionPermanentDenied(getActivity(), failPermissions));
 
             // 证明还有一部分权限被成功授予，回调成功接口
             if (!succeedPermissions.isEmpty()) {

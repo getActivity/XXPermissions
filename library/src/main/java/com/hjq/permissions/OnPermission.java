@@ -22,7 +22,7 @@ public interface OnPermission {
      * 有权限被拒绝授予时回调
      *
      * @param denied            请求失败的权限组
-     * @param quick             是否有某个权限被永久拒绝了
+     * @param never             是否有某个权限被永久拒绝了
      */
-    void noPermission(List<String> denied, boolean quick);
+    void noPermission(List<String> denied, boolean never);
 }

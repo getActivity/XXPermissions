@@ -2,12 +2,9 @@ package com.hjq.permissions;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
-import android.provider.Settings;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,6 +14,9 @@ import java.util.List;
  *    desc   : Android 危险权限请求类
  */
 public final class XXPermissions {
+
+    /** 当前是否是调试模式 */
+    private volatile static Boolean sDebugMode;
 
     private Activity mActivity;
     private List<String> mPermissions;
@@ -35,15 +35,20 @@ public final class XXPermissions {
     public static XXPermissions with(Activity activity) {
         return new XXPermissions(activity);
     }
+    
+    public static void setDebugMode(boolean debug) {
+        sDebugMode = debug;
+    }
 
     /**
      * 设置权限组
      */
     public XXPermissions permission(String... permissions) {
         if (mPermissions == null) {
-            mPermissions = new ArrayList<>(permissions.length);
+            mPermissions = PermissionUtils.asArrayList(permissions);
+        } else {
+            mPermissions.addAll(PermissionUtils.asArrayList(permissions));
         }
-        mPermissions.addAll(Arrays.asList(permissions));
         return this;
     }
 
@@ -59,7 +64,7 @@ public final class XXPermissions {
             mPermissions = new ArrayList<>(length);
         }
         for (String[] group : permissions) {
-            mPermissions.addAll(Arrays.asList(group));
+            mPermissions.addAll(PermissionUtils.asArrayList(group));
         }
         return this;
     }
@@ -78,7 +83,10 @@ public final class XXPermissions {
 
     /**
      * 被拒绝后继续申请，直到授权或者永久拒绝
+     *
+     * @deprecated         已过时，详情请移动至：https://github.com/getActivity/XXPermissions/issues/39
      */
+    @Deprecated
     public XXPermissions constantRequest() {
         mConstant = true;
         return this;
@@ -88,10 +96,6 @@ public final class XXPermissions {
      * 请求权限
      */
     public void request(OnPermission callback) {
-        // 如果没有指定请求的权限，就使用清单注册的权限进行请求
-        if (mPermissions == null || mPermissions.isEmpty()) {
-            mPermissions = PermissionUtils.getManifestPermissions(mActivity);
-        }
         if (mPermissions == null || mPermissions.isEmpty()) {
             throw new IllegalArgumentException("The requested permission cannot be empty");
         }
@@ -108,59 +112,55 @@ public final class XXPermissions {
             throw new IllegalArgumentException("The permission request callback interface must be implemented");
         }
 
-        // 如果本次申请包含了 Android 11 存储权限，但是当前版本不是 Android 11 及以上版本
-        if (mPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) && !PermissionUtils.isAndroid11()) {
-            // 自动添加旧版的存储权限，因为旧版的系统不支持申请新版的存储权限
-            mPermissions.add(Permission.READ_EXTERNAL_STORAGE);
-            mPermissions.add(Permission.WRITE_EXTERNAL_STORAGE);
+        if (sDebugMode == null) {
+            sDebugMode = PermissionUtils.isDebugMode(mActivity);
         }
 
-        // 检测申请的权限和 targetSdk 版本是否符合要求
-        PermissionUtils.checkTargetSdkVersion(mActivity, mPermissions);
+        // 优化所申请的权限列表
+        PermissionUtils.optimizePermission(mPermissions);
 
-        ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(mActivity, mPermissions);
+        if (sDebugMode) {
+            // 检测所申请的权限和 targetSdk 版本是否符合要求
+            PermissionUtils.checkTargetSdkVersion(mActivity, mPermissions);
+        }
 
-        if (failPermissions == null || failPermissions.isEmpty()) {
+        if (PermissionUtils.isPermissionGranted(mActivity, mPermissions)) {
             // 证明权限已经全部授予过
             callback.hasPermission(mPermissions, true);
         } else {
-            // 检测权限有没有在清单文件中注册
-            PermissionUtils.checkPermissions(mActivity, mPermissions);
+            if (sDebugMode) {
+                // 检测权限有没有在清单文件中注册
+                PermissionUtils.checkPermissionManifest(mActivity, mPermissions);
+            }
             // 申请没有授予过的权限
             PermissionFragment.newInstance((new ArrayList<>(mPermissions)), mConstant).prepareRequest(mActivity, callback);
         }
     }
 
     /**
-     * 检查某些权限是否全部授予了
-     *
-     * @param permissions 需要请求的权限组
+     * 判断一个或多个权限是否全部授予了
      */
     public static boolean hasPermission(Context context, String... permissions) {
         if (permissions == null || permissions.length == 0) {
             return hasPermission(context, PermissionUtils.getManifestPermissions(context));
         } else {
-            return hasPermission(context, Arrays.asList(permissions));
+            return hasPermission(context, PermissionUtils.asArrayList(permissions));
         }
     }
 
     public static boolean hasPermission(Context context, List<String> permissions) {
-        ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(context, permissions);
-        return failPermissions == null || failPermissions.isEmpty();
+        return PermissionUtils.isPermissionGranted(context, permissions);
     }
 
     /**
-     * 检查某些权限是否全部授予了
-     *
-     * @param permissions 需要请求的权限组
+     * 判断一个或多个权限组是否全部授予了
      */
     public static boolean hasPermission(Context context, String[]... permissions) {
         List<String> permissionList = new ArrayList<>();
         for (String[] group : permissions) {
-            permissionList.addAll(Arrays.asList(group));
+            permissionList.addAll(PermissionUtils.asArrayList(group));
         }
-        ArrayList<String> failPermissions = PermissionUtils.getFailPermissions(context, permissionList);
-        return failPermissions == null || failPermissions.isEmpty();
+        return PermissionUtils.isPermissionGranted(context, permissionList);
     }
 
     /**
@@ -174,63 +174,38 @@ public final class XXPermissions {
     }
 
     /**
-     * 跳转到应用权限设置页
-     *
-     * @param failPermissions           没有授予或者被拒绝的权限组
-     */
-    public static void startPermissionActivity(Context context, List<String> failPermissions) {
-        // 如果失败的权限里面包含了特殊权限，那么就直接跳转到应用详情页，否则就直接跳转到权限设置页
-        if (failPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) ||
-                failPermissions.contains(Permission.REQUEST_INSTALL_PACKAGES) ||
-                failPermissions.contains(Permission.SYSTEM_ALERT_WINDOW) ||
-                failPermissions.contains(Permission.NOTIFICATION_SERVICE) ||
-                failPermissions.contains(Permission.WRITE_SETTINGS)) {
-            // 如果当前只有一个权限被拒绝了
-            if (failPermissions.size() == 1) {
-                String permission = failPermissions.get(0);
-                if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) {
-                    // 跳转到存储权限设置界面
-                    context.startActivity(PermissionSettingPage.getStoragePermissionIntent(context));
-                } else if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission)) {
-                    // 跳转到安装权限设置界面
-                    context.startActivity(PermissionSettingPage.getInstallPermissionIntent(context));
-                } else if (Permission.SYSTEM_ALERT_WINDOW.equals(permission)) {
-                    // 跳转到悬浮窗设置页面
-                    context.startActivity(PermissionSettingPage.getWindowPermissionIntent(context));
-                } else if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
-                    // 跳转到通知栏权限设置页面
-                    context.startActivity(PermissionSettingPage.getNotifyPermissionIntent(context));
-                } else if (Permission.WRITE_SETTINGS.equals(permission)) {
-                    // 跳转到系统设置权限设置页面
-                    context.startActivity(PermissionSettingPage.getSettingPermissionIntent(context));
-                }
-            } else {
-                // 跳转到应用详情界面
-                startApplicationDetails(context);
-            }
-        } else {
-            // 跳转到具体的权限设置界面
-            Intent intent = ManagePermissionPage.getIntent(context);
-
-            if (intent == null) {
-                intent = PermissionSettingPage.getApplicationDetailsIntent(context);
-            }
-
-            try {
-                context.startActivity(intent);
-            } catch (Exception ignored) {
-                if (!Settings.ACTION_APPLICATION_DETAILS_SETTINGS.equals(intent.getAction())) {
-                    intent = PermissionSettingPage.getApplicationDetailsIntent(context);
-                    context.startActivity(intent);
-                }
-            }
-        }
-    }
-
-    /**
      * 跳转到应用详情页
      */
     public static void startApplicationDetails(Context context) {
         context.startActivity(PermissionSettingPage.getApplicationDetailsIntent(context));
+    }
+
+    public static int startApplicationDetails(Activity activity) {
+        int requestCode = PermissionUtils.getRandomRequestCode();
+        activity.startActivityForResult(PermissionSettingPage.getApplicationDetailsIntent(activity), requestCode);
+        return requestCode;
+    }
+
+    /**
+     * 跳转到应用权限设置页
+     *
+     * @param deniedPermissions           没有授予或者被拒绝的权限组
+     */
+    public static void startPermissionActivity(Context context, List<String> deniedPermissions) {
+        try {
+            context.startActivity(PermissionSettingPage.getSmartPermissionIntent(context, deniedPermissions));
+        } catch (Exception ignored) {
+            context.startActivity(PermissionSettingPage.getApplicationDetailsIntent(context));
+        }
+    }
+
+    public static int startPermissionActivity(Activity activity, List<String> deniedPermissions) {
+        int requestCode = PermissionUtils.getRandomRequestCode();
+        try {
+            activity.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, deniedPermissions), requestCode);
+        } catch (Exception ignored) {
+            activity.startActivityForResult(PermissionSettingPage.getApplicationDetailsIntent(activity), requestCode);
+        }
+        return requestCode;
     }
 }
