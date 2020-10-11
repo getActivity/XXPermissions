@@ -8,6 +8,7 @@ import android.Manifest;
  *    time   : 2018/06/15
  *    desc   : 权限请求实体类，参考 {@link Manifest.permission}
  *    doc    : https://developer.android.google.cn/reference/android/Manifest.permission?hl=zh_cn
+ *             https://developer.android.google.cn/guide/topics/permissions/overview?hl=zh-cn#normal-dangerous
  */
 public final class Permission {
 

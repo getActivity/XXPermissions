@@ -13,7 +13,7 @@
 
 ```groovy
 dependencies {
-    implementation 'com.hjq:xxpermissions:8.6'
+    implementation 'com.hjq:xxpermissions:8.8'
 }
 ```
 
@@ -171,7 +171,7 @@ XXPermissions.with(MainActivity.this)
 
 #### 作者的其他开源项目
 
-* 架构工程：[AndroidProject](https://github.com/getActivity/AndroidProject)
+* 安卓架构：[AndroidProject](https://github.com/getActivity/AndroidProject)
 
 * 网络框架：[EasyHttp](https://github.com/getActivity/EasyHttp)
 

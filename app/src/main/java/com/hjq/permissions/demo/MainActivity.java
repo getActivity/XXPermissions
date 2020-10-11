@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_main_request_5).setOnClickListener(this);
         findViewById(R.id.btn_main_request_6).setOnClickListener(this);
         findViewById(R.id.btn_main_request_7).setOnClickListener(this);
-
         findViewById(R.id.btn_main_app_details).setOnClickListener(this);
     }
 
@@ -90,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
                                     XXPermissions.startPermissionActivity(MainActivity.this, denied);
                                 } else {
-                                    ToastUtils.show("获取录音和日历权限失败");
+                                    ToastUtils.show("获取权限失败");
                                 }
                             }
                         });

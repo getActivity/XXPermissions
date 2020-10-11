@@ -27,6 +27,10 @@ final class PermissionDetailsPage {
         } else if (MARK.contains("meizu")) {
             intent = meizu(context);
         }
+
+        if (intent == null) {
+            intent = PermissionSettingPage.getApplicationDetailsIntent(context);
+        }
         return intent;
     }
 

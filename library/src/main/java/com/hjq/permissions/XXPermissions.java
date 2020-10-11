@@ -15,12 +15,14 @@ import java.util.List;
  */
 public final class XXPermissions {
 
-    /** 当前是否是调试模式 */
-    private volatile static Boolean sDebugMode;
+    /** 调试模式 */
+    private static Boolean sDebugMode;
 
+    /** Activity 对象 */
     private Activity mActivity;
+
+    /** 权限列表 */
     private List<String> mPermissions;
-    private boolean mConstant;
 
     /**
      * 私有化构造函数
@@ -31,11 +33,16 @@ public final class XXPermissions {
 
     /**
      * 设置请求的对象
+     *
+     * @param activity          当前 Activity，也可以传入栈顶的 Activity
      */
     public static XXPermissions with(Activity activity) {
         return new XXPermissions(activity);
     }
-    
+
+    /**
+     * 设置是否为调试模式
+     */
     public static void setDebugMode(boolean debug) {
         sDebugMode = debug;
     }
@@ -82,34 +89,23 @@ public final class XXPermissions {
     }
 
     /**
-     * 被拒绝后继续申请，直到授权或者永久拒绝
-     *
-     * @deprecated         已过时，详情请移动至：https://github.com/getActivity/XXPermissions/issues/39
-     */
-    @Deprecated
-    public XXPermissions constantRequest() {
-        mConstant = true;
-        return this;
-    }
-
-    /**
      * 请求权限
      */
     public void request(OnPermission callback) {
+        if (callback == null) {
+            throw new IllegalArgumentException("The permission request callback interface must be implemented");
+        }
+
         if (mPermissions == null || mPermissions.isEmpty()) {
             throw new IllegalArgumentException("The requested permission cannot be empty");
         }
+
         if (mActivity == null) {
             throw new IllegalArgumentException("The activity is empty");
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mActivity.isDestroyed()){
-                throw new IllegalStateException("The event has been destroyed");
-            } else if (mActivity.isFinishing()) {
-                throw new IllegalStateException("The event has been finish");
-            }
         }
-        if (callback == null) {
-            throw new IllegalArgumentException("The permission request callback interface must be implemented");
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mActivity.isDestroyed()) {
+            throw new IllegalStateException("The activity has been destroyed");
         }
 
         if (sDebugMode == null) {
@@ -133,7 +129,7 @@ public final class XXPermissions {
                 PermissionUtils.checkPermissionManifest(mActivity, mPermissions);
             }
             // 申请没有授予过的权限
-            PermissionFragment.newInstance((new ArrayList<>(mPermissions)), mConstant).prepareRequest(mActivity, callback);
+            PermissionFragment.newInstance((new ArrayList<>(mPermissions))).prepareRequest(mActivity, callback);
         }
     }
 

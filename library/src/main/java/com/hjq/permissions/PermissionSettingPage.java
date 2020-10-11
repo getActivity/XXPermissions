@@ -41,18 +41,21 @@ final class PermissionSettingPage {
                 } else {
                     return getApplicationDetailsIntent(context);
                 }
-            } else {
-                // 跳转到应用详情界面
-                return PermissionSettingPage.getApplicationDetailsIntent(context);
+            } else if (deniedPermissions.size() == 3) {
+                if (deniedPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) &&
+                        deniedPermissions.contains(Permission.READ_EXTERNAL_STORAGE) &&
+                        deniedPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE)) {
+                    if (PermissionUtils.isAndroid11()) {
+                        return getStoragePermissionIntent(context);
+                    } else {
+                        return PermissionDetailsPage.getIntent(context);
+                    }
+                }
             }
-        } else {
-            // 跳转到具体的权限设置界面
-            Intent intent = PermissionDetailsPage.getIntent(context);
 
-            if (intent == null) {
-                intent = PermissionSettingPage.getApplicationDetailsIntent(context);
-            }
-            return intent;
+            return PermissionSettingPage.getApplicationDetailsIntent(context);
+        } else {
+            return PermissionDetailsPage.getIntent(context);
         }
     }
 
@@ -133,7 +136,8 @@ final class PermissionSettingPage {
     static Intent getStoragePermissionIntent(Context context) {
         Intent intent = null;
         if (PermissionUtils.isAndroid11()) {
-            intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+            intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+            intent.setData(Uri.parse("package:" + context.getPackageName()));
         }
         if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
