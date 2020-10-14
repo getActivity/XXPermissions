@@ -1,180 +1,147 @@
 package com.hjq.permissions;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.Settings;
+
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
- *    time   : 2018/07/18
- *    desc   : 权限设置页（兼容大部分国产手机）
+ *    time   : 2020/08/18
+ *    desc   : 权限设置页
  */
 final class PermissionSettingPage {
 
-    private static final String MARK = Build.MANUFACTURER.toLowerCase();
+    /**
+     * 根据传入的权限自动选择最合适的权限设置页
+     */
+    static Intent getSmartPermissionIntent(Context context, List<String> deniedPermissions) {
+        if (deniedPermissions == null || deniedPermissions.isEmpty()) {
+            return PermissionSettingPage.getApplicationDetailsIntent(context);
+        }
+
+        // 如果失败的权限里面包含了特殊权限
+        if (PermissionUtils.containsSpecialPermission(deniedPermissions)) {
+            // 如果当前只有一个权限被拒绝了
+            if (deniedPermissions.size() == 1) {
+                String permission = deniedPermissions.get(0);
+                if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) {
+                    return getStoragePermissionIntent(context);
+                } else if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission)) {
+                    return getInstallPermissionIntent(context);
+                } else if (Permission.SYSTEM_ALERT_WINDOW.equals(permission)) {
+                    return getWindowPermissionIntent(context);
+                } else if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
+                    return getNotifyPermissionIntent(context);
+                } else if (Permission.WRITE_SETTINGS.equals(permission)) {
+                    return getSettingPermissionIntent(context);
+                } else {
+                    return getApplicationDetailsIntent(context);
+                }
+            } else if (deniedPermissions.size() == 3) {
+                if (deniedPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) &&
+                        deniedPermissions.contains(Permission.READ_EXTERNAL_STORAGE) &&
+                        deniedPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE)) {
+                    if (PermissionUtils.isAndroid11()) {
+                        return getStoragePermissionIntent(context);
+                    } else {
+                        return PermissionDetailsPage.getIntent(context);
+                    }
+                }
+            }
+
+            return PermissionSettingPage.getApplicationDetailsIntent(context);
+        } else {
+            return PermissionDetailsPage.getIntent(context);
+        }
+    }
 
     /**
-     * 跳转到应用权限设置页面
-     *
-     * @param context 上下文对象
-     * @param newTask 是否使用新的任务栈启动
+     * 获取应用详情界面意图
      */
-    static void start(Context context, boolean newTask) {
-
-        Intent intent = null;
-        if (MARK.contains("huawei")) {
-            intent = huawei(context);
-        } else if (MARK.contains("xiaomi")) {
-            intent = xiaomi(context);
-        } else if (MARK.contains("oppo")) {
-            intent = oppo(context);
-        } else if (MARK.contains("vivo")) {
-            intent = vivo(context);
-        } else if (MARK.contains("meizu")) {
-            intent = meizu(context);
-        }
-
-        if (intent == null || !hasIntent(context, intent)) {
-            intent = google(context);
-        }
-
-        if (newTask) {
-            // 如果用户在权限设置界面改动了权限，请求权限 Activity 会被重启，加入这个 Flag 就可以避免
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
-
-        try {
-            context.startActivity(intent);
-        } catch (Exception ignored) {
-            intent = google(context);
-            context.startActivity(intent);
-        }
-    }
-
-    private static Intent google(Context context) {
+    static Intent getApplicationDetailsIntent(Context context) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        intent.setData(Uri.fromParts("package", context.getPackageName(), null));
+        intent.setData(Uri.parse("package:" + context.getPackageName()));
         return intent;
     }
 
-    private static Intent huawei(Context context) {
-        Intent intent = new Intent();
-
-        intent.setClassName("com.huawei.systemmanager", "com.huawei.permissionmanager.ui.SingleAppActivity");
-        if (hasIntent(context, intent)) {
-            return intent;
+    /**
+     * 获取安装权限设置界面意图
+     */
+    static Intent getInstallPermissionIntent(Context context) {
+        Intent intent = null;
+        if (PermissionUtils.isAndroid8()) {
+            intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
+            intent.setData(Uri.parse("package:" + context.getPackageName()));
         }
-
-        intent.setComponent(new ComponentName("com.android.packageinstaller", "com.android.packageinstaller.permission.ui.ManagePermissionsActivity"));
-        if (hasIntent(context, intent)) {
-            return intent;
-        }
-
-        intent.setComponent(new ComponentName("com.huawei.systemmanager", "com.huawei.permissionmanager.ui.MainActivity"));
-        if (hasIntent(context, intent)) {
-            return intent;
-        }
-
-        return intent;
-    }
-
-    private static Intent xiaomi(Context context) {
-        Intent intent = new Intent("miui.intent.action.APP_PERM_EDITOR");
-        intent.putExtra("extra_pkgname", context.getPackageName());
-        if (hasIntent(context, intent)) {
-            return intent;
-        }
-
-        intent.setPackage("com.miui.securitycenter");
-        if (hasIntent(context, intent)) {
-            return intent;
-        }
-
-        intent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.AppPermissionsEditorActivity");
-        if (hasIntent(context, intent)) {
-            return intent;
-        }
-
-        intent.setClassName("com.miui.securitycenter", "com.miui.permcenter.permissions.PermissionsEditorActivity");
-        return intent;
-    }
-
-    private static Intent oppo(Context context) {
-        Intent intent = new Intent();
-        intent.putExtra("packageName", context.getPackageName());
-
-        intent.setClassName("com.color.safecenter", "com.color.safecenter.permission.PermissionManagerActivity");
-        if (hasIntent(context, intent)) {
-            return intent;
-        }
-
-        intent.setClassName("com.coloros.safecenter", "com.coloros.safecenter.permission.PermissionManagerActivity");
-        if (hasIntent(context, intent)) {
-            return intent;
-        }
-
-        intent.setClassName("com.coloros.securitypermission", "com.coloros.securitypermission.permission.PermissionGroupsActivity");
-        if (hasIntent(context, intent)) {
-            return intent;
-        }
-
-        intent.setClassName("com.coloros.securitypermission", "com.coloros.securitypermission.permission.PermissionManagerActivity");
-        if (hasIntent(context, intent)) {
-            return intent;
-        }
-
-        intent.setClassName("com.oppo.safe", "com.oppo.safe.permission.PermissionAppListActivity");
-        if (hasIntent(context, intent)) {
-            return intent;
+        if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
+            intent = getApplicationDetailsIntent(context);
         }
         return intent;
     }
 
-    private static Intent vivo(Context context) {
-        Intent intent = new Intent();
-        intent.putExtra("packagename", context.getPackageName());
-
-        // vivo x7 Y67 Y85
-        intent.setClassName("com.iqoo.secure", "com.iqoo.secure.safeguard.SoftPermissionDetailActivity");
-        if (hasIntent(context, intent)) {
-            return intent;
+    /**
+     * 获取悬浮窗权限设置界面意图
+     */
+    static Intent getWindowPermissionIntent(Context context) {
+        Intent intent = null;
+        if (PermissionUtils.isAndroid6()) {
+            intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+            intent.setData(Uri.parse("package:" + context.getPackageName()));
         }
 
-        // vivo Y66 x20 x9
-        intent.setClassName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.SoftPermissionDetailActivity");
-        if (hasIntent(context, intent)) {
-            return intent;
+        if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
+            intent = getApplicationDetailsIntent(context);
         }
-
-        // Y85
-        intent.setClassName("com.vivo.permissionmanager", "com.vivo.permissionmanager.activity.PurviewTabActivity");
-        if (hasIntent(context, intent)) {
-            return intent;
-        }
-
-        // 跳转会报 java.lang.SecurityException: Permission Denial
-        intent.setClassName("com.android.packageinstaller", "com.android.packageinstaller.permission.ui.ManagePermissionsActivity");
-        if (hasIntent(context, intent)) {
-            return intent;
-        }
-
-        intent.setComponent(new ComponentName("com.iqoo.secure", "com.iqoo.secure.safeguard.SoftPermissionDetailActivity"));
         return intent;
     }
 
-    private static Intent meizu(Context context) {
-        Intent intent = new Intent("com.meizu.safe.security.SHOW_APPSEC");
-        intent.putExtra("packageName", context.getPackageName());
-        intent.setComponent(new ComponentName("com.meizu.safe", "com.meizu.safe.security.AppSecActivity"));
+    /**
+     * 获取通知栏权限设置界面意图
+     */
+    static Intent getNotifyPermissionIntent(Context context) {
+        Intent intent = null;
+        if (PermissionUtils.isAndroid8()) {
+            intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+            //intent.putExtra(Settings.EXTRA_CHANNEL_ID, context.getApplicationInfo().uid);
+        }
+        if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
+            intent = getApplicationDetailsIntent(context);
+        }
         return intent;
     }
 
-    private static boolean hasIntent(Context context, Intent intent) {
-        return !context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
+    /**
+     * 获取系统设置权限界面意图
+     */
+    static Intent getSettingPermissionIntent(Context context) {
+        Intent intent = null;
+        if (PermissionUtils.isAndroid6()) {
+            intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+            intent.setData(Uri.parse("package:" + context.getPackageName()));
+        }
+        if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
+            intent = getApplicationDetailsIntent(context);
+        }
+        return intent;
+    }
+
+    /**
+     * 获取存储权限设置界面意图
+     */
+    static Intent getStoragePermissionIntent(Context context) {
+        Intent intent = null;
+        if (PermissionUtils.isAndroid11()) {
+            intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+            intent.setData(Uri.parse("package:" + context.getPackageName()));
+        }
+        if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
+            intent = getApplicationDetailsIntent(context);
+        }
+        return intent;
     }
 }
