@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
-            android:text="申请新版存储权限" />
+            android:text="申请定位权限组" />
 
         <Button
             android:id="@+id/btn_main_request_4"
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
-            android:text="申请安装包权限" />
+            android:text="申请新版存储权限" />
 
         <Button
             android:id="@+id/btn_main_request_5"
@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
-            android:text="申请悬浮窗权限" />
+            android:text="申请安装包权限" />
 
         <Button
             android:id="@+id/btn_main_request_6"
@@ -55,10 +55,18 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
-            android:text="申请通知栏权限" />
+            android:text="申请悬浮窗权限" />
 
         <Button
             android:id="@+id/btn_main_request_7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:text="申请通知栏权限" />
+
+        <Button
+            android:id="@+id/btn_main_request_8"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

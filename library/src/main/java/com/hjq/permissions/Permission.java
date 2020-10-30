@@ -17,10 +17,10 @@ public final class Permission {
     /** 外部存储权限（特殊权限，需要 Android 11 及以上） */
     public static final String MANAGE_EXTERNAL_STORAGE = "android.permission.MANAGE_EXTERNAL_STORAGE";
 
-    /** 应用安装权限（特殊权限，需要 Android 8.0 及以上） */
+    /** 安装应用权限（特殊权限，需要 Android 8.0 及以上） */
     public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES";
 
-    /** 通知栏权限（特殊权限，需要 Android 7.0 及以上） */
+    /** 通知栏权限（特殊权限，需要 Android 6.0 及以上） */
     public static final String NOTIFICATION_SERVICE = "android.permission.ACCESS_NOTIFICATION_POLICY";
 
     /** 悬浮窗权限（特殊权限，需要 Android 6.0 及以上） */

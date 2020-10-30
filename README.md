@@ -4,7 +4,7 @@
 
 > [点击此处下载Demo](XXPermissions.apk)，[博文地址：一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
 
-> 另外想对 Android 6.0 权限需要深入了解的，可以看这篇文章[Android 6.0 运行权限解析（高级篇）](https://www.jianshu.com/p/6a4dff744031)
+> 另外想对 Android 6.0 权限需要深入了解的，可以看这篇文章[Android 6.0 运行权限解析](https://www.jianshu.com/p/6a4dff744031)
 
 ![](picture/1.jpg) ![](picture/2.jpg) ![](picture/3.jpg)
 ![](picture/4.jpg) ![](picture/5.jpg) ![](picture/6.jpg)
@@ -13,7 +13,8 @@
 
 ```groovy
 dependencies {
-    implementation 'com.hjq:xxpermissions:8.8'
+    // 权限请求框架：https://github.com/getActivity/XXPermissions
+    implementation 'com.hjq:xxpermissions:9.0'
 }
 ```
 
@@ -38,28 +39,55 @@ XXPermissions.with(this)
             @Override
             public void hasPermission(List<String> granted, boolean all) {
                 if (all) {
-                    ToastUtils.show("获取存储和拍照权限成功");
+                    toast("获取录音和日历权限成功");
                 } else {
-                    ToastUtils.show("获取权限成功，部分权限未正常授予");
+                    toast("获取部分权限成功，但部分权限未正常授予");
                 }
             }
 
             @Override
             public void noPermission(List<String> denied, boolean never) {
                 if (never) {
-                    ToastUtils.show("被永久拒绝授权，请手动授予存储和拍照权限");
+                    toast("被永久拒绝授权，请手动授予录音和日历权限");
                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
                     XXPermissions.startPermissionActivity(MainActivity.this, denied);
                 } else {
-                    ToastUtils.show("获取存储和拍照权限失败");
+                    toast("获取录音和日历权限失败");
                 }
             }
         });
 ```
+#### 从系统权限设置页返回判断
+
+```java
+public class XxxActivity extends AppCompatActivity {
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == XXPermissions.REQUEST_CODE) {
+            if (XXPermissions.hasPermission(this, Permission.RECORD_AUDIO) &&
+                    XXPermissions.hasPermission(this, Permission.Group.CALENDAR)) {
+                toast("用户已经在权限设置页授予了录音和日历权限");
+            }
+        }
+    }
+}
+```
+
+#### 关于权限监听回调参数说明
+
+* 我们都知道，如果用户全部授予只会调用 hasPermission 方法，如果用户全部拒绝只会调用 noPermission 方法。
+
+* 但是还有一种情况，如果在请求多组权限的情况下，这些权限不是被全部授予或者全部拒绝了，而是部分授权部分拒绝这种情况，框架会如何处理回调呢？
+
+* 框架会先调用 noPermission 方法，再调用 hasPermission 方法。其中我们可以通过 hasPermission 方法中的 all 参数来判断权限是否全部授予了。
+
+* 如果想知道回调中的某个权限是否被授权或者拒绝，可以调用 List 类中的 contains(Permission.XXX) 方法来判断这个集合中是否包含了这个权限。
 
 #### 框架亮点
 
-* 第一款适配 Android 11 存储权限的框架，适配过程几乎零成本
+* 第一款适配 Android 11 的权限请求框架，适配过程几乎零成本
 
 * 简洁易用，采用链式调用的方式，使用只需一句代码
 
@@ -78,6 +106,12 @@ XXPermissions.with(this)
 * 如果申请的权限没有在清单文件中注册会抛出异常（仅在 Debug 模式下判断）
 
 * 如果申请的权限和项目 targetSdkVersion 不符合要求会抛出异常（仅在 Debug 模式下判断）
+
+#### Android 11 定位适配
+
+* 在 Android 10 上面，定位被划分为前台权限（精确和模糊）和后台权限，而到了 Android 11 上面，需要分别申请这两种权限，如果同时申请这两种权限会惨遭系统无情拒绝，也就是连权限申请对话框都不会弹的那种拒绝。
+
+* 如果你使用的是 XXPermissions 最新版本，那么恭喜你，直接将前台和后台传给框架即可，框架已经自动帮你把这两种权限分开申请了，整个适配过程零成本。
 
 #### Android 11 存储适配
 
@@ -124,18 +158,18 @@ XXPermissions.with(MainActivity.this)
             @Override
             public void hasPermission(List<String> granted, boolean all) {
                 if (all) {
-                    ToastUtils.show("获取存储权限成功");
+                    toast("获取存储权限成功");
                 }
             }
 
             @Override
             public void noPermission(List<String> denied, boolean never) {
                 if (never) {
-                    ToastUtils.show("被永久拒绝授权，请手动授予存储权限");
+                    toast("被永久拒绝授权，请手动授予存储权限");
                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
                     XXPermissions.startPermissionActivity(MainActivity.this, denied);
                 } else {
-                    ToastUtils.show("获取存储权限失败");
+                    toast("获取存储权限失败");
                 }
             }
         });
@@ -143,35 +177,29 @@ XXPermissions.with(MainActivity.this)
 
 ![](picture/7.jpg)
 
-#### 监听回调问题
-
-> 我们都知道，如果用户全部授予只会调用hasPermission方法，如果用户全部拒绝只会调用noPermission方法。
-
-> 但是还有一种情况，如果在请求多种权限的情况下，这些权限不是被全部授予或者全部拒绝了，而是部分授权部分拒绝这种情况，框架会如何处理回调呢？
-
-> 框架会先调用noPermission方法，再调用hasPermission方法。其中我们可以通过hasPermission方法中的 all 参数来判断权限是否全部授予了。如果想知道回调中的某个权限是否被授权或者拒绝，可以调用List集合类中的contains(Permission.XXX)方法来判断这个集合中是否包含了这个权限。
-
-#### 不同权限请求框架之间对比
+#### 不同权限请求框架之间的对比
 
 |     功能及细节对比    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) | [PermissionX](https://github.com/guolindev/PermissionX) 
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    aar 包大小  |  [18 KB](https://bintray.com/getactivity/maven/xxpermissions#files/com/hjq/xxpermissions)  | [127 KB](https://mvnrepository.com/artifact/com.yanzhenjie/permission)  |  [28 KB](https://jitpack.io/#com.github.tbruyelle/rxpermissions)  |   [22 KB](https://bintray.com/hotchemi/org.permissionsdispatcher/permissionsdispatcher#files/org/permissionsdispatcher/permissionsdispatcher)  |  [48 KB](https://bintray.com/easygoogle/EasyPermissions/easypermissions#files/pub/devrel/easypermissions)   |   [32 KB](https://bintray.com/guolindev/maven/permissionx#files/com/permissionx/guolindev/permissionx)  |
+|    对应版本  |  9.0 |  2.0.3  |  0.12   |   4.8.0  |  3.0.0   |  1.4.0    |
+|    aar 包大小  |  [20 KB](https://bintray.com/getactivity/maven/xxpermissions#files/com/hjq/xxpermissions)  | [127 KB](https://mvnrepository.com/artifact/com.yanzhenjie/permission)  |  [28 KB](https://jitpack.io/#com.github.tbruyelle/rxpermissions)  |   [22 KB](https://bintray.com/hotchemi/org.permissionsdispatcher/permissionsdispatcher#files/org/permissionsdispatcher/permissionsdispatcher)  |  [48 KB](https://bintray.com/easygoogle/EasyPermissions/easypermissions#files/pub/devrel/easypermissions)   |   [32 KB](https://bintray.com/guolindev/maven/permissionx#files/com/permissionx/guolindev/permissionx)  |
 |    minSdk 要求  |  API 11+ |  API 14+  |  API 14+   |   API 14+   |  API 14+   |  API 15+    |
 |    targetSdk 要求  |  API 23+ |  API 29+  |  API 29+   |   API 29+  |  API 30+   |  API 30+   |
 |    class 文件数量  |  8 个  | 110 个  |  3 个  |   37 个  |   15 个  |  16 个   |
-|   是否有依赖  |  无任何依赖  | 依赖 Support  |  依赖 RxJava |  依赖 AndroidX   |   依赖 AndroidX  |   依赖 AndroidX  |
+|   是否有依赖  |  无任何依赖  | 依赖 Support  |  依赖 AndroidX |  依赖 AndroidX   |   依赖 AndroidX  |   依赖 AndroidX  |
 |   安装包权限   |  支持  |  支持  |  不支持  |  不支持   |  不支持   |  不支持   |
 |   悬浮窗权限   |  支持  |  支持  |  不支持  |  不支持   |  不支持   |  不支持   |
-|   通知栏权限   |  支持  |  支持  |  不支持  |  不支持   |   不支持  |  不支持   |
+|   通知栏权限   |  支持  |  出现崩溃  |  不支持  |  不支持   |   不支持  |  不支持   |
 |   系统设置权限   |  支持  |  支持  |  不支持  |  不支持   |   不支持  |  不支持   |
 |   Android 8.0 两个新危险权限   |  已适配  |  已适配  |  未适配  |   已适配  |  未适配   |   已适配  |
 |   Android 10.0 三个新危险权限   |  已适配  |  部分适配  |  未适配  |   已适配  |  未适配   |   已适配  |
 |   Android 11 新版存储权限   |  已适配  |  未适配  |  未适配  |   未适配  |  未适配   |   未适配  |
+|   Android 11 新版定位策略   |  已适配  |  未适配  |  未适配  |   未适配  |  未适配   |   未适配  |
 |   国产手机权限设置界面   |  已适配  |  已适配 |  未适配  |  未适配   |  未适配   |  未适配   |
 
 #### 作者的其他开源项目
 
-* 安卓架构：[AndroidProject](https://github.com/getActivity/AndroidProject)
+* 安卓技术中台：[AndroidProject](https://github.com/getActivity/AndroidProject)
 
 * 网络框架：[EasyHttp](https://github.com/getActivity/EasyHttp)
 

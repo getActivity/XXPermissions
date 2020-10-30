@@ -27,36 +27,49 @@ final class PermissionSettingPage {
         if (PermissionUtils.containsSpecialPermission(deniedPermissions)) {
             // 如果当前只有一个权限被拒绝了
             if (deniedPermissions.size() == 1) {
+
                 String permission = deniedPermissions.get(0);
                 if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) {
                     return getStoragePermissionIntent(context);
-                } else if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission)) {
-                    return getInstallPermissionIntent(context);
-                } else if (Permission.SYSTEM_ALERT_WINDOW.equals(permission)) {
-                    return getWindowPermissionIntent(context);
-                } else if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
-                    return getNotifyPermissionIntent(context);
-                } else if (Permission.WRITE_SETTINGS.equals(permission)) {
-                    return getSettingPermissionIntent(context);
-                } else {
-                    return getApplicationDetailsIntent(context);
                 }
-            } else if (deniedPermissions.size() == 3) {
+
+                if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission)) {
+                    return getInstallPermissionIntent(context);
+                }
+
+                if (Permission.SYSTEM_ALERT_WINDOW.equals(permission)) {
+                    return getWindowPermissionIntent(context);
+                }
+
+                if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
+                    return getNotifyPermissionIntent(context);
+                }
+
+                if (Permission.WRITE_SETTINGS.equals(permission)) {
+                    return getSettingPermissionIntent(context);
+                }
+
+                return getApplicationDetailsIntent(context);
+            }
+
+            if (deniedPermissions.size() == 3) {
+
                 if (deniedPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) &&
                         deniedPermissions.contains(Permission.READ_EXTERNAL_STORAGE) &&
                         deniedPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE)) {
+
                     if (PermissionUtils.isAndroid11()) {
                         return getStoragePermissionIntent(context);
-                    } else {
-                        return PermissionDetailsPage.getIntent(context);
                     }
+
+                    return PermissionDetailsPage.getIntent(context);
                 }
             }
 
             return PermissionSettingPage.getApplicationDetailsIntent(context);
-        } else {
-            return PermissionDetailsPage.getIntent(context);
         }
+
+        return PermissionDetailsPage.getIntent(context);
     }
 
     /**

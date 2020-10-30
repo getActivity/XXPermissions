@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 11
         targetSdkVersion 23
-        versionCode 88
-        versionName "8.8"
+        versionCode 90
+        versionName "9.0"
     }
 
     lintOptions {
@@ -20,7 +20,7 @@ publish {
     userOrg = 'getactivity'
     groupId = 'com.hjq'
     artifactId = 'xxpermissions'
-    version = '8.8'
+    version = '9.0'
     description = 'Android 6.0 permissions adaptation framework'
     website = "https://github.com/getActivity/XXPermissions"
 }

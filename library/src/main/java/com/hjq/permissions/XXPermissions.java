@@ -2,6 +2,7 @@ package com.hjq.permissions;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import java.util.List;
  *    desc   : Android 危险权限请求类
  */
 public final class XXPermissions {
+
+    public static final int REQUEST_CODE = 1024;
 
     /** 调试模式 */
     private static Boolean sDebugMode;
@@ -29,6 +32,10 @@ public final class XXPermissions {
      */
     private XXPermissions(Activity activity) {
         mActivity = activity;
+    }
+
+    public static XXPermissions with(Context context) {
+        return with(PermissionUtils.getActivity(context));
     }
 
     /**
@@ -92,20 +99,14 @@ public final class XXPermissions {
      * 请求权限
      */
     public void request(OnPermission callback) {
-        if (callback == null) {
-            throw new IllegalArgumentException("The permission request callback interface must be implemented");
+        // 如果传入 Activity 为空或者 Activity 状态非法则直接屏蔽这次权限申请
+        if (mActivity == null || mActivity.isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mActivity.isDestroyed())) {
+            return;
         }
 
+        // 必须要传入权限或者权限组才能申请权限
         if (mPermissions == null || mPermissions.isEmpty()) {
             throw new IllegalArgumentException("The requested permission cannot be empty");
-        }
-
-        if (mActivity == null) {
-            throw new IllegalArgumentException("The activity is empty");
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mActivity.isDestroyed()) {
-            throw new IllegalStateException("The activity has been destroyed");
         }
 
         if (sDebugMode == null) {
@@ -113,24 +114,25 @@ public final class XXPermissions {
         }
 
         // 优化所申请的权限列表
-        PermissionUtils.optimizePermission(mPermissions);
+        PermissionUtils.optimizeDeprecatedPermission(mPermissions);
 
         if (sDebugMode) {
             // 检测所申请的权限和 targetSdk 版本是否符合要求
             PermissionUtils.checkTargetSdkVersion(mActivity, mPermissions);
+            // 检测权限有没有在清单文件中注册
+            PermissionUtils.checkPermissionManifest(mActivity, mPermissions);
         }
 
         if (PermissionUtils.isPermissionGranted(mActivity, mPermissions)) {
-            // 证明权限已经全部授予过
-            callback.hasPermission(mPermissions, true);
-        } else {
-            if (sDebugMode) {
-                // 检测权限有没有在清单文件中注册
-                PermissionUtils.checkPermissionManifest(mActivity, mPermissions);
+            // 证明这些权限已经全部授予过，直接回调成功
+            if (callback != null) {
+                callback.hasPermission(mPermissions, true);
             }
-            // 申请没有授予过的权限
-            PermissionFragment.newInstance((new ArrayList<>(mPermissions))).prepareRequest(mActivity, callback);
+            return;
         }
+
+        // 申请没有授予过的权限
+        PermissionFragment.beginRequest(mActivity, new ArrayList<>(mPermissions), callback);
     }
 
     /**
@@ -173,13 +175,18 @@ public final class XXPermissions {
      * 跳转到应用详情页
      */
     public static void startApplicationDetails(Context context) {
-        context.startActivity(PermissionSettingPage.getApplicationDetailsIntent(context));
+        Activity activity = PermissionUtils.getActivity(context);
+        if (activity != null) {
+            startApplicationDetails(activity);
+            return;
+        }
+        Intent intent = PermissionSettingPage.getApplicationDetailsIntent(context);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 
-    public static int startApplicationDetails(Activity activity) {
-        int requestCode = PermissionUtils.getRandomRequestCode();
-        activity.startActivityForResult(PermissionSettingPage.getApplicationDetailsIntent(activity), requestCode);
-        return requestCode;
+    public static void startApplicationDetails(Activity activity) {
+        activity.startActivityForResult(PermissionSettingPage.getApplicationDetailsIntent(activity), REQUEST_CODE);
     }
 
     /**
@@ -187,21 +194,36 @@ public final class XXPermissions {
      *
      * @param deniedPermissions           没有授予或者被拒绝的权限组
      */
+    public static void startPermissionActivity(Context context, String... deniedPermissions) {
+        startPermissionActivity(context, PermissionUtils.asArrayList(deniedPermissions));
+    }
+
     public static void startPermissionActivity(Context context, List<String> deniedPermissions) {
+        Activity activity = PermissionUtils.getActivity(context);
+        if (activity != null) {
+            startPermissionActivity(activity, deniedPermissions);
+            return;
+        }
         try {
-            context.startActivity(PermissionSettingPage.getSmartPermissionIntent(context, deniedPermissions));
+            Intent intent = PermissionSettingPage.getSmartPermissionIntent(context, deniedPermissions);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
         } catch (Exception ignored) {
-            context.startActivity(PermissionSettingPage.getApplicationDetailsIntent(context));
+            Intent intent = PermissionSettingPage.getApplicationDetailsIntent(context);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
         }
     }
 
-    public static int startPermissionActivity(Activity activity, List<String> deniedPermissions) {
-        int requestCode = PermissionUtils.getRandomRequestCode();
+    public static void startPermissionActivity(Activity activity, String... deniedPermission) {
+        startPermissionActivity(activity, PermissionUtils.asArrayList(deniedPermission));
+    }
+
+    public static void startPermissionActivity(Activity activity, List<String> deniedPermissions) {
         try {
-            activity.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, deniedPermissions), requestCode);
+            activity.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, deniedPermissions), REQUEST_CODE);
         } catch (Exception ignored) {
-            activity.startActivityForResult(PermissionSettingPage.getApplicationDetailsIntent(activity), requestCode);
+            activity.startActivityForResult(PermissionSettingPage.getApplicationDetailsIntent(activity), REQUEST_CODE);
         }
-        return requestCode;
     }
 }
