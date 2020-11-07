@@ -16,6 +16,7 @@ import java.util.List;
  */
 public final class XXPermissions {
 
+    /** 权限设置页跳转请求码 */
     public static final int REQUEST_CODE = 1024;
 
     /** 调试模式 */
@@ -89,7 +90,7 @@ public final class XXPermissions {
     public XXPermissions permission(List<String> permissions) {
         if (mPermissions == null) {
             mPermissions = permissions;
-        }else {
+        } else {
             mPermissions.addAll(permissions);
         }
         return this;
@@ -100,7 +101,8 @@ public final class XXPermissions {
      */
     public void request(OnPermission callback) {
         // 如果传入 Activity 为空或者 Activity 状态非法则直接屏蔽这次权限申请
-        if (mActivity == null || mActivity.isFinishing() || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mActivity.isDestroyed())) {
+        if (mActivity == null || mActivity.isFinishing() ||
+                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mActivity.isDestroyed())) {
             return;
         }
 
@@ -204,15 +206,9 @@ public final class XXPermissions {
             startPermissionActivity(activity, deniedPermissions);
             return;
         }
-        try {
-            Intent intent = PermissionSettingPage.getSmartPermissionIntent(context, deniedPermissions);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
-        } catch (Exception ignored) {
-            Intent intent = PermissionSettingPage.getApplicationDetailsIntent(context);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
-        }
+        Intent intent = PermissionSettingPage.getSmartPermissionIntent(context, deniedPermissions);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 
     public static void startPermissionActivity(Activity activity, String... deniedPermission) {
@@ -220,10 +216,6 @@ public final class XXPermissions {
     }
 
     public static void startPermissionActivity(Activity activity, List<String> deniedPermissions) {
-        try {
-            activity.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, deniedPermissions), REQUEST_CODE);
-        } catch (Exception ignored) {
-            activity.startActivityForResult(PermissionSettingPage.getApplicationDetailsIntent(activity), REQUEST_CODE);
-        }
+        activity.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, deniedPermissions), REQUEST_CODE);
     }
 }

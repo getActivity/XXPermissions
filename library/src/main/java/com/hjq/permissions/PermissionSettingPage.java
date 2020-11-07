@@ -62,14 +62,14 @@ final class PermissionSettingPage {
                         return getStoragePermissionIntent(context);
                     }
 
-                    return PermissionDetailsPage.getIntent(context);
+                    return PermissionSettingPage.getApplicationDetailsIntent(context);
                 }
             }
 
             return PermissionSettingPage.getApplicationDetailsIntent(context);
         }
 
-        return PermissionDetailsPage.getIntent(context);
+        return PermissionSettingPage.getApplicationDetailsIntent(context);
     }
 
     /**

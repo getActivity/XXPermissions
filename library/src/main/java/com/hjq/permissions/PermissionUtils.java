@@ -28,24 +28,10 @@ import java.util.Random;
 final class PermissionUtils {
 
     /**
-     * 是否是 Android 6.0 及以上版本
+     * 是否是 Android 11.0 及以上版本
      */
-    static boolean isAndroid6() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
-    }
-
-    /**
-     * 是否是 Android 7.0 及以上版本
-     */
-    static boolean isAndroid7() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
-    }
-
-    /**
-     * 是否是 Android 8.0 及以上版本
-     */
-    static boolean isAndroid8() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    static boolean isAndroid11() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
     }
 
     /**
@@ -56,10 +42,24 @@ final class PermissionUtils {
     }
 
     /**
-     * 是否是 Android 11.0 及以上版本
+     * 是否是 Android 8.0 及以上版本
      */
-    static boolean isAndroid11() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
+    static boolean isAndroid8() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    }
+
+    /**
+     * 是否是 Android 7.0 及以上版本
+     */
+    static boolean isAndroid7() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
+    }
+
+    /**
+     * 是否是 Android 6.0 及以上版本
+     */
+    static boolean isAndroid6() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
     }
 
     /**

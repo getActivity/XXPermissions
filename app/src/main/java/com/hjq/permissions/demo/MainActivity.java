@@ -112,9 +112,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             @Override
                             public void noPermission(List<String> denied, boolean never) {
                                 if (never) {
-                                    toast("被永久拒绝授权，请手动授予拍照权限");
+                                    toast("被永久拒绝授权，请手动授予定位权限");
                                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
                                     XXPermissions.startPermissionActivity(MainActivity.this, denied);
+                                    return;
+                                }
+
+                                if (denied.size() == 1 && Permission.ACCESS_BACKGROUND_LOCATION.equals(denied.get(0))) {
+                                    toast("没有授予后台定位权限，请您选择\"始终允许\"");
                                 } else {
                                     toast("获取定位权限失败");
                                 }
