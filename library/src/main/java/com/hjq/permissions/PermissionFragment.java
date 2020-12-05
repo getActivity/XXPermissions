@@ -1,13 +1,12 @@
 package com.hjq.permissions;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.util.SparseBooleanArray;
 
 import java.util.ArrayList;
@@ -19,11 +18,9 @@ import java.util.List;
  *    time   : 2018/06/15
  *    desc   : 权限请求处理类
  */
-@SuppressLint("ValidFragment")
-@TargetApi(Build.VERSION_CODES.M)
 public final class PermissionFragment extends Fragment {
 
-    /** 请求的权限 */
+    /** 请求的权限组 */
     private static final String PERMISSION_GROUP = "permission_group";
 
     /** 请求码（自动生成） */
@@ -35,8 +32,8 @@ public final class PermissionFragment extends Fragment {
     /**
      * 开启权限申请
      */
-    public static void beginRequest(Activity activity, ArrayList<String> permissions, OnPermission callback) {
-        PermissionFragment fragment = new PermissionFragment(callback);
+    public static void beginRequest(FragmentActivity activity, ArrayList<String> permissions, OnPermissionCallback callback) {
+        PermissionFragment fragment = new PermissionFragment();
         Bundle bundle = new Bundle();
         int requestCode;
         // 请求码随机生成，避免随机产生之前的请求码，必须进行循环判断
@@ -50,13 +47,18 @@ public final class PermissionFragment extends Fragment {
         fragment.setArguments(bundle);
         // 设置保留实例，不会因为配置变化而重新创建
         fragment.setRetainInstance(true);
-        addFragment(activity.getFragmentManager(), fragment);
+        // 设置权限回调监听
+        fragment.setCallBack(callback);
+        addFragment(activity.getSupportFragmentManager(), fragment);
     }
 
     /**
      * 添加 Fragment
      */
     public static void addFragment(FragmentManager manager, Fragment fragment) {
+        if (manager == null) {
+            return;
+        }
         manager.beginTransaction().add(fragment, fragment.toString()).commitAllowingStateLoss();
     }
 
@@ -64,6 +66,9 @@ public final class PermissionFragment extends Fragment {
      * 移除 Fragment
      */
     public static void removeFragment(FragmentManager manager, Fragment fragment) {
+        if (manager == null) {
+            return;
+        }
         manager.beginTransaction().remove(fragment).commitAllowingStateLoss();
     }
 
@@ -74,14 +79,12 @@ public final class PermissionFragment extends Fragment {
     private boolean mDangerousRequest;
 
     /** 权限回调对象 */
-    private OnPermission mCallBack;
+    private OnPermissionCallback mCallBack;
 
-    public PermissionFragment() {
-        super();
-    }
-
-    public PermissionFragment(OnPermission callback) {
-        super();
+    /**
+     * 设置权限监听回调监听
+     */
+    public void setCallBack(OnPermissionCallback callback) {
         mCallBack = callback;
     }
 
@@ -113,22 +116,26 @@ public final class PermissionFragment extends Fragment {
      * 申请危险权限
      */
     public void requestDangerousPermission() {
-        final ArrayList<String> allPermissions = getArguments().getStringArrayList(PERMISSION_GROUP);
+        Bundle arguments = getArguments();
+        if (arguments == null) {
+            return;
+        }
+        final ArrayList<String> allPermissions = arguments.getStringArrayList(PERMISSION_GROUP);
         if (allPermissions == null || allPermissions.size() == 0) {
             return;
         }
 
         ArrayList<String> locationPermission = null;
-        // Android 11 定位策略发生改变，申请后台定位权限的前提是要有前台定位权限（授予了精确或者模糊任一权限）
-        if (PermissionUtils.isAndroid11() && allPermissions.contains(Permission.ACCESS_BACKGROUND_LOCATION)) {
+        // Android 10 定位策略发生改变，申请后台定位权限的前提是要有前台定位权限（授予了精确或者模糊任一权限）
+        if (PermissionUtils.isAndroid10() && allPermissions.contains(Permission.ACCESS_BACKGROUND_LOCATION)) {
             locationPermission = new ArrayList<>();
             if (allPermissions.contains(Permission.ACCESS_COARSE_LOCATION) &&
-                    !PermissionUtils.isPermissionGranted(getActivity(), Permission.ACCESS_COARSE_LOCATION)) {
+                    !PermissionUtils.isGrantedPermission(getActivity(), Permission.ACCESS_COARSE_LOCATION)) {
                 locationPermission.add(Permission.ACCESS_COARSE_LOCATION);
             }
 
             if (allPermissions.contains(Permission.ACCESS_FINE_LOCATION) &&
-                    !PermissionUtils.isPermissionGranted(getActivity(), Permission.ACCESS_FINE_LOCATION)) {
+                    !PermissionUtils.isGrantedPermission(getActivity(), Permission.ACCESS_FINE_LOCATION)) {
                 locationPermission.add(Permission.ACCESS_FINE_LOCATION);
             }
         }
@@ -139,19 +146,36 @@ public final class PermissionFragment extends Fragment {
             return;
         }
 
-        // 先申请前台定位权限，再申请后台定位权限
-        PermissionFragment.beginRequest(getActivity(), locationPermission, new OnPermission() {
+        FragmentActivity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        // 在 Android 10 的机型上，需要先申请前台定位权限，再申请后台定位权限
+        PermissionFragment.beginRequest(activity, locationPermission, new OnPermissionCallback() {
 
             @Override
-            public void hasPermission(List<String> granted, boolean all) {
-                if (all && isAdded()) {
-                    requestPermissions(allPermissions.toArray(new String[allPermissions.size() - 1]), getArguments().getInt(REQUEST_CODE));
+            public void onGranted(List<String> permissions, boolean all) {
+                if (!all || !isAdded()) {
+                    return;
                 }
+                Bundle arguments = getArguments();
+                if (arguments == null) {
+                    return;
+                }
+                requestPermissions(allPermissions.toArray(new String[allPermissions.size() - 1]), arguments.getInt(REQUEST_CODE));
             }
 
             @Override
-            public void noPermission(List<String> denied, boolean never) {
-                requestPermissions(allPermissions.toArray(new String[allPermissions.size() - 1]), getArguments().getInt(REQUEST_CODE));
+            public void onDenied(List<String> permissions, boolean never) {
+                if (!isAdded()) {
+                    return;
+                }
+                Bundle arguments = getArguments();
+                if (arguments == null) {
+                    return;
+                }
+                requestPermissions(allPermissions.toArray(new String[allPermissions.size() - 1]), arguments.getInt(REQUEST_CODE));
             }
         });
     }
@@ -160,7 +184,11 @@ public final class PermissionFragment extends Fragment {
      * 申请特殊权限
      */
     public void requestSpecialPermission() {
-        List<String> permissions = getArguments().getStringArrayList(PERMISSION_GROUP);
+        Bundle arguments = getArguments();
+        if (arguments == null) {
+            return;
+        }
+        List<String> permissions = arguments.getStringArrayList(PERMISSION_GROUP);
 
         // 是否需要申请特殊权限
         boolean requestSpecialPermission = false;
@@ -168,7 +196,7 @@ public final class PermissionFragment extends Fragment {
         // 判断当前是否包含特殊权限
         if (PermissionUtils.containsSpecialPermission(permissions)) {
 
-            if (permissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) && !PermissionUtils.hasStoragePermission(getActivity())) {
+            if (permissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) && !PermissionUtils.isGrantedStoragePermission(getActivity())) {
                 // 当前必须是 Android 11 及以上版本，因为 hasStoragePermission 在旧版本上是拿旧权限做的判断，所以这里需要多判断一次版本
                 if (PermissionUtils.isAndroid11()) {
                     // 跳转到存储权限设置界面
@@ -177,25 +205,25 @@ public final class PermissionFragment extends Fragment {
                 }
             }
 
-            if (permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.hasInstallPermission(getActivity())) {
+            if (permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.isGrantedInstallPermission(getActivity())) {
                 // 跳转到安装权限设置界面
                 startActivityForResult(PermissionSettingPage.getInstallPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
                 requestSpecialPermission = true;
             }
 
-            if (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.hasWindowPermission(getActivity())) {
+            if (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.isGrantedWindowPermission(getActivity())) {
                 // 跳转到悬浮窗设置页面
                 startActivityForResult(PermissionSettingPage.getWindowPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
                 requestSpecialPermission = true;
             }
 
-            if (permissions.contains(Permission.NOTIFICATION_SERVICE) && !PermissionUtils.hasNotifyPermission(getActivity())) {
+            if (permissions.contains(Permission.NOTIFICATION_SERVICE) && !PermissionUtils.isGrantedNotifyPermission(getActivity())) {
                 // 跳转到通知栏权限设置页面
                 startActivityForResult(PermissionSettingPage.getNotifyPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
                 requestSpecialPermission = true;
             }
 
-            if (permissions.contains(Permission.WRITE_SETTINGS) && !PermissionUtils.hasSettingPermission(getActivity())) {
+            if (permissions.contains(Permission.WRITE_SETTINGS) && !PermissionUtils.isGrantedSettingPermission(getActivity())) {
                 // 跳转到系统设置权限设置页面
                 startActivityForResult(PermissionSettingPage.getSettingPermissionIntent(getActivity()), getArguments().getInt(REQUEST_CODE));
                 requestSpecialPermission = true;
@@ -210,11 +238,16 @@ public final class PermissionFragment extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode != getArguments().getInt(REQUEST_CODE)) {
+        Bundle arguments = getArguments();
+        if (arguments == null) {
             return;
         }
 
-        OnPermission callBack = mCallBack;
+        if (requestCode != arguments.getInt(REQUEST_CODE)) {
+            return;
+        }
+
+        OnPermissionCallback callBack = mCallBack;
         mCallBack = null;
 
         // 根据请求码取出的对象为空，就直接返回不处理
@@ -266,43 +299,49 @@ public final class PermissionFragment extends Fragment {
         removeFragment(getFragmentManager(), this);
 
         // 获取已授予的权限
-        List<String> grantedPermission = PermissionUtils.getGrantedPermission(permissions, grantResults);
+        List<String> grantedPermission = PermissionUtils.getGrantedPermissions(permissions, grantResults);
 
         // 如果请求成功的权限集合大小和请求的数组一样大时证明权限已经全部授予
         if (grantedPermission.size() == permissions.length) {
             // 代表申请的所有的权限都授予了
-            callBack.hasPermission(grantedPermission, true);
+            callBack.onGranted(grantedPermission, true);
             return;
         }
 
         // 获取被拒绝的权限
-        List<String> deniedPermission = PermissionUtils.getDeniedPermission(permissions, grantResults);
+        List<String> deniedPermission = PermissionUtils.getDeniedPermissions(permissions, grantResults);
 
         // 代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回 true 给开发人员，让开发者引导用户去设置界面开启权限
-        callBack.noPermission(deniedPermission, PermissionUtils.isPermissionPermanentDenied(getActivity(), deniedPermission));
+        callBack.onDenied(deniedPermission, PermissionUtils.isPermissionPermanentDenied(getActivity(), deniedPermission));
 
         // 证明还有一部分权限被成功授予，回调成功接口
         if (!grantedPermission.isEmpty()) {
-            callBack.hasPermission(grantedPermission, false);
+            callBack.onGranted(grantedPermission, false);
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!mDangerousRequest && requestCode == getArguments().getInt(REQUEST_CODE)) {
+        Bundle arguments = getArguments();
+        if (arguments == null) {
+            return;
+        }
+
+        if (!mDangerousRequest && requestCode == arguments.getInt(REQUEST_CODE)) {
             mDangerousRequest = true;
             // 需要延迟执行，不然有些华为机型授权了但是获取不到权限
-            getActivity().getWindow().getDecorView().postDelayed(new Runnable() {
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
 
                 @Override
                 public void run() {
                     // 如果用户离开太久，会导致 Activity 被回收掉
                     // 所以这里要判断当前 Fragment 是否有被添加到 Activity
                     // 可在开发者模式中开启不保留活动来复现这个 Bug
-                    if (isAdded()) {
-                        // 请求其他危险权限
-                        requestDangerousPermission();
+                    if (!isAdded()) {
+                        return;
                     }
+                    // 请求其他危险权限
+                    requestDangerousPermission();
                 }
             }, 300);
         }

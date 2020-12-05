@@ -2,7 +2,9 @@
 
 * 码云地址：[Gitee](https://gitee.com/getActivity/XXPermissions)
 
-* [点击此处下载Demo](XXPermissions.apk)，[博文地址：一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
+* [博文地址：一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
+
+* [点击此处下载Demo](XXPermissions.apk)
 
 * 另外想对 Android 6.0 权限需要深入了解的，可以看这篇文章[Android 6.0 运行权限解析](https://www.jianshu.com/p/6a4dff744031)
 
@@ -14,7 +16,7 @@
 ```groovy
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.hjq:xxpermissions:9.2'
+    implementation 'com.hjq:xxpermissions:9.5'
 }
 ```
 
@@ -34,10 +36,10 @@ XXPermissions.with(this)
         .permission(Permission.RECORD_AUDIO)
         // 申请多个权限
         .permission(Permission.Group.CALENDAR)
-        .request(new OnPermission() {
+        .request(new OnPermissionCallback() {
 
             @Override
-            public void hasPermission(List<String> granted, boolean all) {
+            public void onGranted(List<String> granted, boolean all) {
                 if (all) {
                     toast("获取录音和日历权限成功");
                 } else {
@@ -46,7 +48,7 @@ XXPermissions.with(this)
             }
 
             @Override
-            public void noPermission(List<String> denied, boolean never) {
+            public void onDenied(List<String> denied, boolean never) {
                 if (never) {
                     toast("被永久拒绝授权，请手动授予录音和日历权限");
                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
@@ -66,8 +68,8 @@ public class XxxActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == XXPermissions.REQUEST_CODE) {
-            if (XXPermissions.hasPermission(this, Permission.RECORD_AUDIO) &&
-                    XXPermissions.hasPermission(this, Permission.Group.CALENDAR)) {
+            if (XXPermissions.isGrantedPermission(this, Permission.RECORD_AUDIO) &&
+                    XXPermissions.isGrantedPermission(this, Permission.Group.CALENDAR)) {
                 toast("用户已经在权限设置页授予了录音和日历权限");
             } else {
                 toast("用户没有在权限设置页授予权限");
@@ -79,14 +81,13 @@ public class XxxActivity extends AppCompatActivity {
 
 #### 关于权限监听回调参数说明
 
-* 我们都知道，如果用户全部授予只会调用 `hasPermission` 方法，如果用户全部拒绝只会调用 `noPermission` 方法。
+* 我们都知道，如果用户全部授予只会调用 `onGranted` 方法，如果用户全部拒绝只会调用 `onDenied` 方法。
 
 * 但是还有一种情况，如果在请求多组权限的情况下，这些权限不是被全部授予或者全部拒绝了，而是部分授权部分拒绝这种情况，框架会如何处理回调呢？
 
-* 框架会先调用 `noPermission` 方法，再调用 `hasPermission` 方法。其中我们可以通过 `hasPermission` 方法中的 `all` 参数来判断权限是否全部授予了。
+* 框架会先调用 `onDenied` 方法，再调用 `onGranted` 方法。其中我们可以通过 `onGranted` 方法中的 `all` 参数来判断权限是否全部授予了。
 
 * 如果想知道回调中的某个权限是否被授权或者拒绝，可以调用 `List` 类中的 `contains(Permission.XXX)` 方法来判断这个集合中是否包含了这个权限。
-
 
 #### Android 11 定位权限适配
 
@@ -134,17 +135,17 @@ XXPermissions.with(MainActivity.this)
         //.permission(Permission.Group.STORAGE)
         // 适配 Android 11 需要这样写，这里无需再写 Permission.Group.STORAGE
         .permission(Permission.MANAGE_EXTERNAL_STORAGE)
-        .request(new OnPermission() {
+        .request(new OnPermissionCallback() {
 
             @Override
-            public void hasPermission(List<String> granted, boolean all) {
+            public void onGranted(List<String> granted, boolean all) {
                 if (all) {
                     toast("获取存储权限成功");
                 }
             }
 
             @Override
-            public void noPermission(List<String> denied, boolean never) {
+            public void onDenied(List<String> denied, boolean never) {
                 if (never) {
                     toast("被永久拒绝授权，请手动授予存储权限");
                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
@@ -165,8 +166,7 @@ XXPermissions.with(MainActivity.this)
 |    对应版本  |  9.0 |  2.0.3  |  0.12   |   4.8.0  |  3.0.0   |  1.4.0    |
 |    minSdk 要求  |  API 11+ |  API 14+  |  API 14+   |   API 14+   |  API 14+   |  API 15+    |
 |    class 文件数量  |  7 个  | 110 个  |  3 个  |   37 个  |   15 个  |  16 个   |
-|    aar 包大小  |  [19 KB](https://bintray.com/getactivity/maven/xxpermissions#files/com/hjq/xxpermissions)  | [127 KB](https://mvnrepository.com/artifact/com.yanzhenjie/permission)  |  [28 KB](https://jitpack.io/#com.github.tbruyelle/rxpermissions)  |   [22 KB](https://bintray.com/hotchemi/org.permissionsdispatcher/permissionsdispatcher#files/org/permissionsdispatcher/permissionsdispatcher)  |  [48 KB](https://bintray.com/easygoogle/EasyPermissions/easypermissions#files/pub/devrel/easypermissions)   |   [32 KB](https://bintray.com/guolindev/maven/permissionx#files/com/permissionx/guolindev/permissionx)  |
-|   是否有依赖  |  无任何依赖  | 依赖 Support  |  依赖 AndroidX 和 RxJava |  依赖 AndroidX   |   依赖 AndroidX  |   依赖 AndroidX  |
+|    aar 包大小  |  [21 KB](https://bintray.com/getactivity/maven/xxpermissions#files/com/hjq/xxpermissions)  | [127 KB](https://mvnrepository.com/artifact/com.yanzhenjie/permission)  |  [28 KB](https://jitpack.io/#com.github.tbruyelle/rxpermissions)  |   [22 KB](https://bintray.com/hotchemi/org.permissionsdispatcher/permissionsdispatcher#files/org/permissionsdispatcher/permissionsdispatcher)  |  [48 KB](https://bintray.com/easygoogle/EasyPermissions/easypermissions#files/pub/devrel/easypermissions)   |   [32 KB](https://bintray.com/guolindev/maven/permissionx#files/com/permissionx/guolindev/permissionx)  |
 |   安装包权限   |  支持  |  支持  |  不支持  |  不支持   |  不支持   |  不支持   |
 |   悬浮窗权限   |  支持  |  支持  |  不支持  |  不支持   |  不支持   |  不支持   |
 |   通知栏权限   |  支持  |  出现崩溃  |  不支持  |  不支持   |   不支持  |  不支持   |
@@ -178,7 +178,7 @@ XXPermissions.with(MainActivity.this)
 
 #### 框架亮点
 
-* 第一款适配 Android 11 的权限请求框架，适配过程几乎零成本
+* 首款适配 Android 11 的权限请求框架，适配过程几乎零成本
 
 * 简洁易用，采用链式调用的方式，使用只需一句代码
 
@@ -190,7 +190,7 @@ XXPermissions.with(MainActivity.this)
 
 * 向下兼容属性，新权限在旧系统可以正常申请，无需调用者适配
 
-* 本框架不依赖任何第三方库，整个框架大小不到 20 kb（在同类框架中排名第一）
+* 本框架不依赖任何第三方库，整个框架大小只有 21 kb（是同类框架中体积最小的）
 
 * 如果申请的权限没有在清单文件中注册会抛出异常（仅在 Debug 模式下判断）
 
@@ -226,7 +226,9 @@ XXPermissions.with(MainActivity.this)
 
 ![](picture/miui_4.jpg)
 
-* 这个功能的出发点是好的，但是我们没办法做好它，经过慎重考虑，决定将这个功能在 XXPermissions 9.2 版本上面移除。
+* 另外值得一提的是 [Android 11 对软件包可见性进行了限制](https://developer.android.google.cn/about/versions/11/privacy/package-visibility)，所以这种跳包名的方式在未来将会完全不可行。
+
+* 最终决定：这个功能的出发点是好的，但是我们没办法做好它，经过慎重考虑，决定将这个功能在 XXPermissions 9.2 版本及之后的版本进行移除。
 
 #### 作者的其他开源项目
 
@@ -243,6 +245,8 @@ XXPermissions.with(MainActivity.this)
 * 国际化框架：[MultiLanguages](https://github.com/getActivity/MultiLanguages)
 
 * 悬浮窗框架：[XToast](https://github.com/getActivity/XToast)
+
+* Gson 解析容错：[GsonFactory](https://github.com/getActivity/GsonFactory)
 
 #### Android技术讨论Q群：78797078
 

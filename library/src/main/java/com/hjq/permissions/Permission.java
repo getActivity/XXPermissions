@@ -32,7 +32,7 @@ public final class Permission {
     /**
      * 读取外部存储
      *
-     * @deprecated         在 Android 11 已经废弃，请直接使用 {@link Permission#MANAGE_EXTERNAL_STORAGE}
+     * @deprecated         在 Android 11 已经废弃，请使用 {@link Permission#MANAGE_EXTERNAL_STORAGE}
      */
     @Deprecated
     public static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
@@ -40,7 +40,7 @@ public final class Permission {
     /**
      * 写入外部存储
      *
-     * @deprecated         在 Android 11 已经废弃，请直接使用 {@link Permission#MANAGE_EXTERNAL_STORAGE}
+     * @deprecated         在 Android 11 已经废弃，请使用 {@link Permission#MANAGE_EXTERNAL_STORAGE}
      */
     @Deprecated
     public static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";

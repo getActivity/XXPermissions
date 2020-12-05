@@ -90,7 +90,7 @@ final class PermissionSettingPage {
             intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
             intent.setData(Uri.parse("package:" + context.getPackageName()));
         }
-        if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
+        if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;
@@ -106,7 +106,7 @@ final class PermissionSettingPage {
             intent.setData(Uri.parse("package:" + context.getPackageName()));
         }
 
-        if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
+        if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;
@@ -122,7 +122,7 @@ final class PermissionSettingPage {
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
             //intent.putExtra(Settings.EXTRA_CHANNEL_ID, context.getApplicationInfo().uid);
         }
-        if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
+        if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;
@@ -137,7 +137,7 @@ final class PermissionSettingPage {
             intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
             intent.setData(Uri.parse("package:" + context.getPackageName()));
         }
-        if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
+        if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;
@@ -152,7 +152,7 @@ final class PermissionSettingPage {
             intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
             intent.setData(Uri.parse("package:" + context.getPackageName()));
         }
-        if (intent == null || !PermissionUtils.hasActivityIntent(context, intent)) {
+        if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;

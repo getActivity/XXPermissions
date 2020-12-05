@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
+import android.support.v4.app.FragmentActivity;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -28,14 +29,14 @@ import java.util.Random;
 final class PermissionUtils {
 
     /**
-     * 是否是 Android 11.0 及以上版本
+     * 是否是 Android 11 及以上版本
      */
     static boolean isAndroid11() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
     }
 
     /**
-     * 是否是 Android 10.0 及以上版本
+     * 是否是 Android 10 及以上版本
      */
     static boolean isAndroid10() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
@@ -84,17 +85,17 @@ final class PermissionUtils {
     /**
      * 是否有存储权限
      */
-    static boolean hasStoragePermission(Context context) {
+    static boolean isGrantedStoragePermission(Context context) {
         if (isAndroid11()) {
             return Environment.isExternalStorageManager();
         }
-        return XXPermissions.hasPermission(context, Permission.Group.STORAGE);
+        return XXPermissions.isGrantedPermission(context, Permission.Group.STORAGE);
     }
 
     /**
      * 是否有安装权限
      */
-    static boolean hasInstallPermission(Context context) {
+    static boolean isGrantedInstallPermission(Context context) {
         if (isAndroid8()) {
             return context.getPackageManager().canRequestPackageInstalls();
         }
@@ -104,7 +105,7 @@ final class PermissionUtils {
     /**
      * 是否有悬浮窗权限
      */
-    static boolean hasWindowPermission(Context context) {
+    static boolean isGrantedWindowPermission(Context context) {
         if (isAndroid6()) {
             return Settings.canDrawOverlays(context);
         }
@@ -114,7 +115,7 @@ final class PermissionUtils {
     /**
      * 是否有通知栏权限
      */
-    static boolean hasNotifyPermission(Context context) {
+    static boolean isGrantedNotifyPermission(Context context) {
         if (isAndroid7()) {
             return context.getSystemService(NotificationManager.class).areNotificationsEnabled();
         }
@@ -125,7 +126,7 @@ final class PermissionUtils {
             try {
                 Method method = appOps.getClass().getMethod("checkOpNoThrow", Integer.TYPE, Integer.TYPE, String.class);
                 Field field = appOps.getClass().getDeclaredField("OP_POST_NOTIFICATION");
-                int value = (Integer) field.get(Integer.class);
+                int value = (int) field.get(Integer.class);
                 return ((int) method.invoke(appOps, value, context.getApplicationInfo().uid, context.getPackageName())) == AppOpsManager.MODE_ALLOWED;
             } catch (NoSuchMethodException | NoSuchFieldException | InvocationTargetException | IllegalAccessException | RuntimeException ignored) {
                 return true;
@@ -138,7 +139,7 @@ final class PermissionUtils {
     /**
      * 是否有系统设置权限
      */
-    static boolean hasSettingPermission(Context context) {
+    static boolean isGrantedSettingPermission(Context context) {
         if (isAndroid6()) {
             return Settings.System.canWrite(context);
         }
@@ -175,14 +176,14 @@ final class PermissionUtils {
     /**
      * 判断某些权限是否全部被授予
      */
-    static boolean isPermissionGranted(Context context, List<String> permissions) {
+    static boolean isGrantedPermission(Context context, List<String> permissions) {
         // 如果是安卓 6.0 以下版本就直接返回 true
         if (!isAndroid6()) {
             return true;
         }
 
         for (String permission : permissions) {
-            if (!isPermissionGranted(context, permission)) {
+            if (!isGrantedPermission(context, permission)) {
                 return false;
             }
         }
@@ -193,7 +194,7 @@ final class PermissionUtils {
     /**
      * 判断某个权限是否授予
      */
-    static boolean isPermissionGranted(Context context, String permission) {
+    static boolean isGrantedPermission(Context context, String permission) {
         // 如果是安卓 6.0 以下版本就默认授予
         if (!isAndroid6()) {
             return true;
@@ -201,27 +202,27 @@ final class PermissionUtils {
 
         // 检测存储权限
         if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) {
-            return hasStoragePermission(context);
+            return isGrantedStoragePermission(context);
         }
 
         // 检测安装权限
         if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission)) {
-            return hasInstallPermission(context);
+            return isGrantedInstallPermission(context);
         }
 
         // 检测悬浮窗权限
         if (Permission.SYSTEM_ALERT_WINDOW.equals(permission)) {
-            return hasWindowPermission(context);
+            return isGrantedWindowPermission(context);
         }
 
         // 检测通知栏权限
         if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
-            return hasNotifyPermission(context);
+            return isGrantedNotifyPermission(context);
         }
 
         // 检测系统权限
         if (Permission.WRITE_SETTINGS.equals(permission)) {
-            return hasSettingPermission(context);
+            return isGrantedSettingPermission(context);
         }
 
         if (!isAndroid10()) {
@@ -257,7 +258,7 @@ final class PermissionUtils {
      *                未授权返回  {@link PackageManager#PERMISSION_DENIED}
      */
     static int getPermissionStatus(Context context, String permission) {
-        return PermissionUtils.isPermissionGranted(context, permission) ?
+        return PermissionUtils.isGrantedPermission(context, permission) ?
                 PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
     }
 
@@ -328,7 +329,7 @@ final class PermissionUtils {
      * @param permissions           需要请求的权限组
      * @param grantResults          允许结果组
      */
-    static List<String> getDeniedPermission(String[] permissions, int[] grantResults) {
+    static List<String> getDeniedPermissions(String[] permissions, int[] grantResults) {
         List<String> deniedPermissions = new ArrayList<>();
         for (int i = 0; i < grantResults.length; i++) {
             // 把没有授予过的权限加入到集合中
@@ -345,7 +346,7 @@ final class PermissionUtils {
      * @param permissions       需要请求的权限组
      * @param grantResults      允许结果组
      */
-    static List<String> getGrantedPermission(String[] permissions, int[] grantResults) {
+    static List<String> getGrantedPermissions(String[] permissions, int[] grantResults) {
         List<String> grantedPermissions = new ArrayList<>();
         for (int i = 0; i < grantResults.length; i++) {
             // 把授予过的权限加入到集合中
@@ -399,7 +400,7 @@ final class PermissionUtils {
     /**
      * 判断这个意图的 Activity 是否存在
      */
-    static boolean hasActivityIntent(Context context, Intent intent) {
+    static boolean areActivityIntent(Context context, Intent intent) {
         return !context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
     }
 
@@ -541,10 +542,10 @@ final class PermissionUtils {
     /**
      * 获取上下文中的 Activity 对象
      */
-    static Activity getActivity(Context context) {
+    static FragmentActivity getFragmentActivity(Context context) {
         do {
-            if (context instanceof Activity) {
-                return (Activity) context;
+            if (context instanceof FragmentActivity) {
+                return (FragmentActivity) context;
             } else if (context instanceof ContextWrapper){
                 context = ((ContextWrapper) context).getBaseContext();
             } else {
