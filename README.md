@@ -16,7 +16,7 @@
 ```groovy
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.hjq:xxpermissions:9.5'
+    implementation 'com.hjq:xxpermissions:9.6'
 }
 ```
 
@@ -39,7 +39,7 @@ XXPermissions.with(this)
         .request(new OnPermissionCallback() {
 
             @Override
-            public void onGranted(List<String> granted, boolean all) {
+            public void onGranted(List<String> permissions, boolean all) {
                 if (all) {
                     toast("获取录音和日历权限成功");
                 } else {
@@ -48,11 +48,11 @@ XXPermissions.with(this)
             }
 
             @Override
-            public void onDenied(List<String> denied, boolean never) {
+            public void onDenied(List<String> permissions, boolean never) {
                 if (never) {
                     toast("被永久拒绝授权，请手动授予录音和日历权限");
                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                    XXPermissions.startPermissionActivity(MainActivity.this, denied);
+                    XXPermissions.startPermissionActivity(MainActivity.this, permissions);
                 } else {
                     toast("获取录音和日历权限失败");
                 }
@@ -130,7 +130,7 @@ android
 * 最后直接调用下面这句代码
 
 ```java
-XXPermissions.with(MainActivity.this)
+XXPermissions.with(this)
         // 不适配 Android 11 可以这样写
         //.permission(Permission.Group.STORAGE)
         // 适配 Android 11 需要这样写，这里无需再写 Permission.Group.STORAGE
@@ -138,18 +138,18 @@ XXPermissions.with(MainActivity.this)
         .request(new OnPermissionCallback() {
 
             @Override
-            public void onGranted(List<String> granted, boolean all) {
+            public void onGranted(List<String> permissions, boolean all) {
                 if (all) {
                     toast("获取存储权限成功");
                 }
             }
 
             @Override
-            public void onDenied(List<String> denied, boolean never) {
+            public void onDenied(List<String> permissions, boolean never) {
                 if (never) {
                     toast("被永久拒绝授权，请手动授予存储权限");
                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                    XXPermissions.startPermissionActivity(MainActivity.this, denied);
+                    XXPermissions.startPermissionActivity(MainActivity.this, permissions);
                 } else {
                     toast("获取存储权限失败");
                 }
@@ -161,24 +161,27 @@ XXPermissions.with(MainActivity.this)
 
 #### 不同权限请求框架之间的对比
 
-|     功能及细节对比    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) | [PermissionX](https://github.com/guolindev/PermissionX) 
+|     功能及细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) | [PermissionX](https://github.com/guolindev/PermissionX)
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  9.0 |  2.0.3  |  0.12   |   4.8.0  |  3.0.0   |  1.4.0    |
+|    对应版本  |  9.6 |  2.0.3  |  0.12   |   4.8.0  |  3.0.0   |  1.4.0    |
 |    minSdk 要求  |  API 11+ |  API 14+  |  API 14+   |   API 14+   |  API 14+   |  API 15+    |
 |    class 文件数量  |  7 个  | 110 个  |  3 个  |   37 个  |   15 个  |  16 个   |
-|    aar 包大小  |  [21 KB](https://bintray.com/getactivity/maven/xxpermissions#files/com/hjq/xxpermissions)  | [127 KB](https://mvnrepository.com/artifact/com.yanzhenjie/permission)  |  [28 KB](https://jitpack.io/#com.github.tbruyelle/rxpermissions)  |   [22 KB](https://bintray.com/hotchemi/org.permissionsdispatcher/permissionsdispatcher#files/org/permissionsdispatcher/permissionsdispatcher)  |  [48 KB](https://bintray.com/easygoogle/EasyPermissions/easypermissions#files/pub/devrel/easypermissions)   |   [32 KB](https://bintray.com/guolindev/maven/permissionx#files/com/permissionx/guolindev/permissionx)  |
-|   安装包权限   |  支持  |  支持  |  不支持  |  不支持   |  不支持   |  不支持   |
-|   悬浮窗权限   |  支持  |  支持  |  不支持  |  不支持   |  不支持   |  不支持   |
-|   通知栏权限   |  支持  |  出现崩溃  |  不支持  |  不支持   |   不支持  |  不支持   |
-|   系统设置权限   |  支持  |  支持  |  不支持  |  不支持   |   不支持  |  不支持   |
-|   Android 8.0 两个新危险权限   |  已适配  |  已适配  |  未适配  |   已适配  |  未适配   |   已适配  |
-|   Android 10.0 三个新危险权限   |  已适配  |  部分适配  |  未适配  |   已适配  |  未适配   |   已适配  |
-|   Android 11 新版存储权限   |  已适配  |  未适配  |  未适配  |   未适配  |  未适配   |   未适配  |
-|   Android 11 新版定位策略   |  已适配  |  未适配  |  未适配  |   未适配  |  未适配   |   未适配  |
+|    aar 包大小  |  [19 KB](https://bintray.com/getactivity/maven/xxpermissions#files/com/hjq/xxpermissions)  | [127 KB](https://mvnrepository.com/artifact/com.yanzhenjie/permission)  |  [28 KB](https://jitpack.io/#com.github.tbruyelle/rxpermissions)  |   [22 KB](https://bintray.com/hotchemi/org.permissionsdispatcher/permissionsdispatcher#files/org/permissionsdispatcher/permissionsdispatcher)  |  [48 KB](https://bintray.com/easygoogle/EasyPermissions/easypermissions#files/pub/devrel/easypermissions)   |   [32 KB](https://bintray.com/guolindev/maven/permissionx#files/com/permissionx/guolindev/permissionx)  |
+|   安装包权限   |  ✅  |  ✅  |  ❌  |  ❌   |  ❌   |  ❌   |
+|   悬浮窗权限   |  ✅  |  ✅  |  ❌  |  ❌   |  ❌   |  ❌   |
+|   通知栏权限   |  ✅  |  ✅  |  ❌  |  ❌   |   ❌  |  ❌   |
+|   系统设置权限   |  ✅  |  ✅  |  ❌  |  ❌   |   ❌  |  ❌   |
+|   Android 8.0 权限适配   |  ✅  |  ✅  |  ❌  |   ✅  |  ❌   |   ✅  |
+|   Android 9.0 权限适配   |  ✅  |  ❌  |  ❌  |   ✅  |  ❌   |   ❌  |
+|   Android 10.0 权限适配  |  ✅  |  ✅  |  ❌  |   ✅  |  ❌   |   ✅  |
+|   Android 11 新版存储权限   |  ✅  |  ❌  |  ❌  |   ❌  |  ❌   |   ❌  |
+|   Android 11 新版定位策略   |  ✅  |  ❌  |  ❌  |   ❌  |  ❌   |   ❌  |
 
 #### 框架亮点
 
-* 首款适配 Android 11 的权限请求框架，适配过程几乎零成本
+* 首款也是唯一一款适配 Android 11 的权限请求框架
+
+* 首款也是唯一一款适配所有安卓版本的权限请求框架
 
 * 简洁易用，采用链式调用的方式，使用只需一句代码
 
@@ -190,7 +193,7 @@ XXPermissions.with(MainActivity.this)
 
 * 向下兼容属性，新权限在旧系统可以正常申请，无需调用者适配
 
-* 本框架不依赖任何第三方库，整个框架大小只有 21 kb（是同类框架中体积最小的）
+* 本框架不依赖任何第三方库，整个框架大小只有 19 kb（是同类框架中体积最小的）
 
 * 如果申请的权限没有在清单文件中注册会抛出异常（仅在 Debug 模式下判断）
 

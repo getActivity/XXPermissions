@@ -43,6 +43,13 @@ final class PermissionUtils {
     }
 
     /**
+     * 是否是 Android 9.0 及以上版本
+     */
+    static boolean isAndroid9() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
+    }
+
+    /**
      * 是否是 Android 8.0 及以上版本
      */
     static boolean isAndroid8() {
@@ -226,7 +233,7 @@ final class PermissionUtils {
         }
 
         if (!isAndroid10()) {
-            // 检测 10.0 的三个新权限，如果当前版本不符合最低要求，那么就用旧权限进行检测
+            // 检测 10.0 的三个新权限
             if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission) ||
                     Permission.ACCESS_MEDIA_LOCATION.equals(permission)) {
                 return true;
@@ -237,8 +244,15 @@ final class PermissionUtils {
             }
         }
 
+        if (!isAndroid9()) {
+            // 检测 9.0 的一个新权限
+            if (Permission.ACCEPT_HANDOVER.equals(permission)) {
+                return true;
+            }
+        }
+
         if (!isAndroid8()) {
-            // 检测 8.0 的两个新权限，如果当前版本不符合最低要求，那么就用旧权限进行检测
+            // 检测 8.0 的两个新权限
             if (Permission.ANSWER_PHONE_CALLS.equals(permission)) {
                 return context.checkSelfPermission(Permission.PROCESS_OUTGOING_CALLS) == PackageManager.PERMISSION_GRANTED;
             }
@@ -294,7 +308,7 @@ final class PermissionUtils {
         }
 
         if (!isAndroid10()) {
-            // 检测 10.0 的三个新权限，如果当前版本不符合最低要求，那么就用旧权限进行检测
+            // 检测 10.0 的三个新权限
             if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission) ||
                     Permission.ACCESS_MEDIA_LOCATION.equals(permission)) {
                 return false;
@@ -303,6 +317,13 @@ final class PermissionUtils {
             if (Permission.ACTIVITY_RECOGNITION.equals(permission) ) {
                 return activity.checkSelfPermission(Permission.BODY_SENSORS) == PackageManager.PERMISSION_DENIED &&
                         !activity.shouldShowRequestPermissionRationale(permission);
+            }
+        }
+
+        if (!isAndroid9()) {
+            // 检测 9.0 的一个新权限
+            if (Permission.ACCEPT_HANDOVER.equals(permission)) {
+                return false;
             }
         }
 
@@ -513,6 +534,8 @@ final class PermissionUtils {
         if (requestPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE)) {
             // 必须设置 targetSdkVersion >= 30 才能正常检测权限，否则请使用 Permission.Group.STORAGE 来申请存储权限
             targetSdkMinVersion = Build.VERSION_CODES.R;
+        } else if (requestPermissions.contains(Permission.ACCEPT_HANDOVER)) {
+            targetSdkMinVersion = Build.VERSION_CODES.P;
         } else if (requestPermissions.contains(Permission.ACCESS_BACKGROUND_LOCATION) ||
                 requestPermissions.contains(Permission.ACTIVITY_RECOGNITION) ||
                 requestPermissions.contains(Permission.ACCESS_MEDIA_LOCATION)) {

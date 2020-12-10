@@ -112,8 +112,8 @@ public final class Permission {
     /** 接收彩信 */
     public static final String RECEIVE_MMS = "android.permission.RECEIVE_MMS";
 
-    ///** 允许呼叫应用继续在另一个应用中启动的呼叫（需要 Android 9.0 及以上，极其少见，所以不做适配） */
-    //public static final String ACCEPT_HANDOVER = "android.permission.ACCEPT_HANDOVER";
+    /** 允许呼叫应用继续在另一个应用中启动的呼叫（需要 Android 9.0 及以上） */
+    public static final String ACCEPT_HANDOVER = "android.permission.ACCEPT_HANDOVER";
 
     /**
      * 权限组

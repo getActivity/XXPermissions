@@ -48,7 +48,6 @@ public final class XXPermissions {
         sDebugMode = debug;
     }
 
-
     /** Activity 对象 */
     private FragmentActivity mActivity;
 
@@ -199,40 +198,40 @@ public final class XXPermissions {
     /**
      * 跳转到应用权限设置页
      *
-     * @param deniedPermissions           没有授予或者被拒绝的权限组
+     * @param permissions           没有授予或者被拒绝的权限组
      */
-    public static void startPermissionActivity(Context context, String... deniedPermissions) {
-        startPermissionActivity(context, PermissionUtils.asArrayList(deniedPermissions));
+    public static void startPermissionActivity(Context context, String... permissions) {
+        startPermissionActivity(context, PermissionUtils.asArrayList(permissions));
     }
 
-    public static void startPermissionActivity(Context context, List<String> deniedPermissions) {
+    public static void startPermissionActivity(Context context, List<String> permissions) {
         Activity activity = PermissionUtils.getFragmentActivity(context);
         if (activity != null) {
-            startPermissionActivity(activity, deniedPermissions);
+            startPermissionActivity(activity, permissions);
             return;
         }
-        Intent intent = PermissionSettingPage.getSmartPermissionIntent(context, deniedPermissions);
+        Intent intent = PermissionSettingPage.getSmartPermissionIntent(context, permissions);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
-    public static void startPermissionActivity(Activity activity, String... deniedPermission) {
-        startPermissionActivity(activity, PermissionUtils.asArrayList(deniedPermission));
+    public static void startPermissionActivity(Activity activity, String... permissions) {
+        startPermissionActivity(activity, PermissionUtils.asArrayList(permissions));
     }
 
-    public static void startPermissionActivity(Activity activity, List<String> deniedPermissions) {
-        activity.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, deniedPermissions), REQUEST_CODE);
+    public static void startPermissionActivity(Activity activity, List<String> permissions) {
+        activity.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), REQUEST_CODE);
     }
 
-    public static void startPermissionActivity(Fragment fragment, String... deniedPermission) {
-        startPermissionActivity(fragment, PermissionUtils.asArrayList(deniedPermission));
+    public static void startPermissionActivity(Fragment fragment, String... permissions) {
+        startPermissionActivity(fragment, PermissionUtils.asArrayList(permissions));
     }
 
-    public static void startPermissionActivity(Fragment fragment, List<String> deniedPermissions) {
+    public static void startPermissionActivity(Fragment fragment, List<String> permissions) {
         FragmentActivity activity = fragment.getActivity();
         if (activity == null) {
             return;
         }
-        fragment.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, deniedPermissions), REQUEST_CODE);
+        fragment.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), REQUEST_CODE);
     }
 }

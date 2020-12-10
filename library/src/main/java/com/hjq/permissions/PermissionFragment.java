@@ -283,6 +283,14 @@ public final class PermissionFragment extends Fragment {
                 }
             }
 
+            if (!PermissionUtils.isAndroid9()) {
+                // 重新检查 Android 9.0 的一个新权限
+                if (Permission.ACCEPT_HANDOVER.equals(permission)) {
+                    // 如果当前版本不符合最低要求，那么就重新进行权限检测
+                    grantResults[i] = PermissionUtils.getPermissionStatus(getActivity(), permission);
+                }
+            }
+
             if (!PermissionUtils.isAndroid8()) {
                 // 重新检查 Android 8.0 的两个新权限
                 if (Permission.ANSWER_PHONE_CALLS.equals(permission) ||

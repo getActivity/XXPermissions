@@ -8,8 +8,8 @@ android {
         minSdkVersion 11
         // noinspection ExpiredTargetSdkVersion
         targetSdkVersion 23
-        versionCode 95
-        versionName "9.5"
+        versionCode 96
+        versionName "9.6"
     }
 
     lintOptions {
@@ -26,8 +26,8 @@ publish {
     userOrg = 'getactivity'
     groupId = 'com.hjq'
     artifactId = 'xxpermissions'
-    version = '9.5'
-    description = 'Android 6.0 permissions adaptation framework'
+    publishVersion = '9.6'
+    desc = 'Android 6.0 permissions adaptation framework'
     website = "https://github.com/getActivity/XXPermissions"
 }
 
