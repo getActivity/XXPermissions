@@ -297,7 +297,7 @@ final class PermissionUtils {
      * @param activity              Activity对象
      * @param permission            请求的权限
      */
-    private static boolean isPermissionPermanentDenied(Activity activity, String permission) {
+    static boolean isPermissionPermanentDenied(Activity activity, String permission) {
         if (!isAndroid6()) {
             return false;
         }

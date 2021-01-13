@@ -167,7 +167,7 @@ public final class PermissionFragment extends Fragment {
             }
 
             @Override
-            public void onDenied(List<String> permissions, boolean never) {
+            public void onDenied(List<String> permissions, List<String> permanentDeniedList, boolean allNever) {
                 if (!isAdded()) {
                     return;
                 }
@@ -318,9 +318,17 @@ public final class PermissionFragment extends Fragment {
 
         // 获取被拒绝的权限
         List<String> deniedPermission = PermissionUtils.getDeniedPermissions(permissions, grantResults);
-
+        List<String> deniedList = new ArrayList<>();
+        List<String> permanentDeniedList = new ArrayList<>();
+        for (String permission : deniedPermission) {
+            if (PermissionUtils.isPermissionPermanentDenied(getActivity(), permission)) {
+                permanentDeniedList.add(permission);
+            } else {
+                deniedList.add(permission);
+            }
+        }
         // 代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回 true 给开发人员，让开发者引导用户去设置界面开启权限
-        callBack.onDenied(deniedPermission, PermissionUtils.isPermissionPermanentDenied(getActivity(), deniedPermission));
+        callBack.onDenied(deniedList, permanentDeniedList, deniedList.isEmpty());
 
         // 证明还有一部分权限被成功授予，回调成功接口
         if (!grantedPermission.isEmpty()) {

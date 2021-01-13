@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public void onDenied(List<String> permissions, boolean never) {
-                                if (never) {
+                            public void onDenied(List<String> permissions, List<String> permanentDeniedList, boolean allNever) {
+                                if (allNever) {
                                     toast("被永久拒绝授权，请手动授予拍照权限");
                                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
                                     XXPermissions.startPermissionActivity(MainActivity.this, permissions);
@@ -85,8 +85,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public void onDenied(List<String> permissions, boolean never) {
-                                if (never) {
+                            public void onDenied(List<String> permissions, List<String> permanentDeniedList, boolean allNever) {
+                                if (allNever) {
                                     toast("被永久拒绝授权，请手动授予录音和日历权限");
                                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
                                     XXPermissions.startPermissionActivity(MainActivity.this, permissions);
@@ -109,8 +109,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public void onDenied(List<String> permissions, boolean never) {
-                                if (never) {
+                            public void onDenied(List<String> permissions, List<String> permanentDeniedList, boolean allNever) {
+                                if (allNever) {
                                     toast("被永久拒绝授权，请手动授予定位权限");
                                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
                                     XXPermissions.startPermissionActivity(MainActivity.this, permissions);
@@ -151,8 +151,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     }
 
                                     @Override
-                                    public void onDenied(List<String> permissions, boolean never) {
-                                        if (never) {
+                                    public void onDenied(List<String> permissions, List<String> permanentDeniedList, boolean allNever) {
+                                        if (allNever) {
                                             toast("被永久拒绝授权，请手动授予存储权限");
                                             // 如果是被永久拒绝就跳转到应用权限系统设置页面
                                             XXPermissions.startPermissionActivity(MainActivity.this, permissions);
@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public void onDenied(List<String> permissions, boolean never) {
+                            public void onDenied(List<String> permissions, List<String> permanentDeniedList, boolean allNever) {
                                 toast("获取安装包权限失败，请手动授予权限");
                             }
                         });
@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public void onDenied(List<String> permissions, boolean never) {
+                            public void onDenied(List<String> permissions, List<String> permanentDeniedList, boolean allNever) {
                                 toast("获取悬浮窗权限失败，请手动授予权限");
                             }
                         });
@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public void onDenied(List<String> permissions, boolean never) {
+                            public void onDenied(List<String> permissions, List<String> permanentDeniedList, boolean allNever) {
                                 toast("获取通知栏权限失败，请手动授予权限");
                             }
                         });
@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public void onDenied(List<String> permissions, boolean never) {
+                            public void onDenied(List<String> permissions, List<String> permanentDeniedList, boolean allNever) {
                                 toast("获取系统设置权限失败，请手动授予权限");
                             }
                         });
