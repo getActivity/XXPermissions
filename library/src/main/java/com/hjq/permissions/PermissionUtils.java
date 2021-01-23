@@ -5,7 +5,6 @@ import android.app.AppOpsManager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -27,6 +26,9 @@ import java.util.Random;
  *    desc   : 权限请求工具类
  */
 final class PermissionUtils {
+
+    /** 来源于 ApplicationInfo.PRIVATE_FLAG_REQUEST_LEGACY_EXTERNAL_STORAGE */
+    private static final int PRIVATE_FLAG_REQUEST_LEGACY_EXTERNAL_STORAGE = 1 << 29;
 
     /**
      * 是否是 Android 11 及以上版本
@@ -79,12 +81,9 @@ final class PermissionUtils {
                     PackageManager.GET_PERMISSIONS).requestedPermissions;
             // 当清单文件没有注册任何权限的时候，那么这个数组对象就是空的
             // https://github.com/getActivity/XXPermissions/issues/35
-            if (requestedPermissions != null) {
-                return asArrayList(requestedPermissions);
-            } else {
-                return null;
-            }
-        } catch (PackageManager.NameNotFoundException ignored) {
+            return asArrayList(requestedPermissions);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -92,6 +91,7 @@ final class PermissionUtils {
     /**
      * 是否有存储权限
      */
+    @SuppressWarnings("deprecation")
     static boolean isGrantedStoragePermission(Context context) {
         if (isAndroid11()) {
             return Environment.isExternalStorageManager();
@@ -122,6 +122,7 @@ final class PermissionUtils {
     /**
      * 是否有通知栏权限
      */
+    @SuppressWarnings("ConstantConditions")
     static boolean isGrantedNotifyPermission(Context context) {
         if (isAndroid7()) {
             return context.getSystemService(NotificationManager.class).areNotificationsEnabled();
@@ -135,7 +136,8 @@ final class PermissionUtils {
                 Field field = appOps.getClass().getDeclaredField("OP_POST_NOTIFICATION");
                 int value = (int) field.get(Integer.class);
                 return ((int) method.invoke(appOps, value, context.getApplicationInfo().uid, context.getPackageName())) == AppOpsManager.MODE_ALLOWED;
-            } catch (NoSuchMethodException | NoSuchFieldException | InvocationTargetException | IllegalAccessException | RuntimeException ignored) {
+            } catch (NoSuchMethodException | NoSuchFieldException | InvocationTargetException | IllegalAccessException | RuntimeException e) {
+                e.printStackTrace();
                 return true;
             }
         }
@@ -183,7 +185,7 @@ final class PermissionUtils {
     /**
      * 判断某些权限是否全部被授予
      */
-    static boolean isGrantedPermission(Context context, List<String> permissions) {
+    static boolean isGrantedPermissions(Context context, List<String> permissions) {
         // 如果是安卓 6.0 以下版本就直接返回 true
         if (!isAndroid6()) {
             return true;
@@ -196,6 +198,25 @@ final class PermissionUtils {
         }
 
         return true;
+    }
+
+    /**
+     * 获取没有授予的权限
+     */
+    static List<String> getDeniedPermissions(Context context, List<String> permissions) {
+        List<String> deniedPermission = new ArrayList<>(permissions.size());
+
+        // 如果是安卓 6.0 以下版本就默认授予
+        if (!isAndroid6()) {
+            return deniedPermission;
+        }
+
+        for (String permission : permissions) {
+            if (!isGrantedPermission(context, permission)) {
+                deniedPermission.add(permission);
+            }
+        }
+        return deniedPermission;
     }
 
     /**
@@ -232,8 +253,8 @@ final class PermissionUtils {
             return isGrantedSettingPermission(context);
         }
 
+        // 检测 10.0 的三个新权限
         if (!isAndroid10()) {
-            // 检测 10.0 的三个新权限
             if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission) ||
                     Permission.ACCESS_MEDIA_LOCATION.equals(permission)) {
                 return true;
@@ -244,17 +265,17 @@ final class PermissionUtils {
             }
         }
 
+        // 检测 9.0 的一个新权限
         if (!isAndroid9()) {
-            // 检测 9.0 的一个新权限
             if (Permission.ACCEPT_HANDOVER.equals(permission)) {
                 return true;
             }
         }
 
+        // 检测 8.0 的两个新权限
         if (!isAndroid8()) {
-            // 检测 8.0 的两个新权限
             if (Permission.ANSWER_PHONE_CALLS.equals(permission)) {
-                return context.checkSelfPermission(Permission.PROCESS_OUTGOING_CALLS) == PackageManager.PERMISSION_GRANTED;
+                return true;
             }
 
             if (Permission.READ_PHONE_NUMBERS.equals(permission)) {
@@ -297,7 +318,7 @@ final class PermissionUtils {
      * @param activity              Activity对象
      * @param permission            请求的权限
      */
-    private static boolean isPermissionPermanentDenied(Activity activity, String permission) {
+    static boolean isPermissionPermanentDenied(Activity activity, String permission) {
         if (!isAndroid6()) {
             return false;
         }
@@ -307,8 +328,8 @@ final class PermissionUtils {
             return false;
         }
 
+        // 检测 10.0 的三个新权限
         if (!isAndroid10()) {
-            // 检测 10.0 的三个新权限
             if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission) ||
                     Permission.ACCESS_MEDIA_LOCATION.equals(permission)) {
                 return false;
@@ -320,21 +341,20 @@ final class PermissionUtils {
             }
         }
 
+        // 检测 9.0 的一个新权限
         if (!isAndroid9()) {
-            // 检测 9.0 的一个新权限
             if (Permission.ACCEPT_HANDOVER.equals(permission)) {
                 return false;
             }
         }
 
+        // 检测 8.0 的两个新权限
         if (!isAndroid8()) {
-            // 检测 8.0 的两个新权限，如果当前版本不符合最低要求，那么就用旧权限进行检测
-            if (Permission.ANSWER_PHONE_CALLS.equals(permission) ) {
-                return activity.checkSelfPermission(Permission.PROCESS_OUTGOING_CALLS) == PackageManager.PERMISSION_DENIED &&
-                        !activity.shouldShowRequestPermissionRationale(permission);
+            if (Permission.ANSWER_PHONE_CALLS.equals(permission)) {
+                return true;
             }
 
-            if (Permission.READ_PHONE_NUMBERS.equals(permission) ) {
+            if (Permission.READ_PHONE_NUMBERS.equals(permission)) {
                 return activity.checkSelfPermission(Permission.READ_PHONE_STATE) == PackageManager.PERMISSION_DENIED &&
                         !activity.shouldShowRequestPermissionRationale(permission);
             }
@@ -381,6 +401,7 @@ final class PermissionUtils {
     /**
      * 处理和优化已经过时的权限
      */
+    @SuppressWarnings("deprecation")
     static void optimizeDeprecatedPermission(List<String> permission) {
         // 如果本次申请包含了 Android 11 存储权限
         if (permission.contains(Permission.MANAGE_EXTERNAL_STORAGE)) {
@@ -398,39 +419,19 @@ final class PermissionUtils {
             }
         }
 
-        if (permission.contains(Permission.ANSWER_PHONE_CALLS)) {
-            if (permission.contains(Permission.PROCESS_OUTGOING_CALLS)) {
-                // 检测是否有旧版的接听电话权限，有的话直接抛出异常，请不要自己动态申请这个权限
-                throw new IllegalArgumentException("Please do not apply for these two permissions dynamically");
-            }
-
-            if (!PermissionUtils.isAndroid10() && !permission.contains(Permission.PROCESS_OUTGOING_CALLS)) {
-                // 自动添加旧版的接听电话权限，因为旧版的系统不支持申请新版的权限
-                permission.add(Permission.PROCESS_OUTGOING_CALLS);
-            }
+        if (!PermissionUtils.isAndroid8() &&
+                permission.contains(Permission.READ_PHONE_NUMBERS) &&
+                !permission.contains(Permission.READ_PHONE_STATE)) {
+            // 自动添加旧版的读取电话号码权限，因为旧版的系统不支持申请新版的权限
+            permission.add(Permission.READ_PHONE_STATE);
         }
 
-        if (permission.contains(Permission.ACTIVITY_RECOGNITION)) {
-            if (!PermissionUtils.isAndroid10() && !permission.contains(Permission.BODY_SENSORS)) {
-                // 自动添加传感器权限，因为这个权限是从 Android 10 开始才从传感器权限中剥离成独立权限
-                permission.add(Permission.BODY_SENSORS);
-            }
+        if (!PermissionUtils.isAndroid10() &&
+                permission.contains(Permission.ACTIVITY_RECOGNITION) &&
+                !permission.contains(Permission.BODY_SENSORS)) {
+            // 自动添加传感器权限，因为这个权限是从 Android 10 开始才从传感器权限中剥离成独立权限
+            permission.add(Permission.BODY_SENSORS);
         }
-    }
-
-    /**
-     * 判断这个意图的 Activity 是否存在
-     */
-    static boolean areActivityIntent(Context context, Intent intent) {
-        return !context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
-    }
-
-    /**
-     * 当前是否运行在 Debug 模式下
-     */
-    static boolean isDebugMode(Context context) {
-        return context.getApplicationInfo() != null &&
-                (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
     }
 
     /**
@@ -440,92 +441,78 @@ final class PermissionUtils {
      * 第一是返回的类型不是 java.util.ArrayList 而是 java.util.Arrays.ArrayList
      * 第二是返回的 ArrayList 对象是只读的，也就是不能添加任何元素，否则会抛异常
      */
+    @SuppressWarnings("all")
     static <T> ArrayList<T> asArrayList(T... array) {
-        ArrayList<T> list = null;
-        if (array != null) {
-            list = new ArrayList<>(array.length);
-            for (T t : array) {
-                list.add(t);
-            }
+        if (array == null || array.length == 0) {
+            return null;
+        }
+        ArrayList<T> list = new ArrayList<>(array.length);
+        for (T t : array) {
+            list.add(t);
         }
         return list;
     }
 
-    /**
-     * 检测权限有没有在清单文件中注册
-     *
-     * @param activity              Activity对象
-     * @param requestPermissions    请求的权限组
-     */
-    static void checkPermissionManifest(Activity activity, List<String> requestPermissions) {
-        List<String> manifestPermissions = getManifestPermissions(activity);
-        if (manifestPermissions == null || manifestPermissions.isEmpty()) {
-            throw new ManifestException();
+    @SuppressWarnings({"JavaReflectionMemberAccess", "deprecation", "ConstantConditions"})
+    static void checkStoragePermission(Context context, List<String> requestPermissions) {
+        int targetSdkVersion = context.getApplicationInfo().targetSdkVersion;
+        // 在 Android 10 的手机才走这个判断，否则不进行判断，因为在 Android 9.0 及以下的手机上不会设置这个标记
+        if (targetSdkVersion >= Build.VERSION_CODES.Q && isAndroid10() &&
+                (requestPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) ||
+                        requestPermissions.contains(Permission.READ_EXTERNAL_STORAGE) ||
+                        requestPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE))) {
+
+            try {
+                // 为什么不通过反射 ApplicationInfo.hasRequestedLegacyExternalStorage 方法来判断？因为这个 API 属于反射黑名单，反射执行不了
+                Field field = ApplicationInfo.class.getDeclaredField("privateFlags");
+                int privateFlags = (int) field.get(context.getApplicationInfo());
+                boolean requestLegacyExternalStorage = (privateFlags & PRIVATE_FLAG_REQUEST_LEGACY_EXTERNAL_STORAGE) != 0;
+                if (!requestLegacyExternalStorage) {
+                    // 请在清单文件 Application 节点中注册 android:requestLegacyExternalStorage="true" 属性，否则无法在 Android 10 的设备上正常读写外部存储
+                    throw new IllegalStateException("Please register the android:requestLegacyExternalStorage=\"true\" attribute in the manifest file");
+                }
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
         }
 
-        int minSdkVersion;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            minSdkVersion = activity.getApplicationInfo().minSdkVersion;
-        } else {
-            minSdkVersion = Build.VERSION_CODES.M;
+        // 在已经适配 Android 11 的情况下，不能用旧版的存储权限，而是应该用新版的存储权限
+        if (targetSdkVersion >= Build.VERSION_CODES.R &&
+                (requestPermissions.contains(Permission.READ_EXTERNAL_STORAGE) ||
+                        requestPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE))) {
+            // 请直接使用 Permission.MANAGE_EXTERNAL_STORAGE 来申请权限
+            throw new IllegalArgumentException("Please use Permission.MANAGE_EXTERNAL_STORAGE to request storage permission");
+        }
+    }
+
+    /**
+     * 检查定位权限
+     *
+     * @param requestPermissions    请求的权限组
+     */
+    static void checkLocationPermission(List<String> requestPermissions) {
+        if (!requestPermissions.contains(Permission.ACCESS_BACKGROUND_LOCATION)) {
+            return;
         }
 
         for (String permission : requestPermissions) {
-
-            if (minSdkVersion < Build.VERSION_CODES.R) {
-                if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) {
-                    if (!manifestPermissions.contains(Permission.READ_EXTERNAL_STORAGE)) {
-                        // 为了保证能够在旧版的系统上正常运行，必须要在清单文件中注册此权限
-                        throw new ManifestException(Permission.READ_EXTERNAL_STORAGE);
-                    }
-
-                    if (!manifestPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE)) {
-                        // 为了保证能够在旧版的系统上正常运行，必须要在清单文件中注册此权限
-                        throw new ManifestException(Permission.WRITE_EXTERNAL_STORAGE);
-                    }
-                }
-            }
-
-            if (minSdkVersion < Build.VERSION_CODES.Q) {
-                if (Permission.ACTIVITY_RECOGNITION.equals(permission)) {
-                    if (!manifestPermissions.contains(Permission.BODY_SENSORS)) {
-                        // 为了保证能够在旧版的系统上正常运行，必须要在清单文件中注册此权限
-                        throw new ManifestException(Permission.BODY_SENSORS);
-                    }
-                }
-            }
-
-            if (minSdkVersion < Build.VERSION_CODES.O) {
-                if (Permission.ANSWER_PHONE_CALLS.equals(permission)) {
-                    if (!manifestPermissions.contains(Permission.PROCESS_OUTGOING_CALLS)) {
-                        // 为了保证能够在旧版的系统上正常运行，必须要在清单文件中注册此权限
-                        throw new ManifestException(Permission.PROCESS_OUTGOING_CALLS);
-                    }
-                }
-
-                if (Permission.READ_PHONE_NUMBERS.equals(permission)) {
-                    if (!manifestPermissions.contains(Permission.READ_PHONE_STATE)) {
-                        // 为了保证能够在旧版的系统上正常运行，必须要在清单文件中注册此权限
-                        throw new ManifestException(Permission.READ_PHONE_STATE);
-                    }
-                }
-            }
-
-            if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
-                // 不检测通知栏权限有没有在清单文件中注册，因为这个权限是虚拟出来的，有没有在清单文件中注册都没关系
+            if (Permission.ACCESS_FINE_LOCATION.equals(permission)
+                    || Permission.ACCESS_COARSE_LOCATION.equals(permission)
+                    || Permission.ACCESS_BACKGROUND_LOCATION.equals(permission)) {
                 continue;
             }
 
-            if (!manifestPermissions.contains(permission)) {
-                throw new ManifestException(permission);
-            }
+            // 因为包含了后台定位权限，所以请不要申请和定位无关的权限，因为在 Android 11 上面，后台定位权限不能和其他非定位的权限一起申请
+            // 否则会出现只申请了后台定位权限，其他权限会被回绝掉，因为在 Android 11 上面，后台定位权限是要跳 Activity，并非弹 Dialog
+            throw new IllegalArgumentException("Because it includes background location permissions, do not apply for permissions unrelated to location");
         }
     }
 
     /**
      * 检查targetSdkVersion 是否符合要求
      *
-     * @param context                   上下文对象
      * @param requestPermissions        请求的权限组
      */
     static void checkTargetSdkVersion(Context context, List<String> requestPermissions) {
@@ -555,17 +542,81 @@ final class PermissionUtils {
     }
 
     /**
-     * 获得随机的 RequestCode
+     * 检测权限有没有在清单文件中注册
+     *
+     * @param requestPermissions    请求的权限组
      */
-    static int getRandomRequestCode() {
-        // 请求码必须在 2 的 16 次方以内
-        return new Random().nextInt((int) Math.pow(2, 16));
+    @SuppressWarnings({"deprecation"})
+    static void checkPermissionManifest(Context context, List<String> requestPermissions) {
+        List<String> manifestPermissions = getManifestPermissions(context);
+        if (manifestPermissions == null || manifestPermissions.isEmpty()) {
+            throw new ManifestRegisterException();
+        }
+
+        int minSdkVersion;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            minSdkVersion = context.getApplicationInfo().minSdkVersion;
+        } else {
+            minSdkVersion = Build.VERSION_CODES.M;
+        }
+
+        for (String permission : requestPermissions) {
+
+            if (minSdkVersion < Build.VERSION_CODES.R) {
+                if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) {
+
+                    if (!manifestPermissions.contains(Permission.READ_EXTERNAL_STORAGE)) {
+                        // 为了保证能够在旧版的系统上正常运行，必须要在清单文件中注册此权限
+                        throw new ManifestRegisterException(Permission.READ_EXTERNAL_STORAGE);
+                    }
+
+                    if (!manifestPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE)) {
+                        // 为了保证能够在旧版的系统上正常运行，必须要在清单文件中注册此权限
+                        throw new ManifestRegisterException(Permission.WRITE_EXTERNAL_STORAGE);
+                    }
+                }
+            }
+
+            if (minSdkVersion < Build.VERSION_CODES.Q) {
+                if (Permission.ACTIVITY_RECOGNITION.equals(permission) &&
+                        !manifestPermissions.contains(Permission.BODY_SENSORS)) {
+                    // 为了保证能够在旧版的系统上正常运行，必须要在清单文件中注册此权限
+                    throw new ManifestRegisterException(Permission.BODY_SENSORS);
+                }
+            }
+
+            if (minSdkVersion < Build.VERSION_CODES.O) {
+                if (Permission.READ_PHONE_NUMBERS.equals(permission) &&
+                        !manifestPermissions.contains(Permission.READ_PHONE_STATE)) {
+                    // 为了保证能够在旧版的系统上正常运行，必须要在清单文件中注册此权限
+                    throw new ManifestRegisterException(Permission.READ_PHONE_STATE);
+                }
+            }
+
+            if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
+                // 不检测通知栏权限有没有在清单文件中注册，因为这个权限是框架虚拟出来的，有没有在清单文件中注册都没关系
+                continue;
+            }
+
+            if (!manifestPermissions.contains(permission)) {
+                throw new ManifestRegisterException(permission);
+            }
+        }
     }
 
     /**
-     * 获取上下文中的 Activity 对象
+     * 获得随机的 RequestCode
      */
-    static FragmentActivity getFragmentActivity(Context context) {
+    static int getRandomRequestCode() {
+        // 新版本的 Support 库限制请求码必须小于 65536
+        // 旧版本的 Support 库限制请求码必须小于 256
+        return new Random().nextInt((int) Math.pow(2, 8));
+    }
+
+    /**
+     * 寻找上下文中的 Activity 对象
+     */
+    static FragmentActivity findFragmentActivity(Context context) {
         do {
             if (context instanceof FragmentActivity) {
                 return (FragmentActivity) context;

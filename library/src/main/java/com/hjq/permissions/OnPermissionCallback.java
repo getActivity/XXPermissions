@@ -24,5 +24,5 @@ public interface OnPermissionCallback {
      * @param permissions            请求失败的权限组
      * @param never                  是否有某个权限被永久拒绝了
      */
-    void onDenied(List<String> permissions, boolean never);
+    default void onDenied(List<String> permissions, boolean never) {}
 }

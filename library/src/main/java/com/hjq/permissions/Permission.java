@@ -20,8 +20,8 @@ public final class Permission {
     /** 安装应用权限（特殊权限，需要 Android 8.0 及以上） */
     public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES";
 
-    /** 通知栏权限（特殊权限，需要 Android 6.0 及以上） */
-    public static final String NOTIFICATION_SERVICE = "android.permission.ACCESS_NOTIFICATION_POLICY";
+    /** 通知栏权限（特殊权限，需要 Android 6.0 及以上，注意此权限不需要在清单文件中注册也能申请） */
+    public static final String NOTIFICATION_SERVICE = "android.permission.NOTIFICATION_SERVICE";
 
     /** 悬浮窗权限（特殊权限，需要 Android 6.0 及以上） */
     public static final String SYSTEM_ALERT_WINDOW = "android.permission.SYSTEM_ALERT_WINDOW";
@@ -32,7 +32,7 @@ public final class Permission {
     /**
      * 读取外部存储
      *
-     * @deprecated         在 Android 11 已经废弃，请使用 {@link Permission#MANAGE_EXTERNAL_STORAGE}
+     * @deprecated         在 Android 11 已经过时，请使用 {@link Permission#MANAGE_EXTERNAL_STORAGE}
      */
     @Deprecated
     public static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
@@ -40,7 +40,7 @@ public final class Permission {
     /**
      * 写入外部存储
      *
-     * @deprecated         在 Android 11 已经废弃，请使用 {@link Permission#MANAGE_EXTERNAL_STORAGE}
+     * @deprecated         在 Android 11 已经过时，请使用 {@link Permission#MANAGE_EXTERNAL_STORAGE}
      */
     @Deprecated
     public static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
@@ -88,10 +88,12 @@ public final class Permission {
     /**
      * 处理拨出电话
      *
-     * @deprecated         在 Android 10 已经废弃，请直接使用 {@link Permission#ANSWER_PHONE_CALLS}
+     * @deprecated         在 Android 10 已经过时，请见：https://developer.android.google.cn/reference/android/Manifest.permission?hl=zh_cn#PROCESS_OUTGOING_CALLS
      */
     public static final String PROCESS_OUTGOING_CALLS = "android.permission.PROCESS_OUTGOING_CALLS";
-    /** 接听电话（需要 Android 8.0 及以上） */
+    /**
+     * 接听电话（需要 Android 8.0 及以上，Android 8.0 以下可以采用模拟耳机按键事件来实现接听电话，这种方式不需要权限）
+     */
     public static final String ANSWER_PHONE_CALLS = "android.permission.ANSWER_PHONE_CALLS";
     /** 读取手机号码（需要 Android 8.0 及以上） */
     public static final String READ_PHONE_NUMBERS = "android.permission.READ_PHONE_NUMBERS";
@@ -123,7 +125,7 @@ public final class Permission {
         /**
          * 存储权限
          *
-         * @deprecated         在 Android 11 已经废弃，请使用{@link Permission#MANAGE_EXTERNAL_STORAGE}
+         * @deprecated         在 Android 11 已经过时，请使用 {@link Permission#MANAGE_EXTERNAL_STORAGE} 权限
          */
         @Deprecated
         public static final String[] STORAGE = new String[]{

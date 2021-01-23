@@ -2,6 +2,7 @@ package com.hjq.permissions;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
 
@@ -18,55 +19,45 @@ final class PermissionSettingPage {
     /**
      * 根据传入的权限自动选择最合适的权限设置页
      */
+    @SuppressWarnings("deprecation")
     static Intent getSmartPermissionIntent(Context context, List<String> deniedPermissions) {
-        if (deniedPermissions == null || deniedPermissions.isEmpty()) {
+        // 如果失败的权限里面不包含特殊权限
+        if (deniedPermissions == null || deniedPermissions.isEmpty() || !PermissionUtils.containsSpecialPermission(deniedPermissions)) {
             return PermissionSettingPage.getApplicationDetailsIntent(context);
         }
 
-        // 如果失败的权限里面包含了特殊权限
-        if (PermissionUtils.containsSpecialPermission(deniedPermissions)) {
-            // 如果当前只有一个权限被拒绝了
-            if (deniedPermissions.size() == 1) {
+        // 如果当前只有一个权限被拒绝了
+        if (deniedPermissions.size() == 1) {
 
-                String permission = deniedPermissions.get(0);
-                if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) {
-                    return getStoragePermissionIntent(context);
-                }
-
-                if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission)) {
-                    return getInstallPermissionIntent(context);
-                }
-
-                if (Permission.SYSTEM_ALERT_WINDOW.equals(permission)) {
-                    return getWindowPermissionIntent(context);
-                }
-
-                if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
-                    return getNotifyPermissionIntent(context);
-                }
-
-                if (Permission.WRITE_SETTINGS.equals(permission)) {
-                    return getSettingPermissionIntent(context);
-                }
-
-                return getApplicationDetailsIntent(context);
+            String permission = deniedPermissions.get(0);
+            if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) {
+                return getStoragePermissionIntent(context);
             }
 
-            if (deniedPermissions.size() == 3) {
+            if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission)) {
+                return getInstallPermissionIntent(context);
+            }
 
-                if (deniedPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) &&
+            if (Permission.SYSTEM_ALERT_WINDOW.equals(permission)) {
+                return getWindowPermissionIntent(context);
+            }
+
+            if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
+                return getNotifyPermissionIntent(context);
+            }
+
+            if (Permission.WRITE_SETTINGS.equals(permission)) {
+                return getSettingPermissionIntent(context);
+            }
+
+            return getApplicationDetailsIntent(context);
+        }
+
+        if (PermissionUtils.isAndroid11() && deniedPermissions.size() == 3 &&
+                (deniedPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) &&
                         deniedPermissions.contains(Permission.READ_EXTERNAL_STORAGE) &&
-                        deniedPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE)) {
-
-                    if (PermissionUtils.isAndroid11()) {
-                        return getStoragePermissionIntent(context);
-                    }
-
-                    return PermissionSettingPage.getApplicationDetailsIntent(context);
-                }
-            }
-
-            return PermissionSettingPage.getApplicationDetailsIntent(context);
+                        deniedPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE))) {
+            return getStoragePermissionIntent(context);
         }
 
         return PermissionSettingPage.getApplicationDetailsIntent(context);
@@ -90,7 +81,7 @@ final class PermissionSettingPage {
             intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
             intent.setData(Uri.parse("package:" + context.getPackageName()));
         }
-        if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
+        if (intent == null || !areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;
@@ -111,7 +102,7 @@ final class PermissionSettingPage {
             }
         }
 
-        if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
+        if (intent == null || !areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;
@@ -127,7 +118,7 @@ final class PermissionSettingPage {
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
             //intent.putExtra(Settings.EXTRA_CHANNEL_ID, context.getApplicationInfo().uid);
         }
-        if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
+        if (intent == null || !areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;
@@ -142,7 +133,7 @@ final class PermissionSettingPage {
             intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
             intent.setData(Uri.parse("package:" + context.getPackageName()));
         }
-        if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
+        if (intent == null || !areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;
@@ -157,9 +148,16 @@ final class PermissionSettingPage {
             intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
             intent.setData(Uri.parse("package:" + context.getPackageName()));
         }
-        if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
+        if (intent == null || !areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;
+    }
+
+    /**
+     * 判断这个意图的 Activity 是否存在
+     */
+    private static boolean areActivityIntent(Context context, Intent intent) {
+        return !context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
     }
 }

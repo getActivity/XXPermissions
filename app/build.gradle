@@ -7,10 +7,17 @@ android {
         applicationId "com.hjq.permissions.demo"
         minSdkVersion 14
         targetSdkVersion 30
-        versionCode 96
-        versionName "9.6"
+        versionCode 98
+        versionName "9.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    // 使用 JDK 1.8
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+
     buildTypes {
         release {
             minifyEnabled false
