@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
-import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
@@ -28,17 +27,16 @@ public final class XXPermissions {
     /** 调试模式 */
     private static Boolean sDebugMode;
 
+    /** 分区存储 */
+    private static boolean sScopedStorage;
+
     /**
      * 设置请求的对象
      *
-     * @param activity          当前 Activity，也可以传入栈顶的 Activity
+     * @param context          当前 Activity，可以传入栈顶的 Activity
      */
-    public static XXPermissions with(FragmentActivity activity) {
-        return new XXPermissions(activity);
-    }
-
     public static XXPermissions with(Context context) {
-        return with(PermissionUtils.findFragmentActivity(context));
+        return new XXPermissions(context);
     }
 
     public static XXPermissions with(Fragment fragment) {
@@ -46,20 +44,28 @@ public final class XXPermissions {
     }
 
     /**
-     * 设置是否为调试模式
+     * 是否为调试模式
      */
-    public static void setDebugMode(Boolean debugMode) {
-        sDebugMode = debugMode;
+    public static void setDebugMode(boolean debug) {
+        sDebugMode = debug;
     }
 
-    /**
-     * 当前是否为调试模式
-     */
     private static boolean isDebugMode(Context context) {
         if (sDebugMode == null) {
             sDebugMode = (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
         }
         return sDebugMode;
+    }
+
+    /**
+     * 是否已经适配了 Android 10 分区存储特性
+     */
+    public static void setScopedStorage(boolean scopedStorage) {
+        sScopedStorage = scopedStorage;
+    }
+
+    private static boolean isScopedStorage() {
+        return sScopedStorage;
     }
 
     /**
@@ -79,8 +85,8 @@ public final class XXPermissions {
         return sPermissionInterceptor;
     }
 
-    /** Activity 对象 */
-    private final FragmentActivity mActivity;
+    /** Context 对象 */
+    private final Context mContext;
 
     /** 权限列表 */
     private List<String> mPermissions;
@@ -88,8 +94,8 @@ public final class XXPermissions {
     /**
      * 私有化构造函数
      */
-    private XXPermissions(FragmentActivity activity) {
-        mActivity = activity;
+    private XXPermissions(Context context) {
+        mContext = context;
     }
 
     /**
@@ -123,38 +129,42 @@ public final class XXPermissions {
      * 请求权限
      */
     public void request(OnPermissionCallback callback) {
+        if (mContext == null) {
+            return;
+        }
+
+        // 当前是否为调试模式
+        boolean debugMode = isDebugMode(mContext);
+
         // 检查当前 Activity 状态是否是正常的，如果不是则不请求权限
-        if (mActivity == null || mActivity.isFinishing() ||
-                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mActivity.isDestroyed())) {
+        FragmentActivity fragmentActivity = PermissionUtils.findFragmentActivity(mContext);
+        if (!PermissionChecker.checkActivityStatus(fragmentActivity, debugMode)) {
             return;
         }
 
-        // 必须要传入权限或者权限组才能申请权限
-        if (mPermissions == null || mPermissions.isEmpty()) {
-            if (isDebugMode(mActivity)) {
-                throw new IllegalArgumentException("The requested permission cannot be empty");
-            }
+        // 必须要传入正常的权限或者权限组才能申请权限
+        if (!PermissionChecker.checkPermissionArgument(mPermissions, debugMode)) {
             return;
         }
 
-        if (isDebugMode(mActivity)) {
+        if (debugMode) {
             // 检查申请的存储权限是否符合规范
-            PermissionUtils.checkStoragePermission(mActivity, mPermissions);
+            PermissionChecker.checkStoragePermission(mContext, mPermissions, isScopedStorage());
             // 检查申请的定位权限是否符合规范
-            PermissionUtils.checkLocationPermission(mPermissions);
+            PermissionChecker.checkLocationPermission(mPermissions);
             // 检查申请的权限和 targetSdk 版本是否能吻合
-            PermissionUtils.checkTargetSdkVersion(mActivity, mPermissions);
+            PermissionChecker.checkTargetSdkVersion(mContext, mPermissions);
         }
 
         // 优化所申请的权限列表
-        PermissionUtils.optimizeDeprecatedPermission(mPermissions);
+        PermissionChecker.optimizeDeprecatedPermission(mPermissions);
 
-        if (isDebugMode(mActivity)) {
+        if (debugMode) {
             // 检测权限有没有在清单文件中注册
-            PermissionUtils.checkPermissionManifest(mActivity, mPermissions);
+            PermissionChecker.checkPermissionManifest(mContext, mPermissions);
         }
 
-        if (PermissionUtils.isGrantedPermissions(mActivity, mPermissions)) {
+        if (PermissionUtils.isGrantedPermissions(mContext, mPermissions)) {
             // 证明这些权限已经全部授予过，直接回调成功
             if (callback != null) {
                 callback.onGranted(mPermissions, true);
@@ -163,7 +173,7 @@ public final class XXPermissions {
         }
 
         // 申请没有授予过的权限
-        getPermissionInterceptor().requestPermissions(mActivity, callback, mPermissions);
+        getPermissionInterceptor().requestPermissions(fragmentActivity, callback, mPermissions);
     }
 
     /**

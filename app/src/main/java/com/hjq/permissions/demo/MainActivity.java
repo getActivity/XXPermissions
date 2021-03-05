@@ -20,7 +20,7 @@ import java.util.List;
  *    time   : 2018/06/15
  *    desc   : Demo 演示
  */
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public final class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,7 +164,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else if (viewId == R.id.btn_main_app_details) {
 
             XXPermissions.startApplicationDetails(this);
-
         }
     }
 

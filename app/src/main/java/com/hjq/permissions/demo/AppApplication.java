@@ -12,7 +12,7 @@ import com.hjq.toast.style.ToastWhiteStyle;
  *    time   : 2021/01/04
  *    desc   : 应用入口
  */
-public class AppApplication extends Application {
+public final class AppApplication extends Application {
 
     @Override
     public void onCreate() {
@@ -23,5 +23,8 @@ public class AppApplication extends Application {
 
         // 设置权限申请拦截器
         XXPermissions.setPermissionInterceptor(new PermissionInterceptor());
+
+        // 告诉框架，当前项目已适配分区存储特性
+        //XXPermissions.setScopedStorage(true);
     }
 }

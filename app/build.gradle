@@ -7,8 +7,8 @@ android {
         applicationId "com.hjq.permissions.demo"
         minSdkVersion 14
         targetSdkVersion 30
-        versionCode 98
-        versionName "9.8"
+        versionCode 1000
+        versionName "10.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -40,5 +40,6 @@ dependencies {
     // 吐司工具类：https://github.com/getActivity/ToastUtils
     implementation 'com.hjq:toast:8.8'
     // 内存泄漏捕捉：https://github.com/square/leakcanary
+    // noinspection GradleDependency
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
 }

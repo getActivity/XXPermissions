@@ -9,7 +9,6 @@ import android.support.v7.app.AlertDialog;
 import com.hjq.permissions.IPermissionInterceptor;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.Permission;
-import com.hjq.permissions.PermissionFragment;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.toast.ToastUtils;
 
@@ -22,31 +21,31 @@ import java.util.List;
  *    time   : 2021/01/04
  *    desc   : 权限申请拦截器
  */
-public class PermissionInterceptor implements IPermissionInterceptor {
+public final class PermissionInterceptor implements IPermissionInterceptor {
 
-    @Override
-    public void requestPermissions(FragmentActivity activity, OnPermissionCallback callback, List<String> permissions) {
-        // 这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
-        new AlertDialog.Builder(activity)
-                .setTitle(R.string.common_permission_hint)
-                .setMessage(R.string.common_permission_message)
-                .setPositiveButton(R.string.common_permission_granted, new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        PermissionFragment.beginRequest(activity, new ArrayList<>(permissions), callback);
-                    }
-                })
-                .setNegativeButton(R.string.common_permission_denied, new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .show();
-    }
+//    @Override
+//    public void requestPermissions(FragmentActivity activity, OnPermissionCallback callback, List<String> permissions) {
+//        // 这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
+//        new AlertDialog.Builder(activity)
+//                .setTitle(R.string.common_permission_hint)
+//                .setMessage(R.string.common_permission_message)
+//                .setPositiveButton(R.string.common_permission_granted, new DialogInterface.OnClickListener() {
+//
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//                        PermissionFragment.beginRequest(activity, new ArrayList<>(permissions), callback);
+//                    }
+//                })
+//                .setNegativeButton(R.string.common_permission_denied, new DialogInterface.OnClickListener() {
+//
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.dismiss();
+//                    }
+//                })
+//                .show();
+//    }
 
     @Override
     public void grantedPermissions(FragmentActivity activity, OnPermissionCallback callback, List<String> permissions, boolean all) {

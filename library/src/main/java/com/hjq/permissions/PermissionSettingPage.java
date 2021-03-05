@@ -19,11 +19,18 @@ final class PermissionSettingPage {
     /**
      * 根据传入的权限自动选择最合适的权限设置页
      */
-    @SuppressWarnings("deprecation")
     static Intent getSmartPermissionIntent(Context context, List<String> deniedPermissions) {
         // 如果失败的权限里面不包含特殊权限
-        if (deniedPermissions == null || deniedPermissions.isEmpty() || !PermissionUtils.containsSpecialPermission(deniedPermissions)) {
-            return PermissionSettingPage.getApplicationDetailsIntent(context);
+        if (deniedPermissions == null || deniedPermissions.isEmpty() ||
+                !PermissionUtils.containsSpecialPermission(deniedPermissions)) {
+            return getApplicationDetailsIntent(context);
+        }
+
+        if (PermissionUtils.isAndroid11() && deniedPermissions.size() == 3 &&
+                (deniedPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) &&
+                        deniedPermissions.contains(Permission.READ_EXTERNAL_STORAGE) &&
+                        deniedPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE))) {
+            return getStoragePermissionIntent(context);
         }
 
         // 如果当前只有一个权限被拒绝了
@@ -49,18 +56,9 @@ final class PermissionSettingPage {
             if (Permission.WRITE_SETTINGS.equals(permission)) {
                 return getSettingPermissionIntent(context);
             }
-
-            return getApplicationDetailsIntent(context);
         }
 
-        if (PermissionUtils.isAndroid11() && deniedPermissions.size() == 3 &&
-                (deniedPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) &&
-                        deniedPermissions.contains(Permission.READ_EXTERNAL_STORAGE) &&
-                        deniedPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE))) {
-            return getStoragePermissionIntent(context);
-        }
-
-        return PermissionSettingPage.getApplicationDetailsIntent(context);
+        return getApplicationDetailsIntent(context);
     }
 
     /**
@@ -68,7 +66,7 @@ final class PermissionSettingPage {
      */
     static Intent getApplicationDetailsIntent(Context context) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        intent.setData(Uri.parse("package:" + context.getPackageName()));
+        intent.setData(getPackageNameUri(context));
         return intent;
     }
 
@@ -79,7 +77,7 @@ final class PermissionSettingPage {
         Intent intent = null;
         if (PermissionUtils.isAndroid8()) {
             intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
-            intent.setData(Uri.parse("package:" + context.getPackageName()));
+            intent.setData(getPackageNameUri(context));
         }
         if (intent == null || !areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
@@ -98,7 +96,7 @@ final class PermissionSettingPage {
             // 还有人反馈在 Android 11 的 TV 模拟器上会出现崩溃的情况
             // https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION
             if (!PermissionUtils.isAndroid11()) {
-                intent.setData(Uri.parse("package:" + context.getPackageName()));
+                intent.setData(getPackageNameUri(context));
             }
         }
 
@@ -131,7 +129,7 @@ final class PermissionSettingPage {
         Intent intent = null;
         if (PermissionUtils.isAndroid6()) {
             intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-            intent.setData(Uri.parse("package:" + context.getPackageName()));
+            intent.setData(getPackageNameUri(context));
         }
         if (intent == null || !areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
@@ -146,7 +144,7 @@ final class PermissionSettingPage {
         Intent intent = null;
         if (PermissionUtils.isAndroid11()) {
             intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-            intent.setData(Uri.parse("package:" + context.getPackageName()));
+            intent.setData(getPackageNameUri(context));
         }
         if (intent == null || !areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
@@ -159,5 +157,12 @@ final class PermissionSettingPage {
      */
     private static boolean areActivityIntent(Context context, Intent intent) {
         return !context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
+    }
+
+    /**
+     * 获取包名 Uri 对象
+     */
+    private static Uri getPackageNameUri(Context context) {
+        return Uri.parse("package:" + context.getPackageName());
     }
 }

@@ -6,10 +6,8 @@ android {
 
     defaultConfig {
         minSdkVersion 11
-        // noinspection ExpiredTargetSdkVersion
-        targetSdkVersion 23
-        versionCode 98
-        versionName "9.8"
+        versionCode 1000
+        versionName "10.0"
     }
 
     // 使用 JDK 1.8
@@ -32,7 +30,7 @@ publish {
     userOrg = 'getactivity'
     groupId = 'com.hjq'
     artifactId = 'xxpermissions'
-    publishVersion = '9.8'
+    publishVersion = '10.0'
     desc = 'Android 6.0 permissions adaptation framework'
     website = "https://github.com/getActivity/XXPermissions"
 }

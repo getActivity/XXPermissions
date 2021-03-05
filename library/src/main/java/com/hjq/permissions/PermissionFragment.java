@@ -102,11 +102,18 @@ public final class PermissionFragment extends Fragment implements Runnable {
         if (mScreenOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
             return;
         }
-        int currentOrientation = activity.getResources().getConfiguration().orientation;
-        if (currentOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        } else if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        int activityOrientation = activity.getResources().getConfiguration().orientation;
+        try {
+            // 兼容问题：在 Android 8.0 的手机上可以固定 Activity 的方向，但是这个 Activity 不能是透明的，否则就会抛出异常
+            // 复现场景：只需要给 Activity 主题设置 <item name="android:windowIsTranslucent">true</item> 属性即可
+            if (activityOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            } else if (activityOrientation == Configuration.ORIENTATION_PORTRAIT) {
+                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            }
+        } catch (IllegalStateException e) {
+            // java.lang.IllegalStateException: Only fullscreen activities can request orientation
+            e.printStackTrace();
         }
     }
 
@@ -117,6 +124,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
         if (activity == null || mScreenOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
             return;
         }
+        // 为什么这里不用跟上面一样 try catch ？因为这里是把 Activity 方向取消固定，只有设置横屏或竖屏的时候才可能触发 crash
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 
@@ -357,7 +365,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
         mDangerousRequest = true;
         // 需要延迟执行，不然有些华为机型授权了但是获取不到权限
-        activity.getWindow().getDecorView().postDelayed(this, 300);
+        activity.getWindow().getDecorView().postDelayed(this, 200);
     }
 
     @Override
