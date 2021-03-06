@@ -108,15 +108,20 @@ final class PermissionChecker {
             return;
         }
 
+        int cookie = PermissionUtils.findApkCookie(context);
+        if (cookie == -1) {
+            return;
+        }
+
         try {
-            XmlResourceParser parser = context.getAssets().openXmlResourceParser("AndroidManifest.xml");
+            XmlResourceParser parser = context.getAssets().openXmlResourceParser(cookie, "AndroidManifest.xml");
             // 是否读取到文件尾
             while (parser.getEventType() != XmlResourceParser.END_DOCUMENT) {
                 // 当前节点是否为标签头部
                 if (parser.getEventType() == XmlResourceParser.START_TAG) {
                     // 获取标签名称
-                    String tagName = parser.getName();
-                    if ("application".equals(tagName)) {
+                    String nodeName = parser.getName();
+                    if ("application".equals(nodeName)) {
                         String namespace = "http://schemas.android.com/apk/res/android";
                         int targetSdkVersion = context.getApplicationInfo().targetSdkVersion;
 

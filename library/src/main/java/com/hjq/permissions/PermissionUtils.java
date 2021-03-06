@@ -1,11 +1,13 @@
 package com.hjq.permissions;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AppOpsManager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
@@ -435,5 +437,42 @@ final class PermissionUtils {
             }
         } while (context != null);
         return null;
+    }
+
+    /**
+     * 获取当前应用 Apk 在 AssetManager 中的 Cookie
+     */
+    @SuppressWarnings("JavaReflectionMemberAccess")
+    @SuppressLint("PrivateApi")
+    static int findApkCookie(Context context) {
+        AssetManager assets = context.getAssets();
+        String path = context.getApplicationInfo().sourceDir;
+        int cookie = -1;
+        try {
+            try {
+                // 为什么不直接通过反射 AssetManager.findCookieForPath 方法来判断？因为这个 API 属于反射黑名单，反射执行不了
+                Method method = assets.getClass().getDeclaredMethod("addOverlayPath", String.class);
+                cookie = (int) method.invoke(assets, path);
+            } catch (Exception e) {
+                // NoSuchMethodException
+                // IllegalAccessException
+                // InvocationTargetException
+                e.printStackTrace();
+                Method method = assets.getClass().getDeclaredMethod("getApkPaths");
+                String[] apkPaths = (String[]) method.invoke(assets);
+                for (int i = 0; i < apkPaths.length; i++) {
+                    if (apkPaths[i].equals(path)) {
+                        cookie = i + 1;
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // NoSuchMethodException
+            // IllegalAccessException
+            // InvocationTargetException
+            e.printStackTrace();
+        }
+        return cookie;
     }
 }

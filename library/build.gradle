@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         minSdkVersion 11
-        versionCode 1000
-        versionName "10.0"
+        versionCode 1020
+        versionName "10.2"
     }
 
     // 使用 JDK 1.8
@@ -30,7 +30,7 @@ publish {
     userOrg = 'getactivity'
     groupId = 'com.hjq'
     artifactId = 'xxpermissions'
-    publishVersion = '10.0'
+    publishVersion = '10.2'
     desc = 'Android 6.0 permissions adaptation framework'
     website = "https://github.com/getActivity/XXPermissions"
 }
