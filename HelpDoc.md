@@ -4,6 +4,8 @@
 
 * [Android 11 存储权限适配](#android-11-存储权限适配)
 
+* [什么情况下需要适配分区存储特性](#什么情况下需要适配分区存储特性)
+
 * [我想在申请前和申请后统一弹对话框该怎么处理](#我想在申请前和申请后统一弹对话框该怎么处理)
 
 * [如何在回调中判断哪些权限被永久拒绝了](#如何在回调中判断哪些权限被永久拒绝了)
@@ -119,7 +121,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         // 设置权限申请拦截器
-        XXPermissions.setPermissionInterceptor(new PermissionInterceptor());
+        XXPermissions.setInterceptor(new PermissionInterceptor());
     }
 }
 ```
@@ -229,7 +231,7 @@ XXPermissions.with(this)
             @Override
             public void onDenied(List<String> permissions, boolean never) {
                 if (never && permissions.contains(Permission.RECORD_AUDIO) &&
-                        XXPermissions.isPermissionPermanentDenied(MainActivity.this, Permission.RECORD_AUDIO)) {
+                        XXPermissions.isPermanentDenied(MainActivity.this, Permission.RECORD_AUDIO)) {
                     toast("录音权限被永久拒绝了");
                 }
             }

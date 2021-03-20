@@ -22,7 +22,7 @@ public final class AppApplication extends Application {
         ToastUtils.init(this, new ToastWhiteStyle(getApplicationContext()));
 
         // 设置权限申请拦截器
-        XXPermissions.setPermissionInterceptor(new PermissionInterceptor());
+        XXPermissions.setInterceptor(new PermissionInterceptor());
 
         // 告诉框架，当前项目已适配分区存储特性
         //XXPermissions.setScopedStorage(true);

@@ -116,9 +116,7 @@ public final class Permission {
      */
     public static final class Group {
 
-        /**
-         * 存储权限
-         */
+        /** 存储权限 */
         public static final String[] STORAGE = new String[]{
                 Permission.READ_EXTERNAL_STORAGE,
                 Permission.WRITE_EXTERNAL_STORAGE};

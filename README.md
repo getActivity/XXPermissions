@@ -26,7 +26,7 @@ android {
 
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.hjq:xxpermissions:10.2'
+    implementation 'com.hjq:xxpermissions:10.5'
 }
 ```
 
@@ -51,7 +51,7 @@ public final class XxxApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        // 告诉框架，当前项目已适配分区存储特性
+        // 当前项目是否已经适配了分区存储的特性
         XXPermissions.setScopedStorage(true);
     }
 }
@@ -107,8 +107,8 @@ public class XxxActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == XXPermissions.REQUEST_CODE) {
-            if (XXPermissions.isGrantedPermission(this, Permission.RECORD_AUDIO) &&
-                    XXPermissions.isGrantedPermission(this, Permission.Group.CALENDAR)) {
+            if (XXPermissions.isGranted(this, Permission.RECORD_AUDIO) &&
+                    XXPermissions.isGranted(this, Permission.Group.CALENDAR)) {
                 toast("用户已经在权限设置页授予了录音和日历权限");
             } else {
                 toast("用户没有在权限设置页授予权限");
@@ -122,7 +122,7 @@ public class XxxActivity extends AppCompatActivity {
 
 * 我们都知道，如果用户全部授予只会调用 **onGranted** 方法，如果用户全部拒绝只会调用 **onDenied** 方法。
 
-* 但是还有一种情况，如果在请求多组权限的情况下，这些权限不是被全部授予或者全部拒绝了，而是部分授权部分拒绝这种情况，框架会如何处理回调呢？
+* 但是还有一种情况，如果在请求多个权限的情况下，这些权限不是被全部授予或者全部拒绝了，而是部分授权部分拒绝这种情况，框架会如何处理回调呢？
 
 * 框架会先调用 **onDenied** 方法，再调用 **onGranted** 方法。其中我们可以通过 **onGranted** 方法中的 **all** 参数来判断权限是否全部授予了。
 
@@ -134,8 +134,8 @@ public class XxxActivity extends AppCompatActivity {
 
 |     功能及细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  10.2 |  2.0.3  |  0.12   |   4.8.0  |  3.0.0   |  1.4.0    |  1.30.5    |
-|    框架体积  |  [25 KB](https://bintray.com/getactivity/maven/xxpermissions#files/com/hjq/xxpermissions)  | [127 KB](https://mvnrepository.com/artifact/com.yanzhenjie/permission)  |  [28 KB](https://jitpack.io/#com.github.tbruyelle/rxpermissions)  |   [91 KB](https://bintray.com/hotchemi/org.permissionsdispatcher/permissionsdispatcher-processor#files/org/permissionsdispatcher/permissionsdispatcher-processor)  |  [48 KB](https://bintray.com/easygoogle/EasyPermissions/easypermissions#files/pub/devrel/easypermissions)   |   [32 KB](https://bintray.com/guolindev/maven/permissionx#files/com/permissionx/guolindev/permissionx)  |   [483 KB](https://bintray.com/blankj/maven/UtilCode#files/com/blankj/utilcode)  |
+|    对应版本  |  10.5 |  2.0.3  |  0.12   |   4.8.0  |  3.0.0   |  1.4.0    |  1.30.5    |
+|    框架体积  |  [24 KB](https://bintray.com/getactivity/maven/xxpermissions#files/com/hjq/xxpermissions)  | [127 KB](https://mvnrepository.com/artifact/com.yanzhenjie/permission)  |  [28 KB](https://jitpack.io/#com.github.tbruyelle/rxpermissions)  |   [91 KB](https://bintray.com/hotchemi/org.permissionsdispatcher/permissionsdispatcher-processor#files/org/permissionsdispatcher/permissionsdispatcher-processor)  |  [48 KB](https://bintray.com/easygoogle/EasyPermissions/easypermissions#files/pub/devrel/easypermissions)   |   [32 KB](https://bintray.com/guolindev/maven/permissionx#files/com/permissionx/guolindev/permissionx)  |   [483 KB](https://bintray.com/blankj/maven/UtilCode#files/com/blankj/utilcode)  |
 |   安装包权限   |  ✅  |  ✅  |  ❌  |  ❌   |  ❌   |  ❌   |  ❌   |
 |   悬浮窗权限   |  ✅  |  ✅  |  ❌  |  ❌   |  ❌   |  ❌   |   ✅  |
 |   通知栏权限   |  ✅  |  ✅  |  ❌  |  ❌   |   ❌  |  ❌   |  ❌   |
@@ -179,17 +179,15 @@ public class XxxActivity extends AppCompatActivity {
 
 #### 框架亮点
 
-* 简洁易用，采用链式调用的方式，使用只需一句代码
-
-* 体积感人，功能在同类框架中最全的，但是体积是最小的
-
 * 首款也是唯一一款适配 Android 11 的权限请求框架
 
 * 首款也是唯一一款适配所有 Android 版本的权限请求框架
 
-* 无论在多么极端恶劣的环境下申请权限，框架依然坚挺
+* 简洁易用：采用链式调用的方式，使用只需一句代码
 
-* 支持单个权限、多个权限、单个权限组、多个权限组请求
+* 体积感人：功能在同类框架中最全的，但是体积是最小的
+
+* 适配极端情况：无论在多么极端恶劣的环境下申请权限，框架依然坚挺
 
 * 向下兼容属性：新权限在旧系统可以正常申请，框架会做自动适配，无需调用者适配
 

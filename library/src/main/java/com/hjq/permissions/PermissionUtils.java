@@ -93,7 +93,7 @@ final class PermissionUtils {
         if (isAndroid11()) {
             return Environment.isExternalStorageManager();
         }
-        return XXPermissions.isGrantedPermission(context, Permission.Group.STORAGE);
+        return XXPermissions.isGranted(context, Permission.Group.STORAGE);
     }
 
     /**
@@ -444,7 +444,7 @@ final class PermissionUtils {
      */
     @SuppressWarnings("JavaReflectionMemberAccess")
     @SuppressLint("PrivateApi")
-    static int findApkCookie(Context context) {
+    static int findApkPathCookie(Context context) {
         AssetManager assets = context.getAssets();
         String path = context.getApplicationInfo().sourceDir;
         int cookie = -1;

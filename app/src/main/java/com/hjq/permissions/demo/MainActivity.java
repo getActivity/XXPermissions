@@ -163,7 +163,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
         } else if (viewId == R.id.btn_main_app_details) {
 
-            XXPermissions.startApplicationDetails(this);
+            XXPermissions.startPermissionActivity(this);
         }
     }
 

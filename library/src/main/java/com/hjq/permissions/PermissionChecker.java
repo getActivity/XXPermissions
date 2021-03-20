@@ -38,7 +38,7 @@ final class PermissionChecker {
 
         if (activity.isFinishing()) {
             if (debugMode) {
-                // 这个 Activity 对象当前不能是结束状态，这种情况常出现在执行异步请求后申请权限，请手动在外层代码做判断
+                // 这个 Activity 对象当前不能是关闭状态，这种情况常出现在执行异步请求后申请权限，请自行在外层判断 Activity 状态是否正常之后再进入权限申请
                 throw new IllegalStateException("The Activity has been finishing, Please manually determine the status of the Activity");
             }
             return false;
@@ -46,7 +46,7 @@ final class PermissionChecker {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed()) {
             if (debugMode) {
-                // 这个 Activity 对象当前不能是销毁状态，这种情况常出现在执行异步请求后申请权限，请手动在外层代码做判断
+                // 这个 Activity 对象当前不能是销毁状态，这种情况常出现在执行异步请求后申请权限，请自行在外层判断 Activity 状态是否正常之后再进入权限申请
                 throw new IllegalStateException("The Activity has been destroyed, Please manually determine the status of the Activity");
             }
             return false;
@@ -86,7 +86,7 @@ final class PermissionChecker {
             for (String permission : requestPermissions) {
                 if (!allPermissions.contains(permission)) {
                     // 请不要申请危险权限和特殊权限之外的权限
-                    throw new IllegalArgumentException("Please do not apply for permissions other than dangerous and special permissions");
+                    throw new IllegalArgumentException("The " + permission + " is not a dangerous permission or special permission");
                 }
             }
         }
@@ -108,7 +108,7 @@ final class PermissionChecker {
             return;
         }
 
-        int cookie = PermissionUtils.findApkCookie(context);
+        int cookie = PermissionUtils.findApkPathCookie(context);
         if (cookie == -1) {
             return;
         }
@@ -138,9 +138,10 @@ final class PermissionChecker {
                         // 如果在已经适配 Android 11 的情况下
                         if (targetSdkVersion >= Build.VERSION_CODES.R &&
                                 !requestPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) && !scopedStorage) {
-                            // 1. 适配分区存储的特性，并在 Application.onCreate 中调用 XXPermissions.setScopedStorage(true)
+                            // 1. 适配分区存储的特性，并在 Application 初始化时调用 XXPermissions.setScopedStorage(true)
                             // 2. 如果不想适配分区存储，则需要使用 Permission.MANAGE_EXTERNAL_STORAGE 来申请权限
                             // 上面两种方式需要二选一，否则无法在 Android 11 的设备上正常读写外部存储上的文件
+                            // 如果不知道该怎么选择，可以看文档：https://github.com/getActivity/XXPermissions/blob/master/HelpDoc
                             throw new IllegalArgumentException("Please adapt the scoped storage, or use the MANAGE_EXTERNAL_STORAGE permission");
                         }
                         break;

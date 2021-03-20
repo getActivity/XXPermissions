@@ -71,14 +71,14 @@ public final class XXPermissions {
     /**
      * 设置权限请求拦截器
      */
-    public static void setPermissionInterceptor(IPermissionInterceptor interceptor) {
+    public static void setInterceptor(IPermissionInterceptor interceptor) {
         sPermissionInterceptor = interceptor;
     }
 
     /**
      * 获取权限请求拦截器
      */
-    static IPermissionInterceptor getPermissionInterceptor() {
+    static IPermissionInterceptor getInterceptor() {
         if (sPermissionInterceptor == null) {
             sPermissionInterceptor = new IPermissionInterceptor() {};
         }
@@ -173,88 +173,62 @@ public final class XXPermissions {
         }
 
         // 申请没有授予过的权限
-        getPermissionInterceptor().requestPermissions(fragmentActivity, callback, mPermissions);
+        getInterceptor().requestPermissions(fragmentActivity, callback, mPermissions);
     }
 
     /**
      * 判断一个或多个权限是否全部授予了
      */
-    public static boolean isGrantedPermission(Context context, String permission) {
+    public static boolean isGranted(Context context, String permission) {
         return PermissionUtils.isGrantedPermission(context, permission);
     }
 
-    public static boolean isGrantedPermission(Context context, String[] permissions) {
-        return isGrantedPermission(context, PermissionUtils.asArrayList(permissions));
+    public static boolean isGranted(Context context, String[] permissions) {
+        return isGranted(context, PermissionUtils.asArrayList(permissions));
     }
 
-    public static boolean isGrantedPermission(Context context, List<String> permissions) {
+    public static boolean isGranted(Context context, List<String> permissions) {
         return PermissionUtils.isGrantedPermissions(context, permissions);
     }
 
     /**
      * 获取没有授予的权限
      */
-    public static List<String> getDeniedPermissions(Context context, String[] permissions) {
-        return getDeniedPermissions(context, PermissionUtils.asArrayList(permissions));
+    public static List<String> getDenied(Context context, String[] permissions) {
+        return getDenied(context, PermissionUtils.asArrayList(permissions));
     }
 
-    public static List<String> getDeniedPermissions(Context context, List<String> permissions) {
+    public static List<String> getDenied(Context context, List<String> permissions) {
         return PermissionUtils.getDeniedPermissions(context, permissions);
+    }
+
+
+    /**
+     * 判断某个权限是否是特殊权限
+     */
+    public static boolean isSpecial(String permission) {
+        return PermissionUtils.isSpecialPermission(permission);
     }
 
     /**
      * 判断一个或多个权限是否被永久拒绝了（注意不能在请求权限之前调用，应该在 {@link OnPermissionCallback#onDenied(List, boolean)} 方法中调用）
      */
-    public static boolean isPermissionPermanentDenied(Activity activity, String permission) {
+    public static boolean isPermanentDenied(Activity activity, String permission) {
         return PermissionUtils.isPermissionPermanentDenied(activity, permission);
     }
 
-    public static boolean isPermissionPermanentDenied(Activity activity, String[] permissions) {
-        return isPermissionPermanentDenied(activity, PermissionUtils.asArrayList(permissions));
+    public static boolean isPermanentDenied(Activity activity, String[] permissions) {
+        return isPermanentDenied(activity, PermissionUtils.asArrayList(permissions));
     }
 
-    public static boolean isPermissionPermanentDenied(Activity activity, List<String> permissions) {
+    public static boolean isPermanentDenied(Activity activity, List<String> permissions) {
         return PermissionUtils.isPermissionPermanentDenied(activity, permissions);
     }
 
-    /**
-     * 判断某个权限是否是特殊权限
-     */
-    public static boolean isSpecialPermission(String permission) {
-        return PermissionUtils.isSpecialPermission(permission);
+    public static void startPermissionActivity(Context context) {
+        startPermissionActivity(context, (List<String>) null);
     }
 
-    /**
-     * 跳转到应用详情页
-     */
-    public static void startApplicationDetails(Context context) {
-        Activity activity = PermissionUtils.findFragmentActivity(context);
-        if (activity != null) {
-            startApplicationDetails(activity);
-            return;
-        }
-        Intent intent = PermissionSettingPage.getApplicationDetailsIntent(context);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
-    }
-
-    public static void startApplicationDetails(Activity activity) {
-        activity.startActivityForResult(PermissionSettingPage.getApplicationDetailsIntent(activity), REQUEST_CODE);
-    }
-
-    public static void startApplicationDetails(Fragment fragment) {
-        FragmentActivity activity = fragment.getActivity();
-        if (activity == null) {
-            return;
-        }
-        fragment.startActivityForResult(PermissionSettingPage.getApplicationDetailsIntent(activity), REQUEST_CODE);
-    }
-
-    /**
-     * 跳转到应用权限设置页
-     *
-     * @param permission           没有授予或者被拒绝的权限组
-     */
     public static void startPermissionActivity(Context context, String permission) {
         startPermissionActivity(context, PermissionUtils.asArrayList(permission));
     }
@@ -263,6 +237,11 @@ public final class XXPermissions {
         startPermissionActivity(context, PermissionUtils.asArrayList(permissions));
     }
 
+    /**
+     * 跳转到应用权限设置页
+     *
+     * @param permissions           没有授予或者被拒绝的权限组
+     */
     public static void startPermissionActivity(Context context, List<String> permissions) {
         Activity activity = PermissionUtils.findFragmentActivity(context);
         if (activity != null) {
@@ -286,6 +265,10 @@ public final class XXPermissions {
         activity.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), REQUEST_CODE);
     }
 
+    public static void startPermissionActivity(Fragment fragment) {
+        startPermissionActivity(fragment, (List<String>) null);
+    }
+
     public static void startPermissionActivity(Fragment fragment, String permissions) {
         startPermissionActivity(fragment, PermissionUtils.asArrayList(permissions));
     }
@@ -294,6 +277,11 @@ public final class XXPermissions {
         startPermissionActivity(fragment, PermissionUtils.asArrayList(permissions));
     }
 
+    /**
+     * 跳转到应用权限设置页
+     *
+     * @param permissions           没有授予或者被拒绝的权限组
+     */
     public static void startPermissionActivity(Fragment fragment, List<String> permissions) {
         FragmentActivity activity = fragment.getActivity();
         if (activity == null) {
