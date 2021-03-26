@@ -109,7 +109,7 @@ final class PermissionChecker {
         }
 
         int cookie = PermissionUtils.findApkPathCookie(context);
-        if (cookie == -1) {
+        if (cookie == 0) {
             return;
         }
 

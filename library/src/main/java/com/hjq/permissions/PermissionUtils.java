@@ -447,7 +447,7 @@ final class PermissionUtils {
     static int findApkPathCookie(Context context) {
         AssetManager assets = context.getAssets();
         String path = context.getApplicationInfo().sourceDir;
-        int cookie = -1;
+        int cookie = 0;
         try {
             try {
                 // 为什么不直接通过反射 AssetManager.findCookieForPath 方法来判断？因为这个 API 属于反射黑名单，反射执行不了
