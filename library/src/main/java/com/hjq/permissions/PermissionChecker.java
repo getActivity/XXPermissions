@@ -73,6 +73,11 @@ final class PermissionChecker {
         if (debugMode) {
             List<String> allPermissions = new ArrayList<>();
             Field[] fields = Permission.class.getDeclaredFields();
+            // 在开启代码混淆之后，反射 Permission 类中的字段会得到空的字段数组
+            // 这个是因为编译后常量会在代码中直接引用，所以 Permission 常量字段在混淆的时候会被移除掉
+            if (fields.length == 0) {
+                return true;
+            }
             for (Field field : fields) {
                 if (!String.class.equals(field.getType())) {
                     continue;

@@ -15,6 +15,22 @@
 
 #### 集成步骤
 
+* 在项目根目录下的 `build.gradle` 文件中加入
+
+```groovy
+buildscript {
+    ......
+}
+allprojects {
+    repositories {
+        // JitPack 远程仓库：https://jitpack.io
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
+* 在项目 app 模块下的 `build.gradle` 文件中加入
+
 ```groovy
 android {
     // 支持 JDK 1.8
@@ -26,7 +42,7 @@ android {
 
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.hjq:xxpermissions:10.6'
+    implementation 'com.github.getActivity:XXPermissions:10.8'
 }
 ```
 
@@ -134,7 +150,7 @@ public class XxxActivity extends AppCompatActivity {
 
 |     功能及细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  10.6 |  2.0.3  |  0.12   |   4.8.0  |  3.0.0   |  1.4.0    |  1.30.5    |
+|    对应版本  |  10.8 |  2.0.3  |  0.12   |   4.8.0  |  3.0.0   |  1.4.0    |  1.30.5    |
 |    框架体积  |  [24 KB](https://bintray.com/getactivity/maven/xxpermissions#files/com/hjq/xxpermissions)  | [127 KB](https://mvnrepository.com/artifact/com.yanzhenjie/permission)  |  [28 KB](https://jitpack.io/#com.github.tbruyelle/rxpermissions)  |   [91 KB](https://bintray.com/hotchemi/org.permissionsdispatcher/permissionsdispatcher-processor#files/org/permissionsdispatcher/permissionsdispatcher-processor)  |  [48 KB](https://bintray.com/easygoogle/EasyPermissions/easypermissions#files/pub/devrel/easypermissions)   |   [32 KB](https://bintray.com/guolindev/maven/permissionx#files/com/permissionx/guolindev/permissionx)  |   [483 KB](https://bintray.com/blankj/maven/UtilCode#files/com/blankj/utilcode)  |
 |   安装包权限   |  ✅  |  ✅  |  ❌  |  ❌   |  ❌   |  ❌   |  ❌   |
 |   悬浮窗权限   |  ✅  |  ✅  |  ❌  |  ❌   |  ❌   |  ❌   |   ✅  |
@@ -161,7 +177,7 @@ public class XxxActivity extends AppCompatActivity {
 
 * 在框架的日常维护中，有很多人跟我反馈过框架有 Bug，但是经过排查和定位发现，这其中有 95% 的问题来自于调用者一些不规范操作导致的，这不仅对我造成很大的困扰，同时也极大浪费了很多小伙伴的时间和精力，于是我在框架中加入了很多审查元素，在 **Debug** 模式下，一旦有某些操作不符合规范，那么框架会直接抛出异常给调用者，并在异常信息中正确指引调用者纠正错误，例如：
 
-    1. 传入的 Activity 对象不是 FragmentActivity 的子类，框架会抛出异常，又或者传入的 Activity 对象状态有异常（已经 **Finishing** 或者 **Destroyed**），框架也会抛出异常，请在合适的时机申请权限，如果申请的时机无法预估，请在外层做好判断。
+    1. 传入的 Activity 对象不是 FragmentActivity 的子类，框架会抛出异常，又或者传入的 Activity 的状态异常（已经 **Finishing** 或者 **Destroyed**），这种情况一般是在异步申请权限导致的，框架也会抛出异常，请在合适的时机申请权限，如果申请的时机无法预估，请在外层做好  Activity 状态判断再进行权限申请。
 
     2. 如果调用者没有传入任何权限就申请权限的话，框架会抛出异常，如果调用者传入的权限不是危险权限或者特殊权限，框架也会抛出异常，因为有的人会把普通权限当做危险权限传给框架，系统会直接拒绝。
 
@@ -169,11 +185,11 @@ public class XxxActivity extends AppCompatActivity {
 
     4. 如果申请的权限中包含后台定位权限， 那么这里面则不能包含和定位无关的权限，否则框架会抛出异常，因为 `ACCESS_BACKGROUND_LOCATION` 和其他非定位权限定位掺和在一起申请，在 Android 11 上会出现不申请直接被拒绝的情况。
 
-    5. 如果申请的权限和项目中的 **targetSdkVersion** 对不上，框架会抛出异常，是因为 **targetSdkVersion** 代表着项目适配到哪个 Android 版本，系统会自动做向下兼容，假设申请的权限是 Android 11 才出现的，但是 **targetSdkVersion** 还停留在 29，那么在某些机型上的申请结果会出现异常的情况。
+    5. 如果申请的权限和项目中的 **targetSdkVersion** 对不上，框架会抛出异常，是因为 **targetSdkVersion** 代表着项目适配到哪个 Android 版本，系统会自动做向下兼容，假设申请的权限是 Android 11 才出现的，但是 **targetSdkVersion** 还停留在 29，那么在某些机型上的申请结果会出现授权结果异常的情况。
 
-    6. 如果动态申请的权限没有进行静态注册，那么框架会抛出异常，因为如果不这么做，是可以进行申请权限，但是不会出现授权弹窗，直接被系统拒绝，并且系统不会给出任何提示，并且这个问题在每个机型上面都是**必现的**。
+    6. 如果动态申请的权限没有进行在清单文件中注册，那么框架会抛出异常，因为如果不这么做，是可以进行申请权限，但是不会出现授权弹窗，直接被系统拒绝，并且系统不会给出任何弹窗和提示，并且这个问题在每个机型上面都是**必现的**。
 
-* 出现这些问题的原因是，我们对这些机制不太熟悉，而如果框架不加以限制，那么引发各种奇奇怪怪的问题出现，作为框架的作者，表示不仅你们很痛苦，作为框架作者表示也很受伤。因为这些问题不是框架导致的，而是调用者的某些操作不规范导致的。我觉得这个问题最好的解决方式是，由框架做统一的检查，因为我是框架的作者，对权限这块知识点有**较强的专业能力和足够的经验**，知道什么该做，什么不该做，这样就可以对这些骚操作进行一一拦截。
+* 出现这些问题的原因是，我们对这些机制不太熟悉，而如果框架不加以限制，那么引发各种奇奇怪怪的问题出现，作为框架的作者，表示不仅你们很痛苦，作为框架作者表示也很受伤。因为这些问题不是框架导致的，而是调用者的某些操作不规范导致的。我觉得这个问题最好的解决方式是，由框架做统一的检查，因为我是框架的作者，对权限申请这块知识点有**较强的专业能力和足够的经验**，知道什么该做，什么不该做，这样就可以对这些骚操作进行一一拦截。
 
 * 当权限申请出现问题时，你希不希望能有个人过来提醒你，告诉你哪里错了？该怎么去纠正？然而这些 XXPermissions 都做到了，在所有的权限请求框架中，我算是第一个做这件事的人，我认为**做好一个框架**不仅仅是要把功能做好，把复杂的场景处理好，更重要的是要**以人为本**，因为框架本身就是为人服务的，要做的不仅仅是解决大家的需求，还要帮助大家在这个过程中少走弯路。
 

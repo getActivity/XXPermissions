@@ -4,7 +4,7 @@ import android.app.Application;
 
 import com.hjq.permissions.XXPermissions;
 import com.hjq.toast.ToastUtils;
-import com.hjq.toast.style.ToastWhiteStyle;
+import com.hjq.toast.style.WhiteToastStyle;
 
 /**
  *    author : Android 轮子哥
@@ -19,7 +19,7 @@ public final class AppApplication extends Application {
         super.onCreate();
 
         // 初始化吐司工具类
-        ToastUtils.init(this, new ToastWhiteStyle(getApplicationContext()));
+        ToastUtils.init(this, new WhiteToastStyle());
 
         // 设置权限申请拦截器
         XXPermissions.setInterceptor(new PermissionInterceptor());

@@ -1,13 +1,12 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 30
 
     defaultConfig {
         minSdkVersion 11
-        versionCode 1060
-        versionName "10.6"
+        versionCode 1080
+        versionName "10.8"
     }
 
     // 使用 JDK 1.8
@@ -24,15 +23,6 @@ android {
 dependencies {
     // noinspection GradleCompatible
     implementation 'com.android.support:support-fragment:24.2.0'
-}
-
-publish {
-    userOrg = 'getactivity'
-    groupId = 'com.hjq'
-    artifactId = 'xxpermissions'
-    publishVersion = '10.6'
-    desc = 'Android 6.0 permissions adaptation framework'
-    website = "https://github.com/getActivity/XXPermissions"
 }
 
 tasks.withType(Javadoc) {

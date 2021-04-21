@@ -7,8 +7,8 @@ android {
         applicationId "com.hjq.permissions.demo"
         minSdkVersion 14
         targetSdkVersion 30
-        versionCode 1060
-        versionName "10.6"
+        versionCode 1080
+        versionName "10.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -19,8 +19,13 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -37,9 +42,9 @@ dependencies {
     // noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:28.0.0'
 
-    // 吐司工具类：https://github.com/getActivity/ToastUtils
-    implementation 'com.hjq:toast:8.8'
-    // 内存泄漏捕捉：https://github.com/square/leakcanary
-    // noinspection GradleDependency
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
+    // 吐司框架：https://github.com/getActivity/ToastUtils
+    implementation 'com.github.getActivity:ToastUtils:9.0'
+
+    // 内存泄漏检测：https://github.com/square/leakcanary
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }

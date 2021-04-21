@@ -73,7 +73,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_3) {
 
             XXPermissions.with(this)
-                    .permission(Permission.Group.LOCATION)
+                    .permission(Permission.ACCESS_COARSE_LOCATION)
+                    .permission(Permission.ACCESS_FINE_LOCATION)
+                    .permission(Permission.ACCESS_BACKGROUND_LOCATION)
                     .request(new OnPermissionCallback() {
 
                         @Override

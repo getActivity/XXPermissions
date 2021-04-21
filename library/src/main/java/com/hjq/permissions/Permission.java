@@ -35,24 +35,14 @@ public final class Permission {
 
     /** 读取外部存储 */
     public static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
-
     /** 写入外部存储 */
     public static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
-
-    /** 读取日历 */
-    public static final String READ_CALENDAR = "android.permission.READ_CALENDAR";
-    /** 修改日历 */
-    public static final String WRITE_CALENDAR = "android.permission.WRITE_CALENDAR";
 
     /** 相机权限 */
     public static final String CAMERA = "android.permission.CAMERA";
 
-    /** 读取联系人 */
-    public static final String READ_CONTACTS = "android.permission.READ_CONTACTS";
-    /** 修改联系人 */
-    public static final String WRITE_CONTACTS = "android.permission.WRITE_CONTACTS";
-    /** 访问账户列表 */
-    public static final String GET_ACCOUNTS = "android.permission.GET_ACCOUNTS";
+    /** 录音权限 */
+    public static final String RECORD_AUDIO = "android.permission.RECORD_AUDIO";
 
     /** 获取精确位置 */
     public static final String ACCESS_FINE_LOCATION = "android.permission.ACCESS_FINE_LOCATION";
@@ -61,11 +51,20 @@ public final class Permission {
     /** 在后台获取位置（需要 Android 10.0 及以上） */
     public static final String ACCESS_BACKGROUND_LOCATION = "android.permission.ACCESS_BACKGROUND_LOCATION";
 
+    /** 读取联系人 */
+    public static final String READ_CONTACTS = "android.permission.READ_CONTACTS";
+    /** 修改联系人 */
+    public static final String WRITE_CONTACTS = "android.permission.WRITE_CONTACTS";
+    /** 访问账户列表 */
+    public static final String GET_ACCOUNTS = "android.permission.GET_ACCOUNTS";
+
+    /** 读取日历 */
+    public static final String READ_CALENDAR = "android.permission.READ_CALENDAR";
+    /** 修改日历 */
+    public static final String WRITE_CALENDAR = "android.permission.WRITE_CALENDAR";
+
     /** 读取照片中的地理位置（需要 Android 10.0 及以上）*/
     public static final String ACCESS_MEDIA_LOCATION = "android.permission.ACCESS_MEDIA_LOCATION";
-
-    /** 录音权限 */
-    public static final String RECORD_AUDIO = "android.permission.RECORD_AUDIO";
 
     /** 读取电话状态（这个权限在某些手机上面是申请失败的） */
     public static final String READ_PHONE_STATE = "android.permission.READ_PHONE_STATE";
@@ -120,12 +119,6 @@ public final class Permission {
         public static final String[] STORAGE = new String[]{
                 Permission.READ_EXTERNAL_STORAGE,
                 Permission.WRITE_EXTERNAL_STORAGE};
-
-        /** 位置权限 */
-        public static final String[] LOCATION = new String[]{
-                Permission.ACCESS_FINE_LOCATION,
-                Permission.ACCESS_COARSE_LOCATION,
-                Permission.ACCESS_BACKGROUND_LOCATION};
 
         /** 日历权限 */
         public static final String[] CALENDAR = new String[]{

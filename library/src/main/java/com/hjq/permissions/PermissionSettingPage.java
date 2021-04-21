@@ -92,12 +92,9 @@ final class PermissionSettingPage {
         Intent intent = null;
         if (PermissionUtils.isAndroid6()) {
             intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-            // 在 Android 11 上面不能加包名跳转，因为就算加了也没有效果
-            // 还有人反馈在 Android 11 的 TV 模拟器上会出现崩溃的情况
+            // 在 Android 11 加包名跳转也是没有效果的，官方文档链接：
             // https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION
-            if (!PermissionUtils.isAndroid11()) {
-                intent.setData(getPackageNameUri(context));
-            }
+            intent.setData(getPackageNameUri(context));
         }
 
         if (intent == null || !areActivityIntent(context, intent)) {

@@ -8,15 +8,11 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.0'
-        classpath 'com.novoda:bintray-release:0.9.2'
     }
 }
 
 allprojects {
     repositories {
-        maven { url 'https://dl.bintray.com/getactivity/maven/' }
-        maven { url 'https://dl.bintray.com/umsdk/release' }
-        maven { url 'https://maven.google.com' }
         maven { url 'https://jitpack.io' }
         jcenter()
         google()

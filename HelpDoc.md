@@ -26,7 +26,7 @@
 
 * 但是需要注意的是：申请过程分为两个步骤，第一步是申请前台定位权限，第二步是申请后台定位权限，用户必须要先同意前台定位权限才能进入后台定位权限的申请。同意前台定位权限的方式有两种：勾选 `仅在使用该应用时允许` 或 `仅限这一次`，而到了后台定位权限申请中，用户必须要勾选 `始终允许`，只有这样后台定位权限才能申请通过。
 
-* 还有如果你的应用只需要在前台使用定位功能， 而不需要在后台中使用定位功能，那么请不要申请 `Permission.ACCESS_BACKGROUND_LOCATION` 权限，另外需要注意的是 `Permission.Group.LOCATION` 本身就是包含了后台定位权限的。
+* 还有如果你的应用只需要在前台使用定位功能， 而不需要在后台中使用定位功能，那么请不要连带申请 `Permission.ACCESS_BACKGROUND_LOCATION` 权限。
 
 ![](picture/location_1.jpg)
 
@@ -117,7 +117,7 @@ XXPermissions.with(this)
 * 在 Application 初始化的时候配置
 
 ```java
-public class MyApplication extends Application {
+public class XxxApplication extends Application {
 
     @Override
     public void onCreate() {
