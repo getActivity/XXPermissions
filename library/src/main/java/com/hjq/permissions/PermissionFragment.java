@@ -29,13 +29,20 @@ public final class PermissionFragment extends Fragment implements Runnable {
     /** 请求码（自动生成）*/
     private static final String REQUEST_CODE = "request_code";
 
+    /** 是否经过拦截器 */
+    private static final String USE_INTERCEPTOR = "use_interceptor";
+
     /** 权限请求码存放集合 */
     private final static SparseBooleanArray REQUEST_CODE_ARRAY = new SparseBooleanArray();
+
+    public static void beginRequest(FragmentActivity activity, ArrayList<String> permissions, OnPermissionCallback callback) {
+        beginRequest(activity, permissions, true, callback);
+    }
 
     /**
      * 开启权限申请
      */
-    public static void beginRequest(FragmentActivity activity, ArrayList<String> permissions, OnPermissionCallback callback) {
+    private static void beginRequest(FragmentActivity activity, ArrayList<String> permissions, boolean interceptor, OnPermissionCallback callback) {
         PermissionFragment fragment = new PermissionFragment();
         Bundle bundle = new Bundle();
         int requestCode;
@@ -47,6 +54,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
         REQUEST_CODE_ARRAY.put(requestCode, true);
         bundle.putInt(REQUEST_CODE, requestCode);
         bundle.putStringArrayList(REQUEST_PERMISSIONS, permissions);
+        bundle.putBoolean(USE_INTERCEPTOR, interceptor);
         fragment.setArguments(bundle);
         // 设置保留实例，不会因为屏幕方向或配置变化而重新创建
         fragment.setRetainInstance(true);
@@ -216,6 +224,8 @@ public final class PermissionFragment extends Fragment implements Runnable {
             return;
         }
 
+        final int requestCode = arguments.getInt(REQUEST_CODE);
+
         final ArrayList<String> allPermissions = arguments.getStringArrayList(REQUEST_PERMISSIONS);
         if (allPermissions == null || allPermissions.size() == 0) {
             return;
@@ -243,14 +253,46 @@ public final class PermissionFragment extends Fragment implements Runnable {
         }
 
         // 在 Android 10 的机型上，需要先申请前台定位权限，再申请后台定位权限
-        PermissionFragment.beginRequest(activity, locationPermission, new OnPermissionCallback() {
+        PermissionFragment.beginRequest(activity, locationPermission, false, new OnPermissionCallback() {
 
             @Override
             public void onGranted(List<String> permissions, boolean all) {
                 if (!all || !isAdded()) {
                     return;
                 }
-                requestPermissions(allPermissions.toArray(new String[allPermissions.size() - 1]), arguments.getInt(REQUEST_CODE));
+
+                // 前台定位权限授予了，现在申请后台定位权限
+                PermissionFragment.beginRequest(activity,
+                        PermissionUtils.asArrayList(Permission.ACCESS_BACKGROUND_LOCATION),
+                        false, new OnPermissionCallback() {
+
+                    @Override
+                    public void onGranted(List<String> permissions, boolean all) {
+                        if (!all || !isAdded()) {
+                            return;
+                        }
+
+                        // 前台定位权限和后台定位权限都授予了
+                        int[] grantResults = new int[allPermissions.size()];
+                        Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
+                        onRequestPermissionsResult(requestCode, allPermissions.toArray(new String[0]), grantResults);
+                    }
+
+                    @Override
+                    public void onDenied(List<String> permissions, boolean never) {
+                        if (!isAdded()) {
+                            return;
+                        }
+
+                        // 后台定位授权失败，但是前台定位权限已经授予了
+                        int[] grantResults = new int[allPermissions.size()];
+                        for (int i = 0; i < allPermissions.size(); i++) {
+                            grantResults[i] = Permission.ACCESS_BACKGROUND_LOCATION.equals(allPermissions.get(i)) ?
+                                    PackageManager.PERMISSION_DENIED : PackageManager.PERMISSION_GRANTED;
+                        }
+                        onRequestPermissionsResult(requestCode, allPermissions.toArray(new String[0]), grantResults);
+                    }
+                });
             }
 
             @Override
@@ -258,15 +300,11 @@ public final class PermissionFragment extends Fragment implements Runnable {
                 if (!isAdded()) {
                     return;
                 }
-                // 如果申请的权限里面只包含定位相关的权限，那么就直接回调失败
-                if (permissions.size() == allPermissions.size() - 1) {
-                    int[] grantResults = new int[allPermissions.size()];
-                    Arrays.fill(grantResults, PackageManager.PERMISSION_DENIED);
-                    onRequestPermissionsResult(arguments.getInt(REQUEST_CODE), allPermissions.toArray(new String[0]), grantResults);
-                    return;
-                }
-                // 如果还有其他类型的权限组就继续申请
-                requestPermissions(allPermissions.toArray(new String[allPermissions.size() - 1]), arguments.getInt(REQUEST_CODE));
+
+                // 前台定位授权失败，并且无法申请后台定位权限
+                int[] grantResults = new int[allPermissions.size()];
+                Arrays.fill(grantResults, PackageManager.PERMISSION_DENIED);
+                onRequestPermissionsResult(requestCode, allPermissions.toArray(new String[0]), grantResults);
             }
         });
     }
@@ -279,7 +317,9 @@ public final class PermissionFragment extends Fragment implements Runnable {
             return;
         }
 
-        OnPermissionCallback callBack = mCallBack;
+        boolean useInterceptor = arguments.getBoolean(USE_INTERCEPTOR);
+
+        OnPermissionCallback callback = mCallBack;
         mCallBack = null;
 
         for (int i = 0; i < permissions.length; i++) {
@@ -338,20 +378,32 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
         // 如果请求成功的权限集合大小和请求的数组一样大时证明权限已经全部授予
         if (grantedPermission.size() == permissions.length) {
-            // 代表申请的所有的权限都授予了
-            XXPermissions.getInterceptor().grantedPermissions(activity, callBack, grantedPermission, true);
+            if (useInterceptor) {
+                // 代表申请的所有的权限都授予了
+                XXPermissions.getInterceptor().grantedPermissions(activity, callback, grantedPermission, true);
+            } else {
+                callback.onGranted(grantedPermission, true);
+            }
             return;
         }
 
         // 获取被拒绝的权限
         List<String> deniedPermission = PermissionUtils.getDeniedPermissions(permissions, grantResults);
 
-        // 代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回 true 给开发人员，让开发者引导用户去设置界面开启权限
-        XXPermissions.getInterceptor().deniedPermissions(activity, callBack, deniedPermission, PermissionUtils.isPermissionPermanentDenied(activity, deniedPermission));
+        if (useInterceptor) {
+            // 代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回 true 给开发人员，让开发者引导用户去设置界面开启权限
+            XXPermissions.getInterceptor().deniedPermissions(activity, callback, deniedPermission, PermissionUtils.isPermissionPermanentDenied(activity, deniedPermission));
+        } else {
+            callback.onDenied(deniedPermission, PermissionUtils.isPermissionPermanentDenied(activity, deniedPermission));
+        }
 
         // 证明还有一部分权限被成功授予，回调成功接口
         if (!grantedPermission.isEmpty()) {
-            XXPermissions.getInterceptor().grantedPermissions(activity, callBack, grantedPermission, false);
+            if (useInterceptor) {
+                XXPermissions.getInterceptor().grantedPermissions(activity, callback, grantedPermission, false);
+            } else {
+                callback.onDenied(grantedPermission, false);
+            }
         }
     }
 

@@ -325,6 +325,16 @@ final class PermissionUtils {
             return false;
         }
 
+        // 重新检测后台定位权限是否永久拒绝
+        if (isAndroid10()) {
+            if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission) &&
+                    getPermissionStatus(activity, Permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_DENIED) {
+
+                return isPermissionPermanentDenied(activity, Permission.ACCESS_COARSE_LOCATION) ||
+                        isPermissionPermanentDenied(activity, Permission.ACCESS_FINE_LOCATION);
+            }
+        }
+
         // 检测 10.0 的三个新权限
         if (!isAndroid10()) {
             if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission) ||
@@ -332,7 +342,7 @@ final class PermissionUtils {
                 return false;
             }
 
-            if (Permission.ACTIVITY_RECOGNITION.equals(permission) ) {
+            if (Permission.ACTIVITY_RECOGNITION.equals(permission)) {
                 return activity.checkSelfPermission(Permission.BODY_SENSORS) == PackageManager.PERMISSION_DENIED &&
                         !activity.shouldShowRequestPermissionRationale(permission);
             }
@@ -460,6 +470,9 @@ final class PermissionUtils {
                 e.printStackTrace();
                 Method method = assets.getClass().getDeclaredMethod("getApkPaths");
                 String[] apkPaths = (String[]) method.invoke(assets);
+                if (apkPaths == null) {
+                    return cookie;
+                }
                 for (int i = 0; i < apkPaths.length; i++) {
                     if (apkPaths[i].equals(path)) {
                         cookie = i + 1;

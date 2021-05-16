@@ -115,6 +115,7 @@ final class PermissionChecker {
 
         int cookie = PermissionUtils.findApkPathCookie(context);
         if (cookie == 0) {
+            // 如果 cookie 为 0，证明获取失败，直接 return
             return;
         }
 
