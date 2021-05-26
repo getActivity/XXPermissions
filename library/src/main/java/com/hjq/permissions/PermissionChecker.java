@@ -173,6 +173,11 @@ final class PermissionChecker {
             return;
         }
 
+        if (requestPermissions.contains(Permission.ACCESS_COARSE_LOCATION) && !requestPermissions.contains(Permission.ACCESS_FINE_LOCATION)) {
+            // 申请后台定位权限可以不包含模糊定位权限，但是一定要包含精确定位权限，否则后台定位权限会无法申请，也就是会导致无法弹出授权弹窗
+            throw new IllegalArgumentException("The application for background location permissions must include precise location permissions");
+        }
+
         for (String permission : requestPermissions) {
             if (Permission.ACCESS_FINE_LOCATION.equals(permission)
                     || Permission.ACCESS_COARSE_LOCATION.equals(permission)

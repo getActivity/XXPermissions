@@ -93,7 +93,7 @@ final class PermissionUtils {
         if (isAndroid11()) {
             return Environment.isExternalStorageManager();
         }
-        return XXPermissions.isGranted(context, Permission.Group.STORAGE);
+        return isGrantedPermissions(context, asArrayList(Permission.Group.STORAGE));
     }
 
     /**
@@ -188,6 +188,10 @@ final class PermissionUtils {
             return true;
         }
 
+        if (permissions == null || permissions.isEmpty()) {
+            return false;
+        }
+
         for (String permission : permissions) {
             if (!isGrantedPermission(context, permission)) {
                 return false;
@@ -252,18 +256,23 @@ final class PermissionUtils {
 
         // 检测 10.0 的三个新权限
         if (!isAndroid10()) {
-            if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission) ||
-                    Permission.ACCESS_MEDIA_LOCATION.equals(permission)) {
-                return true;
+
+            if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission)) {
+                return context.checkSelfPermission(Permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
             }
 
             if (Permission.ACTIVITY_RECOGNITION.equals(permission)) {
                 return context.checkSelfPermission(Permission.BODY_SENSORS) == PackageManager.PERMISSION_GRANTED;
             }
+
+            if (Permission.ACCESS_MEDIA_LOCATION.equals(permission)) {
+                return true;
+            }
         }
 
         // 检测 9.0 的一个新权限
         if (!isAndroid9()) {
+
             if (Permission.ACCEPT_HANDOVER.equals(permission)) {
                 return true;
             }
@@ -271,6 +280,7 @@ final class PermissionUtils {
 
         // 检测 8.0 的两个新权限
         if (!isAndroid8()) {
+
             if (Permission.ANSWER_PHONE_CALLS.equals(permission)) {
                 return true;
             }
@@ -325,31 +335,37 @@ final class PermissionUtils {
             return false;
         }
 
-        // 重新检测后台定位权限是否永久拒绝
         if (isAndroid10()) {
-            if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission) &&
-                    getPermissionStatus(activity, Permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_DENIED) {
 
-                return isPermissionPermanentDenied(activity, Permission.ACCESS_COARSE_LOCATION) ||
-                        isPermissionPermanentDenied(activity, Permission.ACCESS_FINE_LOCATION);
+            // 重新检测后台定位权限是否永久拒绝
+            if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission) &&
+                    !isGrantedPermission(activity, Permission.ACCESS_BACKGROUND_LOCATION) &&
+                    !isGrantedPermission(activity, Permission.ACCESS_FINE_LOCATION)) {
+                return !activity.shouldShowRequestPermissionRationale(Permission.ACCESS_FINE_LOCATION);
             }
         }
 
         // 检测 10.0 的三个新权限
         if (!isAndroid10()) {
-            if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission) ||
-                    Permission.ACCESS_MEDIA_LOCATION.equals(permission)) {
-                return false;
+
+            if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission)) {
+                return !isGrantedPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
+                        !activity.shouldShowRequestPermissionRationale(Permission.ACCESS_FINE_LOCATION);
             }
 
             if (Permission.ACTIVITY_RECOGNITION.equals(permission)) {
-                return activity.checkSelfPermission(Permission.BODY_SENSORS) == PackageManager.PERMISSION_DENIED &&
-                        !activity.shouldShowRequestPermissionRationale(permission);
+                return !isGrantedPermission(activity, Permission.BODY_SENSORS) &&
+                        !activity.shouldShowRequestPermissionRationale(Permission.BODY_SENSORS);
+            }
+
+            if (Permission.ACCESS_MEDIA_LOCATION.equals(permission)) {
+                return false;
             }
         }
 
         // 检测 9.0 的一个新权限
         if (!isAndroid9()) {
+
             if (Permission.ACCEPT_HANDOVER.equals(permission)) {
                 return false;
             }
@@ -357,17 +373,18 @@ final class PermissionUtils {
 
         // 检测 8.0 的两个新权限
         if (!isAndroid8()) {
+
             if (Permission.ANSWER_PHONE_CALLS.equals(permission)) {
                 return true;
             }
 
             if (Permission.READ_PHONE_NUMBERS.equals(permission)) {
-                return activity.checkSelfPermission(Permission.READ_PHONE_STATE) == PackageManager.PERMISSION_DENIED &&
-                        !activity.shouldShowRequestPermissionRationale(permission);
+                return !isGrantedPermission(activity, Permission.READ_PHONE_STATE) &&
+                        !activity.shouldShowRequestPermissionRationale(Permission.READ_PHONE_STATE);
             }
         }
 
-        return activity.checkSelfPermission(permission) == PackageManager.PERMISSION_DENIED &&
+        return !isGrantedPermission(activity, permission) &&
                 !activity.shouldShowRequestPermissionRationale(permission);
     }
 
@@ -420,6 +437,17 @@ final class PermissionUtils {
         ArrayList<T> list = new ArrayList<>(array.length);
         for (T t : array) {
             list.add(t);
+        }
+        return list;
+    }
+
+    static <T> ArrayList<T> asArrayLists(T[]... arrays) {
+        ArrayList<T> list = new ArrayList<>();
+        if (arrays == null || arrays.length == 0) {
+            return list;
+        }
+        for (T[] ts : arrays) {
+            list.addAll(asArrayList(ts));
         }
         return list;
     }

@@ -235,18 +235,15 @@ public final class PermissionFragment extends Fragment implements Runnable {
         // Android 10 定位策略发生改变，申请后台定位权限的前提是要有前台定位权限（授予了精确或者模糊任一权限）
         if (PermissionUtils.isAndroid10() && allPermissions.contains(Permission.ACCESS_BACKGROUND_LOCATION)) {
             locationPermission = new ArrayList<>();
-            if (allPermissions.contains(Permission.ACCESS_COARSE_LOCATION) &&
-                    !PermissionUtils.isGrantedPermission(activity, Permission.ACCESS_COARSE_LOCATION)) {
+            if (allPermissions.contains(Permission.ACCESS_COARSE_LOCATION)) {
                 locationPermission.add(Permission.ACCESS_COARSE_LOCATION);
             }
 
-            if (allPermissions.contains(Permission.ACCESS_FINE_LOCATION) &&
-                    !PermissionUtils.isGrantedPermission(activity, Permission.ACCESS_FINE_LOCATION)) {
+            if (allPermissions.contains(Permission.ACCESS_FINE_LOCATION)) {
                 locationPermission.add(Permission.ACCESS_FINE_LOCATION);
             }
         }
 
-        // 如果不需要申请前台定位权限就直接申请危险权限
         if (locationPermission == null || locationPermission.isEmpty()) {
             requestPermissions(allPermissions.toArray(new String[allPermissions.size() - 1]), getArguments().getInt(REQUEST_CODE));
             return;
@@ -328,15 +325,6 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
             if (PermissionUtils.isSpecialPermission(permission)) {
                 // 如果这个权限是特殊权限，那么就重新进行权限检测
-                grantResults[i] = PermissionUtils.getPermissionStatus(activity, permission);
-                continue;
-            }
-
-            // 重新检查 Android 11 后台定位权限
-            if (PermissionUtils.isAndroid11() &&
-                    Permission.ACCESS_BACKGROUND_LOCATION.equals(permission)) {
-                // 这个权限是后台定位权限并且当前手机版本是 Android 11 及以上，那么就需要重新进行检测
-                // 因为只要申请这个后台定位权限，grantResults 数组总对这个权限申请的结果返回 -1（拒绝）
                 grantResults[i] = PermissionUtils.getPermissionStatus(activity, permission);
                 continue;
             }

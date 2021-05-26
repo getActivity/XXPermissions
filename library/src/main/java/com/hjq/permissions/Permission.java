@@ -41,7 +41,7 @@ public final class Permission {
     /** 相机权限 */
     public static final String CAMERA = "android.permission.CAMERA";
 
-    /** 录音权限 */
+    /** 麦克风权限 */
     public static final String RECORD_AUDIO = "android.permission.RECORD_AUDIO";
 
     /** 获取精确位置 */
@@ -63,7 +63,14 @@ public final class Permission {
     /** 修改日历 */
     public static final String WRITE_CALENDAR = "android.permission.WRITE_CALENDAR";
 
-    /** 读取照片中的地理位置（需要 Android 10.0 及以上）*/
+    /**
+     * 读取照片中的地理位置（需要 Android 10.0 及以上）
+     *
+     * 需要注意的是，如果这个权限申请成功了但是不能正常读取照片的地理信息，那么需要先申请存储权限：
+     *
+     * 如果项目 targetSdkVersion <= 29 需要申请 {@link Permission.Group#STORAGE}
+     * 如果项目 targetSdkVersion >= 30 需要申请 {@link Permission#MANAGE_EXTERNAL_STORAGE}
+     */
     public static final String ACCESS_MEDIA_LOCATION = "android.permission.ACCESS_MEDIA_LOCATION";
 
     /** 读取电话状态（这个权限在某些手机上面是申请失败的） */

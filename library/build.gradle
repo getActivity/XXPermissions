@@ -5,8 +5,8 @@ android {
 
     defaultConfig {
         minSdkVersion 11
-        versionCode 1100
-        versionName "11.0"
+        versionCode 1120
+        versionName "11.2"
     }
 
     // 使用 JDK 1.8
@@ -17,6 +17,13 @@ android {
 
     lintOptions {
         abortOnError false
+    }
+
+    android.libraryVariants.all { variant ->
+        // aar 输出文件名配置
+        variant.outputs.all { output ->
+            outputFileName = "xxpermissions-${android.defaultConfig.versionName}.aar"
+        }
     }
 }
 

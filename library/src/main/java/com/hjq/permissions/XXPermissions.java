@@ -7,7 +7,6 @@ import android.content.pm.ApplicationInfo;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -99,21 +98,14 @@ public final class XXPermissions {
     }
 
     /**
-     * 添加权限
-     */
-    public XXPermissions permission(String permission) {
-        if (mPermissions == null) {
-            mPermissions = new ArrayList<>(1);
-        }
-        mPermissions.add(permission);
-        return this;
-    }
-
-    /**
      * 添加权限组
      */
-    public XXPermissions permission(String[] permissions) {
+    public XXPermissions permission(String... permissions) {
         return permission(PermissionUtils.asArrayList(permissions));
+    }
+
+    public XXPermissions permission(String[]... permissions) {
+        return permission(PermissionUtils.asArrayLists(permissions));
     }
 
     public XXPermissions permission(List<String> permissions) {
@@ -179,12 +171,12 @@ public final class XXPermissions {
     /**
      * 判断一个或多个权限是否全部授予了
      */
-    public static boolean isGranted(Context context, String permission) {
-        return PermissionUtils.isGrantedPermission(context, permission);
+    public static boolean isGranted(Context context, String... permissions) {
+        return isGranted(context, PermissionUtils.asArrayList(permissions));
     }
 
-    public static boolean isGranted(Context context, String[] permissions) {
-        return isGranted(context, PermissionUtils.asArrayList(permissions));
+    public static boolean isGranted(Context context, String[]... permissions) {
+        return isGranted(context, PermissionUtils.asArrayLists(permissions));
     }
 
     public static boolean isGranted(Context context, List<String> permissions) {
@@ -194,14 +186,17 @@ public final class XXPermissions {
     /**
      * 获取没有授予的权限
      */
-    public static List<String> getDenied(Context context, String[] permissions) {
+    public static List<String> getDenied(Context context, String... permissions) {
         return getDenied(context, PermissionUtils.asArrayList(permissions));
+    }
+
+    public static List<String> getDenied(Context context, String[]... permissions) {
+        return getDenied(context, PermissionUtils.asArrayLists(permissions));
     }
 
     public static List<String> getDenied(Context context, List<String> permissions) {
         return PermissionUtils.getDeniedPermissions(context, permissions);
     }
-
 
     /**
      * 判断某个权限是否是特殊权限
@@ -213,12 +208,12 @@ public final class XXPermissions {
     /**
      * 判断一个或多个权限是否被永久拒绝了（注意不能在请求权限之前调用，应该在 {@link OnPermissionCallback#onDenied(List, boolean)} 方法中调用）
      */
-    public static boolean isPermanentDenied(Activity activity, String permission) {
-        return PermissionUtils.isPermissionPermanentDenied(activity, permission);
+    public static boolean isPermanentDenied(Activity activity, String... permissions) {
+        return isPermanentDenied(activity, PermissionUtils.asArrayList(permissions));
     }
 
-    public static boolean isPermanentDenied(Activity activity, String[] permissions) {
-        return isPermanentDenied(activity, PermissionUtils.asArrayList(permissions));
+    public static boolean isPermanentDenied(Activity activity, String[]... permissions) {
+        return isPermanentDenied(activity, PermissionUtils.asArrayLists(permissions));
     }
 
     public static boolean isPermanentDenied(Activity activity, List<String> permissions) {
@@ -229,12 +224,12 @@ public final class XXPermissions {
         startPermissionActivity(context, (List<String>) null);
     }
 
-    public static void startPermissionActivity(Context context, String permission) {
-        startPermissionActivity(context, PermissionUtils.asArrayList(permission));
+    public static void startPermissionActivity(Context context, String... permissions) {
+        startPermissionActivity(context, PermissionUtils.asArrayList(permissions));
     }
 
-    public static void startPermissionActivity(Context context, String[] permissions) {
-        startPermissionActivity(context, PermissionUtils.asArrayList(permissions));
+    public static void startPermissionActivity(Context context, String[]... permissions) {
+        startPermissionActivity(context, PermissionUtils.asArrayLists(permissions));
     }
 
     /**
@@ -249,16 +244,18 @@ public final class XXPermissions {
             return;
         }
         Intent intent = PermissionSettingPage.getSmartPermissionIntent(context, permissions);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (!(context instanceof Activity)) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
         context.startActivity(intent);
     }
 
-    public static void startPermissionActivity(Activity activity, String permission) {
-        startPermissionActivity(activity, PermissionUtils.asArrayList(permission));
+    public static void startPermissionActivity(Activity activity, String... permissions) {
+        startPermissionActivity(activity, PermissionUtils.asArrayList(permissions));
     }
 
-    public static void startPermissionActivity(Activity activity, String[] permissions) {
-        startPermissionActivity(activity, PermissionUtils.asArrayList(permissions));
+    public static void startPermissionActivity(Activity activity, String[]... permissions) {
+        startPermissionActivity(activity, PermissionUtils.asArrayLists(permissions));
     }
 
     public static void startPermissionActivity(Activity activity, List<String> permissions) {
@@ -269,12 +266,12 @@ public final class XXPermissions {
         startPermissionActivity(fragment, (List<String>) null);
     }
 
-    public static void startPermissionActivity(Fragment fragment, String permissions) {
+    public static void startPermissionActivity(Fragment fragment, String... permissions) {
         startPermissionActivity(fragment, PermissionUtils.asArrayList(permissions));
     }
 
-    public static void startPermissionActivity(Fragment fragment, String[] permissions) {
-        startPermissionActivity(fragment, PermissionUtils.asArrayList(permissions));
+    public static void startPermissionActivity(Fragment fragment, String[]... permissions) {
+        startPermissionActivity(fragment, PermissionUtils.asArrayLists(permissions));
     }
 
     /**
