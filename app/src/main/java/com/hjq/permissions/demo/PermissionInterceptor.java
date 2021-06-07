@@ -1,9 +1,9 @@
 package com.hjq.permissions.demo;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 
 import com.hjq.permissions.IPermissionInterceptor;
@@ -24,7 +24,7 @@ import java.util.List;
 public final class PermissionInterceptor implements IPermissionInterceptor {
 
 //    @Override
-//    public void requestPermissions(FragmentActivity activity, OnPermissionCallback callback, List<String> permissions) {
+//    public void requestPermissions(Activity activity, OnPermissionCallback callback, List<String> permissions) {
 //        // 这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
 //        new AlertDialog.Builder(activity)
 //                .setTitle(R.string.common_permission_hint)
@@ -48,13 +48,13 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
 //    }
 
     @Override
-    public void grantedPermissions(FragmentActivity activity, OnPermissionCallback callback, List<String> permissions, boolean all) {
+    public void grantedPermissions(Activity activity, OnPermissionCallback callback, List<String> permissions, boolean all) {
         // 回调授权失败的方法
         callback.onGranted(permissions, all);
     }
 
     @Override
-    public void deniedPermissions(FragmentActivity activity, OnPermissionCallback callback, List<String> permissions, boolean never) {
+    public void deniedPermissions(Activity activity, OnPermissionCallback callback, List<String> permissions, boolean never) {
         // 回调授权失败的方法
         callback.onDenied(permissions, never);
         if (never) {
@@ -73,7 +73,7 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
     /**
      * 显示授权对话框
      */
-    protected void showPermissionDialog(FragmentActivity activity, List<String> permissions) {
+    protected void showPermissionDialog(Activity activity, List<String> permissions) {
         // 这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
         new AlertDialog.Builder(activity)
                 .setTitle(R.string.common_permission_alert)

@@ -11,7 +11,6 @@ import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.Settings;
-import android.support.v4.app.FragmentActivity;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -464,10 +463,10 @@ final class PermissionUtils {
     /**
      * 寻找上下文中的 Activity 对象
      */
-    static FragmentActivity findFragmentActivity(Context context) {
+    static Activity findActivity(Context context) {
         do {
-            if (context instanceof FragmentActivity) {
-                return (FragmentActivity) context;
+            if (context instanceof Activity) {
+                return (Activity) context;
             } else if (context instanceof ContextWrapper){
                 context = ((ContextWrapper) context).getBaseContext();
             } else {

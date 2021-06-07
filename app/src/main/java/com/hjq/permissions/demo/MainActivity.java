@@ -75,6 +75,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     .permission(Permission.ACCESS_COARSE_LOCATION)
                     .permission(Permission.ACCESS_FINE_LOCATION)
+                    // 如果不需要在后台使用定位功能，请不要申请此权限
                     .permission(Permission.ACCESS_BACKGROUND_LOCATION)
                     .request(new OnPermissionCallback() {
 

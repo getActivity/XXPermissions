@@ -30,8 +30,8 @@ final class PermissionChecker {
         // 检查当前 Activity 状态是否是正常的，如果不是则不请求权限
         if (activity == null) {
             if (debugMode) {
-                // 这个 Activity 对象必须是 FragmentActivity 的子类，请直接继承 AppCompatActivity
-                throw new IllegalArgumentException("The Activity must be a subclass of FragmentActivity, Please directly inherit AppCompatActivity");
+                // Context 的实例必须是 Activity 对象
+                throw new IllegalArgumentException("The instance of the Context must be an Activity object");
             }
             return false;
         }
@@ -104,7 +104,6 @@ final class PermissionChecker {
      * @param requestPermissions        请求的权限组
      * @param scopedStorage             是否适配了分区存储
      */
-    @SuppressWarnings({"ConstantConditions"})
     static void checkStoragePermission(Context context, List<String> requestPermissions, boolean scopedStorage) {
         // 如果请求的权限中没有包含外部存储相关的权限，那么就直接返回
         if (!requestPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) &&

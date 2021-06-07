@@ -1,11 +1,10 @@
 package com.hjq.permissions;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 
 import java.util.List;
 
@@ -15,6 +14,7 @@ import java.util.List;
  *    time   : 2018/06/15
  *    desc   : Android 危险权限请求类
  */
+@SuppressWarnings("deprecation, unused")
 public final class XXPermissions {
 
     /** 权限设置页跳转请求码 */
@@ -39,6 +39,10 @@ public final class XXPermissions {
     }
 
     public static XXPermissions with(Fragment fragment) {
+        return with(fragment.getActivity());
+    }
+
+    public static XXPermissions with(android.support.v4.app.Fragment fragment) {
         return with(fragment.getActivity());
     }
 
@@ -129,8 +133,8 @@ public final class XXPermissions {
         boolean debugMode = isDebugMode(mContext);
 
         // 检查当前 Activity 状态是否是正常的，如果不是则不请求权限
-        FragmentActivity fragmentActivity = PermissionUtils.findFragmentActivity(mContext);
-        if (!PermissionChecker.checkActivityStatus(fragmentActivity, debugMode)) {
+        Activity activity = PermissionUtils.findActivity(mContext);
+        if (!PermissionChecker.checkActivityStatus(activity, debugMode)) {
             return;
         }
 
@@ -165,7 +169,7 @@ public final class XXPermissions {
         }
 
         // 申请没有授予过的权限
-        getInterceptor().requestPermissions(fragmentActivity, callback, mPermissions);
+        getInterceptor().requestPermissions(activity, callback, mPermissions);
     }
 
     /**
@@ -220,6 +224,8 @@ public final class XXPermissions {
         return PermissionUtils.isPermissionPermanentDenied(activity, permissions);
     }
 
+    /* android.content.Context */
+
     public static void startPermissionActivity(Context context) {
         startPermissionActivity(context, (List<String>) null);
     }
@@ -238,7 +244,7 @@ public final class XXPermissions {
      * @param permissions           没有授予或者被拒绝的权限组
      */
     public static void startPermissionActivity(Context context, List<String> permissions) {
-        Activity activity = PermissionUtils.findFragmentActivity(context);
+        Activity activity = PermissionUtils.findActivity(context);
         if (activity != null) {
             startPermissionActivity(activity, permissions);
             return;
@@ -250,6 +256,12 @@ public final class XXPermissions {
         context.startActivity(intent);
     }
 
+    /* android.app.Activity */
+
+    public static void startPermissionActivity(Activity activity) {
+        startPermissionActivity(activity, (List<String>) null);
+    }
+
     public static void startPermissionActivity(Activity activity, String... permissions) {
         startPermissionActivity(activity, PermissionUtils.asArrayList(permissions));
     }
@@ -258,9 +270,16 @@ public final class XXPermissions {
         startPermissionActivity(activity, PermissionUtils.asArrayLists(permissions));
     }
 
+    /**
+     * 跳转到应用权限设置页
+     *
+     * @param permissions           没有授予或者被拒绝的权限组
+     */
     public static void startPermissionActivity(Activity activity, List<String> permissions) {
         activity.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), REQUEST_CODE);
     }
+
+    /* android.app.Fragment */
 
     public static void startPermissionActivity(Fragment fragment) {
         startPermissionActivity(fragment, (List<String>) null);
@@ -280,7 +299,34 @@ public final class XXPermissions {
      * @param permissions           没有授予或者被拒绝的权限组
      */
     public static void startPermissionActivity(Fragment fragment, List<String> permissions) {
-        FragmentActivity activity = fragment.getActivity();
+        Activity activity = fragment.getActivity();
+        if (activity == null) {
+            return;
+        }
+        fragment.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), REQUEST_CODE);
+    }
+
+    /* android.support.v4.app.Fragment */
+
+    public static void startPermissionActivity(android.support.v4.app.Fragment fragment) {
+        startPermissionActivity(fragment, (List<String>) null);
+    }
+
+    public static void startPermissionActivity(android.support.v4.app.Fragment fragment, String... permissions) {
+        startPermissionActivity(fragment, PermissionUtils.asArrayList(permissions));
+    }
+
+    public static void startPermissionActivity(android.support.v4.app.Fragment fragment, String[]... permissions) {
+        startPermissionActivity(fragment, PermissionUtils.asArrayLists(permissions));
+    }
+
+    /**
+     * 跳转到应用权限设置页
+     *
+     * @param permissions           没有授予或者被拒绝的权限组
+     */
+    public static void startPermissionActivity(android.support.v4.app.Fragment fragment, List<String> permissions) {
+        Activity activity = fragment.getActivity();
         if (activity == null) {
             return;
         }

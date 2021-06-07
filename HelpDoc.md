@@ -134,7 +134,7 @@ public class XxxApplication extends Application {
 public class PermissionInterceptor implements IPermissionInterceptor {
 
     @Override
-    public void requestPermissions(FragmentActivity activity, OnPermissionCallback callback, List<String> permissions) {
+    public void requestPermissions(Activity activity, OnPermissionCallback callback, List<String> permissions) {
         new AlertDialog.Builder(activity)
                 .setTitle("授权提示")
                 .setMessage("使用此功能需要先授予权限")
@@ -157,13 +157,13 @@ public class PermissionInterceptor implements IPermissionInterceptor {
     }
 
     @Override
-    public void grantedPermissions(FragmentActivity activity, OnPermissionCallback callback, List<String> permissions, boolean all) {
+    public void grantedPermissions(Activity activity, OnPermissionCallback callback, List<String> permissions, boolean all) {
         // 回调授权成功的方法
         callback.onGranted(permissions, all);
     }
 
     @Override
-    public void deniedPermissions(FragmentActivity activity, OnPermissionCallback callback, List<String> permissions, boolean never) {
+    public void deniedPermissions(Activity activity, OnPermissionCallback callback, List<String> permissions, boolean never) {
         // 回调授权失败的方法
         callback.onDenied(permissions, never);
         if (never) {
@@ -182,7 +182,7 @@ public class PermissionInterceptor implements IPermissionInterceptor {
     /**
      * 显示授权对话框
      */
-    protected void showPermissionDialog(FragmentActivity activity, List<String> permissions) {
+    protected void showPermissionDialog(Activity activity, List<String> permissions) {
         new AlertDialog.Builder(activity)
                 .setTitle("授权提醒")
                 .setMessage(getPermissionHint(activity, permissions))
