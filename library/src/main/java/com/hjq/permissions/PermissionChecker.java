@@ -234,7 +234,8 @@ final class PermissionChecker {
             if (requestPermissions.contains(Permission.READ_EXTERNAL_STORAGE) ||
                     requestPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE)) {
                 // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这两个权限
-                throw new IllegalArgumentException("Please do not apply for these two permissions dynamically");
+                throw new IllegalArgumentException("If you have applied for MANAGE_EXTERNAL_STORAGE permissions, " +
+                        "do not apply for the READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE permissions");
             }
 
             if (!PermissionUtils.isAndroid11()) {

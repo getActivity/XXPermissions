@@ -21,13 +21,22 @@ public final class Permission {
      */
     public static final String MANAGE_EXTERNAL_STORAGE = "android.permission.MANAGE_EXTERNAL_STORAGE";
 
-    /** 安装应用权限（特殊权限，需要 Android 8.0 及以上） */
+    /**
+     * 安装应用权限（特殊权限，需要 Android 8.0 及以上）
+     *
+     * Android 11 特性调整，安装外部来源应用需要重启 App：https://cloud.tencent.com/developer/news/637591
+     */
     public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES";
 
     /** 通知栏权限（特殊权限，需要 Android 6.0 及以上，注意此权限不需要在清单文件中注册也能申请） */
     public static final String NOTIFICATION_SERVICE = "android.permission.NOTIFICATION_SERVICE";
 
-    /** 悬浮窗权限（特殊权限，需要 Android 6.0 及以上） */
+    /**
+     * 悬浮窗权限（特殊权限，需要 Android 6.0 及以上）
+     *
+     * 在 Android 10 及之前的版本能跳转到应用悬浮窗设置页面，而在 Android 11 及之后的版本只能跳转到系统设置悬浮窗管理列表了
+     * 具体详情请看官方文档解释：https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION
+     */
     public static final String SYSTEM_ALERT_WINDOW = "android.permission.SYSTEM_ALERT_WINDOW";
 
     /** 系统设置权限（特殊权限，需要 Android 6.0 及以上） */
@@ -66,14 +75,20 @@ public final class Permission {
     /**
      * 读取照片中的地理位置（需要 Android 10.0 及以上）
      *
-     * 需要注意的是，如果这个权限申请成功了但是不能正常读取照片的地理信息，那么需要先申请存储权限：
+     * 需要注意的是：如果这个权限申请成功了但是不能正常读取照片的地理信息，那么需要先申请存储权限：
      *
      * 如果项目 targetSdkVersion <= 29 需要申请 {@link Permission.Group#STORAGE}
      * 如果项目 targetSdkVersion >= 30 需要申请 {@link Permission#MANAGE_EXTERNAL_STORAGE}
      */
     public static final String ACCESS_MEDIA_LOCATION = "android.permission.ACCESS_MEDIA_LOCATION";
 
-    /** 读取电话状态（这个权限在某些手机上面是申请失败的） */
+    /**
+     * 读取电话状态
+     *
+     * 需要注意的是：这个权限在某些手机上面是没办法获取到的，因为某些系统禁止应用获得该权限
+     *             所以你要是申请了这个权限之后没有弹授权框，而是直接回调授权失败方法
+     *             请不要惊慌，这个不是 Bug、不是 Bug、不是 Bug，而是正常现象
+     */
     public static final String READ_PHONE_STATE = "android.permission.READ_PHONE_STATE";
     /** 拨打电话 */
     public static final String CALL_PHONE = "android.permission.CALL_PHONE";

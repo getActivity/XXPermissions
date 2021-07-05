@@ -14,7 +14,7 @@ import java.util.List;
  *    time   : 2018/06/15
  *    desc   : Android 危险权限请求类
  */
-@SuppressWarnings("deprecation, unused")
+@SuppressWarnings({"unused", "deprecation"})
 public final class XXPermissions {
 
     /** 权限设置页跳转请求码 */
@@ -23,10 +23,10 @@ public final class XXPermissions {
     /** 权限请求拦截器 */
     private static IPermissionInterceptor sPermissionInterceptor;
 
-    /** 调试模式 */
+    /** 当前是否为调试模式 */
     private static Boolean sDebugMode;
 
-    /** 分区存储 */
+    /** 是否适配了分区存储 */
     private static boolean sScopedStorage;
 
     /**
@@ -270,13 +270,18 @@ public final class XXPermissions {
         startPermissionActivity(activity, PermissionUtils.asArrayLists(permissions));
     }
 
+    public static void startPermissionActivity(Activity activity, List<String> permissions) {
+        startPermissionActivity(activity, permissions, REQUEST_CODE);
+    }
+
     /**
      * 跳转到应用权限设置页
      *
      * @param permissions           没有授予或者被拒绝的权限组
+     * @param requestCode           Activity 跳转请求码
      */
-    public static void startPermissionActivity(Activity activity, List<String> permissions) {
-        activity.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), REQUEST_CODE);
+    public static void startPermissionActivity(Activity activity, List<String> permissions, int requestCode) {
+        activity.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), requestCode);
     }
 
     /* android.app.Fragment */
@@ -293,17 +298,22 @@ public final class XXPermissions {
         startPermissionActivity(fragment, PermissionUtils.asArrayLists(permissions));
     }
 
+    public static void startPermissionActivity(Fragment fragment, List<String> permissions) {
+        startPermissionActivity(fragment, permissions, REQUEST_CODE);
+    }
+
     /**
      * 跳转到应用权限设置页
      *
      * @param permissions           没有授予或者被拒绝的权限组
+     * @param requestCode           Activity 跳转请求码
      */
-    public static void startPermissionActivity(Fragment fragment, List<String> permissions) {
+    public static void startPermissionActivity(Fragment fragment, List<String> permissions, int requestCode) {
         Activity activity = fragment.getActivity();
         if (activity == null) {
             return;
         }
-        fragment.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), REQUEST_CODE);
+        fragment.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), requestCode);
     }
 
     /* android.support.v4.app.Fragment */
@@ -320,16 +330,21 @@ public final class XXPermissions {
         startPermissionActivity(fragment, PermissionUtils.asArrayLists(permissions));
     }
 
+    public static void startPermissionActivity(android.support.v4.app.Fragment fragment, List<String> permissions) {
+        startPermissionActivity(fragment, permissions, REQUEST_CODE);
+    }
+
     /**
      * 跳转到应用权限设置页
      *
      * @param permissions           没有授予或者被拒绝的权限组
+     * @param requestCode           Activity 跳转请求码
      */
-    public static void startPermissionActivity(android.support.v4.app.Fragment fragment, List<String> permissions) {
+    public static void startPermissionActivity(android.support.v4.app.Fragment fragment, List<String> permissions, int requestCode) {
         Activity activity = fragment.getActivity();
         if (activity == null) {
             return;
         }
-        fragment.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), REQUEST_CODE);
+        fragment.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), requestCode);
     }
 }

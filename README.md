@@ -43,7 +43,7 @@ android {
 
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.github.getActivity:XXPermissions:11.5'
+    implementation 'com.github.getActivity:XXPermissions:11.6'
 }
 ```
 
@@ -151,8 +151,8 @@ public class XxxActivity extends AppCompatActivity {
 
 |     功能及细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  11.0 |  2.0.3  |  0.12   |   4.8.0  |  3.0.0   |  1.4.0    |  1.30.5    |
-|    框架体积  |  [27 KB](https://bintray.com/getactivity/maven/xxpermissions#files/com/hjq/xxpermissions)  | [127 KB](https://mvnrepository.com/artifact/com.yanzhenjie/permission)  |  [28 KB](https://jitpack.io/#com.github.tbruyelle/rxpermissions)  |   [91 KB](https://bintray.com/hotchemi/org.permissionsdispatcher/permissionsdispatcher-processor#files/org/permissionsdispatcher/permissionsdispatcher-processor)  |  [48 KB](https://bintray.com/easygoogle/EasyPermissions/easypermissions#files/pub/devrel/easypermissions)   |   [32 KB](https://bintray.com/guolindev/maven/permissionx#files/com/permissionx/guolindev/permissionx)  |   [483 KB](https://bintray.com/blankj/maven/UtilCode#files/com/blankj/utilcode)  |
+|    对应版本  |  11.6 |  2.0.3  |  0.12   |   4.8.0  |  3.0.0   |  1.4.0    |  1.30.5    |
+|    框架体积  |  [28 KB](https://bintray.com/getactivity/maven/xxpermissions#files/com/hjq/xxpermissions)  | [127 KB](https://mvnrepository.com/artifact/com.yanzhenjie/permission)  |  [28 KB](https://jitpack.io/#com.github.tbruyelle/rxpermissions)  |   [91 KB](https://bintray.com/hotchemi/org.permissionsdispatcher/permissionsdispatcher-processor#files/org/permissionsdispatcher/permissionsdispatcher-processor)  |  [48 KB](https://bintray.com/easygoogle/EasyPermissions/easypermissions#files/pub/devrel/easypermissions)   |   [32 KB](https://bintray.com/guolindev/maven/permissionx#files/com/permissionx/guolindev/permissionx)  |   [483 KB](https://bintray.com/blankj/maven/UtilCode#files/com/blankj/utilcode)  |
 |   安装包权限   |  ✅  |  ✅  |  ❌  |  ❌   |  ❌   |  ❌   |  ❌   |
 |   悬浮窗权限   |  ✅  |  ✅  |  ❌  |  ❌   |  ❌   |  ❌   |   ✅  |
 |   通知栏权限   |  ✅  |  ✅  |  ❌  |  ❌   |   ❌  |  ❌   |  ❌   |

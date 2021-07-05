@@ -440,6 +440,7 @@ final class PermissionUtils {
         return list;
     }
 
+    @SafeVarargs
     static <T> ArrayList<T> asArrayLists(T[]... arrays) {
         ArrayList<T> list = new ArrayList<>();
         if (arrays == null || arrays.length == 0) {
