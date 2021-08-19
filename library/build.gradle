@@ -5,8 +5,8 @@ android {
 
     defaultConfig {
         minSdkVersion 11
-        versionCode 1160
-        versionName "11.6"
+        versionCode 1180
+        versionName "11.8"
     }
 
     // 使用 JDK 1.8
@@ -22,9 +22,17 @@ android {
     android.libraryVariants.all { variant ->
         // aar 输出文件名配置
         variant.outputs.all { output ->
-            outputFileName = "xxpermissions-${android.defaultConfig.versionName}.aar"
+            outputFileName = "${rootProject.name}-${android.defaultConfig.versionName}.aar"
         }
     }
+}
+
+afterEvaluate {
+    // 排除 BuildConfig.class 和 R.class
+    generateReleaseBuildConfig.enabled = false
+    generateDebugBuildConfig.enabled = false
+    generateReleaseResValues.enabled = false
+    generateDebugResValues.enabled = false
 }
 
 dependencies {

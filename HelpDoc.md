@@ -6,6 +6,8 @@
 
 * [什么情况下需要适配分区存储特性](#什么情况下需要适配分区存储特性)
 
+* [为什么授予了存储权限但是权限设置页还是显示未授权](#为什么授予了存储权限但是权限设置页还是显示未授权)
+
 * [我想在申请前和申请后统一弹对话框该怎么处理](#我想在申请前和申请后统一弹对话框该怎么处理)
 
 * [如何在回调中判断哪些权限被永久拒绝了](#如何在回调中判断哪些权限被永久拒绝了)
@@ -112,6 +114,12 @@ XXPermissions.with(this)
 
     2. 如果你的应用只上架国内的应用市场，并且后续也没有上架谷歌应用市场的需要，那么你也可以直接申请 `MANAGE_EXTERNAL_STORAGE` 权限来读写外部存储
 
+#### 为什么授予了存储权限但是权限设置页还是显示未授权
+
+* 首先我需要先纠正大家一个错误的想法，`READ_EXTERNAL_STORAGE`、`WRITE_EXTERNAL_STORAGE` 这两个权限和 `MANAGE_EXTERNAL_STORAGE` 权限是两码事，虽然都叫存储权限，但是属于两种完全不同的权限，你如果申请的是 `MANAGE_EXTERNAL_STORAGE` 权限，并且授予了权限，但是在权限设置页并没有看到已授予，请注意这种情况是正常的，因为你在权限设置页看到的是存储授予状态是 `READ_EXTERNAL_STORAGE`、`WRITE_EXTERNAL_STORAGE` 权限状态的，而不是 `MANAGE_EXTERNAL_STORAGE` 权限状态的，但是这个时候已经获取到存储权限了，你大可不必管权限设置页显示的权限状态，直接读写文件即可，不会有权限问题的。
+
+* 还有一个问题，为什么只在 Android 11 以上的设备出现？首先 `MANAGE_EXTERNAL_STORAGE` 权限是 Android 11 才有权限，Android 10 及之前的版本是没有这个权限的，你如果在低版本设备上申请了 `MANAGE_EXTERNAL_STORAGE` 权限，那么框架会帮你做向下兼容，会自动帮你替换成 `READ_EXTERNAL_STORAGE`、`WRITE_EXTERNAL_STORAGE` 权限去申请，这个时候你看到权限设置页的存储权限状态肯定是正常的，这就是为什么你只在 Android 11 以上的设备才会看到这个问题。
+
 #### 我想在申请前和申请后统一弹对话框该怎么处理
 
 * 在 Application 初始化的时候配置
@@ -131,7 +139,7 @@ public class XxxApplication extends Application {
 * PermissionInterceptor 源码实现
 
 ```java
-public class PermissionInterceptor implements IPermissionInterceptor {
+public final class PermissionInterceptor implements IPermissionInterceptor {
 
     @Override
     public void requestPermissions(Activity activity, OnPermissionCallback callback, List<String> permissions) {
@@ -143,7 +151,7 @@ public class PermissionInterceptor implements IPermissionInterceptor {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        PermissionFragment.beginRequest(activity, new ArrayList<>(permissions), callback);
+                        PermissionFragment.beginRequest(activity, new ArrayList<>(permissions), PermissionInterceptor.this, callback);
                     }
                 })
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -158,14 +166,15 @@ public class PermissionInterceptor implements IPermissionInterceptor {
 
     @Override
     public void grantedPermissions(Activity activity, OnPermissionCallback callback, List<String> permissions, boolean all) {
+        if (callback == null) {
+            return;
+        }
         // 回调授权成功的方法
         callback.onGranted(permissions, all);
     }
 
     @Override
     public void deniedPermissions(Activity activity, OnPermissionCallback callback, List<String> permissions, boolean never) {
-        // 回调授权失败的方法
-        callback.onDenied(permissions, never);
         if (never) {
             showPermissionDialog(activity, permissions);
             return;
@@ -177,6 +186,12 @@ public class PermissionInterceptor implements IPermissionInterceptor {
         }
 
         ToastUtils.show("授权失败，请正确授予权限");
+
+        if (callback == null) {
+            return;
+        }
+        // 回调授权失败的方法
+        callback.onDenied(permissions, never);
     }
 
     /**
@@ -327,4 +342,3 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 * 另外值得一提的是 [Android 11 对软件包可见性进行了限制](https://developer.android.google.cn/about/versions/11/privacy/package-visibility)，所以这种跳包名的方式在未来将会完全不可行。
 
 * 最终决定：这个功能的出发点是好的，但是我们没办法做好它，经过慎重考虑，决定将这个功能在 XXPermissions 9.2 版本及之后的版本进行移除。
-

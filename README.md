@@ -2,7 +2,7 @@
 
 ![](picture/logo.png)
 
-* 码云地址：[Gitee](https://gitee.com/getActivity/XXPermissions)
+* 项目地址：[Github](https://github.com/getActivity/XXPermissions)、[码云](https://gitee.com/getActivity/XXPermissions)
 
 * 博文地址：[一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
 
@@ -43,7 +43,7 @@ android {
 
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.github.getActivity:XXPermissions:11.6'
+    implementation 'com.github.getActivity:XXPermissions:11.8'
 }
 ```
 
@@ -151,20 +151,21 @@ public class XxxActivity extends AppCompatActivity {
 
 |     功能及细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  11.6 |  2.0.3  |  0.12   |   4.8.0  |  3.0.0   |  1.4.0    |  1.30.5    |
-|    框架体积  |  [28 KB](https://bintray.com/getactivity/maven/xxpermissions#files/com/hjq/xxpermissions)  | [127 KB](https://mvnrepository.com/artifact/com.yanzhenjie/permission)  |  [28 KB](https://jitpack.io/#com.github.tbruyelle/rxpermissions)  |   [91 KB](https://bintray.com/hotchemi/org.permissionsdispatcher/permissionsdispatcher-processor#files/org/permissionsdispatcher/permissionsdispatcher-processor)  |  [48 KB](https://bintray.com/easygoogle/EasyPermissions/easypermissions#files/pub/devrel/easypermissions)   |   [32 KB](https://bintray.com/guolindev/maven/permissionx#files/com/permissionx/guolindev/permissionx)  |   [483 KB](https://bintray.com/blankj/maven/UtilCode#files/com/blankj/utilcode)  |
-|   安装包权限   |  ✅  |  ✅  |  ❌  |  ❌   |  ❌   |  ❌   |  ❌   |
-|   悬浮窗权限   |  ✅  |  ✅  |  ❌  |  ❌   |  ❌   |  ❌   |   ✅  |
-|   通知栏权限   |  ✅  |  ✅  |  ❌  |  ❌   |   ❌  |  ❌   |  ❌   |
-|   系统设置权限   |  ✅  |  ✅  |  ❌  |  ❌   |   ❌  |  ❌   |   ✅  |
-|   Android 8.0 权限适配   |  ✅  |  ✅  |  ❌  |   ✅  |  ❌   |   ✅  |  ❌   |
-|   Android 9.0 权限适配   |  ✅  |  ❌  |  ❌  |   ✅  |  ❌   |   ❌  |  ❌   |
-|   Android 10.0 权限适配  |  ✅  |  ✅  |  ❌  |   ✅  |  ❌   |   ✅  |  ❌   |
-|   Android 11 新版存储权限   |  ✅  |  ❌  |  ❌  |   ❌  |  ❌   |   ❌  |  ❌   |
-|   Android 11 新版定位策略   |  ✅  |  ❌  |  ❌  |   ❌  |  ❌   |   ❌  |  ❌   |
-|   屏幕方向旋转场景适配   |  ✅  |  ✅  |  ❌  |  ✅   |   ❌  |  ❌   |  ❌   |
-|   后台申请权限场景适配   |  ✅  |  ❌  |  ❌  |  ❌   |   ❌  |  ❌   |  ❌   |
-|   低级错误检测机制   |  ✅  |  ❌  |  ❌  |  ❌   |   ❌  |  ❌   |  ❌   |
+|    对应版本  |  11.8 |  2.0.3  |  0.12   |   4.8.0  |  3.0.0   |  1.5.0    |  1.30.6    |
+|    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |
+|    框架体积  |  27 KB  | 127 KB  |  28 KB  |   91 KB  |  48 KB   |   66 KB  |   500 KB  |
+|        安装包权限        |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|        悬浮窗权限        |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ✅  |  ✅  |
+|        通知栏权限        |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|        系统设置权限      |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ✅  |  ✅  |
+|  Android 8.0 权限适配   |  ✅  |  ✅  |  ❌  |   ✅  |  ❌  |  ✅  |  ❌ |
+|  Android 9.0 权限适配   |  ✅  |  ❌  |  ❌  |   ✅  |  ❌  |  ❌  |  ❌ |
+|  Android 10.0 权限适配  |  ✅  |  ✅  |  ❌  |   ✅  |  ❌  |  ✅  |  ❌ |
+|  Android 11 新版存储权限 |  ✅  |  ❌  |  ❌  |   ❌  |  ❌  |  ✅  |  ❌ |
+|  Android 11 新版定位策略 |  ✅  |  ❌  |  ❌  |   ❌  |  ❌  |  ✅  |  ❌ |
+|    屏幕方向旋转场景适配    |  ✅  |  ✅  |  ❌  |  ✅   |  ❌  |  ❌  |  ❌ |
+|    后台申请权限场景适配    |  ✅  |  ❌  |  ❌  |  ❌   |  ❌  |  ❌  |  ❌ |
+|      低级错误检测机制     |  ✅  |  ❌  |  ❌  |  ❌   |  ❌  |  ❌  |  ❌ |
 
 #### 屏幕旋转场景适配介绍
 
@@ -196,7 +197,7 @@ public class XxxActivity extends AppCompatActivity {
 
 #### 框架亮点
 
-* 首款也是唯一一款适配 Android 11 的权限请求框架
+* 首款适配 Android 11 的权限请求框架
 
 * 首款也是唯一一款适配所有 Android 版本的权限请求框架
 
@@ -223,6 +224,8 @@ public class XxxActivity extends AppCompatActivity {
 * 国际化框架：[MultiLanguages](https://github.com/getActivity/MultiLanguages)
 
 * 悬浮窗框架：[XToast](https://github.com/getActivity/XToast)
+
+* Shape 框架：[ShapeView](https://github.com/getActivity/ShapeView)
 
 * Gson 解析容错：[GsonFactory](https://github.com/getActivity/GsonFactory)
 

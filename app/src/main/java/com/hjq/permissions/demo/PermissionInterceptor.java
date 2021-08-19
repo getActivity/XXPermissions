@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import com.hjq.permissions.IPermissionInterceptor;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.Permission;
+import com.hjq.permissions.PermissionFragment;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.toast.ToastUtils;
 
@@ -34,7 +35,7 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
 //                    @Override
 //                    public void onClick(DialogInterface dialog, int which) {
 //                        dialog.dismiss();
-//                        PermissionFragment.beginRequest(activity, new ArrayList<>(permissions), callback);
+//                        PermissionFragment.beginRequest(activity, new ArrayList<>(permissions), PermissionInterceptor.this, callback);
 //                    }
 //                })
 //                .setNegativeButton(R.string.common_permission_denied, new DialogInterface.OnClickListener() {
@@ -49,14 +50,15 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
 
     @Override
     public void grantedPermissions(Activity activity, OnPermissionCallback callback, List<String> permissions, boolean all) {
+        if (callback == null) {
+            return;
+        }
         // 回调授权失败的方法
         callback.onGranted(permissions, all);
     }
 
     @Override
     public void deniedPermissions(Activity activity, OnPermissionCallback callback, List<String> permissions, boolean never) {
-        // 回调授权失败的方法
-        callback.onDenied(permissions, never);
         if (never) {
             showPermissionDialog(activity, permissions);
             return;
@@ -68,6 +70,12 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
         }
 
         ToastUtils.show(R.string.common_permission_fail_1);
+
+        if (callback == null) {
+            return;
+        }
+        // 回调授权失败的方法
+        callback.onDenied(permissions, never);
     }
 
     /**

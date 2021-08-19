@@ -21,7 +21,7 @@ public final class XXPermissions {
     public static final int REQUEST_CODE = 1024 + 1;
 
     /** 权限请求拦截器 */
-    private static IPermissionInterceptor sPermissionInterceptor;
+    private static IPermissionInterceptor sInterceptor;
 
     /** 当前是否为调试模式 */
     private static Boolean sDebugMode;
@@ -72,20 +72,10 @@ public final class XXPermissions {
     }
 
     /**
-     * 设置权限请求拦截器
+     * 设置全局权限请求拦截器
      */
     public static void setInterceptor(IPermissionInterceptor interceptor) {
-        sPermissionInterceptor = interceptor;
-    }
-
-    /**
-     * 获取权限请求拦截器
-     */
-    static IPermissionInterceptor getInterceptor() {
-        if (sPermissionInterceptor == null) {
-            sPermissionInterceptor = new IPermissionInterceptor() {};
-        }
-        return sPermissionInterceptor;
+        sInterceptor = interceptor;
     }
 
     /** Context 对象 */
@@ -94,11 +84,22 @@ public final class XXPermissions {
     /** 权限列表 */
     private List<String> mPermissions;
 
+    /** 权限请求拦截器 */
+    private IPermissionInterceptor mInterceptor;
+
     /**
      * 私有化构造函数
      */
     private XXPermissions(Context context) {
         mContext = context;
+    }
+
+    /**
+     * 设置权限请求拦截器
+     */
+    public XXPermissions interceptor(IPermissionInterceptor interceptor) {
+        mInterceptor = interceptor;
+        return this;
     }
 
     /**
@@ -127,6 +128,13 @@ public final class XXPermissions {
     public void request(OnPermissionCallback callback) {
         if (mContext == null) {
             return;
+        }
+
+        if (mInterceptor == null) {
+            if (sInterceptor == null) {
+                sInterceptor = new IPermissionInterceptor() {};
+            }
+            mInterceptor = sInterceptor;
         }
 
         // 当前是否为调试模式
@@ -163,13 +171,13 @@ public final class XXPermissions {
         if (PermissionUtils.isGrantedPermissions(mContext, mPermissions)) {
             // 证明这些权限已经全部授予过，直接回调成功
             if (callback != null) {
-                callback.onGranted(mPermissions, true);
+                mInterceptor.grantedPermissions(activity, callback, mPermissions, true);
             }
             return;
         }
 
         // 申请没有授予过的权限
-        getInterceptor().requestPermissions(activity, callback, mPermissions);
+        mInterceptor.requestPermissions(activity, callback, mPermissions);
     }
 
     /**

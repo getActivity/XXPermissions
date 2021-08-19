@@ -57,7 +57,11 @@ public final class Permission {
     public static final String ACCESS_FINE_LOCATION = "android.permission.ACCESS_FINE_LOCATION";
     /** 获取粗略位置 */
     public static final String ACCESS_COARSE_LOCATION = "android.permission.ACCESS_COARSE_LOCATION";
-    /** 在后台获取位置（需要 Android 10.0 及以上） */
+    /**
+     * 在后台获取位置（需要 Android 10.0 及以上）
+     *
+     * 需要注意的是：如果你的 App 只在前台状态下使用定位功能，请不要申请该权限
+     */
     public static final String ACCESS_BACKGROUND_LOCATION = "android.permission.ACCESS_BACKGROUND_LOCATION";
 
     /** 读取联系人 */
@@ -88,6 +92,9 @@ public final class Permission {
      * 需要注意的是：这个权限在某些手机上面是没办法获取到的，因为某些系统禁止应用获得该权限
      *             所以你要是申请了这个权限之后没有弹授权框，而是直接回调授权失败方法
      *             请不要惊慌，这个不是 Bug、不是 Bug、不是 Bug，而是正常现象
+     *
+     * 后续情况汇报：有人反馈在 iQOO 手机上面获取不到该权限，在清单文件加入下面这个权限就可以了（这里只是做记录，并不代表这种方式就一定有效果）
+     *             <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
      */
     public static final String READ_PHONE_STATE = "android.permission.READ_PHONE_STATE";
     /** 拨打电话 */
