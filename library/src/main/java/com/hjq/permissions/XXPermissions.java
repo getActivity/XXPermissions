@@ -78,6 +78,16 @@ public final class XXPermissions {
         sInterceptor = interceptor;
     }
 
+    /**
+     * 获取全局权限请求拦截器
+     */
+    public static IPermissionInterceptor getInterceptor() {
+        if (sInterceptor == null) {
+            sInterceptor = new IPermissionInterceptor() {};
+        }
+        return sInterceptor;
+    }
+
     /** Context 对象 */
     private final Context mContext;
 
@@ -131,10 +141,7 @@ public final class XXPermissions {
         }
 
         if (mInterceptor == null) {
-            if (sInterceptor == null) {
-                sInterceptor = new IPermissionInterceptor() {};
-            }
-            mInterceptor = sInterceptor;
+            mInterceptor = getInterceptor();
         }
 
         // 当前是否为调试模式
