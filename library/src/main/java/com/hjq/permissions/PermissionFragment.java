@@ -55,6 +55,8 @@ public final class PermissionFragment extends Fragment implements Runnable {
         fragment.setArguments(bundle);
         // 设置保留实例，不会因为屏幕方向或配置变化而重新创建
         fragment.setRetainInstance(true);
+        // 设置权限申请标记
+        fragment.setRequestFlag(true);
         // 设置权限回调监听
         fragment.setCallBack(callback);
         // 设置权限请求拦截器
@@ -68,6 +70,9 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
     /** 是否申请了危险权限 */
     private boolean mDangerousRequest;
+
+    /** 权限申请标记 */
+    private boolean mRequestFlag;
 
     /** 权限回调对象 */
     private OnPermissionCallback mCallBack;
@@ -97,6 +102,13 @@ public final class PermissionFragment extends Fragment implements Runnable {
      */
     public void setCallBack(OnPermissionCallback callback) {
         mCallBack = callback;
+    }
+
+    /**
+     * 权限申请标记（防止系统杀死应用后重新触发请求的问题）
+     */
+    public void setRequestFlag(boolean flag) {
+        mRequestFlag = flag;
     }
 
     /**
@@ -155,6 +167,13 @@ public final class PermissionFragment extends Fragment implements Runnable {
     @Override
     public void onResume() {
         super.onResume();
+
+        // 如果当前 Fragment 是通过系统重启应用触发的，则不进行权限申请
+        if (!mRequestFlag) {
+            detachActivity(getActivity());
+            return;
+        }
+
         // 如果在 Activity 不可见的状态下添加 Fragment 并且去申请权限会导致授权对话框显示不出来
         // 所以必须要在 Fragment 的 onResume 来申请权限，这样就可以保证应用回到前台的时候才去申请权限
         if (mSpecialRequest) {

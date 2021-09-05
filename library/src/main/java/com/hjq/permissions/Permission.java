@@ -15,7 +15,7 @@ public final class Permission {
     private Permission() {}
 
     /**
-     * 外部存储权限（特殊权限，需要 Android 11 及以上）
+     * 文件管理权限（特殊权限，需要 Android 11 及以上）
      *
      * 如果你的应用需要上架 GooglePlay，那么需要详细查看：https://support.google.com/googleplay/android-developer/answer/9956427
      */

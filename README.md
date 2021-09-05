@@ -43,7 +43,7 @@ android {
 
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.github.getActivity:XXPermissions:12.0'
+    implementation 'com.github.getActivity:XXPermissions:12.2'
 }
 ```
 
@@ -151,13 +151,13 @@ public class XxxActivity extends AppCompatActivity {
 
 |     功能及细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  11.8 |  2.0.3  |  0.12   |   4.8.0  |  3.0.0   |  1.5.0    |  1.30.6    |
+|    对应版本  |  12.2 |  2.0.3  |  0.12   |   4.8.0  |  3.0.0   |  1.5.0    |  1.30.6    |
 |    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |
 |    框架体积  |  27 KB  | 127 KB  |  28 KB  |   91 KB  |  48 KB   |   66 KB  |   500 KB  |
 |        安装包权限        |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|        悬浮窗权限        |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ✅  |  ✅  |
+|        悬浮窗权限        |  ✅  |  ✅  |  ❌  |  ✅  |  ❌  |  ✅  |  ✅  |
 |        通知栏权限        |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|        系统设置权限      |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ✅  |  ✅  |
+|        系统设置权限      |  ✅  |  ✅  |  ❌  |  ✅  |  ❌  |  ✅  |  ✅  |
 |  Android 8.0 权限适配   |  ✅  |  ✅  |  ❌  |   ✅  |  ❌  |  ✅  |  ❌ |
 |  Android 9.0 权限适配   |  ✅  |  ❌  |  ❌  |   ✅  |  ❌  |  ❌  |  ❌ |
 |  Android 10.0 权限适配  |  ✅  |  ✅  |  ❌  |   ✅  |  ❌  |  ✅  |  ❌ |
