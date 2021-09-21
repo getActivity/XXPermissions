@@ -23,8 +23,5 @@ public final class AppApplication extends Application {
 
         // 设置权限申请拦截器
         XXPermissions.setInterceptor(new PermissionInterceptor());
-
-        // 告诉框架，当前项目已适配分区存储特性
-        //XXPermissions.setScopedStorage(true);
     }
 }

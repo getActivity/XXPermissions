@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,9 +26,6 @@ public final class XXPermissions {
 
     /** 当前是否为调试模式 */
     private static Boolean sDebugMode;
-
-    /** 是否适配了分区存储 */
-    private static boolean sScopedStorage;
 
     /**
      * 设置请求的对象
@@ -58,17 +56,6 @@ public final class XXPermissions {
             sDebugMode = (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
         }
         return sDebugMode;
-    }
-
-    /**
-     * 是否已经适配了 Android 10 分区存储特性
-     */
-    public static void setScopedStorage(boolean scopedStorage) {
-        sScopedStorage = scopedStorage;
-    }
-
-    private static boolean isScopedStorage() {
-        return sScopedStorage;
     }
 
     /**
@@ -124,10 +111,19 @@ public final class XXPermissions {
     }
 
     public XXPermissions permission(List<String> permissions) {
+        if (permissions == null || permissions.isEmpty()) {
+            return this;
+        }
         if (mPermissions == null) {
-            mPermissions = permissions;
-        } else {
-            mPermissions.addAll(permissions);
+            mPermissions = new ArrayList<>(permissions);
+            return this;
+        }
+
+        for (String permission : permissions) {
+            if (mPermissions.contains(permission)) {
+                continue;
+            }
+            mPermissions.add(permission);
         }
         return this;
     }
@@ -160,7 +156,7 @@ public final class XXPermissions {
 
         if (debugMode) {
             // 检查申请的存储权限是否符合规范
-            PermissionChecker.checkStoragePermission(mContext, mPermissions, isScopedStorage());
+            PermissionChecker.checkStoragePermission(mContext, mPermissions);
             // 检查申请的定位权限是否符合规范
             PermissionChecker.checkLocationPermission(mPermissions);
             // 检查申请的权限和 targetSdk 版本是否能吻合
@@ -218,7 +214,7 @@ public final class XXPermissions {
     }
 
     /**
-     * 判断某个权限是否是特殊权限
+     * 判断某个权限是否为特殊权限
      */
     public static boolean isSpecial(String permission) {
         return PermissionUtils.isSpecialPermission(permission);

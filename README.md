@@ -43,7 +43,7 @@ android {
 
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.github.getActivity:XXPermissions:12.2'
+    implementation 'com.github.getActivity:XXPermissions:12.3'
 }
 ```
 
@@ -60,18 +60,21 @@ android.enableJetifier = true
 
 #### 分区存储
 
-* 如果项目已经适配了 Android 10 分区存储特性，请在 Application 初始化时加入
+* 如果项目已经适配了 Android 10 分区存储特性，请在 `AndroidManifest.xml` 中加入
 
-```java
-public final class XxxApplication extends Application {
+```xml
+<manifest>
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        // 当前项目是否已经适配了分区存储的特性
-        XXPermissions.setScopedStorage(true);
-    }
-}
+    <application>
+
+        <!-- 表示当前项目已经适配了分区存储特性 -->
+        <meta-data
+            android:name="ScopedStorage"
+            android:value="true" />
+
+    </application>
+
+</manifest>
 ```
 
 * 如果当前项目没有适配这特性，那么这一步骤可以忽略
@@ -135,6 +138,27 @@ public class XxxActivity extends AppCompatActivity {
 }
 ```
 
+#### 框架其他 API 介绍
+
+```java
+// 判断一个或多个权限是否全部授予了
+XXPermissions.isGranted(Context context, String... permissions);
+
+// 获取没有授予的权限
+XXPermissions.getDenied(Context context, String... permissions);
+
+// 判断某个权限是否为特殊权限
+XXPermissions.isSpecial(String permission);
+
+// 判断一个或多个权限是否被永久拒绝了
+XXPermissions.isPermanentDenied(Activity activity, String... permissions);
+
+// 跳转到应用权限设置页
+XXPermissions.startPermissionActivity(Context context, String... permissions);
+XXPermissions.startPermissionActivity(Activity activity, String... permissions);
+XXPermissions.startPermissionActivity(Fragment fragment, String... permissions);
+```
+
 #### 关于权限监听回调参数说明
 
 * 我们都知道，如果用户全部授予只会调用 **onGranted** 方法，如果用户全部拒绝只会调用 **onDenied** 方法。
@@ -149,23 +173,23 @@ public class XxxActivity extends AppCompatActivity {
 
 #### 不同权限请求框架之间的对比
 
-|     功能及细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   |
+|     功能及细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  12.2 |  2.0.3  |  0.12   |   4.8.0  |  3.0.0   |  1.5.0    |  1.30.6    |
-|    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |
-|    框架体积  |  27 KB  | 127 KB  |  28 KB  |   91 KB  |  48 KB   |   66 KB  |   500 KB  |
+|    对应版本  |  12.3 |  2.0.3  |  1.5.0    |  1.30.6    |  0.12   |   4.8.0  |  3.0.0   |
+|    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |
+|    框架体积  |  27 KB  | 127 KB  |   66 KB  |   500 KB  |  28 KB  |   91 KB  |  48 KB   |
 |        安装包权限        |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|        悬浮窗权限        |  ✅  |  ✅  |  ❌  |  ✅  |  ❌  |  ✅  |  ✅  |
+|        悬浮窗权限        |  ✅  |  ✅  |  ✅  |  ✅  |  ❌  |  ✅  |  ❌  |
 |        通知栏权限        |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|        系统设置权限      |  ✅  |  ✅  |  ❌  |  ✅  |  ❌  |  ✅  |  ✅  |
-|  Android 8.0 权限适配   |  ✅  |  ✅  |  ❌  |   ✅  |  ❌  |  ✅  |  ❌ |
-|  Android 9.0 权限适配   |  ✅  |  ❌  |  ❌  |   ✅  |  ❌  |  ❌  |  ❌ |
-|  Android 10.0 权限适配  |  ✅  |  ✅  |  ❌  |   ✅  |  ❌  |  ✅  |  ❌ |
-|  Android 11 新版存储权限 |  ✅  |  ❌  |  ❌  |   ❌  |  ❌  |  ✅  |  ❌ |
-|  Android 11 新版定位策略 |  ✅  |  ❌  |  ❌  |   ❌  |  ❌  |  ✅  |  ❌ |
-|    屏幕方向旋转场景适配    |  ✅  |  ✅  |  ❌  |  ✅   |  ❌  |  ❌  |  ❌ |
-|    后台申请权限场景适配    |  ✅  |  ❌  |  ❌  |  ❌   |  ❌  |  ❌  |  ❌ |
-|      低级错误检测机制     |  ✅  |  ❌  |  ❌  |  ❌   |  ❌  |  ❌  |  ❌ |
+|        系统设置权限      |  ✅  |  ✅  |  ✅  |  ✅  |  ❌  |  ✅  |  ❌  |
+|  Android 8.0 权限适配   |  ✅  |  ✅  |  ✅  |  ❌ |  ❌  |   ✅  |  ❌  |
+|  Android 9.0 权限适配   |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |   ✅  |  ❌  |
+|  Android 10.0 权限适配  |  ✅  |  ✅  |  ✅  |  ❌ |  ❌  |   ✅  |  ❌  |
+|  Android 11 新版存储权限 |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
+|  Android 11 新版定位策略 |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
+|    屏幕方向旋转场景适配    |  ✅  |  ✅  |  ❌  |  ❌ |  ❌  |  ✅   |  ❌  |
+|    后台申请权限场景适配    |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
+|      低级错误检测机制     |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
 
 #### 屏幕旋转场景适配介绍
 

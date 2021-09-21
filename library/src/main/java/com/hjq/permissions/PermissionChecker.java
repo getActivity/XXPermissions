@@ -102,15 +102,17 @@ final class PermissionChecker {
      * 检查存储权限
      *
      * @param requestPermissions        请求的权限组
-     * @param scopedStorage             是否适配了分区存储
      */
-    static void checkStoragePermission(Context context, List<String> requestPermissions, boolean scopedStorage) {
+    static void checkStoragePermission(Context context, List<String> requestPermissions) {
         // 如果请求的权限中没有包含外部存储相关的权限，那么就直接返回
         if (!requestPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) &&
                 !requestPermissions.contains(Permission.READ_EXTERNAL_STORAGE) &&
                 !requestPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE)) {
             return;
         }
+
+        // 是否适配了分区存储
+        boolean scopedStorage = PermissionUtils.isScopedStorage(context);
 
         int cookie = PermissionUtils.findApkPathCookie(context);
         if (cookie == 0) {
@@ -136,14 +138,14 @@ final class PermissionChecker {
                                 (requestPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) || !scopedStorage)) {
                             // 请在清单文件 Application 节点中注册 android:requestLegacyExternalStorage="true" 属性
                             // 否则就算申请了权限，也无法在 Android 10 的设备上正常读写外部存储上的文件
-                            // 如果你的项目已经全面适配了分区存储，请调用 XXPermissions.setScopedStorage(true) 来跳过该检查
+                            // 如果你的项目已经全面适配了分区存储，请在清单文件中注册一个 meta-data 属性，<meta-data android:name="ScopedStorage" android:value="true" /> 来跳过该检查
                             throw new IllegalStateException("Please register the android:requestLegacyExternalStorage=\"true\" attribute in the manifest file");
                         }
 
                         // 如果在已经适配 Android 11 的情况下
                         if (targetSdkVersion >= Build.VERSION_CODES.R &&
                                 !requestPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) && !scopedStorage) {
-                            // 1. 适配分区存储的特性，并在 Application 初始化时调用 XXPermissions.setScopedStorage(true)
+                            // 1. 适配分区存储的特性，并在清单文件中注册一个 meta-data 属性，<meta-data android:name="ScopedStorage" android:value="true" />
                             // 2. 如果不想适配分区存储，则需要使用 Permission.MANAGE_EXTERNAL_STORAGE 来申请权限
                             // 上面两种方式需要二选一，否则无法在 Android 11 的设备上正常读写外部存储上的文件
                             // 如果不知道该怎么选择，可以看文档：https://github.com/getActivity/XXPermissions/blob/master/HelpDoc

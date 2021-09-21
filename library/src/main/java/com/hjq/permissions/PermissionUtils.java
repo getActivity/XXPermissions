@@ -9,6 +9,7 @@ import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 
@@ -515,5 +516,21 @@ final class PermissionUtils {
             e.printStackTrace();
         }
         return cookie;
+    }
+
+    /**
+     * 判断是否适配了分区存储
+     */
+    static boolean isScopedStorage(Context context) {
+        try {
+            String metaKey = "ScopedStorage";
+            Bundle metaData = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA).metaData;
+            if (metaData != null && metaData.containsKey(metaKey)) {
+                return Boolean.parseBoolean(String.valueOf(metaData.get(metaKey)));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

@@ -169,7 +169,6 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
         if (callback == null) {
             return;
         }
-        // 回调授权成功的方法
         callback.onGranted(permissions, all);
     }
 
@@ -177,6 +176,10 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
     public void deniedPermissions(Activity activity, OnPermissionCallback callback, List<String> permissions, boolean never) {
         if (never) {
             showPermissionDialog(activity, permissions);
+            if (callback == null) {
+                return;
+            }
+            callback.onDenied(permissions, never);
             return;
         }
 
@@ -190,7 +193,6 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
         if (callback == null) {
             return;
         }
-        // 回调授权失败的方法
         callback.onDenied(permissions, never);
     }
 
