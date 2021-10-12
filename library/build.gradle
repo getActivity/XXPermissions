@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 11
-        versionCode 1230
-        versionName "12.3"
+        versionCode 1250
+        versionName "12.5"
     }
 
     // 使用 JDK 1.8

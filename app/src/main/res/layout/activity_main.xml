@@ -12,21 +12,21 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/btn_main_request_1"
+            android:id="@+id/btn_main_request_single"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="申请单个危险权限" />
 
         <Button
-            android:id="@+id/btn_main_request_2"
+            android:id="@+id/btn_main_request_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="申请多个危险权限" />
 
         <Button
-            android:id="@+id/btn_main_request_3"
+            android:id="@+id/btn_main_request_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -34,7 +34,15 @@
             android:text="申请定位权限组" />
 
         <Button
-            android:id="@+id/btn_main_request_4"
+            android:id="@+id/btn_main_request_bluetooth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:text="申请蓝牙权限" />
+
+        <Button
+            android:id="@+id/btn_main_request_storage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -42,7 +50,7 @@
             android:text="申请新版存储权限" />
 
         <Button
-            android:id="@+id/btn_main_request_5"
+            android:id="@+id/btn_main_request_package"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -50,7 +58,7 @@
             android:text="申请安装包权限" />
 
         <Button
-            android:id="@+id/btn_main_request_6"
+            android:id="@+id/btn_main_request_window"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -58,7 +66,7 @@
             android:text="申请悬浮窗权限" />
 
         <Button
-            android:id="@+id/btn_main_request_7"
+            android:id="@+id/btn_main_request_notification"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -66,7 +74,7 @@
             android:text="申请通知栏权限" />
 
         <Button
-            android:id="@+id/btn_main_request_8"
+            android:id="@+id/btn_main_request_setting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

@@ -1,5 +1,6 @@
 package com.hjq.permissions;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.XmlResourceParser;
@@ -31,7 +32,7 @@ final class PermissionChecker {
         if (activity == null) {
             if (debugMode) {
                 // Context 的实例必须是 Activity 对象
-                throw new IllegalArgumentException("The instance of the Context must be an Activity object");
+                throw new IllegalArgumentException("The instance of the context must be an activity object");
             }
             return false;
         }
@@ -39,7 +40,7 @@ final class PermissionChecker {
         if (activity.isFinishing()) {
             if (debugMode) {
                 // 这个 Activity 对象当前不能是关闭状态，这种情况常出现在执行异步请求后申请权限，请自行在外层判断 Activity 状态是否正常之后再进入权限申请
-                throw new IllegalStateException("The Activity has been finishing, Please manually determine the status of the Activity");
+                throw new IllegalStateException("The activity has been finishing, please manually determine the status of the activity");
             }
             return false;
         }
@@ -47,7 +48,7 @@ final class PermissionChecker {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed()) {
             if (debugMode) {
                 // 这个 Activity 对象当前不能是销毁状态，这种情况常出现在执行异步请求后申请权限，请自行在外层判断 Activity 状态是否正常之后再进入权限申请
-                throw new IllegalStateException("The Activity has been destroyed, Please manually determine the status of the Activity");
+                throw new IllegalStateException("The activity has been destroyed, please manually determine the status of the activity");
             }
             return false;
         }
@@ -168,7 +169,17 @@ final class PermissionChecker {
      *
      * @param requestPermissions        请求的权限组
      */
-    static void checkLocationPermission(List<String> requestPermissions) {
+    static void checkLocationPermission(Context context, List<String> requestPermissions) {
+        if (context.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.S) {
+            if (requestPermissions.contains(Permission.ACCESS_FINE_LOCATION) &&
+                    !requestPermissions.contains(Permission.ACCESS_COARSE_LOCATION) ) {
+                // 如果您的应用以 Android 12 为目标平台并且您请求 ACCESS_FINE_LOCATION 权限，则还必须请求 ACCESS_COARSE_LOCATION 权限
+                // 官方适配文档：https://developer.android.com/about/versions/12/approximate-location
+                throw new IllegalArgumentException("If your app targets Android 12 or higher and requests the ACCESS_FINE_LOCATION runtime permission, " +
+                        "you must also request the ACCESS_COARSE_LOCATION permission. You must include both permissions in a single runtime request.");
+            }
+        }
+
         // 判断是否包含后台定位权限
         if (!requestPermissions.contains(Permission.ACCESS_BACKGROUND_LOCATION)) {
             return;
@@ -176,6 +187,7 @@ final class PermissionChecker {
 
         if (requestPermissions.contains(Permission.ACCESS_COARSE_LOCATION) && !requestPermissions.contains(Permission.ACCESS_FINE_LOCATION)) {
             // 申请后台定位权限可以不包含模糊定位权限，但是一定要包含精确定位权限，否则后台定位权限会无法申请，也就是会导致无法弹出授权弹窗
+            // 经过实践，在 Android 12 上这个问题已经被解决了，但是为了兼容 Android 12 以下的设备，还是要那么做，否则在 Android 11 及以下设备会出现异常
             throw new IllegalArgumentException("The application for background location permissions must include precise location permissions");
         }
 
@@ -201,7 +213,11 @@ final class PermissionChecker {
     static void checkTargetSdkVersion(Context context, List<String> requestPermissions) {
         // targetSdk 最低版本要求
         int targetSdkMinVersion;
-        if (requestPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE)) {
+        if (requestPermissions.contains(Permission.BLUETOOTH_SCAN) ||
+                requestPermissions.contains(Permission.BLUETOOTH_CONNECT) ||
+                requestPermissions.contains(Permission.BLUETOOTH_ADVERTISE)) {
+            targetSdkMinVersion = Build.VERSION_CODES.S;
+        } else if (requestPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE)) {
             // 必须设置 targetSdkVersion >= 30 才能正常检测权限，否则请使用 Permission.Group.STORAGE 来申请存储权限
             targetSdkMinVersion = Build.VERSION_CODES.R;
         } else if (requestPermissions.contains(Permission.ACCEPT_HANDOVER)) {
@@ -230,6 +246,19 @@ final class PermissionChecker {
      * @param requestPermissions            请求的权限组
      */
     static void optimizeDeprecatedPermission(List<String> requestPermissions) {
+        if (!PermissionUtils.isAndroid12() &&
+                requestPermissions.contains(Permission.BLUETOOTH_SCAN) &&
+                !requestPermissions.contains(Permission.ACCESS_COARSE_LOCATION)) {
+            // 自动添加定位权限，因为在低版本下获取蓝牙扫描的结果需要此权限
+            requestPermissions.add(Permission.ACCESS_COARSE_LOCATION);
+        }
+
+        // 如果本次申请包含了 Android 12 蓝牙扫描权限
+        if (!PermissionUtils.isAndroid12() && requestPermissions.contains(Permission.BLUETOOTH_SCAN)) {
+            // 这是 Android 12 之前遗留的问题，扫描蓝牙需要定位的权限
+            requestPermissions.add(Permission.ACCESS_COARSE_LOCATION);
+        }
+
         // 如果本次申请包含了 Android 11 存储权限
         if (requestPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE)) {
 
@@ -281,6 +310,34 @@ final class PermissionChecker {
         }
 
         for (String permission : requestPermissions) {
+
+            if (minSdkVersion < Build.VERSION_CODES.S) {
+
+                if (Permission.BLUETOOTH_SCAN.equals(permission)) {
+
+                    if (!manifestPermissions.contains(Manifest.permission.BLUETOOTH_ADMIN)) {
+                        // 为了保证能够在旧版的系统上正常运行，必须要在清单文件中注册此权限
+                        throw new ManifestRegisterException(Manifest.permission.BLUETOOTH_ADMIN);
+                    }
+
+                    if (!manifestPermissions.contains(Permission.ACCESS_COARSE_LOCATION)) {
+                        // 这是 Android 12 之前遗留的问题，获取扫描蓝牙的结果需要定位的权限
+                        throw new ManifestRegisterException(Permission.ACCESS_COARSE_LOCATION);
+                    }
+                }
+
+                if (Permission.BLUETOOTH_CONNECT.equals(permission) &&
+                        !manifestPermissions.contains(Manifest.permission.BLUETOOTH)) {
+                    // 为了保证能够在旧版的系统上正常运行，必须要在清单文件中注册此权限
+                    throw new ManifestRegisterException(Manifest.permission.BLUETOOTH);
+                }
+
+                if (Permission.BLUETOOTH_ADVERTISE.equals(permission) &&
+                        !manifestPermissions.contains(Manifest.permission.BLUETOOTH_ADMIN)) {
+                    // 为了保证能够在旧版的系统上正常运行，必须要在清单文件中注册此权限
+                    throw new ManifestRegisterException(Manifest.permission.BLUETOOTH_ADMIN);
+                }
+            }
 
             if (minSdkVersion < Build.VERSION_CODES.R) {
                 if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) {

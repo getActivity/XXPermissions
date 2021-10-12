@@ -149,6 +149,17 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                     }
                     break;
                 }
+                case Permission.BLUETOOTH_SCAN:
+                case Permission.BLUETOOTH_CONNECT:
+                case Permission.BLUETOOTH_ADVERTISE: {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        String hint = context.getString(R.string.common_permission_bluetooth);
+                        if (!hints.contains(hint)) {
+                            hints.add(hint);
+                        }
+                    }
+                    break;
+                }
                 case Permission.READ_PHONE_STATE:
                 case Permission.CALL_PHONE:
                 case Permission.ADD_VOICEMAIL:

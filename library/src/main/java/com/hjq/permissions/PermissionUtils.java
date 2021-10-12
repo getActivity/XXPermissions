@@ -29,6 +29,13 @@ import java.util.Random;
 final class PermissionUtils {
 
     /**
+     * 是否是 Android 12 及以上版本
+     */
+    static boolean isAndroid12() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
+    }
+
+    /**
      * 是否是 Android 11 及以上版本
      */
     static boolean isAndroid11() {
@@ -254,7 +261,20 @@ final class PermissionUtils {
             return isGrantedSettingPermission(context);
         }
 
-        // 检测 10.0 的三个新权限
+        // 检测 Android 12 的三个新权限
+        if (!isAndroid12()) {
+
+            if (Permission.BLUETOOTH_SCAN.equals(permission)) {
+                return context.checkSelfPermission(Permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+            }
+
+            if (Permission.BLUETOOTH_CONNECT.equals(permission) ||
+                    Permission.BLUETOOTH_ADVERTISE.equals(permission)) {
+                return true;
+            }
+        }
+
+        // 检测 Android 10 的三个新权限
         if (!isAndroid10()) {
 
             if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission)) {
@@ -270,7 +290,7 @@ final class PermissionUtils {
             }
         }
 
-        // 检测 9.0 的一个新权限
+        // 检测 Android 9.0 的一个新权限
         if (!isAndroid9()) {
 
             if (Permission.ACCEPT_HANDOVER.equals(permission)) {
@@ -278,7 +298,7 @@ final class PermissionUtils {
             }
         }
 
-        // 检测 8.0 的两个新权限
+        // 检测 Android 8.0 的两个新权限
         if (!isAndroid8()) {
 
             if (Permission.ANSWER_PHONE_CALLS.equals(permission)) {
@@ -335,6 +355,20 @@ final class PermissionUtils {
             return false;
         }
 
+        // 检测 Android 12 的三个新权限
+        if (!isAndroid12()) {
+
+            if (Permission.BLUETOOTH_SCAN.equals(permission)) {
+                return !isGrantedPermission(activity, Permission.ACCESS_COARSE_LOCATION) &&
+                        !activity.shouldShowRequestPermissionRationale(Permission.ACCESS_COARSE_LOCATION);
+            }
+
+            if (Permission.BLUETOOTH_CONNECT.equals(permission) ||
+                    Permission.BLUETOOTH_ADVERTISE.equals(permission)) {
+                return true;
+            }
+        }
+
         if (isAndroid10()) {
 
             // 重新检测后台定位权限是否永久拒绝
@@ -345,7 +379,7 @@ final class PermissionUtils {
             }
         }
 
-        // 检测 10.0 的三个新权限
+        // 检测 Android 10 的三个新权限
         if (!isAndroid10()) {
 
             if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission)) {
@@ -363,7 +397,7 @@ final class PermissionUtils {
             }
         }
 
-        // 检测 9.0 的一个新权限
+        // 检测 Android 9.0 的一个新权限
         if (!isAndroid9()) {
 
             if (Permission.ACCEPT_HANDOVER.equals(permission)) {
@@ -371,7 +405,7 @@ final class PermissionUtils {
             }
         }
 
-        // 检测 8.0 的两个新权限
+        // 检测 Android 8.0 的两个新权限
         if (!isAndroid8()) {
 
             if (Permission.ANSWER_PHONE_CALLS.equals(permission)) {
@@ -490,6 +524,7 @@ final class PermissionUtils {
         try {
             try {
                 // 为什么不直接通过反射 AssetManager.findCookieForPath 方法来判断？因为这个 API 属于反射黑名单，反射执行不了
+                // 为什么不直接通过反射 AssetManager.addAssetPathInternal 这个非隐藏的方法来判断？因为这个也反射不了
                 Method method = assets.getClass().getDeclaredMethod("addOverlayPath", String.class);
                 cookie = (int) method.invoke(assets, path);
             } catch (Exception e) {

@@ -6,7 +6,7 @@ import android.Manifest;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2018/06/15
- *    desc   : 权限请求实体类，参考 {@link Manifest.permission}
+ *    desc   : 危险权限和特殊权限常量集，参考 {@link Manifest.permission}
  *    doc    : https://developer.android.google.cn/reference/android/Manifest.permission?hl=zh_cn
  *             https://developer.android.google.cn/guide/topics/permissions/overview?hl=zh-cn#normal-dangerous
  */
@@ -63,6 +63,26 @@ public final class Permission {
      * 需要注意的是：如果你的 App 只在前台状态下使用定位功能，请不要申请该权限
      */
     public static final String ACCESS_BACKGROUND_LOCATION = "android.permission.ACCESS_BACKGROUND_LOCATION";
+
+    /**
+     * 蓝牙扫描权限（需要 Android 12.0 及以上）
+     *
+     * 为了 Android 12 以下兼容版本，请在清单文件中注册 {@link Manifest.permission#BLUETOOTH_ADMIN } 权限
+     * 还有 Android 12 以下设备，获取蓝牙扫描结果需要模糊定位权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
+     */
+    public static final String BLUETOOTH_SCAN = "android.permission.BLUETOOTH_SCAN";
+    /**
+     * 蓝牙连接权限（需要 Android 12.0 及以上）
+     *
+     * 为了 Android 12 以下兼容版本，请在清单文件中注册 {@link Manifest.permission#BLUETOOTH } 权限
+     */
+    public static final String BLUETOOTH_CONNECT = "android.permission.BLUETOOTH_CONNECT";
+    /**
+     * 蓝牙广播权限（需要 Android 12.0 及以上）
+     *
+     * 将当前设备的蓝牙进行广播，供其他设备扫描时需要用到该权限
+     */
+    public static final String BLUETOOTH_ADVERTISE = "android.permission.BLUETOOTH_ADVERTISE";
 
     /** 读取联系人 */
     public static final String READ_CONTACTS = "android.permission.READ_CONTACTS";
@@ -145,17 +165,17 @@ public final class Permission {
     public static final class Group {
 
         /** 存储权限 */
-        public static final String[] STORAGE = new String[]{
+        public static final String[] STORAGE = new String[] {
                 Permission.READ_EXTERNAL_STORAGE,
                 Permission.WRITE_EXTERNAL_STORAGE};
 
         /** 日历权限 */
-        public static final String[] CALENDAR = new String[]{
+        public static final String[] CALENDAR = new String[] {
                 Permission.READ_CALENDAR,
                 Permission.WRITE_CALENDAR};
 
         /** 联系人权限 */
-        public static final String[] CONTACTS = new String[]{
+        public static final String[] CONTACTS = new String[] {
                 Permission.READ_CONTACTS,
                 Permission.WRITE_CONTACTS,
                 Permission.GET_ACCOUNTS};
@@ -164,5 +184,11 @@ public final class Permission {
         public static final String[] SENSORS = new String[] {
                 Permission.BODY_SENSORS,
                 Permission.ACTIVITY_RECOGNITION};
+
+        /** 蓝牙权限 */
+        public static final String[] BLUETOOTH = new String[] {
+                Permission.BLUETOOTH_SCAN,
+                Permission.BLUETOOTH_CONNECT,
+                Permission.BLUETOOTH_ADVERTISE};
     }
 }

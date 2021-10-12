@@ -358,12 +358,20 @@ public final class PermissionFragment extends Fragment implements Runnable {
                 continue;
             }
 
+            // 重新检查 Android 12 的三个新权限
+            if (!PermissionUtils.isAndroid12() &&
+                    (Permission.BLUETOOTH_SCAN.equals(permission) ||
+                            Permission.BLUETOOTH_CONNECT.equals(permission) ||
+                            Permission.BLUETOOTH_ADVERTISE.equals(permission))) {
+                grantResults[i] = PermissionUtils.getPermissionStatus(activity, permission);
+                continue;
+            }
+
             // 重新检查 Android 10.0 的三个新权限
             if (!PermissionUtils.isAndroid10() &&
                     (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission) ||
                     Permission.ACTIVITY_RECOGNITION.equals(permission) ||
                     Permission.ACCESS_MEDIA_LOCATION.equals(permission))) {
-                // 如果当前版本不符合最低要求，那么就重新进行权限检测
                 grantResults[i] = PermissionUtils.getPermissionStatus(activity, permission);
                 continue;
             }
@@ -371,7 +379,6 @@ public final class PermissionFragment extends Fragment implements Runnable {
             // 重新检查 Android 9.0 的一个新权限
             if (!PermissionUtils.isAndroid9() &&
                     Permission.ACCEPT_HANDOVER.equals(permission)) {
-                // 如果当前版本不符合最低要求，那么就重新进行权限检测
                 grantResults[i] = PermissionUtils.getPermissionStatus(activity, permission);
                 continue;
             }
@@ -380,7 +387,6 @@ public final class PermissionFragment extends Fragment implements Runnable {
             if (!PermissionUtils.isAndroid8() &&
                     (Permission.ANSWER_PHONE_CALLS.equals(permission) ||
                     Permission.READ_PHONE_NUMBERS.equals(permission))) {
-                // 如果当前版本不符合最低要求，那么就重新进行权限检测
                 grantResults[i] = PermissionUtils.getPermissionStatus(activity, permission);
             }
         }

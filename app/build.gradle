@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "com.hjq.permissions.demo"
         minSdkVersion 14
-        targetSdkVersion 30
-        versionCode 1230
-        versionName "12.3"
+        targetSdkVersion 31
+        versionCode 1250
+        versionName "12.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

@@ -140,6 +140,9 @@ public final class XXPermissions {
             mInterceptor = getInterceptor();
         }
 
+        // 权限请求列表（为什么直接不用字段？因为框架要兼容新旧权限，在低版本下会自动添加旧权限申请）
+        List<String> permissions = new ArrayList<>(mPermissions);
+
         // 当前是否为调试模式
         boolean debugMode = isDebugMode(mContext);
 
@@ -150,37 +153,37 @@ public final class XXPermissions {
         }
 
         // 必须要传入正常的权限或者权限组才能申请权限
-        if (!PermissionChecker.checkPermissionArgument(mPermissions, debugMode)) {
+        if (!PermissionChecker.checkPermissionArgument(permissions, debugMode)) {
             return;
         }
 
         if (debugMode) {
             // 检查申请的存储权限是否符合规范
-            PermissionChecker.checkStoragePermission(mContext, mPermissions);
+            PermissionChecker.checkStoragePermission(mContext, permissions);
             // 检查申请的定位权限是否符合规范
-            PermissionChecker.checkLocationPermission(mPermissions);
+            PermissionChecker.checkLocationPermission(mContext, permissions);
             // 检查申请的权限和 targetSdk 版本是否能吻合
-            PermissionChecker.checkTargetSdkVersion(mContext, mPermissions);
+            PermissionChecker.checkTargetSdkVersion(mContext, permissions);
         }
 
         // 优化所申请的权限列表
-        PermissionChecker.optimizeDeprecatedPermission(mPermissions);
+        PermissionChecker.optimizeDeprecatedPermission(permissions);
 
         if (debugMode) {
             // 检测权限有没有在清单文件中注册
-            PermissionChecker.checkPermissionManifest(mContext, mPermissions);
+            PermissionChecker.checkPermissionManifest(mContext, permissions);
         }
 
-        if (PermissionUtils.isGrantedPermissions(mContext, mPermissions)) {
+        if (PermissionUtils.isGrantedPermissions(mContext, permissions)) {
             // 证明这些权限已经全部授予过，直接回调成功
             if (callback != null) {
-                mInterceptor.grantedPermissions(activity, callback, mPermissions, true);
+                mInterceptor.grantedPermissions(activity, callback, permissions, true);
             }
             return;
         }
 
         // 申请没有授予过的权限
-        mInterceptor.requestPermissions(activity, callback, mPermissions);
+        mInterceptor.requestPermissions(activity, callback, permissions);
     }
 
     /**
