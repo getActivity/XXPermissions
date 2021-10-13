@@ -169,27 +169,38 @@ XXPermissions.startPermissionActivity(Fragment fragment, String... permissions);
 
 * 如果想知道回调中的某个权限是否被授权或者拒绝，可以调用 **List** 类中的 **contains(Permission.XXX)** 方法来判断这个集合中是否包含了这个权限。
 
-### [关于 Android 11 适配及常见疑问请点击这里查看](HelpDoc.md)
+### [其他常见疑问请点击此处查看](HelpDoc.md)
 
-#### 不同权限请求框架之间的对比
+#### 同类权限请求框架之间的对比
 
 |     功能及细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  12.5 |  2.0.3  |  1.5.1    |  1.30.6    |  0.12   |   4.8.0  |  3.0.0   |
+|    对应版本  |  12.5 |  2.0.3  |  1.6.0    |  1.30.6    |  0.12   |   4.9.1  |  3.0.0   |
 |    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |
-|    框架体积  |  28 KB  | 127 KB  |   66 KB  |   500 KB  |  28 KB  |   91 KB  |  48 KB   |
-|        安装包权限        |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|    框架体积  |  28 KB  | 127 KB  |   78 KB  |   500 KB  |  28 KB  |   91 KB  |  48 KB   |
+|        安装包权限        |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
 |        悬浮窗权限        |  ✅  |  ✅  |  ✅  |  ✅  |  ❌  |  ✅  |  ❌  |
 |        通知栏权限        |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |        系统设置权限      |  ✅  |  ✅  |  ✅  |  ✅  |  ❌  |  ✅  |  ❌  |
 |  Android 8.0 权限适配   |  ✅  |  ✅  |  ✅  |  ❌ |  ❌  |   ✅  |  ❌  |
-|  Android 9.0 权限适配   |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |   ✅  |  ❌  |
+|  Android 9.0 权限适配   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ✅  |  ❌  |
 |  Android 10 权限适配    |  ✅  |  ✅  |  ✅  |  ❌ |  ❌  |   ✅  |  ❌  |
 |  Android 11 权限适配    |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
-|  Android 12 权限适配    |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |   ❌  |  ❌  |
-|    屏幕方向旋转场景适配   |  ✅  |  ✅  |  ❌  |  ❌ |  ❌  |  ✅   |  ❌  |
+|  Android 12 权限适配    |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
+|   新权限自动兼容旧设备    |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
+|    屏幕方向旋转场景适配   |  ✅  |  ✅  |  ✅  |  ❌ |  ❌  |  ✅   |  ❌  |
 |    后台申请权限场景适配   |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
-|      低级错误检测机制    |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
+|     低级错误检测机制     |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
+
+#### 新权限自动兼容旧设备介绍
+
+* 随着 Android 版本的不断更新，危险权限和特殊权限也在增加，那么这个时候会有一个版本兼容问题，高版本的安卓设备是支持申请低版本的权限，但是低版本的安卓设备是不支持申请高版本的权限，那么这个时候会出现一个兼容性的问题。
+
+* 经过核查，其他权限框架选择了一种最简单粗暴的方式，就是不去做兼容，而是交给外层的调用者做兼容，需要调用者在外层先判断安卓版本，在高版本上面传入新权限给框架，而在低版本上面传入旧权限给框架，这种方式看似简单粗暴，但是开发体验差，同时也暗藏了一个坑，外层的调用者他们知道这个新权限对应着的旧权限是哪个吗？我觉得不是每个人都知道，而一旦认知出现错误，必然会导致结果出现错误。
+
+* 我觉得最好的做法是交给框架来做，**XXPermissions** 正是那么做的，外层调用者申请高版本权限的时候，那么在低版本设备上面，会自动添加低版本的权限进行申请，举个最简单的例子，Android 11 出现的 `MANAGE_EXTERNAL_STORAGE` 新权限，如果是在 Android 10 及以下的设备申请这个权限时，框架会自动添加 `READ_EXTERNAL_STORAGE` 和 `WRITE_EXTERNAL_STORAGE` 进行申请，在 Android 10 及以下的设备上面，我们可以直接把 `MANAGE_EXTERNAL_STORAGE` 当做 `READ_EXTERNAL_STORAGE` 和 `WRITE_EXTERNAL_STORAGE` 来用，因为 `MANAGE_EXTERNAL_STORAGE` 能干的事情，在 Android 10 及以下的设备上面，要用 `READ_EXTERNAL_STORAGE` 和 `WRITE_EXTERNAL_STORAGE` 才能做得了。
+
+* 所以大家在使用 **XXPermissions** 的时候，直接拿新的权限去申请就可以了，完全不需要关心新旧权限的兼容问题，框架会自动帮你做处理的，与其他框架不同的是，我更想做的是让大家一句代码搞定权限请求，框架能做到的，统统交给框架做处理。
 
 #### 屏幕旋转场景适配介绍
 
