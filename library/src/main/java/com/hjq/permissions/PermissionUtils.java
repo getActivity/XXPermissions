@@ -8,17 +8,22 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.content.res.XmlResourceParser;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.view.Surface;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 /**
  *    author : Android 轮子哥
@@ -28,9 +33,13 @@ import java.util.Random;
  */
 final class PermissionUtils {
 
+    /** Android 命名空间 */
+    static final String ANDROID_NAMESPACE = "http://schemas.android.com/apk/res/android";
+
     /**
      * 是否是 Android 12 及以上版本
      */
+    @SuppressWarnings("all")
     static boolean isAndroid12() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
     }
@@ -52,6 +61,7 @@ final class PermissionUtils {
     /**
      * 是否是 Android 9.0 及以上版本
      */
+    @SuppressWarnings("all")
     static boolean isAndroid9() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
     }
@@ -80,17 +90,54 @@ final class PermissionUtils {
     /**
      * 返回应用程序在清单文件中注册的权限
      */
-    static List<String> getManifestPermissions(Context context) {
-        try {
-            String[] requestedPermissions = context.getPackageManager().getPackageInfo(context.getPackageName(),
-                    PackageManager.GET_PERMISSIONS).requestedPermissions;
-            // 当清单文件没有注册任何权限的时候，那么这个数组对象就是空的
-            // https://github.com/getActivity/XXPermissions/issues/35
-            return asArrayList(requestedPermissions);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-            return null;
+    static HashMap<String, Integer> getManifestPermissions(Context context) {
+        HashMap<String, Integer> manifestPermissions = new HashMap<>();
+
+        XmlResourceParser parser = PermissionUtils.parseAndroidManifest(context);
+
+        if (parser != null) {
+            try {
+
+                do {
+                    // 当前节点必须为标签头部
+                    if (parser.getEventType() != XmlResourceParser.START_TAG) {
+                        continue;
+                    }
+
+                    // 当前标签必须为 uses-permission
+                    if (!"uses-permission".equals(parser.getName())) {
+                        continue;
+                    }
+
+                    manifestPermissions.put(parser.getAttributeValue(ANDROID_NAMESPACE, "name"),
+                            parser.getAttributeIntValue(ANDROID_NAMESPACE, "maxSdkVersion", Integer.MAX_VALUE));
+
+                } while (parser.next() != XmlResourceParser.END_DOCUMENT);
+
+            } catch (IOException | XmlPullParserException e) {
+                e.printStackTrace();
+            } finally {
+                parser.close();
+            }
         }
+
+        if (manifestPermissions.isEmpty()) {
+            try {
+                // 当清单文件没有注册任何权限的时候，那么这个数组对象就是空的
+                // https://github.com/getActivity/XXPermissions/issues/35
+                String[] requestedPermissions = context.getPackageManager().getPackageInfo(
+                        context.getPackageName(), PackageManager.GET_PERMISSIONS).requestedPermissions;
+                if (requestedPermissions != null) {
+                    for (String permission : requestedPermissions) {
+                        manifestPermissions.put(permission, Integer.MAX_VALUE);
+                    }
+                }
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return manifestPermissions;
     }
 
     /**
@@ -136,11 +183,14 @@ final class PermissionUtils {
             // 参考 Support 库中的方法： NotificationManagerCompat.from(context).areNotificationsEnabled()
             AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
             try {
-                Method method = appOps.getClass().getMethod("checkOpNoThrow", Integer.TYPE, Integer.TYPE, String.class);
+                Method method = appOps.getClass().getMethod("checkOpNoThrow",
+                        Integer.TYPE, Integer.TYPE, String.class);
                 Field field = appOps.getClass().getDeclaredField("OP_POST_NOTIFICATION");
                 int value = (int) field.get(Integer.class);
-                return ((int) method.invoke(appOps, value, context.getApplicationInfo().uid, context.getPackageName())) == AppOpsManager.MODE_ALLOWED;
-            } catch (NoSuchMethodException | NoSuchFieldException | InvocationTargetException | IllegalAccessException | RuntimeException e) {
+                return ((int) method.invoke(appOps, value, context.getApplicationInfo().uid,
+                        context.getPackageName())) == AppOpsManager.MODE_ALLOWED;
+            } catch (NoSuchMethodException | NoSuchFieldException | InvocationTargetException |
+                    IllegalAccessException | RuntimeException e) {
                 e.printStackTrace();
                 return true;
             }
@@ -314,14 +364,54 @@ final class PermissionUtils {
     }
 
     /**
-     * 获取某个权限的状态
-     *
-     * @return        已授权返回  {@link PackageManager#PERMISSION_GRANTED}
-     *                未授权返回  {@link PackageManager#PERMISSION_DENIED}
+     * 优化权限回调结果
      */
-    static int getPermissionStatus(Context context, String permission) {
-        return PermissionUtils.isGrantedPermission(context, permission) ?
-                PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
+    static void optimizePermissionResults(Activity activity, String[] permissions, int[] grantResults) {
+        for (int i = 0; i < permissions.length; i++) {
+
+            boolean recheck = false;
+
+            String permission = permissions[i];
+
+            // 如果这个权限是特殊权限，那么就重新进行权限检测
+            if (PermissionUtils.isSpecialPermission(permission)) {
+                recheck = true;
+            }
+
+            // 重新检查 Android 12 的三个新权限
+            if (!PermissionUtils.isAndroid12() &&
+                    (Permission.BLUETOOTH_SCAN.equals(permission) ||
+                            Permission.BLUETOOTH_CONNECT.equals(permission) ||
+                            Permission.BLUETOOTH_ADVERTISE.equals(permission))) {
+                recheck = true;
+            }
+
+            // 重新检查 Android 10.0 的三个新权限
+            if (!PermissionUtils.isAndroid10() &&
+                    (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission) ||
+                            Permission.ACTIVITY_RECOGNITION.equals(permission) ||
+                            Permission.ACCESS_MEDIA_LOCATION.equals(permission))) {
+                recheck = true;
+            }
+
+            // 重新检查 Android 9.0 的一个新权限
+            if (!PermissionUtils.isAndroid9() &&
+                    Permission.ACCEPT_HANDOVER.equals(permission)) {
+                recheck = true;
+            }
+
+            // 重新检查 Android 8.0 的两个新权限
+            if (!PermissionUtils.isAndroid8() &&
+                    (Permission.ANSWER_PHONE_CALLS.equals(permission) ||
+                            Permission.READ_PHONE_NUMBERS.equals(permission))) {
+                recheck = true;
+            }
+
+            if (recheck) {
+                grantResults[i] = PermissionUtils.isGrantedPermission(activity, permission) ?
+                        PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
+            }
+        }
     }
 
     /**
@@ -365,7 +455,7 @@ final class PermissionUtils {
 
             if (Permission.BLUETOOTH_CONNECT.equals(permission) ||
                     Permission.BLUETOOTH_ADVERTISE.equals(permission)) {
-                return true;
+                return false;
             }
         }
 
@@ -409,7 +499,7 @@ final class PermissionUtils {
         if (!isAndroid8()) {
 
             if (Permission.ANSWER_PHONE_CALLS.equals(permission)) {
-                return true;
+                return false;
             }
 
             if (Permission.READ_PHONE_NUMBERS.equals(permission)) {
@@ -488,15 +578,6 @@ final class PermissionUtils {
     }
 
     /**
-     * 获得随机的 RequestCode
-     */
-    static int getRandomRequestCode() {
-        // 新版本的 Support 库限制请求码必须小于 65536
-        // 旧版本的 Support 库限制请求码必须小于 256
-        return new Random().nextInt((int) Math.pow(2, 8));
-    }
-
-    /**
      * 寻找上下文中的 Activity 对象
      */
     static Activity findActivity(Context context) {
@@ -517,40 +598,41 @@ final class PermissionUtils {
      */
     @SuppressWarnings("JavaReflectionMemberAccess")
     @SuppressLint("PrivateApi")
-    static int findApkPathCookie(Context context) {
+    static Integer findApkPathCookie(Context context) {
         AssetManager assets = context.getAssets();
         String path = context.getApplicationInfo().sourceDir;
-        int cookie = 0;
         try {
-            try {
-                // 为什么不直接通过反射 AssetManager.findCookieForPath 方法来判断？因为这个 API 属于反射黑名单，反射执行不了
-                // 为什么不直接通过反射 AssetManager.addAssetPathInternal 这个非隐藏的方法来判断？因为这个也反射不了
-                Method method = assets.getClass().getDeclaredMethod("addOverlayPath", String.class);
-                cookie = (int) method.invoke(assets, path);
-            } catch (Exception e) {
-                // NoSuchMethodException
-                // IllegalAccessException
-                // InvocationTargetException
-                e.printStackTrace();
-                Method method = assets.getClass().getDeclaredMethod("getApkPaths");
-                String[] apkPaths = (String[]) method.invoke(assets);
-                if (apkPaths == null) {
-                    return cookie;
-                }
-                for (int i = 0; i < apkPaths.length; i++) {
-                    if (apkPaths[i].equals(path)) {
-                        cookie = i + 1;
-                        break;
-                    }
-                }
-            }
+            // 为什么不直接通过反射 AssetManager.findCookieForPath 方法来判断？因为这个 API 属于反射黑名单，反射执行不了
+            // 为什么不直接通过反射 AssetManager.addAssetPathInternal 这个非隐藏的方法来判断？因为这个也反射不了
+            Method method = assets.getClass().getDeclaredMethod("addOverlayPath", String.class);
+            // Android 9.0 以下获取到的结果会为零
+            // Android 9.0 及以上获取到的结果会大于零
+            return (Integer) method.invoke(assets, path);
         } catch (Exception e) {
             // NoSuchMethodException
             // IllegalAccessException
             // InvocationTargetException
             e.printStackTrace();
         }
-        return cookie;
+        return null;
+    }
+
+    /**
+     * 解析清单文件
+     */
+    static XmlResourceParser parseAndroidManifest(Context context) {
+        Integer cookie = PermissionUtils.findApkPathCookie(context);
+        if (cookie == null) {
+            // 如果 cookie 为 null，证明获取失败，直接 return
+            return null;
+        }
+
+        try {
+            return context.getAssets().openXmlResourceParser(cookie, "AndroidManifest.xml");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -567,5 +649,27 @@ final class PermissionUtils {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * 判断 Activity 是否反方向旋转了
+     */
+    static boolean isActivityReverse(Activity activity) {
+        // 获取 Activity 旋转的角度
+        int activityRotation;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            activityRotation = activity.getDisplay().getRotation();
+        } else {
+            activityRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+        }
+        switch (activityRotation) {
+            case Surface.ROTATION_180:
+            case Surface.ROTATION_270:
+                return true;
+            case Surface.ROTATION_0:
+            case Surface.ROTATION_90:
+            default:
+                return false;
+        }
     }
 }

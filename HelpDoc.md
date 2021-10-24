@@ -69,10 +69,10 @@ android
 * 最后直接调用下面这句代码
 
 ```java
-XXPermissions.with(this)
-        // 不适配 Android 11 可以这样写
+XXPermissions.with(MainActivity.this)
+        // 适配 Android 11 分区存储这样写
         //.permission(Permission.Group.STORAGE)
-        // 适配 Android 11 需要这样写，这里无需再写 Permission.Group.STORAGE
+        // 不适配 Android 11 分区存储这样写
         .permission(Permission.MANAGE_EXTERNAL_STORAGE)
         .request(new OnPermissionCallback() {
 
@@ -80,17 +80,6 @@ XXPermissions.with(this)
             public void onGranted(List<String> permissions, boolean all) {
                 if (all) {
                     toast("获取存储权限成功");
-                }
-            }
-
-            @Override
-            public void onDenied(List<String> permissions, boolean never) {
-                if (never) {
-                    toast("被永久拒绝授权，请手动授予存储权限");
-                    // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                    XXPermissions.startPermissionActivity(MainActivity.this, permissions);
-                } else {
-                    toast("获取存储权限失败");
                 }
             }
         });

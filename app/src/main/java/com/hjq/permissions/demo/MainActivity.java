@@ -18,7 +18,7 @@ import java.util.List;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2018/06/15
- *    desc   : Demo 演示
+ *    desc   : 权限申请演示
  */
 public final class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -129,9 +129,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 @Override
                 public void run() {
                     XXPermissions.with(MainActivity.this)
-                            // 不适配 Android 11 可以这样写
+                            // 适配 Android 11 分区存储这样写
                             //.permission(Permission.Group.STORAGE)
-                            // 适配 Android 11 需要这样写，这里无需再写 Permission.Group.STORAGE
+                            // 不适配 Android 11 分区存储这样写
                             .permission(Permission.MANAGE_EXTERNAL_STORAGE)
                             .request(new OnPermissionCallback() {
 

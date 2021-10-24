@@ -10,6 +10,7 @@ import android.Manifest;
  *    doc    : https://developer.android.google.cn/reference/android/Manifest.permission?hl=zh_cn
  *             https://developer.android.google.cn/guide/topics/permissions/overview?hl=zh-cn#normal-dangerous
  */
+@SuppressWarnings("unused")
 public final class Permission {
 
     private Permission() {}
@@ -25,6 +26,7 @@ public final class Permission {
      * 安装应用权限（特殊权限，需要 Android 8.0 及以上）
      *
      * Android 11 特性调整，安装外部来源应用需要重启 App：https://cloud.tencent.com/developer/news/637591
+     * 经过实践，Android 12 已经修复了此问题，授权或者取消授权后应用并不会重启
      */
     public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES";
 

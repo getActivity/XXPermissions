@@ -18,25 +18,27 @@ final class PermissionSettingPage {
 
     /**
      * 根据传入的权限自动选择最合适的权限设置页
+     *
+     * @param permissions                 请求失败的权限
      */
-    static Intent getSmartPermissionIntent(Context context, List<String> deniedPermissions) {
+    static Intent getSmartPermissionIntent(Context context, List<String> permissions) {
         // 如果失败的权限里面不包含特殊权限
-        if (deniedPermissions == null || deniedPermissions.isEmpty() ||
-                !PermissionUtils.containsSpecialPermission(deniedPermissions)) {
+        if (permissions == null || permissions.isEmpty() ||
+                !PermissionUtils.containsSpecialPermission(permissions)) {
             return getApplicationDetailsIntent(context);
         }
 
-        if (PermissionUtils.isAndroid11() && deniedPermissions.size() == 3 &&
-                (deniedPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) &&
-                        deniedPermissions.contains(Permission.READ_EXTERNAL_STORAGE) &&
-                        deniedPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE))) {
+        if (PermissionUtils.isAndroid11() && permissions.size() == 3 &&
+                (permissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) &&
+                        permissions.contains(Permission.READ_EXTERNAL_STORAGE) &&
+                        permissions.contains(Permission.WRITE_EXTERNAL_STORAGE))) {
             return getStoragePermissionIntent(context);
         }
 
         // 如果当前只有一个权限被拒绝了
-        if (deniedPermissions.size() == 1) {
+        if (permissions.size() == 1) {
 
-            String permission = deniedPermissions.get(0);
+            String permission = permissions.get(0);
             if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) {
                 return getStoragePermissionIntent(context);
             }

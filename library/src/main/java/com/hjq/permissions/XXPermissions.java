@@ -166,13 +166,13 @@ public final class XXPermissions {
             PermissionChecker.checkTargetSdkVersion(mContext, permissions);
         }
 
-        // 优化所申请的权限列表
-        PermissionChecker.optimizeDeprecatedPermission(permissions);
-
         if (debugMode) {
             // 检测权限有没有在清单文件中注册
-            PermissionChecker.checkPermissionManifest(mContext, permissions);
+            PermissionChecker.checkManifestPermissions(mContext, permissions);
         }
+
+        // 优化所申请的权限列表
+        PermissionChecker.optimizeDeprecatedPermission(permissions);
 
         if (PermissionUtils.isGrantedPermissions(mContext, permissions)) {
             // 证明这些权限已经全部授予过，直接回调成功

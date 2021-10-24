@@ -16,12 +16,13 @@ import android.util.ArraySet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 /**
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2018/06/15
- *    desc   : 权限请求处理类
+ *    desc   : 权限请求 Fragment
  */
 @SuppressWarnings("deprecation")
 @TargetApi(Build.VERSION_CODES.M)
@@ -46,7 +47,9 @@ public final class PermissionFragment extends Fragment implements Runnable {
         int requestCode;
         // 请求码随机生成，避免随机产生之前的请求码，必须进行循环判断
         do {
-            requestCode = PermissionUtils.getRandomRequestCode();
+            // 新版本的 Support 库限制请求码必须小于 65536
+            // 旧版本的 Support 库限制请求码必须小于 256
+            requestCode = new Random().nextInt((int) Math.pow(2, 8));
         } while (REQUEST_CODE_ARRAY.contains(requestCode));
         // 标记这个请求码已经被占用
         REQUEST_CODE_ARRAY.add(requestCode);
@@ -131,14 +134,22 @@ public final class PermissionFragment extends Fragment implements Runnable {
         if (mScreenOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
             return;
         }
-        int activityOrientation = activity.getResources().getConfiguration().orientation;
+
         try {
             // 兼容问题：在 Android 8.0 的手机上可以固定 Activity 的方向，但是这个 Activity 不能是透明的，否则就会抛出异常
             // 复现场景：只需要给 Activity 主题设置 <item name="android:windowIsTranslucent">true</item> 属性即可
-            if (activityOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            } else if (activityOrientation == Configuration.ORIENTATION_PORTRAIT) {
-                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            switch (activity.getResources().getConfiguration().orientation) {
+                case Configuration.ORIENTATION_LANDSCAPE:
+                    activity.setRequestedOrientation(PermissionUtils.isActivityReverse(activity) ?
+                            ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE :
+                            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                    break;
+                case Configuration.ORIENTATION_PORTRAIT:
+                default:
+                    activity.setRequestedOrientation(PermissionUtils.isActivityReverse(activity) ?
+                            ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT :
+                            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    break;
             }
         } catch (IllegalStateException e) {
             // java.lang.IllegalStateException: Only fullscreen activities can request orientation
@@ -200,46 +211,28 @@ public final class PermissionFragment extends Fragment implements Runnable {
         boolean requestSpecialPermission = false;
 
         // 判断当前是否包含特殊权限
-        if (PermissionUtils.containsSpecialPermission(permissions)) {
-
-            if (permissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) && !PermissionUtils.isGrantedStoragePermission(activity)) {
-                // 当前必须是 Android 11 及以上版本，因为 hasStoragePermission 在旧版本上是拿旧权限做的判断，所以这里需要多判断一次版本
-                if (PermissionUtils.isAndroid11()) {
-                    // 跳转到存储权限设置界面
-                    startActivityForResult(PermissionSettingPage.getStoragePermissionIntent(activity), getArguments().getInt(REQUEST_CODE));
-                    requestSpecialPermission = true;
+        for (String permission : permissions) {
+            if (PermissionUtils.isSpecialPermission(permission)) {
+                if (PermissionUtils.isGrantedPermission(activity, permission)) {
+                    // 已经授予过了，可以跳过
+                    continue;
                 }
-            }
-
-            if (permissions.contains(Permission.REQUEST_INSTALL_PACKAGES) && !PermissionUtils.isGrantedInstallPermission(activity)) {
-                // 跳转到安装权限设置界面
-                startActivityForResult(PermissionSettingPage.getInstallPermissionIntent(activity), getArguments().getInt(REQUEST_CODE));
-                requestSpecialPermission = true;
-            }
-
-            if (permissions.contains(Permission.SYSTEM_ALERT_WINDOW) && !PermissionUtils.isGrantedWindowPermission(activity)) {
-                // 跳转到悬浮窗设置页面
-                startActivityForResult(PermissionSettingPage.getWindowPermissionIntent(activity), getArguments().getInt(REQUEST_CODE));
-                requestSpecialPermission = true;
-            }
-
-            if (permissions.contains(Permission.NOTIFICATION_SERVICE) && !PermissionUtils.isGrantedNotifyPermission(activity)) {
-                // 跳转到通知栏权限设置页面
-                startActivityForResult(PermissionSettingPage.getNotifyPermissionIntent(activity), getArguments().getInt(REQUEST_CODE));
-                requestSpecialPermission = true;
-            }
-
-            if (permissions.contains(Permission.WRITE_SETTINGS) && !PermissionUtils.isGrantedSettingPermission(activity)) {
-                // 跳转到系统设置权限设置页面
-                startActivityForResult(PermissionSettingPage.getSettingPermissionIntent(activity), getArguments().getInt(REQUEST_CODE));
+                if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) && !PermissionUtils.isAndroid11()) {
+                    // 当前必须是 Android 11 及以上版本，因为在旧版本上是拿旧权限做的判断
+                    continue;
+                }
+                // 跳转到特殊权限授权页面
+                startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity,
+                        PermissionUtils.asArrayList(permission)), getArguments().getInt(REQUEST_CODE));
                 requestSpecialPermission = true;
             }
         }
 
-        // 当前必须没有跳转到悬浮窗或者安装权限界面
-        if (!requestSpecialPermission) {
-            requestDangerousPermission();
+        if (requestSpecialPermission) {
+            return;
         }
+        // 如果没有跳转到特殊权限授权页面，就直接申请危险权限
+        requestDangerousPermission();
     }
 
     /**
@@ -338,7 +331,8 @@ public final class PermissionFragment extends Fragment implements Runnable {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         Bundle arguments = getArguments();
         Activity activity = getActivity();
-        if (activity == null || arguments == null || mCallBack == null || requestCode != arguments.getInt(REQUEST_CODE)) {
+        if (activity == null || arguments == null || mCallBack == null ||
+                requestCode != arguments.getInt(REQUEST_CODE)) {
             return;
         }
 
@@ -348,48 +342,8 @@ public final class PermissionFragment extends Fragment implements Runnable {
         IPermissionInterceptor interceptor = mInterceptor;
         mInterceptor = null;
 
-        for (int i = 0; i < permissions.length; i++) {
-
-            String permission = permissions[i];
-
-            if (PermissionUtils.isSpecialPermission(permission)) {
-                // 如果这个权限是特殊权限，那么就重新进行权限检测
-                grantResults[i] = PermissionUtils.getPermissionStatus(activity, permission);
-                continue;
-            }
-
-            // 重新检查 Android 12 的三个新权限
-            if (!PermissionUtils.isAndroid12() &&
-                    (Permission.BLUETOOTH_SCAN.equals(permission) ||
-                            Permission.BLUETOOTH_CONNECT.equals(permission) ||
-                            Permission.BLUETOOTH_ADVERTISE.equals(permission))) {
-                grantResults[i] = PermissionUtils.getPermissionStatus(activity, permission);
-                continue;
-            }
-
-            // 重新检查 Android 10.0 的三个新权限
-            if (!PermissionUtils.isAndroid10() &&
-                    (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission) ||
-                    Permission.ACTIVITY_RECOGNITION.equals(permission) ||
-                    Permission.ACCESS_MEDIA_LOCATION.equals(permission))) {
-                grantResults[i] = PermissionUtils.getPermissionStatus(activity, permission);
-                continue;
-            }
-
-            // 重新检查 Android 9.0 的一个新权限
-            if (!PermissionUtils.isAndroid9() &&
-                    Permission.ACCEPT_HANDOVER.equals(permission)) {
-                grantResults[i] = PermissionUtils.getPermissionStatus(activity, permission);
-                continue;
-            }
-
-            // 重新检查 Android 8.0 的两个新权限
-            if (!PermissionUtils.isAndroid8() &&
-                    (Permission.ANSWER_PHONE_CALLS.equals(permission) ||
-                    Permission.READ_PHONE_NUMBERS.equals(permission))) {
-                grantResults[i] = PermissionUtils.getPermissionStatus(activity, permission);
-            }
-        }
+        // 优化权限回调结果
+        PermissionUtils.optimizePermissionResults(activity, permissions, grantResults);
 
         // 释放对这个请求码的占用
         REQUEST_CODE_ARRAY.remove(requestCode);
@@ -415,7 +369,8 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
         if (interceptor != null) {
             // 代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回 true 给开发人员，让开发者引导用户去设置界面开启权限
-            interceptor.deniedPermissions(activity, callback, deniedPermission, PermissionUtils.isPermissionPermanentDenied(activity, deniedPermission));
+            interceptor.deniedPermissions(activity, callback, deniedPermission,
+                    PermissionUtils.isPermissionPermanentDenied(activity, deniedPermission));
         } else {
             callback.onDenied(deniedPermission, PermissionUtils.isPermissionPermanentDenied(activity, deniedPermission));
         }
@@ -434,7 +389,8 @@ public final class PermissionFragment extends Fragment implements Runnable {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Activity activity = getActivity();
         Bundle arguments = getArguments();
-        if (activity == null || arguments == null || requestCode != arguments.getInt(REQUEST_CODE) || mDangerousRequest) {
+        if (activity == null || arguments == null || mDangerousRequest ||
+                requestCode != arguments.getInt(REQUEST_CODE)) {
             return;
         }
 
