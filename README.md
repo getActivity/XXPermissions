@@ -1,12 +1,12 @@
 # 权限请求框架
 
-![](picture/logo.png)
+![](logo.png)
 
 * 项目地址：[Github](https://github.com/getActivity/XXPermissions)、[码云](https://gitee.com/getActivity/XXPermissions)
 
 * 博文地址：[一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
 
-* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](XXPermissions.apk)
+* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/12.8/XXPermissions.apk)
 
 ![](picture/demo_code.png)
 
@@ -45,7 +45,7 @@ android {
 
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.github.getActivity:XXPermissions:12.6'
+    implementation 'com.github.getActivity:XXPermissions:12.8'
 }
 ```
 
@@ -85,6 +85,10 @@ android.enableJetifier = true
 
 ```java
 XXPermissions.with(this)
+        // 申请单个权限
+        .permission(Permission.RECORD_AUDIO)
+        // 申请多个权限
+        //.permission(Permission.Group.CALENDAR)
         // 申请安装包权限
         //.permission(Permission.REQUEST_INSTALL_PACKAGES)
         // 申请悬浮窗权限
@@ -93,10 +97,10 @@ XXPermissions.with(this)
         //.permission(Permission.NOTIFICATION_SERVICE)
         // 申请系统设置权限
         //.permission(Permission.WRITE_SETTINGS)
-        // 申请单个权限
-        .permission(Permission.RECORD_AUDIO)
-        // 申请多个权限
-        .permission(Permission.Group.CALENDAR)
+        // 设置权限请求拦截器
+        //.interceptor(new PermissionInterceptor())
+        // 设置不触发错误检测机制
+        //.unchecked()
         .request(new OnPermissionCallback() {
 
             @Override
@@ -159,6 +163,11 @@ XXPermissions.isPermanentDenied(Activity activity, String... permissions);
 XXPermissions.startPermissionActivity(Context context, String... permissions);
 XXPermissions.startPermissionActivity(Activity activity, String... permissions);
 XXPermissions.startPermissionActivity(Fragment fragment, String... permissions);
+
+// 设置不触发错误检测机制（全局设置）
+XXPermissions.setCheckMode(false);
+// 设置权限申请拦截器（全局设置）
+XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 ```
 
 #### 关于权限监听回调参数说明
@@ -177,7 +186,7 @@ XXPermissions.startPermissionActivity(Fragment fragment, String... permissions);
 
 |     功能及细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  12.6 |  2.0.3  |  1.6.1    |  1.30.6    |  0.12   |   4.9.1  |  3.0.0   |
+|    对应版本  |  12.8 |  2.0.3  |  1.6.1    |  1.30.6    |  0.12   |   4.9.1  |  3.0.0   |
 |    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |
 |    框架体积  |  28 KB  | 127 KB  |   78 KB  |   500 KB  |  28 KB  |   91 KB  |  48 KB   |
 |        安装包权限        |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
@@ -238,7 +247,7 @@ XXPermissions.startPermissionActivity(Fragment fragment, String... permissions);
 
     * 如果动态申请的权限有在 `AndroidManifest.xml` 中进行注册，但是设定了不恰当的 `android:maxSdkVersion` 属性值，框架会抛出异常，举个例子：`<uses-permission android:name="xxxx" android:maxSdkVersion="29" />`，这样的设定会导致在 Android 11 （`Build.VERSION.SDK_INT >= 30`）及以上的设备申请权限，系统会认为这个权限没有在清单文件中注册，直接拒绝本次的权限申请，并且也是不会给出任何弹窗和提示，这个问题也是必现的。
 
-    * 如果你不需要上面这些检测，可通过设置 `XXPermissions.setDebugMode(false)` 来关闭，但是需要注意的是，我并不建议你去关闭这个检测，因为在 **release 模式** 时它是关闭状态，不需要你手动关闭，而它只在 **debug 模式** 下才会触发这些检测。
+    * 如果你不需要上面这些检测，可通过调用 `unchecked` 方法来关闭，但是需要注意的是，我并不建议你去关闭这个检测，因为在 **release 模式** 时它是关闭状态，不需要你手动关闭，而它只在 **debug 模式** 下才会触发这些检测。
 
 * 出现这些问题的原因是，我们对这些机制不太熟悉，而如果框架不加以限制，那么引发各种奇奇怪怪的问题出现，作为框架的作者，表示不仅你们很痛苦，作为框架作者表示也很受伤。因为这些问题不是框架导致的，而是调用者的某些操作不规范导致的。我觉得这个问题最好的解决方式是，由框架做统一的检查，因为我是框架的作者，对权限申请这块知识点有**较强的专业能力和足够的经验**，知道什么该做，什么不该做，这样就可以对这些骚操作进行一一拦截。
 

@@ -25,13 +25,13 @@ final class PermissionChecker {
     /**
      * 检查 Activity 的状态是否正常
      *
-     * @param debugMode         是否是调试模式
+     * @param checkMode         是否是检查模式
      * @return                  是否检查通过
      */
-    static boolean checkActivityStatus(Activity activity, boolean debugMode) {
+    static boolean checkActivityStatus(Activity activity, boolean checkMode) {
         // 检查当前 Activity 状态是否是正常的，如果不是则不请求权限
         if (activity == null) {
-            if (debugMode) {
+            if (checkMode) {
                 // Context 的实例必须是 Activity 对象
                 throw new IllegalArgumentException("The instance of the context must be an activity object");
             }
@@ -39,7 +39,7 @@ final class PermissionChecker {
         }
 
         if (activity.isFinishing()) {
-            if (debugMode) {
+            if (checkMode) {
                 // 这个 Activity 对象当前不能是关闭状态，这种情况常出现在执行异步请求后申请权限
                 // 请自行在外层判断 Activity 状态是否正常之后再进入权限申请
                 throw new IllegalStateException("The activity has been finishing, " +
@@ -49,7 +49,7 @@ final class PermissionChecker {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed()) {
-            if (debugMode) {
+            if (checkMode) {
                 // 这个 Activity 对象当前不能是销毁状态，这种情况常出现在执行异步请求后申请权限
                 // 请自行在外层判断 Activity 状态是否正常之后再进入权限申请
                 throw new IllegalStateException("The activity has been destroyed, " +
@@ -65,18 +65,18 @@ final class PermissionChecker {
      * 检查传入的权限是否符合要求
      *
      * @param requestPermissions        请求的权限组
-     * @param debugMode                 是否是调试模式
+     * @param checkMode                 是否是检查模式
      * @return                          是否检查通过
      */
-    static boolean checkPermissionArgument(List<String> requestPermissions, boolean debugMode) {
+    static boolean checkPermissionArgument(List<String> requestPermissions, boolean checkMode) {
         if (requestPermissions == null || requestPermissions.isEmpty()) {
-            if (debugMode) {
+            if (checkMode) {
                 // 不传权限，就想申请权限？
                 throw new IllegalArgumentException("The requested permission cannot be empty");
             }
             return false;
         }
-        if (debugMode) {
+        if (checkMode) {
             List<String> allPermissions = new ArrayList<>();
             Field[] fields = Permission.class.getDeclaredFields();
             // 在开启代码混淆之后，反射 Permission 类中的字段会得到空的字段数组
@@ -152,7 +152,7 @@ final class PermissionChecker {
                     // 如果你的项目已经全面适配了分区存储，请在清单文件中注册一个 meta-data 属性
                     // <meta-data android:name="ScopedStorage" android:value="true" /> 来跳过该检查
                     throw new IllegalStateException("Please register the android:requestLegacyExternalStorage=\"true\" " +
-                            "attribute in the AndroidManifest.xml file");
+                            "attribute in the AndroidManifest.xml file, otherwise it will cause incompatibility with the old version");
                 }
 
                 // 如果在已经适配 Android 11 的情况下
@@ -163,8 +163,9 @@ final class PermissionChecker {
                     // 2. 如果不想适配分区存储，则需要使用 Permission.MANAGE_EXTERNAL_STORAGE 来申请权限
                     // 上面两种方式需要二选一，否则无法在 Android 11 的设备上正常读写外部存储上的文件
                     // 如果不知道该怎么选择，可以看文档：https://github.com/getActivity/XXPermissions/blob/master/HelpDoc
-                    throw new IllegalArgumentException("Please adapt the scoped storage, " +
-                            "or use the MANAGE_EXTERNAL_STORAGE permission");
+                    throw new IllegalArgumentException("The storage permission application is abnormal. If you have adapted the scope storage, " +
+                            "please register the <meta-data android:name=\"ScopedStorage\" android:value=\"true\" /> attribute in the AndroidManifest.xml file. " +
+                            "If there is no adaptation scope storage, please use MANAGE_EXTERNAL_STORAGE to apply for permission");
                 }
 
                 // 终止循环
@@ -188,7 +189,10 @@ final class PermissionChecker {
         if (context.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.S) {
             if (requestPermissions.contains(Permission.ACCESS_FINE_LOCATION) &&
                     !requestPermissions.contains(Permission.ACCESS_COARSE_LOCATION) ) {
-                // 如果您的应用以 Android 12 为目标平台并且您请求 ACCESS_FINE_LOCATION 权限，则还必须请求 ACCESS_COARSE_LOCATION 权限
+                // 如果您的应用以 Android 12 为目标平台并且您请求 ACCESS_FINE_LOCATION 权限
+                // 则还必须请求 ACCESS_COARSE_LOCATION 权限。您必须在单个运行时请求中包含这两项权限
+                // 如果您尝试仅请求 ACCESS_FINE_LOCATION，则系统会忽略该请求并在 Logcat 中记录以下错误消息：
+                // ACCESS_FINE_LOCATION must be requested with ACCESS_COARSE_LOCATION
                 // 官方适配文档：https://developer.android.google.cn/about/versions/12/approximate-location
                 throw new IllegalArgumentException("If your app targets Android 12 or higher " +
                         "and requests the ACCESS_FINE_LOCATION runtime permission, " +
@@ -204,8 +208,9 @@ final class PermissionChecker {
 
         if (requestPermissions.contains(Permission.ACCESS_COARSE_LOCATION) &&
                 !requestPermissions.contains(Permission.ACCESS_FINE_LOCATION)) {
-            // 申请后台定位权限可以不包含模糊定位权限，但是一定要包含精确定位权限，否则后台定位权限会无法申请，也就是会导致无法弹出授权弹窗
-            // 经过实践，在 Android 12 上这个问题已经被解决了，但是为了兼容 Android 12 以下的设备，还是要那么做，否则在 Android 11 及以下设备会出现异常
+            // 申请后台定位权限可以不包含模糊定位权限，但是一定要包含精确定位权限，否则后台定位权限会无法申请
+            // 也就是会导致无法弹出授权弹窗，经过实践，在 Android 12 上这个问题已经被解决了
+            // 但是为了兼容 Android 12 以下的设备还是要那么做，否则在 Android 11 及以下设备会出现异常
             throw new IllegalArgumentException("The application for background location permissions " +
                     "must include precise location permissions");
         }
@@ -219,7 +224,7 @@ final class PermissionChecker {
 
             // 因为包含了后台定位权限，所以请不要申请和定位无关的权限，因为在 Android 11 上面，后台定位权限不能和其他非定位的权限一起申请
             // 否则会出现只申请了后台定位权限，其他权限会被回绝掉的情况，因为在 Android 11 上面，后台定位权限是要跳 Activity，并非弹 Dialog
-            // 如果你的项目没有后台定位的需求，请不要一同申请 Permission.ACCESS_BACKGROUND_LOCATION 权限
+            // 另外如果你的应用没有后台定位的需求，请不要一同申请 Permission.ACCESS_BACKGROUND_LOCATION 权限
             throw new IllegalArgumentException("Because it includes background location permissions, " +
                     "do not apply for permissions unrelated to location");
         }
@@ -256,7 +261,9 @@ final class PermissionChecker {
 
         // 必须设置正确的 targetSdkVersion 才能正常检测权限
         if (context.getApplicationInfo().targetSdkVersion < targetSdkMinVersion) {
-            throw new RuntimeException("The targetSdkVersion SDK must be " + targetSdkMinVersion + " or more");
+            throw new RuntimeException("The targetSdkVersion SDK must be " + targetSdkMinVersion +
+                    " or more, if you do not want to upgrade targetSdkVersion, " +
+                    "please apply with the old permissions");
         }
     }
 
@@ -333,9 +340,15 @@ final class PermissionChecker {
      * @param checkPermission           被检查的权限
      * @param maxSdkVersion             最低要求的 maxSdkVersion
      */
-    static void checkManifestPermission(HashMap<String, Integer> manifestPermissions, String checkPermission, int maxSdkVersion) {
+    static void checkManifestPermission(HashMap<String, Integer> manifestPermissions,
+                                        String checkPermission, int maxSdkVersion) {
         if (!manifestPermissions.containsKey(checkPermission)) {
-            // 动态申请的权限没有在清单文件中注册
+            // 动态申请的权限没有在清单文件中注册，分为以下两种情况：
+            // 1. 如果你的项目没有在清单文件中注册这个权限，请直接在清单文件中注册一下即可
+            // 2. 如果你的项目明明已注册这个权限，可以检查一下编译完成的 apk 包中是否包含该权限，如果里面没有，证明框架的判断是没有问题的
+            //    一般是第三方 sdk 或者框架在清单文件中注册了 <uses-permission android:name="xxx" tools:node="remove"/> 导致的
+            //    解决方式也很简单，通过在项目中注册 <uses-permission android:name="xxx" tools:node="replace"/> 即可替换掉原先的配置
+            // 具体案例：https://github.com/getActivity/XXPermissions/issues/98
             throw new IllegalStateException("Please register permissions in the AndroidManifest.xml file " +
                     "<uses-permission android:name=\"" + checkPermission + "\" />");
         }
@@ -346,13 +359,19 @@ final class PermissionChecker {
         }
 
         if (manifestMaxSdkVersion < maxSdkVersion) {
-            // 清单文件中所注册的权限 android:maxSdkVersion 大小不符合最低要求
+            // 清单文件中所注册的权限 maxSdkVersion 大小不符合最低要求，分为以下两种情况：
+            // 1. 如果你的项目中注册了该属性，请根据报错提示修改 maxSdkVersion 属性值或者删除 maxSdkVersion 属性
+            // 2. 如果你明明没有注册过 maxSdkVersion 属性，可以检查一下编译完成的 apk 包中是否有该属性，如果里面存在，证明框架的判断是没有问题的
+            //    一般是第三方 sdk 或者框架在清单文件中注册了 <uses-permission android:name="xxx" android:maxSdkVersion="xx"/> 导致的
+            //    解决方式也很简单，通过在项目中注册 <uses-permission android:name="xxx" tools:node="replace"/> 即可替换掉原先的配置
+            // 具体案例：https://github.com/getActivity/XXPermissions/issues/98
             throw new IllegalArgumentException("The AndroidManifest.xml file " +
                     "<uses-permission android:name=\"" + checkPermission +
                     "\" android:maxSdkVersion=\"" + manifestMaxSdkVersion +
                     "\" /> does not meet the requirements, " +
-                    (maxSdkVersion != Integer.MAX_VALUE ? "the minimum requirement for maxSdkVersion is " + maxSdkVersion
-                            : "please delete the android:maxSdkVersion=\"" + manifestMaxSdkVersion + "\" attribute"));
+                    (maxSdkVersion != Integer.MAX_VALUE ?
+                            "the minimum requirement for maxSdkVersion is " + maxSdkVersion :
+                            "please delete the android:maxSdkVersion=\"" + manifestMaxSdkVersion + "\" attribute"));
         }
     }
 

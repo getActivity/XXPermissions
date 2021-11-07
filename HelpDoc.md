@@ -131,7 +131,8 @@ public class XxxApplication extends Application {
 public final class PermissionInterceptor implements IPermissionInterceptor {
 
     @Override
-    public void requestPermissions(Activity activity, OnPermissionCallback callback, List<String> permissions) {
+    public void requestPermissions(Activity activity, OnPermissionCallback callback, List<String> allPermissions) {
+        // 这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
         new AlertDialog.Builder(activity)
                 .setTitle("授权提示")
                 .setMessage("使用此功能需要先授予权限")
@@ -140,7 +141,7 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        PermissionFragment.beginRequest(activity, new ArrayList<>(permissions), PermissionInterceptor.this, callback);
+                        PermissionFragment.beginRequest(activity, new ArrayList<>(allPermissions), PermissionInterceptor.this, callback);
                     }
                 })
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -154,25 +155,26 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
     }
 
     @Override
-    public void grantedPermissions(Activity activity, OnPermissionCallback callback, List<String> permissions, boolean all) {
-        if (callback == null) {
-            return;
+    public void grantedPermissions(Activity activity, List<String> allPermissions, List<String> grantedPermissions,
+                                   boolean all, OnPermissionCallback callback) {
+        if (callback != null) {
+            callback.onGranted(grantedPermissions, all);
         }
-        callback.onGranted(permissions, all);
     }
 
     @Override
-    public void deniedPermissions(Activity activity, OnPermissionCallback callback, List<String> permissions, boolean never) {
+    public void deniedPermissions(Activity activity, List<String> allPermissions, List<String> deniedPermissions,
+                                  boolean never, OnPermissionCallback callback) {
+        if (callback != null) {
+            callback.onDenied(deniedPermissions, never);
+        }
+
         if (never) {
-            showPermissionDialog(activity, permissions);
-            if (callback == null) {
-                return;
-            }
-            callback.onDenied(permissions, never);
+            showPermissionDialog(activity, deniedPermissions);
             return;
         }
 
-        if (permissions.size() == 1 && Permission.ACCESS_BACKGROUND_LOCATION.equals(permissions.get(0))) {
+        if (deniedPermissions.size() == 1 && Permission.ACCESS_BACKGROUND_LOCATION.equals(deniedPermissions.get(0))) {
             ToastUtils.show("没有授予后台定位权限，请您选择\"始终允许\"");
             return;
         }
@@ -182,15 +184,17 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
         if (callback == null) {
             return;
         }
-        callback.onDenied(permissions, never);
+        callback.onDenied(deniedPermissions, never);
     }
 
     /**
      * 显示授权对话框
      */
     protected void showPermissionDialog(Activity activity, List<String> permissions) {
+        // 这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
         new AlertDialog.Builder(activity)
                 .setTitle("授权提醒")
+                .setCancelable(false)
                 .setMessage(getPermissionHint(activity, permissions))
                 .setPositiveButton("前往授权", new DialogInterface.OnClickListener() {
 
@@ -198,13 +202,6 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         XXPermissions.startPermissionActivity(activity, permissions);
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
                     }
                 })
                 .show();

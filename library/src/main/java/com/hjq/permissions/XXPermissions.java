@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +23,8 @@ public final class XXPermissions {
     /** 权限请求拦截器 */
     private static IPermissionInterceptor sInterceptor;
 
-    /** 当前是否为调试模式 */
-    private static Boolean sDebugMode;
+    /** 当前是否为检查模式 */
+    private static Boolean sCheckMode;
 
     /**
      * 设置请求的对象
@@ -45,17 +44,10 @@ public final class XXPermissions {
     }
 
     /**
-     * 是否为调试模式
+     * 是否为检查模式
      */
-    public static void setDebugMode(boolean debug) {
-        sDebugMode = debug;
-    }
-
-    private static boolean isDebugMode(Context context) {
-        if (sDebugMode == null) {
-            sDebugMode = (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-        }
-        return sDebugMode;
+    public static void setCheckMode(boolean checkMode) {
+        sCheckMode = checkMode;
     }
 
     /**
@@ -84,19 +76,14 @@ public final class XXPermissions {
     /** 权限请求拦截器 */
     private IPermissionInterceptor mInterceptor;
 
+    /** 设置不检查 */
+    private Boolean mCheckMode;
+
     /**
      * 私有化构造函数
      */
     private XXPermissions(Context context) {
         mContext = context;
-    }
-
-    /**
-     * 设置权限请求拦截器
-     */
-    public XXPermissions interceptor(IPermissionInterceptor interceptor) {
-        mInterceptor = interceptor;
-        return this;
     }
 
     /**
@@ -129,6 +116,22 @@ public final class XXPermissions {
     }
 
     /**
+     * 设置权限请求拦截器
+     */
+    public XXPermissions interceptor(IPermissionInterceptor interceptor) {
+        mInterceptor = interceptor;
+        return this;
+    }
+
+    /**
+     * 设置不触发错误检测机制
+     */
+    public XXPermissions unchecked() {
+        mCheckMode = false;
+        return this;
+    }
+
+    /**
      * 请求权限
      */
     public void request(OnPermissionCallback callback) {
@@ -143,21 +146,25 @@ public final class XXPermissions {
         // 权限请求列表（为什么直接不用字段？因为框架要兼容新旧权限，在低版本下会自动添加旧权限申请）
         List<String> permissions = new ArrayList<>(mPermissions);
 
-        // 当前是否为调试模式
-        boolean debugMode = isDebugMode(mContext);
+        if (mCheckMode == null) {
+            if (sCheckMode == null) {
+                sCheckMode = PermissionUtils.isDebugMode(mContext);
+            }
+            mCheckMode = sCheckMode;
+        }
 
         // 检查当前 Activity 状态是否是正常的，如果不是则不请求权限
         Activity activity = PermissionUtils.findActivity(mContext);
-        if (!PermissionChecker.checkActivityStatus(activity, debugMode)) {
+        if (!PermissionChecker.checkActivityStatus(activity, mCheckMode)) {
             return;
         }
 
         // 必须要传入正常的权限或者权限组才能申请权限
-        if (!PermissionChecker.checkPermissionArgument(permissions, debugMode)) {
+        if (!PermissionChecker.checkPermissionArgument(permissions, mCheckMode)) {
             return;
         }
 
-        if (debugMode) {
+        if (mCheckMode) {
             // 检查申请的存储权限是否符合规范
             PermissionChecker.checkStoragePermission(mContext, permissions);
             // 检查申请的定位权限是否符合规范
@@ -166,7 +173,7 @@ public final class XXPermissions {
             PermissionChecker.checkTargetSdkVersion(mContext, permissions);
         }
 
-        if (debugMode) {
+        if (mCheckMode) {
             // 检测权限有没有在清单文件中注册
             PermissionChecker.checkManifestPermissions(mContext, permissions);
         }
@@ -177,7 +184,7 @@ public final class XXPermissions {
         if (PermissionUtils.isGrantedPermissions(mContext, permissions)) {
             // 证明这些权限已经全部授予过，直接回调成功
             if (callback != null) {
-                mInterceptor.grantedPermissions(activity, callback, permissions, true);
+                mInterceptor.grantedPermissions(activity, permissions, permissions, true, callback);
             }
             return;
         }
@@ -224,7 +231,9 @@ public final class XXPermissions {
     }
 
     /**
-     * 判断一个或多个权限是否被永久拒绝了（注意不能在请求权限之前调用，应该在 {@link OnPermissionCallback#onDenied(List, boolean)} 方法中调用）
+     * 判断一个或多个权限是否被永久拒绝了
+     *
+     * （注意不能在请求权限之前调用，应该在 {@link OnPermissionCallback#onDenied(List, boolean)} 方法中调用）
      */
     public static boolean isPermanentDenied(Activity activity, String... permissions) {
         return isPermanentDenied(activity, PermissionUtils.asArrayList(permissions));

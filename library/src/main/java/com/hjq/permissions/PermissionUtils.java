@@ -6,6 +6,7 @@ import android.app.AppOpsManager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.XmlResourceParser;
@@ -13,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.view.Surface;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -85,6 +87,13 @@ final class PermissionUtils {
      */
     static boolean isAndroid6() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+    }
+
+    /**
+     * 当前是否处于 debug 模式
+     */
+    static boolean isDebugMode(Context context) {
+        return (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
     }
 
     /**
@@ -315,7 +324,8 @@ final class PermissionUtils {
         if (!isAndroid12()) {
 
             if (Permission.BLUETOOTH_SCAN.equals(permission)) {
-                return context.checkSelfPermission(Permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+                return context.checkSelfPermission(Permission.ACCESS_COARSE_LOCATION) ==
+                        PackageManager.PERMISSION_GRANTED;
             }
 
             if (Permission.BLUETOOTH_CONNECT.equals(permission) ||
@@ -328,11 +338,13 @@ final class PermissionUtils {
         if (!isAndroid10()) {
 
             if (Permission.ACCESS_BACKGROUND_LOCATION.equals(permission)) {
-                return context.checkSelfPermission(Permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+                return context.checkSelfPermission(Permission.ACCESS_FINE_LOCATION) ==
+                        PackageManager.PERMISSION_GRANTED;
             }
 
             if (Permission.ACTIVITY_RECOGNITION.equals(permission)) {
-                return context.checkSelfPermission(Permission.BODY_SENSORS) == PackageManager.PERMISSION_GRANTED;
+                return context.checkSelfPermission(Permission.BODY_SENSORS) ==
+                        PackageManager.PERMISSION_GRANTED;
             }
 
             if (Permission.ACCESS_MEDIA_LOCATION.equals(permission)) {
@@ -356,7 +368,8 @@ final class PermissionUtils {
             }
 
             if (Permission.READ_PHONE_NUMBERS.equals(permission)) {
-                return context.checkSelfPermission(Permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED;
+                return context.checkSelfPermission(Permission.READ_PHONE_STATE) ==
+                        PackageManager.PERMISSION_GRANTED;
             }
         }
 
@@ -518,12 +531,12 @@ final class PermissionUtils {
      * @param permissions           需要请求的权限组
      * @param grantResults          允许结果组
      */
-    static List<String> getDeniedPermissions(String[] permissions, int[] grantResults) {
+    static List<String> getDeniedPermissions(List<String> permissions, int[] grantResults) {
         List<String> deniedPermissions = new ArrayList<>();
         for (int i = 0; i < grantResults.length; i++) {
             // 把没有授予过的权限加入到集合中
             if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                deniedPermissions.add(permissions[i]);
+                deniedPermissions.add(permissions.get(i));
             }
         }
         return deniedPermissions;
@@ -535,12 +548,12 @@ final class PermissionUtils {
      * @param permissions       需要请求的权限组
      * @param grantResults      允许结果组
      */
-    static List<String> getGrantedPermissions(String[] permissions, int[] grantResults) {
+    static List<String> getGrantedPermissions(List<String> permissions, int[] grantResults) {
         List<String> grantedPermissions = new ArrayList<>();
         for (int i = 0; i < grantResults.length; i++) {
             // 把授予过的权限加入到集合中
             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                grantedPermissions.add(permissions[i]);
+                grantedPermissions.add(permissions.get(i));
             }
         }
         return grantedPermissions;
@@ -594,45 +607,68 @@ final class PermissionUtils {
     }
 
     /**
-     * 获取当前应用 Apk 在 AssetManager 中的 Cookie
+     * 获取当前应用 Apk 在 AssetManager 中的 Cookie，如果获取失败，则为 0
      */
     @SuppressWarnings("JavaReflectionMemberAccess")
     @SuppressLint("PrivateApi")
-    static Integer findApkPathCookie(Context context) {
+    static int findApkPathCookie(Context context) {
         AssetManager assets = context.getAssets();
-        String path = context.getApplicationInfo().sourceDir;
+        String apkPath = context.getApplicationInfo().sourceDir;
         try {
             // 为什么不直接通过反射 AssetManager.findCookieForPath 方法来判断？因为这个 API 属于反射黑名单，反射执行不了
             // 为什么不直接通过反射 AssetManager.addAssetPathInternal 这个非隐藏的方法来判断？因为这个也反射不了
-            Method method = assets.getClass().getDeclaredMethod("addOverlayPath", String.class);
-            // Android 9.0 以下获取到的结果会为零
-            // Android 9.0 及以上获取到的结果会大于零
-            return (Integer) method.invoke(assets, path);
-        } catch (Exception e) {
-            // NoSuchMethodException
-            // IllegalAccessException
-            // InvocationTargetException
+            Method method = assets.getClass().getDeclaredMethod("addAssetPath", String.class);
+            Integer cookie = (Integer) method.invoke(assets, apkPath);
+            if (cookie != null) {
+                return cookie;
+            }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
-        return null;
+        // 获取失败
+        return 0;
     }
 
     /**
      * 解析清单文件
      */
     static XmlResourceParser parseAndroidManifest(Context context) {
-        Integer cookie = PermissionUtils.findApkPathCookie(context);
-        if (cookie == null) {
-            // 如果 cookie 为 null，证明获取失败，直接 return
+        int cookie = PermissionUtils.findApkPathCookie(context);
+        if (cookie == 0) {
+            // 如果 cookie 为 0，证明获取失败，直接 return
             return null;
         }
 
         try {
-            return context.getAssets().openXmlResourceParser(cookie, "AndroidManifest.xml");
+            XmlResourceParser parser = context.getAssets().openXmlResourceParser(cookie, "AndroidManifest.xml");
+
+            do {
+                // 当前节点必须为标签头部
+                if (parser.getEventType() != XmlResourceParser.START_TAG) {
+                    continue;
+                }
+
+                if ("manifest".equals(parser.getName())) {
+                    // 如果读取到的包名和当前应用的包名不是同一个的话，证明这个清单文件的内容不是当前应用的
+                    // 具体案例：https://github.com/getActivity/XXPermissions/issues/102
+                    if (TextUtils.equals(context.getPackageName(),
+                            parser.getAttributeValue(null, "package"))) {
+                        return parser;
+                    }
+                }
+
+            } while (parser.next() != XmlResourceParser.END_DOCUMENT);
+
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
     /**
@@ -641,7 +677,8 @@ final class PermissionUtils {
     static boolean isScopedStorage(Context context) {
         try {
             String metaKey = "ScopedStorage";
-            Bundle metaData = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA).metaData;
+            Bundle metaData = context.getPackageManager().getApplicationInfo(
+                    context.getPackageName(), PackageManager.GET_META_DATA).metaData;
             if (metaData != null && metaData.containsKey(metaKey)) {
                 return Boolean.parseBoolean(String.valueOf(metaData.get(metaKey)));
             }

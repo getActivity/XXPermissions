@@ -21,7 +21,7 @@ public final class AppApplication extends Application {
         // 初始化吐司工具类
         ToastUtils.init(this, new WhiteToastStyle());
 
-        // 设置权限申请拦截器
+        // 设置权限申请拦截器（全局设置）
         XXPermissions.setInterceptor(new PermissionInterceptor());
     }
 }

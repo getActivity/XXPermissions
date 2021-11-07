@@ -18,6 +18,9 @@ public final class Permission {
     /**
      * 文件管理权限（特殊权限，需要 Android 11 及以上）
      *
+     * 为了兼容 Android 11 以下版本，需要在清单文件中注册
+     * {@link Permission#READ_EXTERNAL_STORAGE} 和 {@link Permission#WRITE_EXTERNAL_STORAGE} 权限
+     *
      * 如果你的应用需要上架 GooglePlay，那么需要详细查看：https://support.google.com/googleplay/android-developer/answer/9956427
      */
     public static final String MANAGE_EXTERNAL_STORAGE = "android.permission.MANAGE_EXTERNAL_STORAGE";
@@ -30,18 +33,18 @@ public final class Permission {
      */
     public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES";
 
-    /** 通知栏权限（特殊权限，需要 Android 6.0 及以上，注意此权限不需要在清单文件中注册也能申请） */
+    /** 通知栏权限（特殊权限，注意此权限不需要在清单文件中注册也能申请） */
     public static final String NOTIFICATION_SERVICE = "android.permission.NOTIFICATION_SERVICE";
 
     /**
-     * 悬浮窗权限（特殊权限，需要 Android 6.0 及以上）
+     * 悬浮窗权限（特殊权限）
      *
      * 在 Android 10 及之前的版本能跳转到应用悬浮窗设置页面，而在 Android 11 及之后的版本只能跳转到系统设置悬浮窗管理列表了
-     * 具体详情请看官方文档解释：https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION
+     * 官方解释：https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION
      */
     public static final String SYSTEM_ALERT_WINDOW = "android.permission.SYSTEM_ALERT_WINDOW";
 
-    /** 系统设置权限（特殊权限，需要 Android 6.0 及以上） */
+    /** 系统设置权限（特殊权限） */
     public static final String WRITE_SETTINGS = "android.permission.WRITE_SETTINGS";
 
     /** 读取外部存储 */
@@ -69,20 +72,21 @@ public final class Permission {
     /**
      * 蓝牙扫描权限（需要 Android 12.0 及以上）
      *
-     * 为了 Android 12 以下兼容版本，请在清单文件中注册 {@link Manifest.permission#BLUETOOTH_ADMIN } 权限
+     * 为了兼容 Android 12 以下版本，需要清单文件中注册 {@link Manifest.permission#BLUETOOTH_ADMIN} 权限
      * 还有 Android 12 以下设备，获取蓝牙扫描结果需要模糊定位权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
      */
     public static final String BLUETOOTH_SCAN = "android.permission.BLUETOOTH_SCAN";
     /**
      * 蓝牙连接权限（需要 Android 12.0 及以上）
      *
-     * 为了 Android 12 以下兼容版本，请在清单文件中注册 {@link Manifest.permission#BLUETOOTH } 权限
+     * 为了兼容 Android 12 以下版本，需要在清单文件中注册 {@link Manifest.permission#BLUETOOTH} 权限
      */
     public static final String BLUETOOTH_CONNECT = "android.permission.BLUETOOTH_CONNECT";
     /**
      * 蓝牙广播权限（需要 Android 12.0 及以上）
      *
      * 将当前设备的蓝牙进行广播，供其他设备扫描时需要用到该权限
+     * 为了兼容 Android 12 以下版本，需要在清单文件中注册 {@link Manifest.permission#BLUETOOTH_ADMIN} 权限
      */
     public static final String BLUETOOTH_ADVERTISE = "android.permission.BLUETOOTH_ADVERTISE";
 
@@ -139,7 +143,11 @@ public final class Permission {
      * 接听电话（需要 Android 8.0 及以上，Android 8.0 以下可以采用模拟耳机按键事件来实现接听电话，这种方式不需要权限）
      */
     public static final String ANSWER_PHONE_CALLS = "android.permission.ANSWER_PHONE_CALLS";
-    /** 读取手机号码（需要 Android 8.0 及以上） */
+    /**
+     * 读取手机号码（需要 Android 8.0 及以上）
+     *
+     * 为了兼容 Android 8.0 以下版本，需要在清单文件中注册 {@link Manifest.permission#READ_PHONE_STATE} 权限
+     */
     public static final String READ_PHONE_NUMBERS = "android.permission.READ_PHONE_NUMBERS";
 
     /** 使用传感器 */
