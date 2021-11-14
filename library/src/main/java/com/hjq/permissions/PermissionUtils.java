@@ -35,9 +35,6 @@ import java.util.List;
  */
 final class PermissionUtils {
 
-    /** Android 命名空间 */
-    static final String ANDROID_NAMESPACE = "http://schemas.android.com/apk/res/android";
-
     /**
      * 是否是 Android 12 及以上版本
      */
@@ -76,17 +73,24 @@ final class PermissionUtils {
     }
 
     /**
-     * 是否是 Android 7.0 及以上版本
-     */
-    static boolean isAndroid7() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
-    }
-
-    /**
      * 是否是 Android 6.0 及以上版本
      */
     static boolean isAndroid6() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+    }
+
+    /**
+     * 是否是 Android 5.0 及以上版本
+     */
+    static boolean isAndroid5() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    }
+
+    /**
+     * 获取 Android 属性命名空间
+     */
+    static String getAndroidNamespace() {
+        return "http://schemas.android.com/apk/res/android";
     }
 
     /**
@@ -118,8 +122,8 @@ final class PermissionUtils {
                         continue;
                     }
 
-                    manifestPermissions.put(parser.getAttributeValue(ANDROID_NAMESPACE, "name"),
-                            parser.getAttributeIntValue(ANDROID_NAMESPACE, "maxSdkVersion", Integer.MAX_VALUE));
+                    manifestPermissions.put(parser.getAttributeValue(getAndroidNamespace(), "name"),
+                            parser.getAttributeIntValue(getAndroidNamespace(), "maxSdkVersion", Integer.MAX_VALUE));
 
                 } while (parser.next() != XmlResourceParser.END_DOCUMENT);
 
@@ -180,15 +184,25 @@ final class PermissionUtils {
     }
 
     /**
+     * 是否有系统设置权限
+     */
+    static boolean isGrantedSettingPermission(Context context) {
+        if (isAndroid6()) {
+            return Settings.System.canWrite(context);
+        }
+        return true;
+    }
+
+    /**
      * 是否有通知栏权限
      */
     @SuppressWarnings("ConstantConditions")
     static boolean isGrantedNotifyPermission(Context context) {
-        if (isAndroid7()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return context.getSystemService(NotificationManager.class).areNotificationsEnabled();
         }
 
-        if (isAndroid6()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // 参考 Support 库中的方法： NotificationManagerCompat.from(context).areNotificationsEnabled()
             AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
             try {
@@ -204,16 +218,25 @@ final class PermissionUtils {
                 return true;
             }
         }
-
         return true;
     }
 
     /**
-     * 是否有系统设置权限
+     * 是否有读取包权限
      */
-    static boolean isGrantedSettingPermission(Context context) {
-        if (isAndroid6()) {
-            return Settings.System.canWrite(context);
+    static boolean isGrantedPackagePermission(Context context) {
+        if (isAndroid5()) {
+            AppOpsManager appOps = (AppOpsManager)
+                    context.getSystemService(Context.APP_OPS_SERVICE);
+            int mode;
+            if (isAndroid10()) {
+                mode = appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
+                        context.getApplicationInfo().uid, context.getPackageName());
+            } else {
+                mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
+                        context.getApplicationInfo().uid, context.getPackageName());
+            }
+            return mode == AppOpsManager.MODE_ALLOWED;
         }
         return true;
     }
@@ -241,19 +264,15 @@ final class PermissionUtils {
         return Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) ||
                 Permission.REQUEST_INSTALL_PACKAGES.equals(permission) ||
                 Permission.SYSTEM_ALERT_WINDOW.equals(permission) ||
+                Permission.WRITE_SETTINGS.equals(permission) ||
                 Permission.NOTIFICATION_SERVICE.equals(permission) ||
-                Permission.WRITE_SETTINGS.equals(permission);
+                Permission.PACKAGE_USAGE_STATS.equals(permission);
     }
 
     /**
      * 判断某些权限是否全部被授予
      */
     static boolean isGrantedPermissions(Context context, List<String> permissions) {
-        // 如果是安卓 6.0 以下版本就直接返回 true
-        if (!isAndroid6()) {
-            return true;
-        }
-
         if (permissions == null || permissions.isEmpty()) {
             return false;
         }
@@ -290,7 +309,17 @@ final class PermissionUtils {
      * 判断某个权限是否授予
      */
     static boolean isGrantedPermission(Context context, String permission) {
-        // 如果是安卓 6.0 以下版本就默认授予
+        // 检测通知栏权限
+        if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
+            return isGrantedNotifyPermission(context);
+        }
+
+        // 检测获取读取包权限
+        if (Permission.PACKAGE_USAGE_STATS.equals(permission)) {
+            return isGrantedPackagePermission(context);
+        }
+
+        // 其他权限在 Android 6.0 以下版本就默认授予
         if (!isAndroid6()) {
             return true;
         }
@@ -308,11 +337,6 @@ final class PermissionUtils {
         // 检测悬浮窗权限
         if (Permission.SYSTEM_ALERT_WINDOW.equals(permission)) {
             return isGrantedWindowPermission(context);
-        }
-
-        // 检测通知栏权限
-        if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
-            return isGrantedNotifyPermission(context);
         }
 
         // 检测系统权限
@@ -568,10 +592,10 @@ final class PermissionUtils {
      */
     @SuppressWarnings("all")
     static <T> ArrayList<T> asArrayList(T... array) {
-        if (array == null || array.length == 0) {
-            return null;
-        }
         ArrayList<T> list = new ArrayList<>(array.length);
+        if (array == null || array.length == 0) {
+            return list;
+        }
         for (T t : array) {
             list.add(t);
         }

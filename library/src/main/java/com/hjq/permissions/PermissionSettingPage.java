@@ -51,12 +51,16 @@ final class PermissionSettingPage {
                 return getWindowPermissionIntent(context);
             }
 
+            if (Permission.WRITE_SETTINGS.equals(permission)) {
+                return getSettingPermissionIntent(context);
+            }
+
             if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
                 return getNotifyPermissionIntent(context);
             }
 
-            if (Permission.WRITE_SETTINGS.equals(permission)) {
-                return getSettingPermissionIntent(context);
+            if (Permission.PACKAGE_USAGE_STATS.equals(permission)) {
+                return getPackagePermissionIntent(context);
             }
         }
 
@@ -144,6 +148,25 @@ final class PermissionSettingPage {
         if (PermissionUtils.isAndroid11()) {
             intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
             intent.setData(getPackageNameUri(context));
+        }
+        if (intent == null || !areActivityIntent(context, intent)) {
+            intent = getApplicationDetailsIntent(context);
+        }
+        return intent;
+    }
+
+    /**
+     * 获取读取包权限设置界面意图
+     */
+    static Intent getPackagePermissionIntent(Context context) {
+        Intent intent = null;
+        if (PermissionUtils.isAndroid5()) {
+            intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+            if (PermissionUtils.isAndroid10()) {
+                // 经过测试，只有在 Android 10 及以上加包名才有效果
+                // 如果在 Android 10 以下加包名会导致无法跳转
+                intent.setData(getPackageNameUri(context));
+            }
         }
         if (intent == null || !areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);

@@ -6,7 +6,6 @@ build
 captures
 
 ._*
-*.apk
 *.iml
 .DS_Store
 local.properties

@@ -32,11 +32,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_location).setOnClickListener(this);
         findViewById(R.id.btn_main_request_bluetooth).setOnClickListener(this);
         findViewById(R.id.btn_main_request_storage).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_package).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_install).setOnClickListener(this);
         findViewById(R.id.btn_main_request_window).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_notification).setOnClickListener(this);
         findViewById(R.id.btn_main_request_setting).setOnClickListener(this);
         findViewById(R.id.btn_main_app_details).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_notification).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_package).setOnClickListener(this);
     }
 
     @Override
@@ -145,7 +146,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 }
             }, delayMillis);
 
-        } else if (viewId == R.id.btn_main_request_package) {
+        } else if (viewId == R.id.btn_main_request_install) {
 
             XXPermissions.with(this)
                     .permission(Permission.REQUEST_INSTALL_PACKAGES)
@@ -169,6 +170,18 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
+        } else if (viewId == R.id.btn_main_request_setting) {
+
+            XXPermissions.with(this)
+                    .permission(Permission.WRITE_SETTINGS)
+                    .request(new OnPermissionCallback() {
+
+                        @Override
+                        public void onGranted(List<String> permissions, boolean all) {
+                            toast("获取系统设置权限成功");
+                        }
+                    });
+
         } else if (viewId == R.id.btn_main_request_notification) {
 
             XXPermissions.with(this)
@@ -181,15 +194,15 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_setting) {
+        } else if (viewId == R.id.btn_main_request_package) {
 
             XXPermissions.with(this)
-                    .permission(Permission.WRITE_SETTINGS)
+                    .permission(Permission.PACKAGE_USAGE_STATS)
                     .request(new OnPermissionCallback() {
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
-                            toast("获取系统设置权限成功");
+                            toast("获取读取包权限成功");
                         }
                     });
 

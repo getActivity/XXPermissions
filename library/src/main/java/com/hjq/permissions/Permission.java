@@ -33,9 +33,6 @@ public final class Permission {
      */
     public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES";
 
-    /** 通知栏权限（特殊权限，注意此权限不需要在清单文件中注册也能申请） */
-    public static final String NOTIFICATION_SERVICE = "android.permission.NOTIFICATION_SERVICE";
-
     /**
      * 悬浮窗权限（特殊权限）
      *
@@ -46,6 +43,12 @@ public final class Permission {
 
     /** 系统设置权限（特殊权限） */
     public static final String WRITE_SETTINGS = "android.permission.WRITE_SETTINGS";
+
+    /** 通知栏权限（特殊权限，注意此权限不需要在清单文件中注册也能申请） */
+    public static final String NOTIFICATION_SERVICE = "android.permission.NOTIFICATION_SERVICE";
+
+    /** 查看应用使用情况权限，简称读取包权限（特殊权限，Android 5.0 之后才有的权限） */
+    public static final String PACKAGE_USAGE_STATS = "android.permission.PACKAGE_USAGE_STATS";
 
     /** 读取外部存储 */
     public static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";

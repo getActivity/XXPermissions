@@ -142,7 +142,7 @@ final class PermissionChecker {
 
                 int targetSdkVersion = context.getApplicationInfo().targetSdkVersion;
 
-                boolean requestLegacyExternalStorage = parser.getAttributeBooleanValue(PermissionUtils.ANDROID_NAMESPACE,
+                boolean requestLegacyExternalStorage = parser.getAttributeBooleanValue(PermissionUtils.getAndroidNamespace(),
                         "requestLegacyExternalStorage", false);
                 // 如果在已经适配 Android 10 的情况下
                 if (targetSdkVersion >= Build.VERSION_CODES.Q && !requestLegacyExternalStorage &&

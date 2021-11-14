@@ -28,7 +28,8 @@
     <string name="common_permission_storage">存储权限</string>
 
     <string name="common_permission_install">安装应用权限</string>
-    <string name="common_permission_notification">通知栏权限</string>
     <string name="common_permission_window">悬浮窗权限</string>
     <string name="common_permission_setting">系统设置权限</string>
+    <string name="common_permission_notification">通知栏权限</string>
+    <string name="common_permission_task">查看使用情况权限</string>
 </resources>

@@ -1,7 +1,6 @@
 package com.hjq.permissions;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -9,9 +8,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.ArraySet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +22,6 @@ import java.util.Random;
  *    desc   : 权限请求 Fragment
  */
 @SuppressWarnings("deprecation")
-@TargetApi(Build.VERSION_CODES.M)
 public final class PermissionFragment extends Fragment implements Runnable {
 
     /** 请求的权限组 */
@@ -35,7 +31,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
     private static final String REQUEST_CODE = "request_code";
 
     /** 权限请求码存放集合 */
-    private static final ArraySet<Integer> REQUEST_CODE_ARRAY = new ArraySet<>();
+    private static final List<Integer> REQUEST_CODE_ARRAY = new ArrayList<>();
 
     /**
      * 开启权限申请
@@ -205,13 +201,13 @@ public final class PermissionFragment extends Fragment implements Runnable {
             return;
         }
 
-        List<String> permissions = arguments.getStringArrayList(REQUEST_PERMISSIONS);
+        List<String> allPermissions = arguments.getStringArrayList(REQUEST_PERMISSIONS);
 
         // 是否需要申请特殊权限
         boolean requestSpecialPermission = false;
 
         // 判断当前是否包含特殊权限
-        for (String permission : permissions) {
+        for (String permission : allPermissions) {
             if (PermissionUtils.isSpecialPermission(permission)) {
                 if (PermissionUtils.isGrantedPermission(activity, permission)) {
                     // 已经授予过了，可以跳过
@@ -248,7 +244,18 @@ public final class PermissionFragment extends Fragment implements Runnable {
         final int requestCode = arguments.getInt(REQUEST_CODE);
 
         final ArrayList<String> allPermissions = arguments.getStringArrayList(REQUEST_PERMISSIONS);
-        if (allPermissions == null || allPermissions.size() == 0) {
+        if (allPermissions == null || allPermissions.isEmpty()) {
+            return;
+        }
+
+        if (!PermissionUtils.isAndroid6()) {
+            // 如果是 Android 6.0 以下，没有危险权限的概念，则直接回调监听
+            int[] grantResults = new int[allPermissions.size()];
+            for (int i = 0; i < grantResults.length; i++) {
+                grantResults[i] = PermissionUtils.isGrantedPermission(activity, allPermissions.get(i)) ?
+                        PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
+            }
+            onRequestPermissionsResult(requestCode, allPermissions.toArray(new String[0]), grantResults);
             return;
         }
 
@@ -330,6 +337,11 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (permissions == null || permissions.length == 0 ||
+                grantResults == null || grantResults.length == 0) {
+            return;
+        }
+
         Bundle arguments = getArguments();
         Activity activity = getActivity();
         if (activity == null || arguments == null || mInterceptor == null ||
@@ -346,21 +358,21 @@ public final class PermissionFragment extends Fragment implements Runnable {
         // 优化权限回调结果
         PermissionUtils.optimizePermissionResults(activity, permissions, grantResults);
 
-        // 全部权限
+        // 将数组转换成 ArrayList
         List<String> allPermissions = PermissionUtils.asArrayList(permissions);
 
         // 释放对这个请求码的占用
-        REQUEST_CODE_ARRAY.remove(requestCode);
+        REQUEST_CODE_ARRAY.remove((Integer) requestCode);
         // 将 Fragment 从 Activity 移除
         detachActivity(activity);
 
         // 获取已授予的权限
-        List<String> grantedPermission = PermissionUtils.getGrantedPermissions(allPermissions, grantResults);
+        List<String> grantedPermissions = PermissionUtils.getGrantedPermissions(allPermissions, grantResults);
 
         // 如果请求成功的权限集合大小和请求的数组一样大时证明权限已经全部授予
-        if (grantedPermission.size() == allPermissions.size()) {
+        if (grantedPermissions.size() == allPermissions.size()) {
             // 代表申请的所有的权限都授予了
-            interceptor.grantedPermissions(activity, allPermissions, grantedPermission, true, callback);
+            interceptor.grantedPermissions(activity, allPermissions, grantedPermissions, true, callback);
             return;
         }
 
@@ -372,8 +384,8 @@ public final class PermissionFragment extends Fragment implements Runnable {
                 PermissionUtils.isPermissionPermanentDenied(activity, deniedPermission), callback);
 
         // 证明还有一部分权限被成功授予，回调成功接口
-        if (!grantedPermission.isEmpty()) {
-            interceptor.grantedPermissions(activity, allPermissions, grantedPermission, false, callback);
+        if (!grantedPermissions.isEmpty()) {
+            interceptor.grantedPermissions(activity, allPermissions, grantedPermissions, false, callback);
         }
     }
 

@@ -232,13 +232,6 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                     }
                     break;
                 }
-                case Permission.NOTIFICATION_SERVICE: {
-                    String hint = context.getString(R.string.common_permission_notification);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
-                    }
-                    break;
-                }
                 case Permission.SYSTEM_ALERT_WINDOW: {
                     String hint = context.getString(R.string.common_permission_window);
                     if (!hints.contains(hint)) {
@@ -248,6 +241,20 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                 }
                 case Permission.WRITE_SETTINGS: {
                     String hint = context.getString(R.string.common_permission_setting);
+                    if (!hints.contains(hint)) {
+                        hints.add(hint);
+                    }
+                    break;
+                }
+                case Permission.NOTIFICATION_SERVICE: {
+                    String hint = context.getString(R.string.common_permission_notification);
+                    if (!hints.contains(hint)) {
+                        hints.add(hint);
+                    }
+                    break;
+                }
+                case Permission.PACKAGE_USAGE_STATS: {
+                    String hint = context.getString(R.string.common_permission_task);
                     if (!hints.contains(hint)) {
                         hints.add(hint);
                     }

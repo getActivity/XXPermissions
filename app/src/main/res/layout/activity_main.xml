@@ -57,7 +57,7 @@
                 android:text="申请新版存储权限" />
 
             <Button
-                android:id="@+id/btn_main_request_package"
+                android:id="@+id/btn_main_request_install"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -73,6 +73,14 @@
                 android:text="申请悬浮窗权限" />
 
             <Button
+                android:id="@+id/btn_main_request_setting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="申请系统设置权限" />
+
+            <Button
                 android:id="@+id/btn_main_request_notification"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -81,12 +89,12 @@
                 android:text="申请通知栏权限" />
 
             <Button
-                android:id="@+id/btn_main_request_setting"
+                android:id="@+id/btn_main_request_package"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请系统设置权限" />
+                android:text="申请读取包权限" />
 
             <Button
                 android:id="@+id/btn_main_app_details"

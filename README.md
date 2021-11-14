@@ -6,14 +6,13 @@
 
 * 博文地址：[一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
 
-* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/12.8/XXPermissions.apk)
+* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/13.0/XXPermissions.apk)
 
 ![](picture/demo_code.png)
 
 * 另外想对 Android 6.0 权限需要深入了解的，可以看这篇文章[Android 6.0 运行权限解析](https://www.jianshu.com/p/6a4dff744031)
 
-![](picture/1.jpg) ![](picture/2.jpg) ![](picture/3.jpg)
-![](picture/4.jpg) ![](picture/5.jpg) ![](picture/6.jpg)
+![](picture/1.jpg) ![](picture/2.jpg) ![](picture/3.jpg) ![](picture/4.jpg) ![](picture/5.jpg) ![](picture/6.jpg) ![](picture/7.jpg) ![](picture/8.jpg)
 
 #### 集成步骤
 
@@ -45,7 +44,7 @@ android {
 
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.github.getActivity:XXPermissions:12.8'
+    implementation 'com.github.getActivity:XXPermissions:13.0'
 }
 ```
 
@@ -186,13 +185,15 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 |     功能及细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  12.8 |  2.0.3  |  1.6.1    |  1.30.6    |  0.12   |   4.9.1  |  3.0.0   |
+|    对应版本  |  13.0 |  2.0.3  |  1.6.1    |  1.30.6    |  0.12   |   4.9.1  |  3.0.0   |
 |    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |
-|    框架体积  |  28 KB  | 127 KB  |   78 KB  |   500 KB  |  28 KB  |   91 KB  |  48 KB   |
+|    框架体积  |  30 KB  | 127 KB  |   78 KB  |   500 KB  |  28 KB  |   91 KB  |  48 KB   |
+|     所有文件管理权限      |  ✅  |  ❌  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
 |        安装包权限        |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
 |        悬浮窗权限        |  ✅  |  ✅  |  ✅  |  ✅  |  ❌  |  ✅  |  ❌  |
+|       系统设置权限       |  ✅  |  ✅  |  ✅  |  ✅  |  ❌  |  ✅  |  ❌  |
 |        通知栏权限        |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|        系统设置权限      |  ✅  |  ✅  |  ✅  |  ✅  |  ❌  |  ✅  |  ❌  |
+|    查看应用使用情况权限   |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |  Android 8.0 权限适配   |  ✅  |  ✅  |  ✅  |  ❌ |  ❌  |   ✅  |  ❌  |
 |  Android 9.0 权限适配   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ✅  |  ❌  |
 |  Android 10 权限适配    |  ✅  |  ✅  |  ✅  |  ❌ |  ❌  |   ✅  |  ❌  |
@@ -261,7 +262,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 * 简洁易用：采用链式调用的方式，使用只需一句代码
 
-* 体积感人：功能在同类框架中最全的，但是体积是最小的
+* 体积感人：功能在同类框架中是最全的，但是框架体积是垫底的
 
 * 适配极端情况：无论在多么极端恶劣的环境下申请权限，框架依然坚挺
 
