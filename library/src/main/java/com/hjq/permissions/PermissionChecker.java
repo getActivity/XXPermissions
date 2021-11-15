@@ -288,44 +288,42 @@ final class PermissionChecker {
                 continue;
             }
 
-            int sdkVersion;
-
-            if ((sdkVersion = Build.VERSION_CODES.S) >= minSdkVersion) {
+            if (minSdkVersion < Build.VERSION_CODES.S) {
 
                 if (Permission.BLUETOOTH_SCAN.equals(permission)) {
-                    checkManifestPermission(manifestPermissions, Manifest.permission.BLUETOOTH_ADMIN, sdkVersion);
+                    checkManifestPermission(manifestPermissions, Manifest.permission.BLUETOOTH_ADMIN, Build.VERSION_CODES.R);
                     // 这是 Android 12 之前遗留的问题，获取扫描蓝牙的结果需要定位的权限
-                    checkManifestPermission(manifestPermissions, Manifest.permission.ACCESS_COARSE_LOCATION, sdkVersion);
+                    checkManifestPermission(manifestPermissions, Manifest.permission.ACCESS_COARSE_LOCATION, Build.VERSION_CODES.R);
                 }
 
                 if (Permission.BLUETOOTH_CONNECT.equals(permission)) {
-                    checkManifestPermission(manifestPermissions, Manifest.permission.BLUETOOTH, sdkVersion);
+                    checkManifestPermission(manifestPermissions, Manifest.permission.BLUETOOTH, Build.VERSION_CODES.R);
                 }
 
                 if (Permission.BLUETOOTH_ADVERTISE.equals(permission)) {
-                    checkManifestPermission(manifestPermissions, Manifest.permission.BLUETOOTH_ADMIN, sdkVersion);
+                    checkManifestPermission(manifestPermissions, Manifest.permission.BLUETOOTH_ADMIN, Build.VERSION_CODES.R);
                 }
             }
 
-            if ((sdkVersion = Build.VERSION_CODES.R) >= minSdkVersion) {
+            if (minSdkVersion < Build.VERSION_CODES.R) {
 
                 if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) {
-                    checkManifestPermission(manifestPermissions, Permission.READ_EXTERNAL_STORAGE, sdkVersion);
-                    checkManifestPermission(manifestPermissions, Permission.WRITE_EXTERNAL_STORAGE, sdkVersion);
+                    checkManifestPermission(manifestPermissions, Permission.READ_EXTERNAL_STORAGE, Build.VERSION_CODES.Q);
+                    checkManifestPermission(manifestPermissions, Permission.WRITE_EXTERNAL_STORAGE, Build.VERSION_CODES.Q);
                 }
             }
 
-            if ((sdkVersion = Build.VERSION_CODES.Q) >= minSdkVersion) {
+            if (minSdkVersion < Build.VERSION_CODES.Q) {
 
                 if (Permission.ACTIVITY_RECOGNITION.equals(permission)) {
-                    checkManifestPermission(manifestPermissions, Permission.BODY_SENSORS, sdkVersion);
+                    checkManifestPermission(manifestPermissions, Permission.BODY_SENSORS,  Build.VERSION_CODES.O);
                 }
             }
 
-            if ((sdkVersion = Build.VERSION_CODES.O) >= minSdkVersion) {
+            if (minSdkVersion < Build.VERSION_CODES.O) {
 
                 if (Permission.READ_PHONE_NUMBERS.equals(permission)) {
-                    checkManifestPermission(manifestPermissions, Permission.READ_PHONE_NUMBERS, sdkVersion);
+                    checkManifestPermission(manifestPermissions, Permission.READ_PHONE_STATE, Build.VERSION_CODES.N_MR1);
                 }
             }
 
