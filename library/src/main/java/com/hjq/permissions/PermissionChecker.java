@@ -386,27 +386,26 @@ final class PermissionChecker {
             requestPermissions.add(Permission.ACCESS_COARSE_LOCATION);
         }
 
-        // 如果本次申请包含了 Android 12 蓝牙扫描权限
-        if (!PermissionUtils.isAndroid12() && requestPermissions.contains(Permission.BLUETOOTH_SCAN)) {
-            // 这是 Android 12 之前遗留的问题，扫描蓝牙需要定位的权限
-            requestPermissions.add(Permission.ACCESS_COARSE_LOCATION);
-        }
-
         // 如果本次申请包含了 Android 11 存储权限
         if (requestPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE)) {
 
-            if (requestPermissions.contains(Permission.READ_EXTERNAL_STORAGE) ||
+            if (PermissionUtils.isAndroid11()) {
+                if (requestPermissions.contains(Permission.READ_EXTERNAL_STORAGE) ||
                     requestPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE)) {
-                // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这两个权限
-                throw new IllegalArgumentException("If you have applied for MANAGE_EXTERNAL_STORAGE permissions, " +
+                    // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这两个权限
+                    throw new IllegalArgumentException("If you have applied for MANAGE_EXTERNAL_STORAGE permissions, " +
                         "do not apply for the READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE permissions");
+                }
+            } else {
+                // 自动添加旧版的存储权限，因为旧版的系统不支持申请新版的存储权限
+                if (!requestPermissions.contains(Permission.READ_EXTERNAL_STORAGE)) {
+                    requestPermissions.add(Permission.READ_EXTERNAL_STORAGE);
+                }
+                if (!requestPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE)) {
+                    requestPermissions.add(Permission.WRITE_EXTERNAL_STORAGE);
+                }
             }
 
-            if (!PermissionUtils.isAndroid11()) {
-                // 自动添加旧版的存储权限，因为旧版的系统不支持申请新版的存储权限
-                requestPermissions.add(Permission.READ_EXTERNAL_STORAGE);
-                requestPermissions.add(Permission.WRITE_EXTERNAL_STORAGE);
-            }
         }
 
         if (!PermissionUtils.isAndroid8() &&

@@ -75,10 +75,10 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
 
         ToastUtils.show(R.string.common_permission_fail_1);
 
-        if (callback == null) {
-            return;
-        }
-        callback.onDenied(deniedPermissions, never);
+//        if (callback == null) {
+//            return;
+//        }
+//        callback.onDenied(deniedPermissions, never);
     }
 
     /**
