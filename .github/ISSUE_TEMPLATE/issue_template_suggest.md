@@ -1,12 +1,14 @@
 ---
 name: 提交建议
 about: 请告诉我框架的不足之处，让我做得更好！
-labels: bug
+labels: help wanted
 assignees: getActivity
 
 ---
 
 ## 建议收集
+
+* issue 是否有人曾提过类似的问题？（必答项，一旦出现重复提问我将不会再次解答）
 
 * 你觉得框架有什么不足之处？（必答项，你可以描述框架有什么令你不满意的地方）
 
