@@ -208,17 +208,17 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
         // 判断当前是否包含特殊权限
         for (String permission : allPermissions) {
-            if (PermissionUtils.isSpecialPermission(permission)) {
-                if (PermissionUtils.isGrantedPermission(activity, permission)) {
+            if (PermissionApi.isSpecialPermission(permission)) {
+                if (PermissionApi.isGrantedPermission(activity, permission)) {
                     // 已经授予过了，可以跳过
                     continue;
                 }
-                if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) && !PermissionUtils.isAndroid11()) {
+                if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) && !AndroidVersion.isAndroid11()) {
                     // 当前必须是 Android 11 及以上版本，因为在旧版本上是拿旧权限做的判断
                     continue;
                 }
                 // 跳转到特殊权限授权页面
-                startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity,
+                startActivityForResult(PermissionPageIntent.getSmartPermissionIntent(activity,
                         PermissionUtils.asArrayList(permission)), getArguments().getInt(REQUEST_CODE));
                 requestSpecialPermission = true;
             }
@@ -248,11 +248,11 @@ public final class PermissionFragment extends Fragment implements Runnable {
             return;
         }
 
-        if (!PermissionUtils.isAndroid6()) {
+        if (!AndroidVersion.isAndroid6()) {
             // 如果是 Android 6.0 以下，没有危险权限的概念，则直接回调监听
             int[] grantResults = new int[allPermissions.size()];
             for (int i = 0; i < grantResults.length; i++) {
-                grantResults[i] = PermissionUtils.isGrantedPermission(activity, allPermissions.get(i)) ?
+                grantResults[i] = PermissionApi.isGrantedPermission(activity, allPermissions.get(i)) ?
                         PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
             }
             onRequestPermissionsResult(requestCode, allPermissions.toArray(new String[0]), grantResults);
@@ -261,7 +261,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
         ArrayList<String> locationPermission = null;
         // Android 10 定位策略发生改变，申请后台定位权限的前提是要有前台定位权限（授予了精确或者模糊任一权限）
-        if (PermissionUtils.isAndroid10() && allPermissions.contains(Permission.ACCESS_BACKGROUND_LOCATION)) {
+        if (AndroidVersion.isAndroid10() && allPermissions.contains(Permission.ACCESS_BACKGROUND_LOCATION)) {
             locationPermission = new ArrayList<>();
             if (allPermissions.contains(Permission.ACCESS_COARSE_LOCATION)) {
                 locationPermission.add(Permission.ACCESS_COARSE_LOCATION);
@@ -272,7 +272,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
             }
         }
 
-        if (!PermissionUtils.isAndroid10() || locationPermission == null || locationPermission.isEmpty()) {
+        if (!AndroidVersion.isAndroid10() || locationPermission == null || locationPermission.isEmpty()) {
             requestPermissions(allPermissions.toArray(new String[allPermissions.size() - 1]), getArguments().getInt(REQUEST_CODE));
             return;
         }
@@ -367,7 +367,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
         detachActivity(activity);
 
         // 获取已授予的权限
-        List<String> grantedPermissions = PermissionUtils.getGrantedPermissions(allPermissions, grantResults);
+        List<String> grantedPermissions = PermissionApi.getGrantedPermissions(allPermissions, grantResults);
 
         // 如果请求成功的权限集合大小和请求的数组一样大时证明权限已经全部授予
         if (grantedPermissions.size() == allPermissions.size()) {
@@ -377,11 +377,11 @@ public final class PermissionFragment extends Fragment implements Runnable {
         }
 
         // 获取被拒绝的权限
-        List<String> deniedPermission = PermissionUtils.getDeniedPermissions(allPermissions, grantResults);
+        List<String> deniedPermissions = PermissionApi.getDeniedPermissions(allPermissions, grantResults);
 
         // 代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回 true 给开发人员，让开发者引导用户去设置界面开启权限
-        interceptor.deniedPermissions(activity, allPermissions, deniedPermission,
-                PermissionUtils.isPermissionPermanentDenied(activity, deniedPermission), callback);
+        interceptor.deniedPermissions(activity, allPermissions, deniedPermissions,
+                PermissionApi.isPermissionPermanentDenied(activity, deniedPermissions), callback);
 
         // 证明还有一部分权限被成功授予，回调成功接口
         if (!grantedPermissions.isEmpty()) {
@@ -400,7 +400,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
         mDangerousRequest = true;
         // 需要延迟执行，不然有些华为机型授权了但是获取不到权限
-        activity.getWindow().getDecorView().postDelayed(this, 300);
+        PermissionUtils.postDelayed(this, 300);
     }
 
     @Override

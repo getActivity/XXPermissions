@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 32
 
     defaultConfig {
         minSdkVersion 11
-        versionCode 1320
-        versionName "13.2"
+        versionCode 1350
+        versionName "13.5"
     }
 
     // 使用 JDK 1.8
@@ -44,15 +44,6 @@ dependencies {
     // noinspection GradleCompatible
     implementation 'com.android.support:support-fragment:24.2.0'
 }
-
-task makeJar(type: Copy) {
-    delete 'build/TestJar_V1.0.jar' //删除之前的旧jar包
-    from('build/intermediates/bundles/default/') //从这个目录下取出默认jar包
-    into('build/') //将jar包输出到指定目录下
-    include('classes.jar')
-    rename('classes.jar', 'TestJar_V1.0.jar') //自定义jar包的名字
-}
-makeJar.dependsOn(build)
 
 tasks.withType(Javadoc) {
     options.addStringOption('Xdoclint:none', '-quiet')

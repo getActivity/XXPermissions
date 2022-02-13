@@ -16,6 +16,14 @@ public final class Permission {
     private Permission() {}
 
     /**
+     * 闹钟权限（特殊权限，需要 Android 12 及以上）
+     *
+     * 需要注意的是：这个权限和其他特殊权限不同的是，默认已经是授予状态，用户也可以手动撤销授权
+     * 官方文档介绍：https://developer.android.google.cn/about/versions/12/behavior-changes-12?hl=zh_cn#exact-alarm-permission
+     */
+    public static final String SCHEDULE_EXACT_ALARM = "android.permission.SCHEDULE_EXACT_ALARM";
+
+    /**
      * 文件管理权限（特殊权限，需要 Android 11 及以上）
      *
      * 为了兼容 Android 11 以下版本，需要在清单文件中注册
@@ -44,11 +52,17 @@ public final class Permission {
     /** 系统设置权限（特殊权限） */
     public static final String WRITE_SETTINGS = "android.permission.WRITE_SETTINGS";
 
+    /** 勿扰权限，可控制手机响铃模式（静音，震动）（特殊权限，Android 6.0 之后才有的权限）*/
+    public static final String ACCESS_NOTIFICATION_POLICY = "android.permission.ACCESS_NOTIFICATION_POLICY";
+
+    /** 通知栏监听权限（特殊权限，Android 4.3 之后才有的权限） */
+    public static final String BIND_NOTIFICATION_LISTENER_SERVICE = "android.permission.BIND_NOTIFICATION_LISTENER_SERVICE";
+
+    /** 查看应用使用情况权限，简称使用统计权限（特殊权限，Android 5.0 之后才有的权限） */
+    public static final String PACKAGE_USAGE_STATS = "android.permission.PACKAGE_USAGE_STATS";
+
     /** 通知栏权限（特殊权限，注意此权限不需要在清单文件中注册也能申请） */
     public static final String NOTIFICATION_SERVICE = "android.permission.NOTIFICATION_SERVICE";
-
-    /** 查看应用使用情况权限，简称读取包权限（特殊权限，Android 5.0 之后才有的权限） */
-    public static final String PACKAGE_USAGE_STATS = "android.permission.PACKAGE_USAGE_STATS";
 
     /** 读取外部存储 */
     public static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
@@ -68,7 +82,9 @@ public final class Permission {
     /**
      * 在后台获取位置（需要 Android 10.0 及以上）
      *
-     * 需要注意的是：如果你的 App 只在前台状态下使用定位功能，请不要申请该权限
+     * 需要注意的是：
+     * 1. 一旦你申请了该权限，在授权的时候，需要选择 "始终允许"，而不能选择 "仅在使用中允许"
+     * 2. 如果你的 App 只在前台状态下使用定位功能，请不要申请该权限（后台定位权限）
      */
     public static final String ACCESS_BACKGROUND_LOCATION = "android.permission.ACCESS_BACKGROUND_LOCATION";
 

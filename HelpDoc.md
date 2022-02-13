@@ -20,6 +20,8 @@
 
 * [新版框架为什么移除了国产手机权限设置页功能](#新版框架为什么移除了国产手机权限设置页功能)
 
+* [为什么不用 ActivityResultContract 来申请权限](为什么不用-activityresultcontract-来申请权限)
+
 #### Android 11 定位权限适配
 
 * 在 Android 10 上面，定位权限被划分为前台权限（精确和模糊）和后台权限，而到了 Android 11 上面，需要分别申请这两种权限，如果同时申请这两种权限会**惨遭系统无情拒绝**，连权限申请对话框都不会弹，立马被系统拒绝，直接导致定位权限申请失败。
@@ -111,7 +113,28 @@ XXPermissions.with(MainActivity.this)
 
 #### 我想在申请前和申请后统一弹对话框该怎么处理
 
-* 在 Application 初始化的时候配置
+* 框架内部有提供一个拦截器接口，通过实现框架中提供的 [IPermissionInterceptor](/library/src/main/java/com/hjq/permissions/IPermissionInterceptor.java) 接口即可，具体实现可参考 Demo 中提供的 [PermissionInterceptor](app/src/main/java/com/hjq/permissions/demo/PermissionInterceptor.java) 类，建议下载源码后进行阅读，再将代码引入到项目中
+
+* 使用拦截的方式也很简单，具体有两种设置方式，一种针对局部设置，另外一种是全局设置
+
+```java
+XXPermissions.with(this)
+        .permission(Permission.XXX)
+        // 设置权限请求拦截器（局部设置）
+        .interceptor(new PermissionInterceptor())
+        .request(new OnPermissionCallback() {
+
+            @Override
+            public void onGranted(List<String> permissions, boolean all) {
+                ......
+            }
+
+            @Override
+            public void onDenied(List<String> permissions, boolean never) {
+                ......
+            }
+        });
+```
 
 ```java
 public class XxxApplication extends Application {
@@ -119,99 +142,9 @@ public class XxxApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        // 设置权限申请拦截器
+        
+        // 设置权限请求拦截器（全局设置）
         XXPermissions.setInterceptor(new PermissionInterceptor());
-    }
-}
-```
-
-* PermissionInterceptor 源码实现
-
-```java
-public final class PermissionInterceptor implements IPermissionInterceptor {
-
-    @Override
-    public void requestPermissions(Activity activity, OnPermissionCallback callback, List<String> allPermissions) {
-        // 这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
-        new AlertDialog.Builder(activity)
-                .setTitle("授权提示")
-                .setMessage("使用此功能需要先授予权限")
-                .setPositiveButton("授予", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        PermissionFragment.beginRequest(activity, new ArrayList<>(allPermissions), PermissionInterceptor.this, callback);
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .show();
-    }
-
-    @Override
-    public void grantedPermissions(Activity activity, List<String> allPermissions, List<String> grantedPermissions,
-                                   boolean all, OnPermissionCallback callback) {
-        if (callback != null) {
-            callback.onGranted(grantedPermissions, all);
-        }
-    }
-
-    @Override
-    public void deniedPermissions(Activity activity, List<String> allPermissions, List<String> deniedPermissions,
-                                  boolean never, OnPermissionCallback callback) {
-        if (callback != null) {
-            callback.onDenied(deniedPermissions, never);
-        }
-
-        if (never) {
-            showPermissionDialog(activity, deniedPermissions);
-            return;
-        }
-
-        if (deniedPermissions.size() == 1 && Permission.ACCESS_BACKGROUND_LOCATION.equals(deniedPermissions.get(0))) {
-            ToastUtils.show("没有授予后台定位权限，请您选择\"始终允许\"");
-            return;
-        }
-
-        ToastUtils.show("授权失败，请正确授予权限");
-
-        if (callback == null) {
-            return;
-        }
-        callback.onDenied(deniedPermissions, never);
-    }
-
-    /**
-     * 显示授权对话框
-     */
-    protected void showPermissionDialog(Activity activity, List<String> permissions) {
-        // 这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
-        new AlertDialog.Builder(activity)
-                .setTitle("授权提醒")
-                .setCancelable(false)
-                .setMessage(getPermissionHint(activity, permissions))
-                .setPositiveButton("前往授权", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        XXPermissions.startPermissionActivity(activity, permissions);
-                    }
-                })
-                .show();
-    }
-
-    /**
-     * 根据权限获取提示
-     */
-    protected String getPermissionHint(Context context, List<String> permissions) {
-        // 具体实现请看 Demo 源码
     }
 }
 ```
@@ -253,11 +186,13 @@ XXPermissions.with(this)
 
 #### 新版框架为什么移除了自动申请清单权限的功能
 
+> [【issue】建议恢复跳转权限设置页和获取AndroidManifest的所有权限两个实用功能](https://github.com/getActivity/XXPermissions/issues/54)
+
 * 获取清单权限并申请的功能，这个虽然非常方便，但是存在一些隐患，因为 apk 中的清单文件最终是由多个 module 的清单文件合并而成，会变得不可控，这样会使我们无法预估申请的权限，并且还会掺杂一些不需要的权限，所以经过慎重考虑移除该功能。
 
 #### 新版框架为什么移除了不断申请权限的功能
 
-* [【issue】建议恢复跳转权限设置页和获取AndroidManifest的所有权限两个实用功能](https://github.com/getActivity/XXPermissions/issues/54)
+> [【issue】关于拒绝权限后一直请求获取的优化问题](https://github.com/getActivity/XXPermissions/issues/39)
 
 * 假设用户拒绝了权限，如果框架再次申请，那么用户会授予的可能性也是比较小，同时某些应用商店已经禁用了这种行为，经过慎重考虑，对这个功能相关的 API 进行移除。
 
@@ -307,6 +242,12 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 
 #### 新版框架为什么移除了国产手机权限设置页功能
 
+> [【issue】权限拒绝并不再提示的问题](https://github.com/getActivity/XXPermissions/issues/99)
+
+> [【issue】小米手机权限拒绝后，库中判断的小米权限设置界面开启无效](https://github.com/getActivity/XXPermissions/issues/38)
+
+> [【issue】正常申请存储权限时，永久拒绝，然后再应用设置页开启权限询问，系统权限申请弹窗未显示](https://github.com/getActivity/XXPermissions/issues/100)
+
 * XXPermissions 9.0 及之前是有存在这一功能的，但是我在后续的版本上面将这个功能移除了，原因是有很多人跟我反馈这个功能其实存在很大的缺陷，例如在一些华为新机型上面可能跳转的页面不是应用的权限设置页，而是所有应用的权限管理列表界面。
 
 * 其实不止华为有问题，小米同样有问题，有很多人跟我反馈过同一个问题，XXPermissions 跳转到国产手机权限设置页，用户正常授予了权限之后返回仍然检测到权限仍然是拒绝的状态，这个问题反馈的次数很多，但是迟迟不能排查到原因，终于在最后一次得到答案了，[有人](https://github.com/getActivity/XXPermissions/issues/38)帮我排查到是 miui 优化开关的问题（小米手机 ---> 开发者选项 ---> 启用 miui 优化），那么问题来了，这个开关有什么作用？是如何影响到 XXPermissions 的？
@@ -329,4 +270,10 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 
 * 另外值得一提的是 [Android 11 对软件包可见性进行了限制](https://developer.android.google.cn/about/versions/11/privacy/package-visibility)，所以这种跳包名的方式在未来将会完全不可行。
 
-* 最终决定：这个功能的出发点是好的，但是我们没办法做好它，经过慎重考虑，决定将这个功能在 XXPermissions 9.2 版本及之后的版本进行移除。
+* 最终决定：这个功能的出发点是好的，但是我们没办法做好它，经过慎重考虑，决定将这个功能在 [XXPermissions 9.2 版本](https://github.com/getActivity/XXPermissions/releases/tag/9.2)及之后的版本进行移除。
+
+#### 为什么不用 ActivityResultContract 来申请权限
+
+> [【issue】是否有考虑 onActivityResult 回调的权限申请切换成 ActivityResultContract](https://github.com/getActivity/XXPermissions/issues/103)
+
+* ActivityResultContract 是 Activity `1.2.0-alpha02` 和 Fragment `1.3.0-alpha02` 中新追加的新 API，有一定的使用门槛，必须要求项目是基于 AndroidX，并且 AndroidX 的版本还要是 `1.3.0-alpha01` 以上才可以，如果替换成 `ActivityResultContract` 来实现，那么就会导致一部分开发者用不了 XXPermissions，这是一个比较严重的问题，但实际上换成 ActivityResultContract 来实现本身没有带来任何的效益，例如我之前解决过的 Fragment 屏幕旋转及后台申请的问题，所以更换的意义又在哪里呢？有人可能会说官方已经将 onActivityResult 标记成过时，大家不必担心，之所以标记成过时只不过是谷歌为了推广新技术，但是可以明确说，官方是一定不会删掉这个 API 的，更准确来说是一定不敢，至于为什么？大家可以去看看 ActivityResultContract 是怎么实现的？它也是通过重写 Activity 的 `onActivityResult`、`onRequestPermissionsResult` 方法回调实现的，具体大家可以去看 `androidx.activity.ComponentActivity` 类中这两个方法的实现就会明白了，这里不再赘述。

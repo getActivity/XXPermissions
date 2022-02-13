@@ -1,9 +1,12 @@
 package com.hjq.permissions.demo;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -35,9 +38,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_install).setOnClickListener(this);
         findViewById(R.id.btn_main_request_window).setOnClickListener(this);
         findViewById(R.id.btn_main_request_setting).setOnClickListener(this);
-        findViewById(R.id.btn_main_app_details).setOnClickListener(this);
         findViewById(R.id.btn_main_request_notification).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_notification_listener).setOnClickListener(this);
         findViewById(R.id.btn_main_request_package).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_alarm).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_not_disturb).setOnClickListener(this);
+        findViewById(R.id.btn_main_app_details).setOnClickListener(this);
     }
 
     @Override
@@ -47,6 +53,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
             XXPermissions.with(this)
                     .permission(Permission.CAMERA)
+                    .interceptor(new PermissionInterceptor())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -62,6 +69,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     .permission(Permission.RECORD_AUDIO)
                     .permission(Permission.Group.CALENDAR)
+                    .interceptor(new PermissionInterceptor())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -79,6 +87,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .permission(Permission.ACCESS_FINE_LOCATION)
                     // 如果不需要在后台使用定位功能，请不要申请此权限
                     .permission(Permission.ACCESS_BACKGROUND_LOCATION)
+                    .interceptor(new PermissionInterceptor())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -105,6 +114,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .permission(Permission.BLUETOOTH_SCAN)
                             .permission(Permission.BLUETOOTH_CONNECT)
                             .permission(Permission.BLUETOOTH_ADVERTISE)
+                            .interceptor(new PermissionInterceptor())
                             .request(new OnPermissionCallback() {
 
                                 @Override
@@ -134,6 +144,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             //.permission(Permission.Group.STORAGE)
                             // 不适配 Android 11 分区存储这样写
                             .permission(Permission.MANAGE_EXTERNAL_STORAGE)
+                            .interceptor(new PermissionInterceptor())
                             .request(new OnPermissionCallback() {
 
                                 @Override
@@ -150,6 +161,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
             XXPermissions.with(this)
                     .permission(Permission.REQUEST_INSTALL_PACKAGES)
+                    .interceptor(new PermissionInterceptor())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -162,6 +174,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
             XXPermissions.with(this)
                     .permission(Permission.SYSTEM_ALERT_WINDOW)
+                    .interceptor(new PermissionInterceptor())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -174,6 +187,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
             XXPermissions.with(this)
                     .permission(Permission.WRITE_SETTINGS)
+                    .interceptor(new PermissionInterceptor())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -186,6 +200,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
             XXPermissions.with(this)
                     .permission(Permission.NOTIFICATION_SERVICE)
+                    .interceptor(new PermissionInterceptor())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -194,15 +209,58 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_package) {
+        } else if (viewId == R.id.btn_main_request_notification_listener) {
 
             XXPermissions.with(this)
-                    .permission(Permission.PACKAGE_USAGE_STATS)
+                    .permission(Permission.BIND_NOTIFICATION_LISTENER_SERVICE)
+                    .interceptor(new PermissionInterceptor())
                     .request(new OnPermissionCallback() {
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
-                            toast("获取读取包权限成功");
+                            toast("获取通知栏监听权限成功");
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                                toggleNotificationListenerService();
+                            }
+                        }
+                    });
+
+        } else if (viewId == R.id.btn_main_request_package) {
+
+            XXPermissions.with(this)
+                    .permission(Permission.PACKAGE_USAGE_STATS)
+                    .interceptor(new PermissionInterceptor())
+                    .request(new OnPermissionCallback() {
+
+                        @Override
+                        public void onGranted(List<String> permissions, boolean all) {
+                            toast("获取使用统计权限成功");
+                        }
+                    });
+
+        } else if (viewId == R.id.btn_main_request_alarm) {
+
+            XXPermissions.with(this)
+                    .permission(Permission.SCHEDULE_EXACT_ALARM)
+                    .interceptor(new PermissionInterceptor())
+                    .request(new OnPermissionCallback() {
+
+                        @Override
+                        public void onGranted(List<String> permissions, boolean all) {
+                            toast("获取闹钟权限成功");
+                        }
+                    });
+
+        } else if (viewId == R.id.btn_main_request_not_disturb) {
+
+            XXPermissions.with(this)
+                    .permission(Permission.ACCESS_NOTIFICATION_POLICY)
+                    .interceptor(new PermissionInterceptor())
+                    .request(new OnPermissionCallback() {
+
+                        @Override
+                        public void onGranted(List<String> permissions, boolean all) {
+                            toast("获取勿扰权限成功");
                         }
                     });
 
@@ -222,5 +280,17 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
     public void toast(CharSequence text) {
         ToastUtils.show(text);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    private void toggleNotificationListenerService() {
+        PackageManager packageManager = getPackageManager();
+        packageManager.setComponentEnabledSetting(
+                new ComponentName(this, NotificationMonitorService.class),
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+
+        packageManager.setComponentEnabledSetting(
+                new ComponentName(this, NotificationMonitorService.class),
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
     }
 }

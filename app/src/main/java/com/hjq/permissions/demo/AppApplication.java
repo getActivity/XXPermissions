@@ -2,7 +2,6 @@ package com.hjq.permissions.demo;
 
 import android.app.Application;
 
-import com.hjq.permissions.XXPermissions;
 import com.hjq.toast.ToastUtils;
 import com.hjq.toast.style.WhiteToastStyle;
 
@@ -20,8 +19,5 @@ public final class AppApplication extends Application {
 
         // 初始化吐司工具类
         ToastUtils.init(this, new WhiteToastStyle());
-
-        // 设置权限申请拦截器（全局设置）
-        XXPermissions.setInterceptor(new PermissionInterceptor());
     }
 }

@@ -6,32 +6,45 @@
 
 * 博文地址：[一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
 
-* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/13.2/XXPermissions.apk)
+* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/13.5/XXPermissions.apk)
 
 ![](picture/demo_code.png)
 
 * 另外想对 Android 6.0 权限需要深入了解的，可以看这篇文章[Android 6.0 运行权限解析](https://www.jianshu.com/p/6a4dff744031)
 
-![](picture/1.jpg) ![](picture/2.jpg) ![](picture/3.jpg) ![](picture/4.jpg) ![](picture/5.jpg) ![](picture/6.jpg) ![](picture/7.jpg) ![](picture/8.jpg)
+![](picture/1.jpg) ![](picture/2.jpg) ![](picture/3.jpg)
+
+![](picture/4.jpg) ![](picture/5.jpg) ![](picture/6.jpg)
+
+![](picture/7.jpg) ![](picture/8.jpg) ![](picture/9.jpg)
+
+![](picture/10.jpg) ![](picture/11.jpg)
 
 #### 集成步骤
 
-* 在项目根目录下的 `build.gradle` 文件中加入
+* 如果你的项目 Gradle 配置是在 `7.0 以下`，需要在 `build.gradle` 文件中加入
 
 ```groovy
-buildscript {
-    repositories {
-        maven { url 'https://jitpack.io' }
-    }
-}
 allprojects {
     repositories {
+        // JitPack 远程仓库：https://jitpack.io
         maven { url 'https://jitpack.io' }
     }
 }
 ```
 
-* 在项目 app 模块下的 `build.gradle` 文件中加入
+* 如果你的 Gradle 配置是 `7.0 及以上`，则需要在 `settings.gradle` 文件中加入
+
+```groovy
+dependencyResolutionManagement {
+    repositories {
+        // JitPack 远程仓库：https://jitpack.io
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
+* 配置完远程仓库后，在项目 app 模块下的 `build.gradle` 文件中加入远程依赖
 
 ```groovy
 android {
@@ -44,7 +57,7 @@ android {
 
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.github.getActivity:XXPermissions:13.2'
+    implementation 'com.github.getActivity:XXPermissions:13.5'
 }
 ```
 
@@ -52,7 +65,7 @@ dependencies {
 
 * 如果项目是基于 **AndroidX** 包，请在项目 `gradle.properties` 文件中加入
 
-```groovy
+```text
 # 表示将第三方库迁移到 AndroidX
 android.enableJetifier = true
 ```
@@ -80,25 +93,21 @@ android.enableJetifier = true
 
 * 如果当前项目没有适配这特性，那么这一步骤可以忽略
 
+* 需要注意的是：这个选项是框架用于判断当前项目是否适配了分区存储，需要注意的是，如果你的项目已经适配了分区存储特性，可以使用 `READ_EXTERNAL_STORAGE`、`WRITE_EXTERNAL_STORAGE` 来申请权限，如果你的项目还没有适配分区特性，就算申请了 `READ_EXTERNAL_STORAGE`、`WRITE_EXTERNAL_STORAGE` 权限也会导致无法正常读取外部存储上面的文件，如果你的项目没有适配分区存储，请使用 `MANAGE_EXTERNAL_STORAGE` 来申请权限，这样才能正常读取外部存储上面的文件，你如果想了解更多关于 Android 10 分区存储的特性，可以[点击此处查看和学习](https://github.com/getActivity/AndroidVersionAdapter#android-100)。
+
 #### 一句代码搞定权限请求，从未如此简单
+
+* Java 用法示例
 
 ```java
 XXPermissions.with(this)
         // 申请单个权限
         .permission(Permission.RECORD_AUDIO)
         // 申请多个权限
-        //.permission(Permission.Group.CALENDAR)
-        // 申请安装包权限
-        //.permission(Permission.REQUEST_INSTALL_PACKAGES)
-        // 申请悬浮窗权限
-        //.permission(Permission.SYSTEM_ALERT_WINDOW)
-        // 申请通知栏权限
-        //.permission(Permission.NOTIFICATION_SERVICE)
-        // 申请系统设置权限
-        //.permission(Permission.WRITE_SETTINGS)
-        // 设置权限请求拦截器
+        .permission(Permission.Group.CALENDAR)
+        // 设置权限请求拦截器（局部设置）
         //.interceptor(new PermissionInterceptor())
-        // 设置不触发错误检测机制
+        // 设置不触发错误检测机制（局部设置）
         //.unchecked()
         .request(new OnPermissionCallback() {
 
@@ -116,13 +125,48 @@ XXPermissions.with(this)
                 if (never) {
                     toast("被永久拒绝授权，请手动授予录音和日历权限");
                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                    XXPermissions.startPermissionActivity(MainActivity.this, permissions);
+                    XXPermissions.startPermissionActivity(context, permissions);
                 } else {
                     toast("获取录音和日历权限失败");
                 }
             }
         });
 ```
+
+* Kotlin 用法示例
+
+```kotlin
+XXPermissions.with(this)
+    // 申请单个权限
+    .permission(Permission.RECORD_AUDIO)
+    // 申请多个权限
+    .permission(Permission.Group.CALENDAR)
+    // 设置权限请求拦截器（局部设置）
+    //.interceptor(new PermissionInterceptor())
+    // 设置不触发错误检测机制（局部设置）
+    //.unchecked()
+    .request(object : OnPermissionCallback {
+
+        override fun onGranted(permissions: MutableList<String>, all: Boolean) {
+            if (all) {
+                toast("获取录音和日历权限成功")
+            } else {
+                toast("获取部分权限成功，但部分权限未正常授予")
+            }
+        }
+
+        override fun onDenied(permissions: MutableList<String>, never: Boolean) {
+            if (never) {
+                toast("被永久拒绝授权，请手动授予录音和日历权限")
+                // 如果是被永久拒绝就跳转到应用权限系统设置页面
+                XXPermissions.startPermissionActivity(context, permissions)
+            } else {
+                toast("获取录音和日历权限失败")
+            }
+        }
+    })
+```
+
 #### 从系统权限设置页返回判断
 
 ```java
@@ -161,7 +205,9 @@ XXPermissions.isPermanentDenied(Activity activity, String... permissions);
 // 跳转到应用权限设置页
 XXPermissions.startPermissionActivity(Context context, String... permissions);
 XXPermissions.startPermissionActivity(Activity activity, String... permissions);
+XXPermissions.startPermissionActivity(Activity activity, String... permission, OnPermissionPageCallback callback);
 XXPermissions.startPermissionActivity(Fragment fragment, String... permissions);
+XXPermissions.startPermissionActivity(Fragment fragment, String... permissions, OnPermissionPageCallback callback);
 
 // 设置不触发错误检测机制（全局设置）
 XXPermissions.setCheckMode(false);
@@ -183,26 +229,29 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 #### 同类权限请求框架之间的对比
 
-|     功能及细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |
+|     适配细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   | [RxPermissions](https://github.com/tbruyelle/RxPermissions) | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  13.2 |  2.0.3  |  1.6.1    |  1.30.6    |  0.12   |   4.9.1  |  3.0.0   |
+|    对应版本  |  13.5 |  2.0.3  |  1.6.1    |  1.31.0    |  0.12   |   4.9.1  |  3.0.0   |
 |    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |
-|    框架体积  |  30 KB  | 127 KB  |   78 KB  |   500 KB  |  28 KB  |   91 KB  |  48 KB   |
+|    框架体积  |  37 KB  | 127 KB  |  78 KB  |   500 KB |  28 KB  | 91 KB  | 48 KB |
+|       闹钟提醒权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |     所有文件管理权限      |  ✅  |  ❌  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
 |        安装包权限        |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
 |        悬浮窗权限        |  ✅  |  ✅  |  ✅  |  ✅  |  ❌  |  ✅  |  ❌  |
 |       系统设置权限       |  ✅  |  ✅  |  ✅  |  ✅  |  ❌  |  ✅  |  ❌  |
 |        通知栏权限        |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|    查看应用使用情况权限   |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|  Android 8.0 权限适配   |  ✅  |  ✅  |  ✅  |  ❌ |  ❌  |   ✅  |  ❌  |
-|  Android 9.0 权限适配   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ✅  |  ❌  |
-|  Android 10 权限适配    |  ✅  |  ✅  |  ✅  |  ❌ |  ❌  |   ✅  |  ❌  |
-|  Android 11 权限适配    |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
-|  Android 12 权限适配    |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
-|   新权限自动兼容旧设备    |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
-|    屏幕方向旋转场景适配   |  ✅  |  ✅  |  ✅  |  ❌ |  ❌  |  ✅   |  ❌  |
-|    后台申请权限场景适配   |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
-|      错误检测机制       |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
+|       通知栏监听权限      |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|         勿扰权限         |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|     查看应用使用情况权限   |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|    Android 12 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
+|    Android 11 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
+|    Android 10 危险权限   |  ✅  |  ✅  |  ✅  |  ❌ |  ❌  |   ✅  |  ❌  |
+|    Android 9.0 危险权限  |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ✅  |  ❌  |
+|    Android 8.0 危险权限  |  ✅  |  ✅  |  ✅  |  ❌ |  ❌  |   ✅  |  ❌  |
+|    新权限自动兼容旧设备    |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
+|    屏幕方向旋转场景适配    |  ✅  |  ✅  |  ✅  |  ❌ |  ❌  |  ✅   |  ❌  |
+|    后台申请权限场景适配    |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
+|       错误检测机制        |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
 
 #### 新权限自动兼容旧设备介绍
 
@@ -248,6 +297,8 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
     * 如果动态申请的权限有在 `AndroidManifest.xml` 中进行注册，但是设定了不恰当的 `android:maxSdkVersion` 属性值，框架会抛出异常，举个例子：`<uses-permission android:name="xxxx" android:maxSdkVersion="29" />`，这样的设定会导致在 Android 11 （`Build.VERSION.SDK_INT >= 30`）及以上的设备申请权限，系统会认为这个权限没有在清单文件中注册，直接拒绝本次的权限申请，并且也是不会给出任何弹窗和提示，这个问题也是必现的。
 
+    * 如果你同时申请了 `MANAGE_EXTERNAL_STORAGE`、`READ_EXTERNAL_STORAGE`、`WRITE_EXTERNAL_STORAGE` 这三个权限，框架会抛出异常，告诉你不要同时申请这三个权限，这是因为在 Android 11 及以上设备上面，申请了 `MANAGE_EXTERNAL_STORAGE` 权限，则没有申请 `READ_EXTERNAL_STORAGE`、`WRITE_EXTERNAL_STORAGE` 权限的必要，这是因为申请了 `MANAGE_EXTERNAL_STORAGE` 权限，就等于拥有了比 `READ_EXTERNAL_STORAGE`、`WRITE_EXTERNAL_STORAGE` 更加强大的能力，如果硬要那么做反而适得其反，假设框架允许的情况下，会同时出现两种授权方式，一种是弹窗授权，另一种是跳页面授权，用户要进行两次授权，但是实际上面有了 `MANAGE_EXTERNAL_STORAGE` 权限就满足使用了，这个时候大家可能心中有一个疑问了，你不申请 `READ_EXTERNAL_STORAGE`、`WRITE_EXTERNAL_STORAGE` 权限，Android 11 以下又没有 `MANAGE_EXTERNAL_STORAGE` 这个权限，那不是会有问题？关于这个问题大家可以放心，框架会做判断，如果你申请了 `MANAGE_EXTERNAL_STORAGE` 权限，在 Android 11 以下框架会自动添加 `READ_EXTERNAL_STORAGE`、`WRITE_EXTERNAL_STORAGE` 来申请，所以在低版本下也不会因为没有权限导致的无法使用。
+
     * 如果你不需要上面这些检测，可通过调用 `unchecked` 方法来关闭，但是需要注意的是，我并不建议你去关闭这个检测，因为在 **release 模式** 时它是关闭状态，不需要你手动关闭，而它只在 **debug 模式** 下才会触发这些检测。
 
 * 出现这些问题的原因是，我们对这些机制不太熟悉，而如果框架不加以限制，那么引发各种奇奇怪怪的问题出现，作为框架的作者，表示不仅你们很痛苦，作为框架作者表示也很受伤。因为这些问题不是框架导致的，而是调用者的某些操作不规范导致的。我觉得这个问题最好的解决方式是，由框架做统一的检查，因为我是框架的作者，对权限申请这块知识点有**较强的专业能力和足够的经验**，知道什么该做，什么不该做，这样就可以对这些骚操作进行一一拦截。
@@ -272,29 +323,41 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 #### 作者的其他开源项目
 
-* 安卓技术中台：[AndroidProject](https://github.com/getActivity/AndroidProject)
+* 安卓技术中台：[AndroidProject](https://github.com/getActivity/AndroidProject) ![](https://img.shields.io/github/stars/getActivity/AndroidProject.svg) ![](https://img.shields.io/github/forks/getActivity/AndroidProject.svg)
 
-* 网络框架：[EasyHttp](https://github.com/getActivity/EasyHttp)
+* 安卓技术中台 Kt 版：[AndroidProject-Kotlin](https://github.com/getActivity/AndroidProject-Kotlin) ![](https://img.shields.io/github/stars/getActivity/AndroidProject-Kotlin.svg) ![](https://img.shields.io/github/forks/getActivity/AndroidProject-Kotlin.svg)
 
-* 吐司框架：[ToastUtils](https://github.com/getActivity/ToastUtils)
+* 吐司框架：[ToastUtils](https://github.com/getActivity/ToastUtils) ![](https://img.shields.io/github/stars/getActivity/ToastUtils.svg) ![](https://img.shields.io/github/forks/getActivity/ToastUtils.svg)
 
-* 标题栏框架：[TitleBar](https://github.com/getActivity/TitleBar)
+* 网络框架：[EasyHttp](https://github.com/getActivity/EasyHttp) ![](https://img.shields.io/github/stars/getActivity/EasyHttp.svg) ![](https://img.shields.io/github/forks/getActivity/EasyHttp.svg)
 
-* 国际化框架：[MultiLanguages](https://github.com/getActivity/MultiLanguages)
+* 标题栏框架：[TitleBar](https://github.com/getActivity/TitleBar) ![](https://img.shields.io/github/stars/getActivity/TitleBar.svg) ![](https://img.shields.io/github/forks/getActivity/TitleBar.svg)
 
-* 悬浮窗框架：[XToast](https://github.com/getActivity/XToast)
+* 悬浮窗框架：[XToast](https://github.com/getActivity/XToast) ![](https://img.shields.io/github/stars/getActivity/XToast.svg) ![](https://img.shields.io/github/forks/getActivity/XToast.svg)
 
-* Shape 框架：[ShapeView](https://github.com/getActivity/ShapeView)
+* Shape 框架：[ShapeView](https://github.com/getActivity/ShapeView) ![](https://img.shields.io/github/stars/getActivity/ShapeView.svg) ![](https://img.shields.io/github/forks/getActivity/ShapeView.svg)
 
-* Gson 解析容错：[GsonFactory](https://github.com/getActivity/GsonFactory)
+* 语种切换框架：[MultiLanguages](https://github.com/getActivity/MultiLanguages) ![](https://img.shields.io/github/stars/getActivity/MultiLanguages.svg) ![](https://img.shields.io/github/forks/getActivity/MultiLanguages.svg)
 
-* 日志查看框架：[Logcat](https://github.com/getActivity/Logcat)
+* Gson 解析容错：[GsonFactory](https://github.com/getActivity/GsonFactory) ![](https://img.shields.io/github/stars/getActivity/GsonFactory.svg) ![](https://img.shields.io/github/forks/getActivity/GsonFactory.svg)
+
+* 日志查看框架：[Logcat](https://github.com/getActivity/Logcat) ![](https://img.shields.io/github/stars/getActivity/Logcat.svg) ![](https://img.shields.io/github/forks/getActivity/Logcat.svg)
+
+* Android 版本适配：[AndroidVersionAdapter](https://github.com/getActivity/AndroidVersionAdapter) ![](https://img.shields.io/github/stars/getActivity/AndroidVersionAdapter.svg) ![](https://img.shields.io/github/forks/getActivity/AndroidVersionAdapter.svg)
+
+* Android 代码规范：[AndroidCodeStandard](https://github.com/getActivity/AndroidCodeStandard) ![](https://img.shields.io/github/stars/getActivity/AndroidCodeStandard.svg) ![](https://img.shields.io/github/forks/getActivity/AndroidCodeStandard.svg)
+
+* Studio 精品插件：[StudioPlugins](https://github.com/getActivity/StudioPlugins) ![](https://img.shields.io/github/stars/getActivity/StudioPlugins.svg) ![](https://img.shields.io/github/forks/getActivity/StudioPlugins.svg)
+
+* 表情包大集合：[EmojiPackage](https://github.com/getActivity/EmojiPackage) ![](https://img.shields.io/github/stars/getActivity/EmojiPackage.svg) ![](https://img.shields.io/github/forks/getActivity/EmojiPackage.svg)
+
+* 省市区 Json 数据：[ProvinceJson](https://github.com/getActivity/ProvinceJson) ![](https://img.shields.io/github/stars/getActivity/ProvinceJson.svg) ![](https://img.shields.io/github/forks/getActivity/ProvinceJson.svg)
 
 #### 微信公众号：Android轮子哥
 
 ![](https://raw.githubusercontent.com/getActivity/Donate/master/picture/official_ccount.png)
 
-#### Android 技术分享 QQ 群：78797078
+#### Android 技术 Q 群：10047167
 
 #### 如果您觉得我的开源库帮你节省了大量的开发时间，请扫描下方的二维码随意打赏，要是能打赏个 10.24 :monkey_face:就太:thumbsup:了。您的支持将鼓励我继续创作:octocat:
 

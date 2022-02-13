@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 
 import com.hjq.permissions.IPermissionInterceptor;
 import com.hjq.permissions.OnPermissionCallback;
+import com.hjq.permissions.OnPermissionPageCallback;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.PermissionFragment;
 import com.hjq.permissions.XXPermissions;
@@ -64,7 +65,7 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
         }
 
         if (never) {
-            showPermissionDialog(activity, deniedPermissions);
+            showPermissionDialog(activity, allPermissions, deniedPermissions, callback);
             return;
         }
 
@@ -74,28 +75,43 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
         }
 
         ToastUtils.show(R.string.common_permission_fail_1);
-
-        if (callback == null) {
-            return;
-        }
-        callback.onDenied(deniedPermissions, never);
     }
 
     /**
      * 显示授权对话框
      */
-    protected void showPermissionDialog(Activity activity, List<String> permissions) {
+    protected void showPermissionDialog(Activity activity, List<String> allPermissions,
+                                        List<String> deniedPermissions, OnPermissionCallback callback) {
+        if (activity == null || activity.isFinishing() ||
+                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed())) {
+            return;
+        }
         // 这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
         new AlertDialog.Builder(activity)
                 .setTitle(R.string.common_permission_alert)
-                .setCancelable(false)
-                .setMessage(getPermissionHint(activity, permissions))
+                .setMessage(getPermissionHint(activity, deniedPermissions))
                 .setPositiveButton(R.string.common_permission_goto, new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        XXPermissions.startPermissionActivity(activity, permissions);
+                        XXPermissions.startPermissionActivity(activity,
+                                deniedPermissions, new OnPermissionPageCallback() {
+
+                            @Override
+                            public void onGranted() {
+                                if (callback == null) {
+                                    return;
+                                }
+                                callback.onGranted(allPermissions, true);
+                            }
+
+                            @Override
+                            public void onDenied() {
+                                showPermissionDialog(activity, allPermissions,
+                                        XXPermissions.getDenied(activity, allPermissions), callback);
+                            }
+                        });
                     }
                 })
                 .show();
@@ -253,8 +269,29 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                     }
                     break;
                 }
+                case Permission.BIND_NOTIFICATION_LISTENER_SERVICE: {
+                    String hint = context.getString(R.string.common_permission_notification);
+                    if (!hints.contains(hint)) {
+                        hints.add(hint);
+                    }
+                    break;
+                }
                 case Permission.PACKAGE_USAGE_STATS: {
                     String hint = context.getString(R.string.common_permission_task);
+                    if (!hints.contains(hint)) {
+                        hints.add(hint);
+                    }
+                    break;
+                }
+                case Permission.SCHEDULE_EXACT_ALARM: {
+                    String hint = context.getString(R.string.common_permission_alarm);
+                    if (!hints.contains(hint)) {
+                        hints.add(hint);
+                    }
+                    break;
+                }
+                case Permission.ACCESS_NOTIFICATION_POLICY: {
+                    String hint = context.getString(R.string.common_permission_not_disturb);
                     if (!hints.contains(hint)) {
                         hints.add(hint);
                     }
