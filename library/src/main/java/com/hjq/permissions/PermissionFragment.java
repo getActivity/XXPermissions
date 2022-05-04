@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.os.Bundle;
 
 import java.util.ArrayList;
@@ -131,33 +130,16 @@ public final class PermissionFragment extends Fragment implements Runnable {
             return;
         }
 
-        try {
-            // 兼容问题：在 Android 8.0 的手机上可以固定 Activity 的方向，但是这个 Activity 不能是透明的，否则就会抛出异常
-            // 复现场景：只需要给 Activity 主题设置 <item name="android:windowIsTranslucent">true</item> 属性即可
-            switch (activity.getResources().getConfiguration().orientation) {
-                case Configuration.ORIENTATION_LANDSCAPE:
-                    activity.setRequestedOrientation(PermissionUtils.isActivityReverse(activity) ?
-                            ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE :
-                            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                    break;
-                case Configuration.ORIENTATION_PORTRAIT:
-                default:
-                    activity.setRequestedOrientation(PermissionUtils.isActivityReverse(activity) ?
-                            ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT :
-                            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                    break;
-            }
-        } catch (IllegalStateException e) {
-            // java.lang.IllegalStateException: Only fullscreen activities can request orientation
-            e.printStackTrace();
-        }
+        // 锁定当前 Activity 方向
+        PermissionUtils.lockActivityOrientation(activity);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         Activity activity = getActivity();
-        if (activity == null || mScreenOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
+        if (activity == null || mScreenOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED ||
+                activity.getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
             return;
         }
         // 为什么这里不用跟上面一样 try catch ？因为这里是把 Activity 方向取消固定，只有设置横屏或竖屏的时候才可能触发 crash
@@ -208,20 +190,22 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
         // 判断当前是否包含特殊权限
         for (String permission : allPermissions) {
-            if (PermissionApi.isSpecialPermission(permission)) {
-                if (PermissionApi.isGrantedPermission(activity, permission)) {
-                    // 已经授予过了，可以跳过
-                    continue;
-                }
-                if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) && !AndroidVersion.isAndroid11()) {
-                    // 当前必须是 Android 11 及以上版本，因为在旧版本上是拿旧权限做的判断
-                    continue;
-                }
-                // 跳转到特殊权限授权页面
-                startActivityForResult(PermissionPageIntent.getSmartPermissionIntent(activity,
-                        PermissionUtils.asArrayList(permission)), getArguments().getInt(REQUEST_CODE));
-                requestSpecialPermission = true;
+            if (!PermissionApi.isSpecialPermission(permission)) {
+                continue;
             }
+
+            if (PermissionApi.isGrantedPermission(activity, permission)) {
+                // 已经授予过了，可以跳过
+                continue;
+            }
+            if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) && !AndroidVersion.isAndroid11()) {
+                // 当前必须是 Android 11 及以上版本，因为在旧版本上是拿旧权限做的判断
+                continue;
+            }
+            // 跳转到特殊权限授权页面
+            startActivityForResult(PermissionPageIntent.getSmartPermissionIntent(activity,
+                    PermissionUtils.asArrayList(permission)), getArguments().getInt(REQUEST_CODE));
+            requestSpecialPermission = true;
         }
 
         if (requestSpecialPermission) {
@@ -398,9 +382,13 @@ public final class PermissionFragment extends Fragment implements Runnable {
             return;
         }
 
+        final ArrayList<String> allPermissions = arguments.getStringArrayList(REQUEST_PERMISSIONS);
+        if (allPermissions == null || allPermissions.isEmpty()) {
+            return;
+        }
+
         mDangerousRequest = true;
-        // 需要延迟执行，不然有些华为机型授权了但是获取不到权限
-        PermissionUtils.postDelayed(this, 300);
+        PermissionUtils.postActivityResult(allPermissions, this);
     }
 
     @Override

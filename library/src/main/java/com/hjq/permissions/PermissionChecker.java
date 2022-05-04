@@ -304,8 +304,8 @@ final class PermissionChecker {
 
                 if (Permission.BLUETOOTH_SCAN.equals(permission)) {
                     checkManifestPermission(manifestPermissions, Manifest.permission.BLUETOOTH_ADMIN, AndroidVersion.ANDROID_11);
-                    // 这是 Android 12 之前遗留的问题，获取扫描蓝牙的结果需要定位的权限
-                    checkManifestPermission(manifestPermissions, Manifest.permission.ACCESS_COARSE_LOCATION, AndroidVersion.ANDROID_11);
+                    // 这是 Android 12 之前遗留的问题，获取扫描蓝牙的结果需要精确定位权限
+                    checkManifestPermission(manifestPermissions, Permission.ACCESS_FINE_LOCATION, AndroidVersion.ANDROID_11);
                 }
 
                 if (Permission.BLUETOOTH_CONNECT.equals(permission)) {
@@ -393,9 +393,9 @@ final class PermissionChecker {
         // 如果本次申请包含了 Android 12 蓝牙扫描权限
         if (!AndroidVersion.isAndroid12() &&
                 requestPermissions.contains(Permission.BLUETOOTH_SCAN) &&
-                !requestPermissions.contains(Permission.ACCESS_COARSE_LOCATION)) {
-            // 这是 Android 12 之前遗留的问题，扫描蓝牙需要定位的权限
-            requestPermissions.add(Permission.ACCESS_COARSE_LOCATION);
+                !requestPermissions.contains(Permission.ACCESS_FINE_LOCATION)) {
+            // 这是 Android 12 之前遗留的问题，扫描蓝牙需要精确定位权限
+            requestPermissions.add(Permission.ACCESS_FINE_LOCATION);
         }
 
         // 如果本次申请包含了 Android 11 存储权限

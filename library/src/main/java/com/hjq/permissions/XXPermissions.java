@@ -232,6 +232,17 @@ public final class XXPermissions {
     }
 
     /**
+     * 判断权限列表中是否包含特殊权限
+     */
+    public static boolean containsSpecial(String... permissions) {
+        return containsSpecial(PermissionUtils.asArrayList(permissions));
+    }
+
+    public static boolean containsSpecial(List<String> permissions) {
+        return PermissionApi.containsSpecialPermission(permissions);
+    }
+
+    /**
      * 判断一个或多个权限是否被永久拒绝了
      *
      * （注意不能在请求权限之前调用，应该在 {@link OnPermissionCallback#onDenied(List, boolean)} 方法中调用）

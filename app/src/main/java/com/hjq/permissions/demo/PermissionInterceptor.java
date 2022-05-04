@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 
 import com.hjq.permissions.IPermissionInterceptor;
@@ -27,10 +28,13 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
 
 //    @Override
 //    public void requestPermissions(Activity activity, OnPermissionCallback callback, List<String> allPermissions) {
+//        List<String> deniedPermissions = XXPermissions.getDenied(activity, allPermissions);
+//        String hints = listToString(getPermissionNameList(activity, deniedPermissions));
+//
 //        // 这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
 //        new AlertDialog.Builder(activity)
 //                .setTitle(R.string.common_permission_hint)
-//                .setMessage(R.string.common_permission_message)
+//                .setMessage(activity.getString(R.string.common_permission_message, hints))
 //                .setPositiveButton(R.string.common_permission_granted, new DialogInterface.OnClickListener() {
 //
 //                    @Override
@@ -44,6 +48,9 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
 //                    @Override
 //                    public void onClick(DialogInterface dialog, int which) {
 //                        dialog.dismiss();
+//                        if (callback != null) {
+//                            callback.onDenied(deniedPermissions, false);
+//                        }
 //                    }
 //                })
 //                .show();
@@ -65,7 +72,7 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
         }
 
         if (never) {
-            showPermissionDialog(activity, allPermissions, deniedPermissions, callback);
+            showPermissionSettingDialog(activity, allPermissions, deniedPermissions, callback);
             return;
         }
 
@@ -80,8 +87,8 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
     /**
      * 显示授权对话框
      */
-    protected void showPermissionDialog(Activity activity, List<String> allPermissions,
-                                        List<String> deniedPermissions, OnPermissionCallback callback) {
+    private void showPermissionSettingDialog(Activity activity, List<String> allPermissions,
+                                             List<String> deniedPermissions, OnPermissionCallback callback) {
         if (activity == null || activity.isFinishing() ||
                 (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed())) {
             return;
@@ -108,7 +115,7 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
 
                             @Override
                             public void onDenied() {
-                                showPermissionDialog(activity, allPermissions,
+                                showPermissionSettingDialog(activity, allPermissions,
                                         XXPermissions.getDenied(activity, allPermissions), callback);
                             }
                         });
@@ -120,34 +127,46 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
     /**
      * 根据权限获取提示
      */
-    protected String getPermissionHint(Context context, List<String> permissions) {
+    private String getPermissionHint(Context context, List<String> permissions) {
         if (permissions == null || permissions.isEmpty()) {
             return context.getString(R.string.common_permission_fail_2);
         }
 
-        List<String> hints = new ArrayList<>();
+        List<String> hints = getPermissionNameList(context, permissions);
+
+        if (!hints.isEmpty()) {
+            return context.getString(R.string.common_permission_fail_3, listToString(hints));
+        }
+        return context.getString(R.string.common_permission_fail_2);
+    }
+
+    /**
+     * 获取权限名称列表
+     */
+    @NonNull
+    private List<String> getPermissionNameList(Context context, List<String> permissions) {
+        List<String> nameList = new ArrayList<>();
         for (String permission : permissions) {
             switch (permission) {
                 case Permission.READ_EXTERNAL_STORAGE:
-                case Permission.WRITE_EXTERNAL_STORAGE:
-                case Permission.MANAGE_EXTERNAL_STORAGE: {
+                case Permission.WRITE_EXTERNAL_STORAGE: {
                     String hint = context.getString(R.string.common_permission_storage);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
                 case Permission.CAMERA: {
                     String hint = context.getString(R.string.common_permission_camera);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
                 case Permission.RECORD_AUDIO: {
                     String hint = context.getString(R.string.common_permission_microphone);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
@@ -161,8 +180,8 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                     } else {
                         hint = context.getString(R.string.common_permission_location);
                     }
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
@@ -171,8 +190,8 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                 case Permission.BLUETOOTH_ADVERTISE: {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         String hint = context.getString(R.string.common_permission_bluetooth);
-                        if (!hints.contains(hint)) {
-                            hints.add(hint);
+                        if (!nameList.contains(hint)) {
+                            nameList.add(hint);
                         }
                     }
                     break;
@@ -184,8 +203,8 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                 case Permission.READ_PHONE_NUMBERS:
                 case Permission.ANSWER_PHONE_CALLS: {
                     String hint = context.getString(R.string.common_permission_phone);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
@@ -193,16 +212,16 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                 case Permission.READ_CONTACTS:
                 case Permission.WRITE_CONTACTS: {
                     String hint = context.getString(R.string.common_permission_contacts);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
                 case Permission.READ_CALENDAR:
                 case Permission.WRITE_CALENDAR: {
                     String hint = context.getString(R.string.common_permission_calendar);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
@@ -211,22 +230,22 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                 case Permission.PROCESS_OUTGOING_CALLS: {
                     String hint = context.getString(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ?
                             R.string.common_permission_call_log : R.string.common_permission_phone);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
                 case Permission.BODY_SENSORS: {
                     String hint = context.getString(R.string.common_permission_sensors);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
                 case Permission.ACTIVITY_RECOGNITION: {
                     String hint = context.getString(R.string.common_permission_activity_recognition);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
@@ -236,64 +255,80 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                 case Permission.RECEIVE_WAP_PUSH:
                 case Permission.RECEIVE_MMS: {
                     String hint = context.getString(R.string.common_permission_sms);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
+                    }
+                    break;
+                }
+                case Permission.MANAGE_EXTERNAL_STORAGE: {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        String hint = context.getString(R.string.common_permission_manage_storage);
+                        if (!nameList.contains(hint)) {
+                            nameList.add(hint);
+                        }
                     }
                     break;
                 }
                 case Permission.REQUEST_INSTALL_PACKAGES: {
                     String hint = context.getString(R.string.common_permission_install);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
                 case Permission.SYSTEM_ALERT_WINDOW: {
                     String hint = context.getString(R.string.common_permission_window);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
                 case Permission.WRITE_SETTINGS: {
                     String hint = context.getString(R.string.common_permission_setting);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
                 case Permission.NOTIFICATION_SERVICE: {
                     String hint = context.getString(R.string.common_permission_notification);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
                 case Permission.BIND_NOTIFICATION_LISTENER_SERVICE: {
                     String hint = context.getString(R.string.common_permission_notification);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
                 case Permission.PACKAGE_USAGE_STATS: {
                     String hint = context.getString(R.string.common_permission_task);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
                 case Permission.SCHEDULE_EXACT_ALARM: {
                     String hint = context.getString(R.string.common_permission_alarm);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
                 case Permission.ACCESS_NOTIFICATION_POLICY: {
                     String hint = context.getString(R.string.common_permission_not_disturb);
-                    if (!hints.contains(hint)) {
-                        hints.add(hint);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
+                    }
+                    break;
+                }
+                case Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: {
+                    String hint = context.getString(R.string.common_permission_ignore_battery);
+                    if (!nameList.contains(hint)) {
+                        nameList.add(hint);
                     }
                     break;
                 }
@@ -302,20 +337,26 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
             }
         }
 
-        if (!hints.isEmpty()) {
-            StringBuilder builder = new StringBuilder();
-            for (String text : hints) {
-                if (builder.length() == 0) {
-                    builder.append(text);
-                } else {
-                    builder.append("、")
-                            .append(text);
-                }
-            }
-            builder.append(" ");
-            return context.getString(R.string.common_permission_fail_3, builder.toString());
+        return nameList;
+    }
+
+    /**
+     * String 列表拼接成一个字符串
+     */
+    private String listToString(List<String> hints) {
+        if (hints == null || hints.isEmpty()) {
+            return "";
         }
 
-        return context.getString(R.string.common_permission_fail_2);
+        StringBuilder builder = new StringBuilder();
+        for (String text : hints) {
+            if (builder.length() == 0) {
+                builder.append(text);
+            } else {
+                builder.append("、")
+                        .append(text);
+            }
+        }
+        return builder.toString();
     }
 }

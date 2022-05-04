@@ -42,24 +42,27 @@ public final class Permission {
     public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES";
 
     /**
-     * 悬浮窗权限（特殊权限）
+     * 悬浮窗权限（特殊权限，Android 6.0 之后才有的权限）
      *
      * 在 Android 10 及之前的版本能跳转到应用悬浮窗设置页面，而在 Android 11 及之后的版本只能跳转到系统设置悬浮窗管理列表了
      * 官方解释：https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION
      */
     public static final String SYSTEM_ALERT_WINDOW = "android.permission.SYSTEM_ALERT_WINDOW";
 
-    /** 系统设置权限（特殊权限） */
+    /** 系统设置权限（特殊权限，Android 6.0 之后才有的权限） */
     public static final String WRITE_SETTINGS = "android.permission.WRITE_SETTINGS";
+
+    /** 请求忽略电池优化选项权限（特殊权限，Android 6.0 之后才有的权限）*/
+    public static final String REQUEST_IGNORE_BATTERY_OPTIMIZATIONS = "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS";
 
     /** 勿扰权限，可控制手机响铃模式（静音，震动）（特殊权限，Android 6.0 之后才有的权限）*/
     public static final String ACCESS_NOTIFICATION_POLICY = "android.permission.ACCESS_NOTIFICATION_POLICY";
 
-    /** 通知栏监听权限（特殊权限，Android 4.3 之后才有的权限） */
-    public static final String BIND_NOTIFICATION_LISTENER_SERVICE = "android.permission.BIND_NOTIFICATION_LISTENER_SERVICE";
-
     /** 查看应用使用情况权限，简称使用统计权限（特殊权限，Android 5.0 之后才有的权限） */
     public static final String PACKAGE_USAGE_STATS = "android.permission.PACKAGE_USAGE_STATS";
+
+    /** 通知栏监听权限（特殊权限，Android 4.3 之后才有的权限） */
+    public static final String BIND_NOTIFICATION_LISTENER_SERVICE = "android.permission.BIND_NOTIFICATION_LISTENER_SERVICE";
 
     /** 通知栏权限（特殊权限，注意此权限不需要在清单文件中注册也能申请） */
     public static final String NOTIFICATION_SERVICE = "android.permission.NOTIFICATION_SERVICE";
@@ -92,7 +95,7 @@ public final class Permission {
      * 蓝牙扫描权限（需要 Android 12.0 及以上）
      *
      * 为了兼容 Android 12 以下版本，需要清单文件中注册 {@link Manifest.permission#BLUETOOTH_ADMIN} 权限
-     * 还有 Android 12 以下设备，获取蓝牙扫描结果需要模糊定位权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
+     * 还有 Android 12 以下设备，获取蓝牙扫描结果需要精确定位权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
      */
     public static final String BLUETOOTH_SCAN = "android.permission.BLUETOOTH_SCAN";
     /**

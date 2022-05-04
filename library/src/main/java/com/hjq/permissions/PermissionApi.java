@@ -7,6 +7,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.v4.app.NotificationManagerCompat;
 
@@ -121,6 +122,16 @@ final class PermissionApi {
     }
 
     /**
+     * 是否忽略电池优化选项
+     */
+    static boolean isGrantedIgnoreBatteryPermission(Context context) {
+        if (AndroidVersion.isAndroid6()) {
+            return context.getSystemService(PowerManager.class).isIgnoringBatteryOptimizations(context.getPackageName());
+        }
+        return true;
+    }
+
+    /**
      * 判断某个权限集合是否包含特殊权限
      */
     static boolean containsSpecialPermission(List<String> permissions) {
@@ -148,7 +159,8 @@ final class PermissionApi {
                 Permission.PACKAGE_USAGE_STATS.equals(permission) ||
                 Permission.SCHEDULE_EXACT_ALARM.equals(permission) ||
                 Permission.BIND_NOTIFICATION_LISTENER_SERVICE.equals(permission) ||
-                Permission.ACCESS_NOTIFICATION_POLICY.equals(permission);
+                Permission.ACCESS_NOTIFICATION_POLICY.equals(permission) ||
+                Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS.equals(permission);
     }
 
     /**
@@ -246,6 +258,11 @@ final class PermissionApi {
         // 检测勿扰权限
         if (Permission.ACCESS_NOTIFICATION_POLICY.equals(permission)) {
             return isGrantedNotDisturbPermission(context);
+        }
+
+        // 检测电池优化选项权限
+        if (Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS.equals(permission)) {
+            return isGrantedIgnoreBatteryPermission(context);
         }
 
         // 检测 Android 12 的三个新权限

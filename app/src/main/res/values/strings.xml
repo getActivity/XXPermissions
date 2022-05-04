@@ -3,7 +3,7 @@
     <string name="app_name">XXPermissions</string>
 
     <string name="common_permission_hint">授权提示</string>
-    <string name="common_permission_message">使用此功能需要先授予权限</string>
+    <string name="common_permission_message">使用此功能需要先授予%s</string>
     <string name="common_permission_granted">授予</string>
     <string name="common_permission_denied">取消</string>
 
@@ -28,6 +28,7 @@
     <string name="common_permission_sms">短信权限</string>
     <string name="common_permission_storage">存储权限</string>
 
+    <string name="common_permission_manage_storage">所有文件访问权限</string>
     <string name="common_permission_install">安装应用权限</string>
     <string name="common_permission_window">悬浮窗权限</string>
     <string name="common_permission_setting">系统设置权限</string>
@@ -36,4 +37,5 @@
     <string name="common_permission_task">查看使用情况权限</string>
     <string name="common_permission_alarm">查看闹钟提醒权限</string>
     <string name="common_permission_not_disturb">勿扰权限</string>
+    <string name="common_permission_ignore_battery">忽略电池优化权限</string>
 </resources>

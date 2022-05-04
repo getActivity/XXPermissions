@@ -74,6 +74,10 @@ final class PermissionPageIntent {
             if (Permission.ACCESS_NOTIFICATION_POLICY.equals(permission)) {
                 return getNotDisturbPermissionIntent(context);
             }
+
+            if (Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS.equals(permission)) {
+                return getIgnoreBatteryPermissionIntent(context);
+            }
         }
 
         return getApplicationDetailsIntent(context);
@@ -210,6 +214,21 @@ final class PermissionPageIntent {
         Intent intent = null;
         if (AndroidVersion.isAndroid6()) {
             intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+        }
+        if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
+            intent = getApplicationDetailsIntent(context);
+        }
+        return intent;
+    }
+
+    /**
+     * 获取电池优化选项设置界面意图
+     */
+    static Intent getIgnoreBatteryPermissionIntent(Context context) {
+        Intent intent = null;
+        if (AndroidVersion.isAndroid6()) {
+            intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            intent.setData(getPackageNameUri(context));
         }
         if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);

@@ -5,10 +5,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.content.res.XmlResourceParser;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,6 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -35,10 +39,36 @@ final class PermissionUtils {
     private static final Handler HANDLER = new Handler(Looper.getMainLooper());
 
     /**
-     * 延迟一段时间执行
+     * 延迟一段时间执行 OnActivityResult，避免有些机型明明授权了，但还是回调失败的问题
      */
-    public static void postDelayed(Runnable r, long delayMillis) {
-        HANDLER.postDelayed(r, delayMillis);
+    public static void postActivityResult(List<String> permissions, Runnable runnable) {
+        long delayMillis;
+        if (AndroidVersion.isAndroid11()) {
+            delayMillis = 100;
+        } else {
+            delayMillis = 200;
+        }
+
+        String manufacturer = Build.MANUFACTURER.toLowerCase();
+        if (manufacturer.contains("huawei")) {
+            // 需要加长时间等待，不然某些华为机型授权了但是获取不到权限
+            if (AndroidVersion.isAndroid8()) {
+                delayMillis = 300;
+            } else {
+                delayMillis = 500;
+            }
+        } else if (manufacturer.contains("xiaomi")) {
+            // 经过测试，发现小米 Android 11 及以上的版本，申请这个权限需要 1 秒钟才能判断到
+            // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
+            // 然而在 Android 11 之后的，这个权限页面被小米改成了自己定制化的页面
+            // 测试了原生的模拟器和 vivo 云测并发现没有这个问题，所以断定这个 Bug 就是小米特有的
+            if (AndroidVersion.isAndroid11() &&
+                    permissions.contains(Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
+                delayMillis = 1000;
+            }
+        }
+
+        HANDLER.postDelayed(runnable, delayMillis);
     }
 
     /**
@@ -286,6 +316,34 @@ final class PermissionUtils {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * 锁定当前 Activity 的方向
+     */
+    @SuppressLint("SwitchIntDef")
+    static void lockActivityOrientation(Activity activity) {
+        try {
+            // 兼容问题：在 Android 8.0 的手机上可以固定 Activity 的方向，但是这个 Activity 不能是透明的，否则就会抛出异常
+            // 复现场景：只需要给 Activity 主题设置 <item name="android:windowIsTranslucent">true</item> 属性即可
+            switch (activity.getResources().getConfiguration().orientation) {
+                case Configuration.ORIENTATION_LANDSCAPE:
+                    activity.setRequestedOrientation(PermissionUtils.isActivityReverse(activity) ?
+                            ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE :
+                            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                    break;
+                case Configuration.ORIENTATION_PORTRAIT:
+                    activity.setRequestedOrientation(PermissionUtils.isActivityReverse(activity) ?
+                            ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT :
+                            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    break;
+                default:
+                    break;
+            }
+        } catch (IllegalStateException e) {
+            // java.lang.IllegalStateException: Only fullscreen activities can request orientation
+            e.printStackTrace();
+        }
     }
 
     /**

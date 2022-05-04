@@ -20,7 +20,9 @@
 
 * [新版框架为什么移除了国产手机权限设置页功能](#新版框架为什么移除了国产手机权限设置页功能)
 
-* [为什么不用 ActivityResultContract 来申请权限](为什么不用-activityresultcontract-来申请权限)
+* [为什么不用 ActivityResultContract 来申请权限](#为什么不用-activityresultcontract-来申请权限)
+
+* [怎么处理权限请求成功但是返回空白通行证的问题](#怎么处理权限请求成功但是返回空白通行证的问题)
 
 #### Android 11 定位权限适配
 
@@ -277,3 +279,8 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 > [【issue】是否有考虑 onActivityResult 回调的权限申请切换成 ActivityResultContract](https://github.com/getActivity/XXPermissions/issues/103)
 
 * ActivityResultContract 是 Activity `1.2.0-alpha02` 和 Fragment `1.3.0-alpha02` 中新追加的新 API，有一定的使用门槛，必须要求项目是基于 AndroidX，并且 AndroidX 的版本还要是 `1.3.0-alpha01` 以上才可以，如果替换成 `ActivityResultContract` 来实现，那么就会导致一部分开发者用不了 XXPermissions，这是一个比较严重的问题，但实际上换成 ActivityResultContract 来实现本身没有带来任何的效益，例如我之前解决过的 Fragment 屏幕旋转及后台申请的问题，所以更换的意义又在哪里呢？有人可能会说官方已经将 onActivityResult 标记成过时，大家不必担心，之所以标记成过时只不过是谷歌为了推广新技术，但是可以明确说，官方是一定不会删掉这个 API 的，更准确来说是一定不敢，至于为什么？大家可以去看看 ActivityResultContract 是怎么实现的？它也是通过重写 Activity 的 `onActivityResult`、`onRequestPermissionsResult` 方法回调实现的，具体大家可以去看 `androidx.activity.ComponentActivity` 类中这两个方法的实现就会明白了，这里不再赘述。
+
+#### 怎么处理权限请求成功但是返回空白通行证的问题
+
+* 此问题无解，权限请求框架只能帮你申请权限，至于你申请权限做什么操作，框架无法知道，也无法干预，还有返回空白通行证是厂商自己的行为，目的就是为了保护用户的隐私，因为在某些应用上面不给权限就不能用，返回空白通行证是为了规避这种情况的发生。你要问我怎么办？我只能说胳膊拗不过大腿，别做一些无谓的抵抗。
+

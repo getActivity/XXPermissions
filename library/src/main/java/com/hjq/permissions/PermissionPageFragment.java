@@ -17,9 +17,6 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 public final class PermissionPageFragment extends Fragment implements Runnable {
 
-    /** 权限设置页跳转请求码 */
-    public static final int REQUEST_CODE = 1024 + 1;
-
     /** 请求的权限组 */
     private static final String REQUEST_PERMISSIONS = "request_permissions";
 
@@ -41,6 +38,15 @@ public final class PermissionPageFragment extends Fragment implements Runnable {
         fragment.attachActivity(activity);
     }
 
+    /** 权限回调对象 */
+    private OnPermissionPageCallback mCallBack;
+
+    /** 权限申请标记 */
+    private boolean mRequestFlag;
+
+    /** 是否申请了权限 */
+    private boolean mStartActivityFlag;
+
     /**
      * 绑定 Activity
      */
@@ -54,15 +60,6 @@ public final class PermissionPageFragment extends Fragment implements Runnable {
     public void detachActivity(Activity activity) {
         activity.getFragmentManager().beginTransaction().remove(this).commitAllowingStateLoss();
     }
-
-    /** 权限回调对象 */
-    private OnPermissionPageCallback mCallBack;
-
-    /** 权限申请标记 */
-    private boolean mRequestFlag;
-
-    /** 是否申请了权限 */
-    private boolean mStartActivityFlag;
 
     @Override
     public void onResume() {
@@ -105,12 +102,21 @@ public final class PermissionPageFragment extends Fragment implements Runnable {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode != REQUEST_CODE) {
+        if (requestCode != XXPermissions.REQUEST_CODE) {
             return;
         }
-        // 需要延迟执行，不然有些华为机型授权了但是获取不到权限
-        PermissionUtils.postDelayed(this, 300);
+
+        Activity activity = getActivity();
+        Bundle arguments = getArguments();
+        if (activity == null || arguments == null) {
+            return;
+        }
+        final ArrayList<String> allPermissions = arguments.getStringArrayList(REQUEST_PERMISSIONS);
+        if (allPermissions == null || allPermissions.isEmpty()) {
+            return;
+        }
+
+        PermissionUtils.postActivityResult(allPermissions, this);
     }
 
     @Override

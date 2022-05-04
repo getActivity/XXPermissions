@@ -43,6 +43,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_package).setOnClickListener(this);
         findViewById(R.id.btn_main_request_alarm).setOnClickListener(this);
         findViewById(R.id.btn_main_request_not_disturb).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_ignore_battery).setOnClickListener(this);
         findViewById(R.id.btn_main_app_details).setOnClickListener(this);
     }
 
@@ -261,6 +262,19 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
                             toast("获取勿扰权限成功");
+                        }
+                    });
+
+        } else if (viewId == R.id.btn_main_request_ignore_battery) {
+
+            XXPermissions.with(this)
+                    .permission(Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+                    .interceptor(new PermissionInterceptor())
+                    .request(new OnPermissionCallback() {
+
+                        @Override
+                        public void onGranted(List<String> permissions, boolean all) {
+                            toast("获取忽略电池优化权限成功");
                         }
                     });
 
