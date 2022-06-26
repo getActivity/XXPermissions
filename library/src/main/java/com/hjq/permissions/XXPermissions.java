@@ -166,15 +166,14 @@ public final class XXPermissions {
         }
 
         if (mCheckMode) {
+            // 检查申请的读取媒体位置权限是否符合规范
+            PermissionChecker.checkMediaLocationPermission(permissions);
             // 检查申请的存储权限是否符合规范
             PermissionChecker.checkStoragePermission(mContext, permissions);
             // 检查申请的定位权限是否符合规范
             PermissionChecker.checkLocationPermission(mContext, permissions);
             // 检查申请的权限和 targetSdk 版本是否能吻合
             PermissionChecker.checkTargetSdkVersion(mContext, permissions);
-        }
-
-        if (mCheckMode) {
             // 检测权限有没有在清单文件中注册
             PermissionChecker.checkManifestPermissions(mContext, permissions);
         }
@@ -284,7 +283,7 @@ public final class XXPermissions {
             startPermissionActivity(activity, permissions);
             return;
         }
-        Intent intent = PermissionPageIntent.getSmartPermissionIntent(context, permissions);
+        Intent intent = PermissionUtils.getSmartPermissionIntent(context, permissions);
         if (!(context instanceof Activity)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
@@ -310,7 +309,7 @@ public final class XXPermissions {
     }
 
     public static void startPermissionActivity(Activity activity, List<String> permissions, int requestCode) {
-        activity.startActivityForResult(PermissionPageIntent.getSmartPermissionIntent(activity, permissions), requestCode);
+        activity.startActivityForResult(PermissionUtils.getSmartPermissionIntent(activity, permissions), requestCode);
     }
 
     public static void startPermissionActivity(Activity activity, String permission, OnPermissionPageCallback callback) {
@@ -348,7 +347,7 @@ public final class XXPermissions {
         if (activity == null) {
             return;
         }
-        fragment.startActivityForResult(PermissionPageIntent.getSmartPermissionIntent(activity, permissions), requestCode);
+        fragment.startActivityForResult(PermissionUtils.getSmartPermissionIntent(activity, permissions), requestCode);
     }
 
     public static void startPermissionActivity(Fragment fragment, String permission, OnPermissionPageCallback callback) {
@@ -393,7 +392,7 @@ public final class XXPermissions {
         if (activity == null) {
             return;
         }
-        fragment.startActivityForResult(PermissionPageIntent.getSmartPermissionIntent(activity, permissions), requestCode);
+        fragment.startActivityForResult(PermissionUtils.getSmartPermissionIntent(activity, permissions), requestCode);
     }
 
     public static void startPermissionActivity(android.support.v4.app.Fragment fragment, String permission, OnPermissionPageCallback callback) {

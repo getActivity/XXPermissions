@@ -27,6 +27,7 @@ final class AndroidVersion {
     static final int ANDROID_4_3 = Build.VERSION_CODES.JELLY_BEAN_MR2;
     static final int ANDROID_4_2 = Build.VERSION_CODES.JELLY_BEAN_MR1;
     static final int ANDROID_4_1 = Build.VERSION_CODES.JELLY_BEAN;
+    static final int ANDROID_4_0 = Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 
     /**
      * 是否是 Android 12 及以上版本
@@ -96,5 +97,12 @@ final class AndroidVersion {
      */
     static boolean isAndroid4_2() {
         return Build.VERSION.SDK_INT >= ANDROID_4_2;
+    }
+
+    /**
+     * 是否是 Android 4.0 及以上版本
+     */
+    static boolean isAndroid4() {
+        return Build.VERSION.SDK_INT >= ANDROID_4_0;
     }
 }

@@ -6,7 +6,7 @@
 
 * 博文地址：[一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
 
-* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/13.6/XXPermissions.apk)
+* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/15.0/XXPermissions.apk)
 
 ![](picture/demo_code.png)
 
@@ -57,7 +57,7 @@ android {
 
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.github.getActivity:XXPermissions:13.6'
+    implementation 'com.github.getActivity:XXPermissions:15.0'
 }
 ```
 
@@ -211,9 +211,9 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 |     适配细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  13.6 |  2.0.3  |  1.6.3    |  1.31.0    |   4.9.2  |  0.12   |  3.0.0   |
+|    对应版本  |  15.0 |  2.0.3  |  1.6.4    |  1.31.0    |   4.9.2  |  0.12   |  3.0.0   |
 |    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |
-|    框架体积  |  38 KB  | 127 KB  |  90 KB  |   500 KB |  99 KB  | 28 KB  | 48 KB |
+|    框架体积  |  45 KB  | 127 KB  |  90 KB  |   500 KB |  99 KB  | 28 KB  | 48 KB |
 |       闹钟提醒权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |     所有文件管理权限      |  ✅  |  ❌  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
 |        安装包权限        |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
@@ -224,6 +224,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 |         勿扰权限         |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |     忽略电池优化权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |     查看应用使用情况权限   |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|        VPN 权限         |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |    Android 12 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
 |    Android 11 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
 |    Android 10 危险权限   |  ✅  |  ✅  |  ✅  |  ❌ |  ✅  |   ❌  |  ❌  |
@@ -232,6 +233,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 |    新权限自动兼容旧设备    |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
 |    屏幕方向旋转场景适配    |  ✅  |  ✅  |  ✅  |  ❌ |  ✅  |  ❌   |  ❌  |
 |    后台申请权限场景适配    |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
+| Android 12 内存泄漏问题修复 |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |   ❌  |  ❌  |
 |       错误检测机制        |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
 
 #### 新权限自动兼容旧设备介绍
@@ -253,6 +255,36 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 #### 后台申请权限场景介绍
 
 * 当我们做耗时操作之后申请权限（例如在闪屏页获取隐私协议再申请权限），在网络请求的过程中将 Activity 返回桌面去（退到后台），然后会导致权限请求是在后台状态中进行，在这个时机上就可能会导致权限申请不正常，表现为不会显示授权对话框，处理不当的还会导致崩溃，例如 [RxPeremission/issues/249](https://github.com/tbruyelle/RxPermissions/issues/249)。原因在于框架中的 PermissionFragment 在 **commit / commitNow** 到 Activity 的时候会做一个检测，如果 Activity 的状态是不可见时则会抛出异常，而 **RxPeremission** 正是使用了 **commitNow** 才会导致崩溃 ，使用 **commitAllowingStateLoss / commitNowAllowingStateLoss** 则可以避开这个检测，虽然这样可以避免崩溃，但是会出现另外一个问题，系统提供的 **requestPermissions** API 在 Activity 不可见时调用也不会弹出授权对话框，**XXPermissions** 的解决方式是将 **requestPermissions** 时机从 **create** 转移到了 **resume**，因为 Activity 和 Fragment 的生命周期方法是捆绑在一起的，如果 Activity 是不可见的，那么就算创建了 Fragment 也只会调用 **onCreate** 方法，而不会去调用它的 **onResume** 方法，最后当 Activity 从后台返回到前台时，不仅会触发 **Activity.onResume** 方法，同时也会触发 **PermissionFragment** 的 **onResume** 方法，在这个方法申请权限就可以保证最终 **requestPermissions** 申请的时机是在 Activity **处于可见状态的情况**下。
+
+#### Android 12 内存泄漏问题修复介绍
+
+* 最近有人跟我提了一个内存泄漏的问题 [XXPermissions/issues/133](https://github.com/getActivity/XXPermissions/issues/133) ，我经过实践后确认这个问题真实存在，但是通过查看代码堆栈，发现这个问题是系统的代码引起的，引发这个问题需要以下几个条件：
+
+    1. 在 Android 12 及以上的设备上使用
+
+    2. 调用了 `Activity.shouldShowRequestPermissionRationale`
+
+    3. 在这之后又主动在代码调用了 activity.finish 方法
+
+* 排查的过程：经过对代码的追踪，发现代码调用栈是这样的
+
+     * Activity.shouldShowRequestPermissionRationale
+
+    * PackageManager.shouldShowRequestPermissionRationale（实现对象为 ApplicationPackageManager）
+
+    * PermissionManager.shouldShowRequestPermissionRationale
+
+    * new PermissionManager(Context context)
+
+    * new PermissionUsageHelper(Context context)
+
+    * AppOpsManager.startWatchingStarted
+
+* 罪魁祸首其实是 **PermissionUsageHelper** 将 Context 对象作为字段持有着，并在构造函数中调用 `AppOpsManager.startWatchingStarted` 开启监听，这样 PermissionUsageHelper 对象就会被添加进 `AppOpsManager#mStartedWatchers` 集合中，这样导致在 Activity 主动调用 finish 的时候，并没有使用 stopWatchingStarted 来移除监听，导致 Activity 对象一直被 `AppOpsManager#mStartedWatchers` 集合中持有着，所以间接导致了 Activity 对象无法被系统回收。
+
+* 针对这个问题处理也很简单粗暴，就是将在外层传入的 **Context** 参数从 **Activity** 对象给替换成 **Application** 对象即可，有人可能会说了，Activity 里面才有 `shouldShowRequestPermissionRationale` 方法，而 Application 里面没有这个方法怎么办？看了一下这个方法的实现，其实那个方法最终会调用 `PackageManager.shouldShowRequestPermissionRationale` 方法（**隐藏 API，但是并不在黑名单中**）里面去，所以只要能获取到 **PackageManager** 对象即可，最后再使用反射去执行这个方法，这样就能避免出现内存泄漏。
+
+* 幸好 Google 没有将 PackageManager.shouldShowRequestPermissionRationale 列入到反射黑名单中，否则这次想给 Google 擦屁股都没有办法了，要不然只能用修改系统源码实现的方式，但这种方式只能等谷歌在后续的 Android 版本上面修复了。
 
 #### 错误检测机制介绍
 

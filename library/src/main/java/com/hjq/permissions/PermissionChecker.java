@@ -113,15 +113,48 @@ final class PermissionChecker {
     }
 
     /**
+     * 检查读取媒体位置权限
+     */
+    static void checkMediaLocationPermission(List<String> requestPermissions) {
+        // 如果请求的权限中没有包含外部存储相关的权限，那么就直接返回
+        if (!requestPermissions.contains(Permission.ACCESS_MEDIA_LOCATION)) {
+            return;
+        }
+        if (requestPermissions.contains(Permission.READ_EXTERNAL_STORAGE) || requestPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE)) {
+            return;
+        }
+
+        for (String permission : requestPermissions) {
+            if (Permission.ACCESS_MEDIA_LOCATION.equals(permission)
+                    || Permission.READ_EXTERNAL_STORAGE.equals(permission)
+                    || Permission.WRITE_EXTERNAL_STORAGE.equals(permission)
+                    || Permission.MANAGE_EXTERNAL_STORAGE.equals(permission)) {
+                continue;
+            }
+
+            // 因为包含了获取媒体位置权限，所以请不要申请和获取媒体位置无关的权限
+            throw new IllegalArgumentException("Because it includes access media location permissions, " +
+                    "do not apply for permissions unrelated to access media location");
+        }
+
+        // 你需要在外层手动添加 READ_EXTERNAL_STORAGE 或者 MANAGE_EXTERNAL_STORAGE 才可以申请 ACCESS_MEDIA_LOCATION 权限
+        throw new IllegalArgumentException("You must add " + Permission.READ_EXTERNAL_STORAGE + " or " +
+                Permission.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + Permission.ACCESS_MEDIA_LOCATION + " rights");
+    }
+
+    /**
      * 检查存储权限
-     *
-     * @param requestPermissions        请求的权限组
      */
     static void checkStoragePermission(Context context, List<String> requestPermissions) {
         // 如果请求的权限中没有包含外部存储相关的权限，那么就直接返回
         if (!requestPermissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) &&
                 !requestPermissions.contains(Permission.READ_EXTERNAL_STORAGE) &&
                 !requestPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE)) {
+            return;
+        }
+
+        // 如果只是获取媒体位置权限则绕过本次检查
+        if (requestPermissions.contains(Permission.ACCESS_MEDIA_LOCATION)) {
             return;
         }
 
@@ -171,7 +204,7 @@ final class PermissionChecker {
                     // 如果不知道该怎么选择，可以看文档：https://github.com/getActivity/XXPermissions/blob/master/HelpDoc
                     throw new IllegalArgumentException("The storage permission application is abnormal. If you have adapted the scope storage, " +
                             "please register the <meta-data android:name=\"ScopedStorage\" android:value=\"true\" /> attribute in the AndroidManifest.xml file. " +
-                            "If there is no adaptation scope storage, please use MANAGE_EXTERNAL_STORAGE to apply for permission");
+                            "If there is no adaptation scope storage, please use " + Permission.MANAGE_EXTERNAL_STORAGE + " to apply for permission");
                 }
 
                 // 终止循环
@@ -290,13 +323,10 @@ final class PermissionChecker {
 
         for (String permission : requestPermissions) {
 
-            if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
-                // 不检测通知栏权限有没有在清单文件中注册，因为这个权限是框架虚拟出来的，有没有在清单文件中注册都没关系
-                continue;
-            }
-
-            if (Permission.BIND_NOTIFICATION_LISTENER_SERVICE.equals(permission)) {
-                // 不检测通知栏监听权限有没有在清单文件中注册，因为这个权限是需要直接注册在清单文件中的 service 节点上面的
+            if (Permission.NOTIFICATION_SERVICE.equals(permission) ||
+                    Permission.BIND_NOTIFICATION_LISTENER_SERVICE.equals(permission) ||
+                    Permission.BIND_VPN_SERVICE.equals(permission)) {
+                // 不检测权限有没有在清单文件中注册，因为这几个权限是框架虚拟出来的，有没有在清单文件中注册都没关系
                 continue;
             }
 
@@ -404,6 +434,7 @@ final class PermissionChecker {
             if (requestPermissions.contains(Permission.READ_EXTERNAL_STORAGE) ||
                     requestPermissions.contains(Permission.WRITE_EXTERNAL_STORAGE)) {
                 // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这两个权限
+                // 框架会在 Android 10 以下的版本上自动添加并申请这两个权限
                 throw new IllegalArgumentException("If you have applied for MANAGE_EXTERNAL_STORAGE permissions, " +
                         "do not apply for the READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE permissions");
             }

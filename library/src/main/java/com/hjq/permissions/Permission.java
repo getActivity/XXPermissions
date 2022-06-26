@@ -61,8 +61,11 @@ public final class Permission {
     /** 查看应用使用情况权限，简称使用统计权限（特殊权限，Android 5.0 之后才有的权限） */
     public static final String PACKAGE_USAGE_STATS = "android.permission.PACKAGE_USAGE_STATS";
 
-    /** 通知栏监听权限（特殊权限，Android 4.3 之后才有的权限） */
+    /** 通知栏监听权限（特殊权限，Android 4.3 之后才有的权限，注意此权限不需要在清单文件中注册也能申请） */
     public static final String BIND_NOTIFICATION_LISTENER_SERVICE = "android.permission.BIND_NOTIFICATION_LISTENER_SERVICE";
+
+    /** VPN 权限（特殊权限，Android 4.0 之后才有的权限，注意此权限不需要在清单文件中注册也能申请） */
+    public static final String BIND_VPN_SERVICE = "android.permission.BIND_VPN_SERVICE";
 
     /** 通知栏权限（特殊权限，注意此权限不需要在清单文件中注册也能申请） */
     public static final String NOTIFICATION_SERVICE = "android.permission.NOTIFICATION_SERVICE";
@@ -93,6 +96,10 @@ public final class Permission {
 
     /**
      * 蓝牙扫描权限（需要 Android 12.0 及以上）
+     *
+     * 需要在清单文件中加入 android:usesPermissionFlags="neverForLocation" 属性（表示不推导设备地理位置）
+     * 否则就会导致在没有定位权限的情况下扫描不到附近的蓝牙设备，这个是经过测试的，下面是清单权限注册案例，请参考以下进行注册
+     * <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
      *
      * 为了兼容 Android 12 以下版本，需要清单文件中注册 {@link Manifest.permission#BLUETOOTH_ADMIN} 权限
      * 还有 Android 12 以下设备，获取蓝牙扫描结果需要精确定位权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请

@@ -83,7 +83,7 @@ public final class PermissionPageFragment extends Fragment implements Runnable {
             return;
         }
         List<String> permissions = arguments.getStringArrayList(REQUEST_PERMISSIONS);
-        startActivityForResult(PermissionPageIntent.getSmartPermissionIntent(getActivity(), permissions), XXPermissions.REQUEST_CODE);
+        startActivityForResult(PermissionUtils.getSmartPermissionIntent(getActivity(), permissions), XXPermissions.REQUEST_CODE);
     }
 
     /**

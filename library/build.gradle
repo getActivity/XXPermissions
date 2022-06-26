@@ -4,9 +4,9 @@ android {
     compileSdkVersion 32
 
     defaultConfig {
-        minSdkVersion 11
-        versionCode 1360
-        versionName "13.6"
+        minSdkVersion 14
+        versionCode 1500
+        versionName "15.0"
     }
 
     // 使用 JDK 1.8

@@ -3,11 +3,18 @@ package com.hjq.permissions.demo;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.location.Address;
+import android.location.Geocoder;
+import android.media.ExifInterface;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import com.hjq.permissions.OnPermissionCallback;
@@ -15,7 +22,11 @@ import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.toast.ToastUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  *    author : Android 轮子哥
@@ -34,6 +45,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_group).setOnClickListener(this);
         findViewById(R.id.btn_main_request_location).setOnClickListener(this);
         findViewById(R.id.btn_main_request_bluetooth).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_media_location).setOnClickListener(this);
         findViewById(R.id.btn_main_request_storage).setOnClickListener(this);
         findViewById(R.id.btn_main_request_install).setOnClickListener(this);
         findViewById(R.id.btn_main_request_window).setOnClickListener(this);
@@ -44,6 +56,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_alarm).setOnClickListener(this);
         findViewById(R.id.btn_main_request_not_disturb).setOnClickListener(this);
         findViewById(R.id.btn_main_request_ignore_battery).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_open_vpn).setOnClickListener(this);
         findViewById(R.id.btn_main_app_details).setOnClickListener(this);
     }
 
@@ -59,9 +72,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
-                            if (all) {
-                                toast("获取拍照权限成功");
-                            }
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
 
@@ -75,9 +86,10 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
-                            if (all) {
-                                toast("获取录音和日历权限成功");
+                            if (!all) {
+                                return;
                             }
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
 
@@ -93,9 +105,10 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
-                            if (all) {
-                                toast("获取定位权限成功");
+                            if (!all) {
+                                return;
                             }
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
 
@@ -120,9 +133,38 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                                 @Override
                                 public void onGranted(List<String> permissions, boolean all) {
-                                    if (all) {
-                                        toast("获取蓝牙权限成功");
+                                    toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                                }
+                            });
+                }
+            }, delayMillis);
+
+        } else if (viewId == R.id.btn_main_request_media_location) {
+
+            long delayMillis = 0;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                delayMillis = 2000;
+                toast("当前版本不是 Android 10 及以上，旧版本的需要读取存储权限才能获取媒体位置权限");
+            }
+
+            view.postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    XXPermissions.with(MainActivity.this)
+                            // Permission.Group.STORAGE 和 Permission.MANAGE_EXTERNAL_STORAGE 二选一
+                            .permission(Permission.Group.STORAGE)
+                            .permission(Permission.ACCESS_MEDIA_LOCATION)
+                            .interceptor(new PermissionInterceptor())
+                            .request(new OnPermissionCallback() {
+
+                                @Override
+                                public void onGranted(List<String> permissions, boolean all) {
+                                    if (!all) {
+                                        return;
                                     }
+                                    toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                                    getAllImagesFromGallery();
                                 }
                             });
                 }
@@ -150,9 +192,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                                 @Override
                                 public void onGranted(List<String> permissions, boolean all) {
-                                    if (all) {
-                                        toast("获取存储权限成功");
-                                    }
+                                    toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                                 }
                             });
                 }
@@ -167,7 +207,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
-                            toast("获取安装包权限成功");
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
 
@@ -180,7 +220,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
-                            toast("获取悬浮窗权限成功");
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
 
@@ -193,7 +233,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
-                            toast("获取系统设置权限成功");
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
 
@@ -206,7 +246,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
-                            toast("获取通知栏权限成功");
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
 
@@ -219,7 +259,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
-                            toast("获取通知栏监听权限成功");
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                                 toggleNotificationListenerService();
                             }
@@ -235,7 +275,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
-                            toast("获取使用统计权限成功");
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
 
@@ -248,7 +288,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
-                            toast("获取闹钟权限成功");
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
 
@@ -261,7 +301,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
-                            toast("获取勿扰权限成功");
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
 
@@ -274,7 +314,20 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
-                            toast("获取忽略电池优化权限成功");
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                        }
+                    });
+
+        } else if (viewId == R.id.btn_main_request_open_vpn) {
+
+            XXPermissions.with(this)
+                    .permission(Permission.BIND_VPN_SERVICE)
+                    .interceptor(new PermissionInterceptor())
+                    .request(new OnPermissionCallback() {
+
+                        @Override
+                        public void onGranted(List<String> permissions, boolean all) {
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
 
@@ -306,5 +359,93 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         packageManager.setComponentEnabledSetting(
                 new ComponentName(this, NotificationMonitorService.class),
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+    }
+
+    /**
+     * 获取所有图片
+     */
+    private void getAllImagesFromGallery() {
+        String[] projection = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA,
+                MediaStore.MediaColumns.TITLE, MediaStore.Images.Media.SIZE,
+                MediaStore.Images.ImageColumns.LATITUDE, MediaStore.Images.ImageColumns.LONGITUDE};
+
+        final String orderBy = MediaStore.Video.Media.DATE_TAKEN;
+        Cursor cursor = getApplicationContext().getContentResolver()
+                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection,
+                        null, null, orderBy + " DESC");
+
+        int idIndex = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID);
+        int pathIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DATA);
+
+        while (cursor.moveToNext()) {
+
+            String filePath = cursor.getString(pathIndex);
+
+            float[] latLong = new float[2];
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // 谷歌官方文档：https://developer.android.google.cn/training/data-storage/shared/media?hl=zh-cn#location-media-captured
+                Uri photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        cursor.getString(idIndex));
+                photoUri = MediaStore.setRequireOriginal(photoUri);
+                try {
+                    InputStream inputStream = getApplicationContext()
+                            .getContentResolver().openInputStream(photoUri);
+                    if (inputStream == null) {
+                        continue;
+                    }
+                    ExifInterface exifInterface = new ExifInterface(inputStream);
+                    // 获取图片的经纬度
+                    exifInterface.getLatLong(latLong);
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedOperationException e) {
+                    // java.lang.UnsupportedOperationException:
+                    // Caller must hold ACCESS_MEDIA_LOCATION permission to access original
+                    // 经过测试，在部分手机上面申请获取媒体位置权限，如果用户选择的是 "仅在使用中允许"
+                    // 那么就会导致权限是授予状态，但是调用 openInputStream 时会抛出此异常
+                    e.printStackTrace();
+                }
+            } else {
+                int latitudeIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.LATITUDE);
+                int longitudeIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.LONGITUDE);
+                latLong = new float[]{cursor.getFloat(latitudeIndex), cursor.getFloat(longitudeIndex)};
+            }
+
+            if (latLong[0] != 0 && latLong[1] != 0) {
+                Log.i("XXPermissions", "获取到图片的经纬度：" + filePath + "，" +  Arrays.toString(latLong));
+                Log.i("XXPermissions", "图片经纬度所在的地址：" + latLongToAddressString(latLong[0], latLong[1]));
+            } else {
+                Log.i("XXPermissions", "该图片获取不到经纬度：" + filePath);
+            }
+        }
+        cursor.close();
+    }
+
+    /**
+     * 将经纬度转换成地址
+     */
+    private String latLongToAddressString(float latitude, float longitude) {
+        String addressString = "";
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null) {
+                Address returnedAddress = addresses.get(0);
+                StringBuilder strReturnedAddress = new StringBuilder("");
+
+                for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
+                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
+                }
+                addressString = strReturnedAddress.toString();
+            } else {
+                Log.w("XXPermissions", "没有返回地址");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.w("XXPermissions", "无法获取到地址");
+        }
+        return addressString;
     }
 }

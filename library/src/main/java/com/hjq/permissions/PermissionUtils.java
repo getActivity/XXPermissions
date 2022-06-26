@@ -41,12 +41,12 @@ final class PermissionUtils {
     /**
      * 延迟一段时间执行 OnActivityResult，避免有些机型明明授权了，但还是回调失败的问题
      */
-    public static void postActivityResult(List<String> permissions, Runnable runnable) {
+    static void postActivityResult(List<String> permissions, Runnable runnable) {
         long delayMillis;
         if (AndroidVersion.isAndroid11()) {
-            delayMillis = 100;
-        } else {
             delayMillis = 200;
+        } else {
+            delayMillis = 300;
         }
 
         String manufacturer = Build.MANUFACTURER.toLowerCase();
@@ -373,5 +373,32 @@ final class PermissionUtils {
      */
     static boolean areActivityIntent(Context context, Intent intent) {
         return !context.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
+    }
+
+    /**
+     * 根据传入的权限自动选择最合适的权限设置页
+     *
+     * @param permissions                 请求失败的权限
+     */
+    static Intent getSmartPermissionIntent(Context context, List<String> permissions) {
+        // 如果失败的权限里面不包含特殊权限
+        if (permissions == null || permissions.isEmpty() ||
+                !PermissionApi.containsSpecialPermission(permissions)) {
+            return PermissionDelegate.getApplicationDetailsIntent(context);
+        }
+
+        if (AndroidVersion.isAndroid11() && permissions.size() == 3 &&
+                (permissions.contains(Permission.MANAGE_EXTERNAL_STORAGE) &&
+                        permissions.contains(Permission.READ_EXTERNAL_STORAGE) &&
+                        permissions.contains(Permission.WRITE_EXTERNAL_STORAGE))) {
+            return PermissionDelegateImplV30.getStoragePermissionIntent(context);
+        }
+
+        // 如果当前只有一个权限被拒绝了
+        if (permissions.size() == 1) {
+            return PermissionApi.getPermissionIntent(context, permissions.get(0));
+        }
+
+        return PermissionDelegate.getApplicationDetailsIntent(context);
     }
 }
