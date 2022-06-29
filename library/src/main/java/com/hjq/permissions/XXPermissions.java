@@ -304,7 +304,7 @@ public final class XXPermissions {
      * @param requestCode           Activity 跳转请求码
      */
     public static void startPermissionActivity(Activity activity, List<String> permissions, int requestCode) {
-        activity.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), requestCode);
+        PermissionUtils.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), requestCode,activity);
     }
 
     /* android.app.Fragment */
@@ -336,7 +336,7 @@ public final class XXPermissions {
         if (activity == null) {
             return;
         }
-        fragment.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), requestCode);
+        PermissionUtils.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), requestCode,activity);
     }
 
     /* android.support.v4.app.Fragment */
@@ -368,6 +368,6 @@ public final class XXPermissions {
         if (activity == null) {
             return;
         }
-        fragment.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), requestCode);
+        PermissionUtils.startActivityForResult(PermissionSettingPage.getSmartPermissionIntent(activity, permissions), requestCode,activity);
     }
 }

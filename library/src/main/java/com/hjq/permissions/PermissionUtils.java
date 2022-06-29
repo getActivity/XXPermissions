@@ -6,6 +6,7 @@ import android.app.AppOpsManager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
@@ -731,6 +732,14 @@ final class PermissionUtils {
             case Surface.ROTATION_90:
             default:
                 return false;
+        }
+    }
+
+    static void startActivityForResult(Intent intent, int requestCode, Activity mContext) {
+        try {
+            mContext.startActivityForResult(intent, requestCode);
+        }catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
