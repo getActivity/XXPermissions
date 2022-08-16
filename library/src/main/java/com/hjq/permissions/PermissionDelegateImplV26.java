@@ -1,8 +1,8 @@
 package com.hjq.permissions;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 
@@ -17,27 +17,34 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
 
    @Override
    public boolean isGrantedPermission(Context context, String permission) {
-      // 检测安装权限
-      if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission)) {
+      if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES)) {
          return isGrantedInstallPermission(context);
       }
 
-      // 检测 Android 8.0 的两个新权限
-      if (Permission.ANSWER_PHONE_CALLS.equals(permission)) {
-         return true;
+      if (PermissionUtils.equalsPermission(permission, Permission.READ_PHONE_NUMBERS) ||
+              PermissionUtils.equalsPermission(permission, Permission.ANSWER_PHONE_CALLS)) {
+         return PermissionUtils.checkSelfPermission(context, permission);
       }
-
-      if (Permission.READ_PHONE_NUMBERS.equals(permission)) {
-         return context.checkSelfPermission(Permission.READ_PHONE_STATE) ==
-                 PackageManager.PERMISSION_GRANTED;
-      }
-
       return super.isGrantedPermission(context, permission);
    }
 
    @Override
+   public boolean isPermissionPermanentDenied(Activity activity, String permission) {
+      if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES)) {
+         return false;
+      }
+
+      if (PermissionUtils.equalsPermission(permission, Permission.READ_PHONE_NUMBERS) ||
+              PermissionUtils.equalsPermission(permission, Permission.ANSWER_PHONE_CALLS)) {
+         return !PermissionUtils.checkSelfPermission(activity, permission) &&
+                 !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+      }
+      return super.isPermissionPermanentDenied(activity, permission);
+   }
+
+   @Override
    public Intent getPermissionIntent(Context context, String permission) {
-      if (Permission.REQUEST_INSTALL_PACKAGES.equals(permission)) {
+      if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES)) {
          return getInstallPermissionIntent(context);
       }
       return super.getPermissionIntent(context, permission);
@@ -46,18 +53,18 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
    /**
     * 是否有安装权限
     */
-   static boolean isGrantedInstallPermission(Context context) {
+   private static boolean isGrantedInstallPermission(Context context) {
       return context.getPackageManager().canRequestPackageInstalls();
    }
 
    /**
     * 获取安装权限设置界面意图
     */
-   static Intent getInstallPermissionIntent(Context context) {
+   private static Intent getInstallPermissionIntent(Context context) {
       Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
-      intent.setData(PermissionDelegate.getPackageNameUri(context));
+      intent.setData(PermissionUtils.getPackageNameUri(context));
       if (!PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionDelegate.getApplicationDetailsIntent(context);
+         intent = PermissionUtils.getApplicationDetailsIntent(context);
       }
       return intent;
    }

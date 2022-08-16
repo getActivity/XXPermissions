@@ -19,12 +19,16 @@ final class PermissionApi {
     private static final PermissionDelegate DELEGATE;
 
     static {
-        if (AndroidVersion.isAndroid12()) {
+        if (AndroidVersion.isAndroid13()) {
+            DELEGATE = new PermissionDelegateImplV33();
+        } else if (AndroidVersion.isAndroid12()) {
             DELEGATE = new PermissionDelegateImplV31();
         } else if (AndroidVersion.isAndroid11()) {
             DELEGATE = new PermissionDelegateImplV30();
         } else if (AndroidVersion.isAndroid10()) {
             DELEGATE = new PermissionDelegateImplV29();
+        } else if (AndroidVersion.isAndroid9()) {
+            DELEGATE = new PermissionDelegateImplV28();
         } else if (AndroidVersion.isAndroid8()) {
             DELEGATE = new PermissionDelegateImplV26();
         } else if (AndroidVersion.isAndroid6()) {
@@ -56,6 +60,13 @@ final class PermissionApi {
     }
 
     /**
+     * 判断某个权限是否是特殊权限
+     */
+    static boolean isSpecialPermission(String permission) {
+        return PermissionUtils.isSpecialPermission(permission);
+    }
+
+    /**
      * 判断某个权限集合是否包含特殊权限
      */
     static boolean containsSpecialPermission(List<String> permissions) {
@@ -69,13 +80,6 @@ final class PermissionApi {
             }
         }
         return false;
-    }
-
-    /**
-     * 判断某个权限是否是特殊权限
-     */
-    static boolean isSpecialPermission(String permission) {
-        return PermissionDelegate.isSpecialPermission(permission);
     }
 
     /**

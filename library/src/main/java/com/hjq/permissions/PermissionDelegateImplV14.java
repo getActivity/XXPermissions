@@ -1,5 +1,6 @@
 package com.hjq.permissions;
 
+import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
@@ -22,65 +23,89 @@ class PermissionDelegateImplV14 implements PermissionDelegate {
    @Override
    public boolean isGrantedPermission(Context context, String permission) {
       // 检测通知栏权限
-      if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
+      if (PermissionUtils.equalsPermission(permission, Permission.NOTIFICATION_SERVICE)) {
          return isGrantedNotifyPermission(context);
       }
 
       // 检测获取使用统计权限
-      if (Permission.PACKAGE_USAGE_STATS.equals(permission)) {
+      if (PermissionUtils.equalsPermission(permission, Permission.PACKAGE_USAGE_STATS)) {
          return isGrantedPackagePermission(context);
       }
 
       // 检测通知栏监听权限
-      if (Permission.BIND_NOTIFICATION_LISTENER_SERVICE.equals(permission)) {
+      if (PermissionUtils.equalsPermission(permission, Permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
          return isGrantedNotificationListenerPermission(context);
       }
 
       // 检测 VPN 权限
-      if (Permission.BIND_VPN_SERVICE.equals(permission)) {
+      if (PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE)) {
          return isGrantedVpnPermission(context);
       }
+
+      /* ---------------------------------------------------------------------------------------- */
+
+      // 向下兼容 Android 13 新权限
+      if (!AndroidVersion.isAndroid13()) {
+
+         if (PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS)) {
+            return isGrantedNotifyPermission(context);
+         }
+      }
+
+      /* ---------------------------------------------------------------------------------------- */
 
       return true;
    }
 
    @Override
-   public boolean isPermissionPermanentDenied(Context context, String permission) {
+   public boolean isPermissionPermanentDenied(Activity activity, String permission) {
       return false;
    }
 
    @Override
    public Intent getPermissionIntent(Context context, String permission) {
-      if (Permission.NOTIFICATION_SERVICE.equals(permission)) {
+      if (PermissionUtils.equalsPermission(permission, Permission.NOTIFICATION_SERVICE)) {
          return getNotifyPermissionIntent(context);
       }
 
-      if (Permission.PACKAGE_USAGE_STATS.equals(permission)) {
+      if (PermissionUtils.equalsPermission(permission, Permission.PACKAGE_USAGE_STATS)) {
          return getPackagePermissionIntent(context);
       }
 
-      if (Permission.BIND_NOTIFICATION_LISTENER_SERVICE.equals(permission)) {
+      if (PermissionUtils.equalsPermission(permission, Permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
          return getNotificationListenerIntent(context);
       }
 
-      if (Permission.BIND_VPN_SERVICE.equals(permission)) {
+      if (PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE)) {
          return getVpnPermissionIntent(context);
       }
 
-      return PermissionDelegate.getApplicationDetailsIntent(context);
+      /* ---------------------------------------------------------------------------------------- */
+
+      // 向下兼容 Android 13 新权限
+      if (!AndroidVersion.isAndroid13()) {
+
+         if (PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS)) {
+            return getNotifyPermissionIntent(context);
+         }
+      }
+
+      /* ---------------------------------------------------------------------------------------- */
+
+      return PermissionUtils.getApplicationDetailsIntent(context);
    }
 
    /**
     * 是否有通知栏权限
     */
-   static boolean isGrantedNotifyPermission(Context context) {
+   private static boolean isGrantedNotifyPermission(Context context) {
       return NotificationManagerCompat.from(context).areNotificationsEnabled();
    }
 
    /**
     * 获取通知栏权限设置界面意图
     */
-   static Intent getNotifyPermissionIntent(Context context) {
+   private static Intent getNotifyPermissionIntent(Context context) {
       Intent intent = null;
       if (AndroidVersion.isAndroid8()) {
          intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
@@ -88,7 +113,7 @@ class PermissionDelegateImplV14 implements PermissionDelegate {
          //intent.putExtra(Settings.EXTRA_CHANNEL_ID, context.getApplicationInfo().uid);
       }
       if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionDelegate.getApplicationDetailsIntent(context);
+         intent = PermissionUtils.getApplicationDetailsIntent(context);
       }
       return intent;
    }
@@ -96,7 +121,7 @@ class PermissionDelegateImplV14 implements PermissionDelegate {
    /**
     * 是否通知栏监听的权限
     */
-   static boolean isGrantedNotificationListenerPermission(Context context) {
+   private static boolean isGrantedNotificationListenerPermission(Context context) {
       if (AndroidVersion.isAndroid4_3()) {
          Set<String> packageNames = NotificationManagerCompat.getEnabledListenerPackages(context);
          return packageNames.contains(context.getPackageName());
@@ -107,7 +132,7 @@ class PermissionDelegateImplV14 implements PermissionDelegate {
    /**
     * 获取通知监听设置界面意图
     */
-   static Intent getNotificationListenerIntent(Context context) {
+   private static Intent getNotificationListenerIntent(Context context) {
       Intent intent;
       if (AndroidVersion.isAndroid5_1()) {
          intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
@@ -116,7 +141,7 @@ class PermissionDelegateImplV14 implements PermissionDelegate {
       }
 
       if (!PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionDelegate.getApplicationDetailsIntent(context);
+         intent = PermissionUtils.getApplicationDetailsIntent(context);
       }
       return intent;
    }
@@ -124,7 +149,7 @@ class PermissionDelegateImplV14 implements PermissionDelegate {
    /**
     * 是否有使用统计权限
     */
-   static boolean isGrantedPackagePermission(Context context) {
+   private static boolean isGrantedPackagePermission(Context context) {
       if (AndroidVersion.isAndroid5()) {
          AppOpsManager appOps = (AppOpsManager)
                  context.getSystemService(Context.APP_OPS_SERVICE);
@@ -144,18 +169,18 @@ class PermissionDelegateImplV14 implements PermissionDelegate {
    /**
     * 获取使用统计权限设置界面意图
     */
-   static Intent getPackagePermissionIntent(Context context) {
+   private static Intent getPackagePermissionIntent(Context context) {
       Intent intent = null;
       if (AndroidVersion.isAndroid5()) {
          intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
          if (AndroidVersion.isAndroid10()) {
             // 经过测试，只有在 Android 10 及以上加包名才有效果
             // 如果在 Android 10 以下加包名会导致无法跳转
-            intent.setData(PermissionDelegate.getPackageNameUri(context));
+            intent.setData(PermissionUtils.getPackageNameUri(context));
          }
       }
       if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionDelegate.getApplicationDetailsIntent(context);
+         intent = PermissionUtils.getApplicationDetailsIntent(context);
       }
       return intent;
    }
@@ -163,17 +188,17 @@ class PermissionDelegateImplV14 implements PermissionDelegate {
    /**
     * 是否有 VPN 权限
     */
-   static boolean isGrantedVpnPermission(Context context) {
+   private static boolean isGrantedVpnPermission(Context context) {
       return VpnService.prepare(context) == null;
    }
 
    /**
     * 获取 VPN 权限设置界面意图
     */
-   static Intent getVpnPermissionIntent(Context context) {
+   private static Intent getVpnPermissionIntent(Context context) {
       Intent intent = VpnService.prepare(context);
       if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionDelegate.getApplicationDetailsIntent(context);
+         intent = PermissionUtils.getApplicationDetailsIntent(context);
       }
       return intent;
    }

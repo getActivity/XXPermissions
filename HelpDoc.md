@@ -6,6 +6,8 @@
 
 * [什么情况下需要适配分区存储特性](#什么情况下需要适配分区存储特性)
 
+* [Android 11 授予了安装权限之后为什么应用重启了](#android-11-授予了安装权限之后为什么应用重启了)
+
 * [为什么授予了存储权限但是权限设置页还是显示未授权](#为什么授予了存储权限但是权限设置页还是显示未授权)
 
 * [我想在申请前和申请后统一弹对话框该怎么处理](#我想在申请前和申请后统一弹对话框该怎么处理)
@@ -23,6 +25,10 @@
 * [为什么不用 ActivityResultContract 来申请权限](#为什么不用-activityresultcontract-来申请权限)
 
 * [怎么处理权限请求成功但是返回空白通行证的问题](#怎么处理权限请求成功但是返回空白通行证的问题)
+
+* [为什么授权了还是无法访问 Android/data 目录下的文件](#为什么授权了还是无法访问-android-data-目录下的文件)
+
+* [如何应对国内某些应用商店在明确拒绝权限后 48 小时内不允许再次申请的问题](#如何应对国内某些应用商店在明确拒绝权限后-48-小时内不允许再次申请的问题)
 
 #### Android 11 定位权限适配
 
@@ -93,11 +99,11 @@ XXPermissions.with(MainActivity.this)
 
 #### 什么情况下需要适配分区存储特性
 
-* 如果你的应用需要上架 GooglePlay，那么需要详细查看：[谷歌应用商店政策（需要翻墙）](https://support.google.com/googleplay/android-developer/answer/9956427)
+* 如果你的应用需要上架 GooglePlay，那么需要详细查看：[谷歌应用商店政策（需要翻墙）](https://support.google.com/googleplay/android-developer/answer/9956427)、[Google Play 通知](https://developer.android.google.cn/training/data-storage/manage-all-files#all-files-access-google-play)
 
 * 分区存储的由来：谷歌之前收到了很多用户投诉，说很多应用都在 SD 卡下创建目录和文件，导致用户管理手机文件非常麻烦（强迫症的外国网友真多，哈哈），所以在 Android 10 版本更新中，谷歌要求所有开发者将媒体文件存放在自己内部目录或者 SD 卡内部目录中，不过谷歌在一版本上采取了宽松政策，在清单文件中加入 `android:requestLegacyExternalStorage="true"` 即可跳过这一特性的适配，不过在 Android 11 上面，你有两种选择：
 
-    1. 适配分区存储：这个是谷歌推荐的一种方式，但是会增加工作量，因为分区存储适配起来十分麻烦，我个人感觉是这样的。不过对于一些特定应用，例如文件管理器，文件备份工具，防病毒应用等这类应用它们就一定需要用到外部存储，这个时候就需要用第二种方式来实现了。
+    1. 适配分区存储：这个是谷歌推荐的一种方式，但是会增加工作量，因为分区存储适配起来十分麻烦，我个人感觉是这样的。不过对于一些特定应用，例如文件管理器、备份和恢复应用、防病毒应用、文档管理应用、设备上的文件搜索、磁盘和文件加密、设备到设备数据迁移等这类应用它们就一定需要用到外部存储，这个时候就需要用第二种方式来实现了。
 
     2. 申请外部存储权限：这个是谷歌不推荐的一种方式，只需要 `MANAGE_EXTERNAL_STORAGE` 权限即可，适配起来基本无压力，但是会存在一个问题，就是上架谷歌应用市场的时候，要经过 Google Play 审核和批准。
 
@@ -106,6 +112,14 @@ XXPermissions.with(MainActivity.this)
     1. 如果你的应用需要上架谷歌应用市场，需要尽快适配分区存储，因为谷歌这次来真的了
 
     2. 如果你的应用只上架国内的应用市场，并且后续也没有上架谷歌应用市场的需要，那么你也可以直接申请 `MANAGE_EXTERNAL_STORAGE` 权限来读写外部存储
+
+#### Android 11 授予了安装权限之后为什么应用重启了
+
+* [Android 11 特性调整，安装外部来源应用需要重启 App](https://cloud.tencent.com/developer/news/637591)
+
+* 先说结论，这个问题是 Android 11 的新特性，并非框架的问题导致的，当然这个问题是没有办法规避的，因为应用是被系统杀死的，应用的等级肯定不如系统的高，目前行业对这块也没有解决方案，如果你有好的解决方案，欢迎你提供给我。
+
+* 另外经过实践，这个问题在 Android 12 上面已经不会再出现，证明问题已经被谷歌修复了。
 
 #### 为什么授予了存储权限但是权限设置页还是显示未授权
 
@@ -284,3 +298,53 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 
 * 此问题无解，权限请求框架只能帮你申请权限，至于你申请权限做什么操作，框架无法知道，也无法干预，还有返回空白通行证是厂商自己的行为，目的就是为了保护用户的隐私，因为在某些应用上面不给权限就不能用，返回空白通行证是为了规避这种情况的发生。你要问我怎么办？我只能说胳膊拗不过大腿，别做一些无谓的抵抗。
 
+#### 为什么授权了还是无法访问 Android/data 目录下的文件
+
+* 首先无论你申请了哪种存储权限，在 Android 11 上面就是无法直接读取 Android/data 目录的，这个是 Android 11 上的新特性，需要你进行额外适配，具体适配流程可以参考这个开源项目 [https://github.com/getActivity/AndroidVersionAdapter](https://github.com/getActivity/AndroidVersionAdapter)
+
+#### 如何应对国内某些应用商店在明确拒绝权限后 48 小时内不允许再次申请的问题
+
+* 首先这种属于业务逻辑的问题，框架本身是不会做这种事情的，但并非不能实现，这得益于框架良好的设计，框架内部提供了一个叫 IPermissionInterceptor 的拦截器类，当前有权限申请的时候，会走 requestPermissions 方法的回调，你可以重写这个方法的逻辑，先去判断要申请的权限是否在 48 小时内已经申请过了一次了，如果没有的话，就走权限申请的流程，如果有的话，那么就直接回调权限申请失败的方法。
+
+```java
+public final class PermissionInterceptor implements IPermissionInterceptor {
+
+    private static final String SP_NAME_PERMISSION_REQUEST_TIME_RECORD = "permission_request_time_record";
+
+    @Override
+    public void requestPermissions(Activity activity, List<String> allPermissions, OnPermissionCallback callback) {
+        SharedPreferences sharedPreferences = activity.getSharedPreferences(SP_NAME_PERMISSION_REQUEST_TIME_RECORD, Context.MODE_PRIVATE);
+        String permissionKey = String.valueOf(allPermissions);
+        long lastRequestPermissionTime = sharedPreferences.getLong(permissionKey, 0);
+        if (System.currentTimeMillis() - lastRequestPermissionTime <= 1000 * 60 * 60 * 24 * 2) {
+            List<String> deniedPermissions = XXPermissions.getDenied(activity, allPermissions);
+            List<String> grantedPermissions = new ArrayList<>(allPermissions);
+            grantedPermissions.removeAll(deniedPermissions);
+            deniedPermissions(activity, allPermissions, deniedPermissions, true, callback);
+            if (!grantedPermissions.isEmpty()) {
+                grantedPermissions(activity, allPermissions, grantedPermissions, false, callback);
+            }
+            return;
+        }
+        sharedPreferences.edit().putLong(permissionKey, System.currentTimeMillis()).apply();
+        // 如果之前没有申请过权限，或者距离上次申请已经超过了 48 个小时，则进行申请权限
+        IPermissionInterceptor.super.requestPermissions(activity, allPermissions, callback);
+    }
+    
+    @Override
+    public void grantedPermissions(Activity activity, List<String> allPermissions, List<String> grantedPermissions, boolean all, OnPermissionCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        callback.onGranted(grantedPermissions, all);
+    }
+
+    @Override
+    public void deniedPermissions(Activity activity, List<String> allPermissions, List<String> deniedPermissions, boolean never, OnPermissionCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        callback.onDenied(deniedPermissions, never);
+    }
+}
+```

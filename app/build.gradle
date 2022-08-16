@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId "com.hjq.permissions.demo"
         minSdkVersion 14
-        targetSdkVersion 32
-        versionCode 1500
-        versionName "15.0"
+        targetSdkVersion 33
+        versionCode 1600
+        versionName "16.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -64,5 +64,5 @@ dependencies {
     implementation 'com.github.getActivity:ToastUtils:10.5'
 
     // 内存泄漏检测：https://github.com/square/leakcanary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.8.1'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
 }

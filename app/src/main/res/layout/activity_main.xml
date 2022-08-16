@@ -38,7 +38,15 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请定位权限组" />
+                android:text="申请定位权限" />
+
+            <Button
+                android:id="@+id/btn_main_request_sensors"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="申请传感器权限" />
 
             <Button
                 android:id="@+id/btn_main_request_bluetooth"
@@ -49,6 +57,14 @@
                 android:text="申请蓝牙权限" />
 
             <Button
+                android:id="@+id/btn_main_request_wifi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="申请 WIFI 权限" />
+
+            <Button
                 android:id="@+id/btn_main_request_media_location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -57,12 +73,20 @@
                 android:text="申请读取图片位置权限" />
 
             <Button
-                android:id="@+id/btn_main_request_storage"
+                android:id="@+id/btn_main_request_media_storage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请新版存储权限" />
+                android:text="申请媒体文件读取权限" />
+
+            <Button
+                android:id="@+id/btn_main_request_manage_storage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="申请所有文件管理权限" />
 
             <Button
                 android:id="@+id/btn_main_request_install"
@@ -94,7 +118,15 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请通知栏权限" />
+                android:text="申请通知权限" />
+
+            <Button
+                android:id="@+id/btn_main_request_post_notification"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="申请新版通知权限" />
 
             <Button
                 android:id="@+id/btn_main_request_notification_listener"

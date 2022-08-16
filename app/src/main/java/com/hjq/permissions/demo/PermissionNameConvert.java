@@ -15,13 +15,13 @@ import java.util.List;
  *    time   : 2022/06/11
  *    desc   : 权限名称转换器
  */
-public class PermissionNameConvert {
+public final class PermissionNameConvert {
 
     /**
      * 获取权限名称
      */
    public static String getPermissionString(Context context, List<String> permissions) {
-      return listToString(permissionsToStrings(context, permissions));
+      return listToString(permissionsToNames(context, permissions));
    }
 
    /**
@@ -48,8 +48,11 @@ public class PermissionNameConvert {
     * 将权限列表转换成对应名称列表
     */
    @NonNull
-   public static List<String> permissionsToStrings(Context context, List<String> permissions) {
+   public static List<String> permissionsToNames(Context context, List<String> permissions) {
        List<String> permissionNames = new ArrayList<>();
+       if (permissions == null) {
+           return permissionNames;
+       }
        for (String permission : permissions) {
            switch (permission) {
                case Permission.READ_EXTERNAL_STORAGE:
@@ -57,6 +60,25 @@ public class PermissionNameConvert {
                    String hint = context.getString(R.string.common_permission_storage);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
+                   }
+                   break;
+               }
+               case Permission.READ_MEDIA_IMAGES:
+               case Permission.READ_MEDIA_VIDEO: {
+                   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                       String hint = context.getString(R.string.common_permission_image_and_video);
+                       if (!permissionNames.contains(hint)) {
+                           permissionNames.add(hint);
+                       }
+                   }
+                   break;
+               }
+               case Permission.READ_MEDIA_AUDIO: {
+                   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                       String hint = context.getString(R.string.common_permission_audio);
+                       if (!permissionNames.contains(hint)) {
+                           permissionNames.add(hint);
+                       }
                    }
                    break;
                }
@@ -78,7 +100,8 @@ public class PermissionNameConvert {
                case Permission.ACCESS_COARSE_LOCATION:
                case Permission.ACCESS_BACKGROUND_LOCATION: {
                    String hint;
-                   if (!permissions.contains(Permission.ACCESS_FINE_LOCATION) &&
+                   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                           !permissions.contains(Permission.ACCESS_FINE_LOCATION) &&
                            !permissions.contains(Permission.ACCESS_COARSE_LOCATION)) {
                        hint = context.getString(R.string.common_permission_location_background);
                    } else {
@@ -89,11 +112,34 @@ public class PermissionNameConvert {
                    }
                    break;
                }
+               case Permission.BODY_SENSORS:
+               case Permission.BODY_SENSORS_BACKGROUND: {
+                   String hint;
+                   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                           !permissions.contains(Permission.BODY_SENSORS)) {
+                       hint = context.getString(R.string.common_permission_sensors_background);
+                   } else {
+                       hint = context.getString(R.string.common_permission_sensors);
+                   }
+                   if (!permissionNames.contains(hint)) {
+                       permissionNames.add(hint);
+                   }
+                   break;
+               }
                case Permission.BLUETOOTH_SCAN:
                case Permission.BLUETOOTH_CONNECT:
                case Permission.BLUETOOTH_ADVERTISE: {
                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                       String hint = context.getString(R.string.common_permission_bluetooth);
+                       String hint = context.getString(R.string.common_permission_wireless_devices);
+                       if (!permissionNames.contains(hint)) {
+                           permissionNames.add(hint);
+                       }
+                   }
+                   break;
+               }
+               case Permission.NEARBY_WIFI_DEVICES: {
+                   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                       String hint = context.getString(R.string.common_permission_wireless_devices);
                        if (!permissionNames.contains(hint)) {
                            permissionNames.add(hint);
                        }
@@ -134,13 +180,6 @@ public class PermissionNameConvert {
                case Permission.PROCESS_OUTGOING_CALLS: {
                    String hint = context.getString(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ?
                            R.string.common_permission_call_log : R.string.common_permission_phone);
-                   if (!permissionNames.contains(hint)) {
-                       permissionNames.add(hint);
-                   }
-                   break;
-               }
-               case Permission.BODY_SENSORS: {
-                   String hint = context.getString(R.string.common_permission_sensors);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
                    }
@@ -207,6 +246,15 @@ public class PermissionNameConvert {
                    String hint = context.getString(R.string.common_permission_notification);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
+                   }
+                   break;
+               }
+               case Permission.POST_NOTIFICATIONS: {
+                   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                       String hint = context.getString(R.string.common_permission_post_notifications);
+                       if (!permissionNames.contains(hint)) {
+                           permissionNames.add(hint);
+                       }
                    }
                    break;
                }

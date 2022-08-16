@@ -108,7 +108,7 @@ public final class XXPermissions {
         }
 
         for (String permission : permissions) {
-            if (mPermissions.contains(permission)) {
+            if (PermissionUtils.containsPermission(mPermissions, permission)) {
                 continue;
             }
             mPermissions.add(permission);
@@ -147,29 +147,26 @@ public final class XXPermissions {
         // 权限请求列表（为什么直接不用字段？因为框架要兼容新旧权限，在低版本下会自动添加旧权限申请）
         List<String> permissions = new ArrayList<>(mPermissions);
 
-        if (mCheckMode == null) {
-            if (sCheckMode == null) {
-                sCheckMode = PermissionUtils.isDebugMode(mContext);
-            }
-            mCheckMode = sCheckMode;
-        }
+        boolean checkMode = isCheckMode();
 
         // 检查当前 Activity 状态是否是正常的，如果不是则不请求权限
         Activity activity = PermissionUtils.findActivity(mContext);
-        if (!PermissionChecker.checkActivityStatus(activity, mCheckMode)) {
+        if (!PermissionChecker.checkActivityStatus(activity, checkMode)) {
             return;
         }
 
         // 必须要传入正常的权限或者权限组才能申请权限
-        if (!PermissionChecker.checkPermissionArgument(permissions, mCheckMode)) {
+        if (!PermissionChecker.checkPermissionArgument(permissions, checkMode)) {
             return;
         }
 
-        if (mCheckMode) {
+        if (checkMode) {
             // 检查申请的读取媒体位置权限是否符合规范
-            PermissionChecker.checkMediaLocationPermission(permissions);
+            PermissionChecker.checkMediaLocationPermission(mContext, permissions);
             // 检查申请的存储权限是否符合规范
             PermissionChecker.checkStoragePermission(mContext, permissions);
+            // 检查申请的传感器权限是否符合规范
+            PermissionChecker.checkBodySensorsPermission(permissions);
             // 检查申请的定位权限是否符合规范
             PermissionChecker.checkLocationPermission(mContext, permissions);
             // 检查申请的权限和 targetSdk 版本是否能吻合
@@ -190,7 +187,52 @@ public final class XXPermissions {
         }
 
         // 申请没有授予过的权限
-        mInterceptor.requestPermissions(activity, callback, permissions);
+        mInterceptor.requestPermissions(activity, permissions, callback);
+    }
+
+    /**
+     * 撤销权限并杀死当前进程
+     *
+     * @return          返回 true 代表成功，返回 false 代表失败
+     */
+    public boolean revokeOnKill() {
+        if (mContext == null) {
+            return false;
+        }
+
+        if (!AndroidVersion.isAndroid13()) {
+            return false;
+        }
+
+        try {
+            if (mPermissions.size() == 1) {
+                // API 文档：https://developer.android.google.cn/reference/android/content/Context#revokeSelfPermissionOnKill(java.lang.String)
+                mContext.revokeSelfPermissionOnKill(mPermissions.get(0));
+            } else {
+                // API 文档：https://developer.android.google.cn/reference/android/content/Context#revokeSelfPermissionsOnKill(java.util.Collection%3Cjava.lang.String%3E)
+                mContext.revokeSelfPermissionsOnKill(mPermissions);
+            }
+            return true;
+        } catch (IllegalArgumentException e) {
+            if (isCheckMode()) {
+                throw e;
+            }
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 当前是否为检测模式
+     */
+    private boolean isCheckMode() {
+        if (mCheckMode == null) {
+            if (sCheckMode == null) {
+                sCheckMode = PermissionUtils.isDebugMode(mContext);
+            }
+            mCheckMode = sCheckMode;
+        }
+        return mCheckMode;
     }
 
     /**

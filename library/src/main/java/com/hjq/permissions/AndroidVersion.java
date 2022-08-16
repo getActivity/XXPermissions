@@ -1,5 +1,6 @@
 package com.hjq.permissions;
 
+import android.content.Context;
 import android.os.Build;
 
 /**
@@ -11,6 +12,7 @@ import android.os.Build;
 @SuppressWarnings("all")
 final class AndroidVersion {
 
+    static final int ANDROID_13 = Build.VERSION_CODES.TIRAMISU;
     static final int ANDROID_12_L = Build.VERSION_CODES.S_V2;
     static final int ANDROID_12 = Build.VERSION_CODES.S;
     static final int ANDROID_11 = Build.VERSION_CODES.R;
@@ -28,6 +30,27 @@ final class AndroidVersion {
     static final int ANDROID_4_2 = Build.VERSION_CODES.JELLY_BEAN_MR1;
     static final int ANDROID_4_1 = Build.VERSION_CODES.JELLY_BEAN;
     static final int ANDROID_4_0 = Build.VERSION_CODES.ICE_CREAM_SANDWICH;
+
+    /**
+     * 获取 Android 版本码
+     */
+    static int getAndroidVersionCode() {
+        return Build.VERSION.SDK_INT;
+    }
+
+    /**
+     * 获取 targetSdk 版本码
+     */
+    static int getTargetSdkVersionCode(Context context) {
+        return context.getApplicationInfo().targetSdkVersion;
+    }
+
+    /**
+     * 是否是 Android 13 及以上版本
+     */
+    static boolean isAndroid13() {
+        return Build.VERSION.SDK_INT >= ANDROID_13;
+    }
 
     /**
      * 是否是 Android 12 及以上版本

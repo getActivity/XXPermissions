@@ -198,7 +198,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
                 // 已经授予过了，可以跳过
                 continue;
             }
-            if (Permission.MANAGE_EXTERNAL_STORAGE.equals(permission) && !AndroidVersion.isAndroid11()) {
+            if (!AndroidVersion.isAndroid11() && PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
                 // 当前必须是 Android 11 及以上版本，因为在旧版本上是拿旧权限做的判断
                 continue;
             }
@@ -243,9 +243,20 @@ public final class PermissionFragment extends Fragment implements Runnable {
             return;
         }
 
+        // Android 13 传感器策略发生改变，申请后台传感器权限的前提是要有前台传感器权限
+        if (AndroidVersion.isAndroid13() && allPermissions.size() >= 2 &&
+                PermissionUtils.containsPermission(allPermissions, Permission.BODY_SENSORS_BACKGROUND)) {
+            ArrayList<String> bodySensorsPermission = new ArrayList<>(allPermissions);
+            bodySensorsPermission.remove(Permission.BODY_SENSORS_BACKGROUND);
+
+            // 在 Android 13 的机型上，需要先申请前台传感器权限，再申请后台传感器权限
+            splitTwiceRequestPermission(activity, allPermissions, bodySensorsPermission, requestCode);
+            return;
+        }
+
         // Android 10 定位策略发生改变，申请后台定位权限的前提是要有前台定位权限（授予了精确或者模糊任一权限）
         if (AndroidVersion.isAndroid10() && allPermissions.size() >= 2 &&
-                allPermissions.contains(Permission.ACCESS_BACKGROUND_LOCATION)) {
+                PermissionUtils.containsPermission(allPermissions, Permission.ACCESS_BACKGROUND_LOCATION)) {
             ArrayList<String> locationPermission = new ArrayList<>(allPermissions);
             locationPermission.remove(Permission.ACCESS_BACKGROUND_LOCATION);
 
@@ -256,8 +267,8 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
         // 必须要有文件读取权限才能申请获取媒体位置权限
         if (AndroidVersion.isAndroid10() &&
-                allPermissions.contains(Permission.ACCESS_MEDIA_LOCATION) &&
-                allPermissions.contains(Permission.READ_EXTERNAL_STORAGE)) {
+                PermissionUtils.containsPermission(allPermissions, Permission.ACCESS_MEDIA_LOCATION) &&
+                PermissionUtils.containsPermission(allPermissions, Permission.READ_EXTERNAL_STORAGE)) {
 
             ArrayList<String> storagePermission = new ArrayList<>(allPermissions);
             storagePermission.remove(Permission.ACCESS_MEDIA_LOCATION);
@@ -289,7 +300,12 @@ public final class PermissionFragment extends Fragment implements Runnable {
                     return;
                 }
 
-                PermissionFragment.beginRequest(activity, secondPermissions, new IPermissionInterceptor() {}, new OnPermissionCallback() {
+                // 经过测试，在 Android 13 设备上面，先申请前台权限，然后立马申请后台权限大概率会出现失败
+                // 这里为了避免这种情况出现，所以加了一点延迟，这样就没有什么问题了
+                // 为什么延迟时间是 150 毫秒？ 经过实践得出 100 还是有概率会出现失败，但是换成 150 试了很多次就都没有问题了
+                long delayMillis = AndroidVersion.isAndroid13() ? 150 : 0;
+                PermissionUtils.postDelayed(() -> PermissionFragment.beginRequest(activity, secondPermissions,
+                        new IPermissionInterceptor() {}, new OnPermissionCallback() {
 
                     @Override
                     public void onGranted(List<String> permissions, boolean all) {
@@ -312,12 +328,13 @@ public final class PermissionFragment extends Fragment implements Runnable {
                         // 第二次申请的权限失败了，但是第一次申请的权限已经授予了
                         int[] grantResults = new int[allPermissions.size()];
                         for (int i = 0; i < allPermissions.size(); i++) {
-                            grantResults[i] = secondPermissions.contains(allPermissions.get(i)) ?
+                            grantResults[i] = PermissionUtils.containsPermission(secondPermissions, allPermissions.get(i)) ?
                                     PackageManager.PERMISSION_DENIED : PackageManager.PERMISSION_GRANTED;
                         }
                         onRequestPermissionsResult(requestCode, allPermissions.toArray(new String[0]), grantResults);
                     }
-                });
+
+                }), delayMillis);
             }
 
             @Override

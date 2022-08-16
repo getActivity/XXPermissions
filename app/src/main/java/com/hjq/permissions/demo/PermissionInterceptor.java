@@ -1,7 +1,6 @@
 package com.hjq.permissions.demo;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.support.v7.app.AlertDialog;
@@ -24,7 +23,7 @@ import java.util.List;
 public final class PermissionInterceptor implements IPermissionInterceptor {
 
 //    @Override
-//    public void requestPermissions(Activity activity, OnPermissionCallback callback, List<String> allPermissions) {
+//    public void requestPermissions(Activity activity, List<String> allPermissions, OnPermissionCallback callback) {
 //        List<String> deniedPermissions = XXPermissions.getDenied(activity, allPermissions);
 //        String permissionString = PermissionNameConvert.getPermissionString(activity, deniedPermissions);
 //
@@ -53,6 +52,7 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
 //                .show();
 //    }
 
+
     @Override
     public void grantedPermissions(Activity activity, List<String> allPermissions, List<String> grantedPermissions,
                                    boolean all, OnPermissionCallback callback) {
@@ -79,12 +79,29 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
             return;
         }
 
-        if (deniedPermissions.size() == 1 && Permission.ACCESS_BACKGROUND_LOCATION.equals(deniedPermissions.get(0))) {
-            ToastUtils.show(R.string.common_permission_background_location_fail_hint);
-            return;
+        if (deniedPermissions.size() == 1) {
+
+            String deniedPermission = deniedPermissions.get(0);
+
+            if (Permission.ACCESS_BACKGROUND_LOCATION.equals(deniedPermission)) {
+                ToastUtils.show(R.string.common_permission_background_location_fail_hint);
+                return;
+            }
+
+            if (Permission.BODY_SENSORS_BACKGROUND.equals(deniedPermission)) {
+                ToastUtils.show(R.string.common_permission_background_sensors_fail_hint);
+                return;
+            }
         }
 
-        ToastUtils.show(R.string.common_permission_fail_hint);
+        final String message;
+        List<String> permissionNames = PermissionNameConvert.permissionsToNames(activity, deniedPermissions);
+        if (!permissionNames.isEmpty()) {
+            message = activity.getString(R.string.common_permission_fail_assign_hint, PermissionNameConvert.listToString(permissionNames));
+        } else {
+            message = activity.getString(R.string.common_permission_fail_hint);
+        }
+        ToastUtils.show(message);
     }
 
     /**
@@ -97,10 +114,19 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
             return;
         }
 
+        final String message;
+
+        List<String> permissionNames = PermissionNameConvert.permissionsToNames(activity, deniedPermissions);
+        if (!permissionNames.isEmpty()) {
+            message = activity.getString(R.string.common_permission_manual_assign_fail_hint, PermissionNameConvert.listToString(permissionNames));
+        } else {
+            message = activity.getString(R.string.common_permission_manual_fail_hint);
+        }
+
         // 这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
         new AlertDialog.Builder(activity)
                 .setTitle(R.string.common_permission_alert)
-                .setMessage(getPermissionHint(activity, deniedPermissions))
+                .setMessage(message)
                 .setPositiveButton(R.string.common_permission_goto_setting_page, new DialogInterface.OnClickListener() {
 
                     @Override
@@ -126,21 +152,5 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                     }
                 })
                 .show();
-    }
-
-    /**
-     * 根据权限获取提示
-     */
-    private String getPermissionHint(Context context, List<String> permissions) {
-        if (permissions == null || permissions.isEmpty()) {
-            return context.getString(R.string.common_permission_manual_fail_hint);
-        }
-
-        List<String> hints = PermissionNameConvert.permissionsToStrings(context, permissions);
-
-        if (!hints.isEmpty()) {
-            return context.getString(R.string.common_permission_manual_assign_fail_hint, PermissionNameConvert.listToString(hints));
-        }
-        return context.getString(R.string.common_permission_manual_fail_hint);
     }
 }

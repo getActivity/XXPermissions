@@ -6,7 +6,7 @@
 
 * 博文地址：[一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
 
-* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/15.0/XXPermissions.apk)
+* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/16.0/XXPermissions.apk)
 
 ![](picture/demo_code.png)
 
@@ -57,7 +57,7 @@ android {
 
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.github.getActivity:XXPermissions:15.0'
+    implementation 'com.github.getActivity:XXPermissions:16.0'
 }
 ```
 
@@ -113,11 +113,11 @@ XXPermissions.with(this)
 
             @Override
             public void onGranted(List<String> permissions, boolean all) {
-                if (all) {
-                    toast("获取录音和日历权限成功");
-                } else {
+                if (!all) {
                     toast("获取部分权限成功，但部分权限未正常授予");
+                    return;
                 }
+                toast("获取录音和日历权限成功");
             }
 
             @Override
@@ -149,10 +149,10 @@ XXPermissions.with(this)
 
         override fun onGranted(permissions: MutableList<String>, all: Boolean) {
             if (all) {
-                toast("获取录音和日历权限成功")
-            } else {
                 toast("获取部分权限成功，但部分权限未正常授予")
+                return
             }
+            toast("获取录音和日历权限成功")
         }
 
         override fun onDenied(permissions: MutableList<String>, never: Boolean) {
@@ -211,9 +211,10 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 |     适配细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  15.0 |  2.0.3  |  1.6.4    |  1.31.0    |   4.9.2  |  0.12   |  3.0.0   |
+|    对应版本  |  16.0 |  2.0.3  |  1.6.4    |  1.31.0    |   4.9.2  |  0.12   |  3.0.0   |
 |    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |
-|    框架体积  |  45 KB  | 127 KB  |  90 KB  |   500 KB |  99 KB  | 28 KB  | 48 KB |
+|    框架体积  |  51 KB  | 127 KB  |  90 KB  |   500 KB |  99 KB  | 28 KB  | 48 KB |
+|  框架维护状态 |**维护中**|  停止维护 |**维护中**|  停止维护 |**维护中**| 停止维护 | 停止维护 |
 |       闹钟提醒权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |     所有文件管理权限      |  ✅  |  ❌  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
 |        安装包权限        |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
@@ -225,6 +226,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 |     忽略电池优化权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |     查看应用使用情况权限   |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |        VPN 权限         |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|    Android 13 危险权限   |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |   ❌  |  ❌  |
 |    Android 12 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
 |    Android 11 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
 |    Android 10 危险权限   |  ✅  |  ✅  |  ✅  |  ❌ |  ✅  |   ❌  |  ❌  |
@@ -260,7 +262,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 * 最近有人跟我提了一个内存泄漏的问题 [XXPermissions/issues/133](https://github.com/getActivity/XXPermissions/issues/133) ，我经过实践后确认这个问题真实存在，但是通过查看代码堆栈，发现这个问题是系统的代码引起的，引发这个问题需要以下几个条件：
 
-    1. 在 Android 12 及以上的设备上使用
+    1. 在 Android 12 的设备上使用
 
     2. 调用了 `Activity.shouldShowRequestPermissionRationale`
 
@@ -268,7 +270,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 * 排查的过程：经过对代码的追踪，发现代码调用栈是这样的
 
-     * Activity.shouldShowRequestPermissionRationale
+    * Activity.shouldShowRequestPermissionRationale
 
     * PackageManager.shouldShowRequestPermissionRationale（实现对象为 ApplicationPackageManager）
 
@@ -284,7 +286,9 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 * 针对这个问题处理也很简单粗暴，就是将在外层传入的 **Context** 参数从 **Activity** 对象给替换成 **Application** 对象即可，有人可能会说了，Activity 里面才有 `shouldShowRequestPermissionRationale` 方法，而 Application 里面没有这个方法怎么办？看了一下这个方法的实现，其实那个方法最终会调用 `PackageManager.shouldShowRequestPermissionRationale` 方法（**隐藏 API，但是并不在黑名单中**）里面去，所以只要能获取到 **PackageManager** 对象即可，最后再使用反射去执行这个方法，这样就能避免出现内存泄漏。
 
-* 幸好 Google 没有将 PackageManager.shouldShowRequestPermissionRationale 列入到反射黑名单中，否则这次想给 Google 擦屁股都没有办法了，要不然只能用修改系统源码实现的方式，但这种方式只能等谷歌在后续的 Android 版本上面修复了。
+* 幸好 Google 没有将 PackageManager.shouldShowRequestPermissionRationale 列入到反射黑名单中，否则这次想给 Google 擦屁股都没有办法了，要不然只能用修改系统源码实现的方式，但这种方式只能等谷歌在后续的 Android 版本上面修复了，不过庆幸的是，在 Android 12 L 的版本之后，这个问题被修复了，[具体的提交记录可以点击此处查看](https://cs.android.com/android/_/android/platform/frameworks/base/+/0d47a03bfa8f4ca54b883ff3c664cd4ea4a624d9:core/java/android/permission/PermissionUsageHelper.java;dlc=cec069482f80019c12f3c06c817d33fc5ad6151f)，但是对于 Android 12 而言，这仍是一个历史遗留问题。
+
+* 值得注意的是：XXPermissions 是目前同类框架第一款也是唯一一款修复这个问题的框架，另外针对这个问题，我还给谷歌的 [AndroidX](https://github.com/androidx/androidx/pull/435) 项目提供了解决方案。
 
 #### 错误检测机制介绍
 
@@ -320,7 +324,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 #### 框架亮点
 
-* 首款适配 Android 11 的权限请求框架
+* 首款适配 Android 13 的权限请求框架
 
 * 首款也是唯一一款适配所有 Android 版本的权限请求框架
 

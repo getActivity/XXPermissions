@@ -44,13 +44,17 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_single).setOnClickListener(this);
         findViewById(R.id.btn_main_request_group).setOnClickListener(this);
         findViewById(R.id.btn_main_request_location).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_sensors).setOnClickListener(this);
         findViewById(R.id.btn_main_request_bluetooth).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_wifi).setOnClickListener(this);
         findViewById(R.id.btn_main_request_media_location).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_storage).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_media_storage).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_manage_storage).setOnClickListener(this);
         findViewById(R.id.btn_main_request_install).setOnClickListener(this);
         findViewById(R.id.btn_main_request_window).setOnClickListener(this);
         findViewById(R.id.btn_main_request_setting).setOnClickListener(this);
         findViewById(R.id.btn_main_request_notification).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_post_notification).setOnClickListener(this);
         findViewById(R.id.btn_main_request_notification_listener).setOnClickListener(this);
         findViewById(R.id.btn_main_request_package).setOnClickListener(this);
         findViewById(R.id.btn_main_request_alarm).setOnClickListener(this);
@@ -72,6 +76,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
+                            if (!all) {
+                                return;
+                            }
                             toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
@@ -112,6 +119,23 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
+        } else if (viewId == R.id.btn_main_request_sensors) {
+
+            XXPermissions.with(this)
+                    .permission(Permission.BODY_SENSORS)
+                    .permission(Permission.BODY_SENSORS_BACKGROUND)
+                    .interceptor(new PermissionInterceptor())
+                    .request(new OnPermissionCallback() {
+
+                        @Override
+                        public void onGranted(List<String> permissions, boolean all) {
+                            if (!all) {
+                                return;
+                            }
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                        }
+                    });
+
         } else if (viewId == R.id.btn_main_request_bluetooth) {
 
             long delayMillis = 0;
@@ -133,6 +157,37 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                                 @Override
                                 public void onGranted(List<String> permissions, boolean all) {
+                                    if (!all) {
+                                        return;
+                                    }
+                                    toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                                }
+                            });
+                }
+            }, delayMillis);
+
+        } else if (viewId == R.id.btn_main_request_wifi) {
+
+            long delayMillis = 0;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                delayMillis = 2000;
+                toast("当前版本不是 Android 13 及以上，旧版本的需要定位权限才能进行扫描 WIFI");
+            }
+
+            view.postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    XXPermissions.with(MainActivity.this)
+                            .permission(Permission.NEARBY_WIFI_DEVICES)
+                            .interceptor(new PermissionInterceptor())
+                            .request(new OnPermissionCallback() {
+
+                                @Override
+                                public void onGranted(List<String> permissions, boolean all) {
+                                    if (!all) {
+                                        return;
+                                    }
                                     toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                                 }
                             });
@@ -152,8 +207,10 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 @Override
                 public void run() {
                     XXPermissions.with(MainActivity.this)
-                            // Permission.Group.STORAGE 和 Permission.MANAGE_EXTERNAL_STORAGE 二选一
-                            .permission(Permission.Group.STORAGE)
+                            // Permission.READ_EXTERNAL_STORAGE 和 Permission.MANAGE_EXTERNAL_STORAGE 二选一
+                            // 如果 targetSdk >= 33，则添加 Permission.READ_MEDIA_IMAGES 和 Permission.MANAGE_EXTERNAL_STORAGE 二选一
+                            // 如果 targetSdk < 33，则添加 Permission.READ_EXTERNAL_STORAGE 和 Permission.MANAGE_EXTERNAL_STORAGE 二选一
+                            .permission(Permission.READ_MEDIA_IMAGES)
                             .permission(Permission.ACCESS_MEDIA_LOCATION)
                             .interceptor(new PermissionInterceptor())
                             .request(new OnPermissionCallback() {
@@ -164,13 +221,51 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                         return;
                                     }
                                     toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
-                                    getAllImagesFromGallery();
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            getAllImagesFromGallery();
+                                        }
+                                    }).start();
                                 }
                             });
                 }
             }, delayMillis);
 
-        } else if (viewId == R.id.btn_main_request_storage) {
+        } else if (viewId == R.id.btn_main_request_media_storage) {
+
+            long delayMillis = 0;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                delayMillis = 2000;
+                toast("当前版本不是 Android 13 及以上，会自动变更为旧版的请求方式");
+            }
+
+            view.postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    XXPermissions.with(MainActivity.this)
+                            // 不适配分区存储应该这样写
+                            //.permission(Permission.MANAGE_EXTERNAL_STORAGE)
+                            // 适配分区存储应该这样写
+                            .permission(Permission.READ_MEDIA_IMAGES)
+                            .permission(Permission.READ_MEDIA_VIDEO)
+                            .permission(Permission.READ_MEDIA_AUDIO)
+                            .interceptor(new PermissionInterceptor())
+                            .request(new OnPermissionCallback() {
+
+                                @Override
+                                public void onGranted(List<String> permissions, boolean all) {
+                                    if (!all) {
+                                        return;
+                                    }
+                                    toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                                }
+                            });
+                }
+            }, delayMillis);
+
+        } else if (viewId == R.id.btn_main_request_manage_storage) {
 
             long delayMillis = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
@@ -183,15 +278,18 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 @Override
                 public void run() {
                     XXPermissions.with(MainActivity.this)
-                            // 适配 Android 11 分区存储这样写
+                            // 适配分区存储应该这样写
                             //.permission(Permission.Group.STORAGE)
-                            // 不适配 Android 11 分区存储这样写
+                            // 不适配分区存储应该这样写
                             .permission(Permission.MANAGE_EXTERNAL_STORAGE)
                             .interceptor(new PermissionInterceptor())
                             .request(new OnPermissionCallback() {
 
                                 @Override
                                 public void onGranted(List<String> permissions, boolean all) {
+                                    if (!all) {
+                                        return;
+                                    }
                                     toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                                 }
                             });
@@ -207,6 +305,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
+                            if (!all) {
+                                return;
+                            }
                             toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
@@ -220,6 +321,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
+                            if (!all) {
+                                return;
+                            }
                             toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
@@ -233,6 +337,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
+                            if (!all) {
+                                return;
+                            }
                             toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
@@ -246,9 +353,40 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
+                            if (!all) {
+                                return;
+                            }
                             toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
+
+        } else if (viewId == R.id.btn_main_request_post_notification) {
+
+            long delayMillis = 0;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                delayMillis = 2000;
+                toast("当前版本不是 Android 13 及以上，会自动变更为旧版的请求方式");
+            }
+
+            view.postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    XXPermissions.with(MainActivity.this)
+                            .permission(Permission.POST_NOTIFICATIONS)
+                            .interceptor(new PermissionInterceptor())
+                            .request(new OnPermissionCallback() {
+
+                                @Override
+                                public void onGranted(List<String> permissions, boolean all) {
+                                    if (!all) {
+                                        return;
+                                    }
+                                    toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                                }
+                            });
+                }
+            }, delayMillis);
 
         } else if (viewId == R.id.btn_main_request_notification_listener) {
 
@@ -259,6 +397,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
+                            if (!all) {
+                                return;
+                            }
                             toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                                 toggleNotificationListenerService();
@@ -275,6 +416,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
+                            if (!all) {
+                                return;
+                            }
                             toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
@@ -288,6 +432,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
+                            if (!all) {
+                                return;
+                            }
                             toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
@@ -301,6 +448,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
+                            if (!all) {
+                                return;
+                            }
                             toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
@@ -314,6 +464,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
+                            if (!all) {
+                                return;
+                            }
                             toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });
@@ -327,6 +480,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
                         @Override
                         public void onGranted(List<String> permissions, boolean all) {
+                            if (!all) {
+                                return;
+                            }
                             toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
                         }
                     });

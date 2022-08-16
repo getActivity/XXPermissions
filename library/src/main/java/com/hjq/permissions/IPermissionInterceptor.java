@@ -16,7 +16,8 @@ public interface IPermissionInterceptor {
     /**
      * 权限申请拦截，可在此处先弹 Dialog 再申请权限
      */
-    default void requestPermissions(Activity activity, OnPermissionCallback callback, List<String> allPermissions) {
+    default void requestPermissions(Activity activity, List<String> allPermissions,
+                                    OnPermissionCallback callback) {
         PermissionFragment.beginRequest(activity, new ArrayList<>(allPermissions), this, callback);
     }
 
