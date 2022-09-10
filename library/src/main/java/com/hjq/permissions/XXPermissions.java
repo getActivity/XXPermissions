@@ -169,6 +169,8 @@ public final class XXPermissions {
             PermissionChecker.checkBodySensorsPermission(permissions);
             // 检查申请的定位权限是否符合规范
             PermissionChecker.checkLocationPermission(mContext, permissions);
+            // 检查申请的画中画权限是否符合规范
+            PermissionChecker.checkPictureInPicturePermission(mContext, permissions);
             // 检查申请的权限和 targetSdk 版本是否能吻合
             PermissionChecker.checkTargetSdkVersion(mContext, permissions);
             // 检测权限有没有在清单文件中注册

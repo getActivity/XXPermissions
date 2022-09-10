@@ -4,6 +4,10 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.media.ExifInterface;
@@ -45,6 +49,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_group).setOnClickListener(this);
         findViewById(R.id.btn_main_request_location).setOnClickListener(this);
         findViewById(R.id.btn_main_request_sensors).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_activity_recognition).setOnClickListener(this);
         findViewById(R.id.btn_main_request_bluetooth).setOnClickListener(this);
         findViewById(R.id.btn_main_request_wifi).setOnClickListener(this);
         findViewById(R.id.btn_main_request_media_location).setOnClickListener(this);
@@ -60,6 +65,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_alarm).setOnClickListener(this);
         findViewById(R.id.btn_main_request_not_disturb).setOnClickListener(this);
         findViewById(R.id.btn_main_request_ignore_battery).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_picture_in_picture).setOnClickListener(this);
         findViewById(R.id.btn_main_request_open_vpn).setOnClickListener(this);
         findViewById(R.id.btn_main_app_details).setOnClickListener(this);
     }
@@ -133,6 +139,23 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                        }
+                    });
+
+        } else if (viewId == R.id.btn_main_request_activity_recognition) {
+
+            XXPermissions.with(this)
+                    .permission(Permission.ACTIVITY_RECOGNITION)
+                    .interceptor(new PermissionInterceptor())
+                    .request(new OnPermissionCallback() {
+
+                        @Override
+                        public void onGranted(List<String> permissions, boolean all) {
+                            if (!all) {
+                                return;
+                            }
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            addCountStepListener();
                         }
                     });
 
@@ -471,6 +494,22 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
+        } else if (viewId == R.id.btn_main_request_picture_in_picture) {
+
+            XXPermissions.with(this)
+                    .permission(Permission.PICTURE_IN_PICTURE)
+                    .interceptor(new PermissionInterceptor())
+                    .request(new OnPermissionCallback() {
+
+                        @Override
+                        public void onGranted(List<String> permissions, boolean all) {
+                            if (!all) {
+                                return;
+                            }
+                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                        }
+                    });
+
         } else if (viewId == R.id.btn_main_request_open_vpn) {
 
             XXPermissions.with(this)
@@ -603,5 +642,51 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             Log.w("XXPermissions", "无法获取到地址");
         }
         return addressString;
+    }
+
+    private final SensorEventListener mSensorEventListener = new SensorEventListener() {
+
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            Log.w("onSensorChanged", "event = " + event);
+            switch (event.sensor.getType()) {
+                case Sensor.TYPE_STEP_COUNTER:
+                    Log.w("XXPermissions", "开机以来当天总步数：" + event.values[0]);
+                    break;
+                case Sensor.TYPE_STEP_DETECTOR:
+                    if (event.values[0] == 1) {
+                        Log.w("XXPermissions", "当前走了一步");
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            Log.w("onAccuracyChanged", String.valueOf(accuracy));
+        }
+    };
+
+    /**
+     * 添加步数监听
+     */
+    private void addCountStepListener() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            return;
+        }
+        SensorManager manager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
+        Sensor stepSensor = manager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
+        Sensor detectorSensor = manager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+
+        if (stepSensor != null) {
+            manager.registerListener(mSensorEventListener, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+
+        if (detectorSensor != null) {
+            manager.registerListener(mSensorEventListener, detectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
     }
 }

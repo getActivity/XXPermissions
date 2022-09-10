@@ -50,6 +50,9 @@ public final class PermissionNameConvert {
    @NonNull
    public static List<String> permissionsToNames(Context context, List<String> permissions) {
        List<String> permissionNames = new ArrayList<>();
+       if (context == null) {
+           return permissionNames;
+       }
        if (permissions == null) {
            return permissionNames;
        }
@@ -179,14 +182,17 @@ public final class PermissionNameConvert {
                case Permission.WRITE_CALL_LOG:
                case Permission.PROCESS_OUTGOING_CALLS: {
                    String hint = context.getString(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ?
-                           R.string.common_permission_call_log : R.string.common_permission_phone);
+                           R.string.common_permission_call_log :
+                           R.string.common_permission_phone);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
                    }
                    break;
                }
                case Permission.ACTIVITY_RECOGNITION: {
-                   String hint = context.getString(R.string.common_permission_activity_recognition);
+                   String hint = context.getString(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ?
+                           R.string.common_permission_activity_recognition_30 :
+                           R.string.common_permission_activity_recognition_29);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
                    }
@@ -295,6 +301,13 @@ public final class PermissionNameConvert {
                }
                case Permission.BIND_VPN_SERVICE: {
                    String hint = context.getString(R.string.common_permission_vpn);
+                   if (!permissionNames.contains(hint)) {
+                       permissionNames.add(hint);
+                   }
+                   break;
+               }
+               case Permission.PICTURE_IN_PICTURE: {
+                   String hint = context.getString(R.string.common_permission_picture_in_picture);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
                    }

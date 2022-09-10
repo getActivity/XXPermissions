@@ -103,7 +103,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
          }
 
          if (PermissionUtils.equalsPermission(permission, Permission.ACTIVITY_RECOGNITION)) {
-            return PermissionUtils.checkSelfPermission(context, Permission.BODY_SENSORS);
+            return true;
          }
 
          if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_MEDIA_LOCATION)) {
@@ -201,8 +201,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
          }
 
          if (PermissionUtils.equalsPermission(permission, Permission.ACTIVITY_RECOGNITION)) {
-            return !PermissionUtils.checkSelfPermission(activity, Permission.BODY_SENSORS) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.BODY_SENSORS);
+            return false;
          }
 
          if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_MEDIA_LOCATION)) {

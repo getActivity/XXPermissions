@@ -326,6 +326,54 @@ final class PermissionChecker {
     }
 
     /**
+     * 检查画中画权限
+     */
+    static void checkPictureInPicturePermission(Context context, List<String> requestPermissions) {
+        // 如果请求的权限中没有画中画权限，那么就直接返回
+        if (!PermissionUtils.containsPermission(requestPermissions, Permission.PICTURE_IN_PICTURE)) {
+            return;
+        }
+
+        XmlResourceParser parser = PermissionUtils.parseAndroidManifest(context);
+        if (parser == null) {
+            return;
+        }
+
+        try {
+
+            do {
+                // 当前节点必须为标签头部
+                if (parser.getEventType() != XmlResourceParser.START_TAG) {
+                    continue;
+                }
+
+                // 当前标签必须为 activity
+                if (!"activity".equals(parser.getName())) {
+                    continue;
+                }
+
+                boolean supportsPictureInPicture = parser.getAttributeBooleanValue(PermissionUtils.getAndroidNamespace(),
+                        "supportsPictureInPicture", false);
+                if (supportsPictureInPicture) {
+                    // 终止循环并返回
+                    return;
+                }
+
+            } while (parser.next() != XmlResourceParser.END_DOCUMENT);
+
+            // 在 AndroidManifest.xml 中没有发现任何 Activity 注册过 supportsPictureInPicture 属性
+            // 请在 AndroidManifest.xml 中注册 <activity android:supportsPictureInPicture="true" >
+            throw new IllegalArgumentException("No activity registered supportsPictureInPicture attribute, " +
+                    "please register <activity android:supportsPictureInPicture=\"true\" > in AndroidManifest.xml");
+
+        } catch (IOException | XmlPullParserException e) {
+            e.printStackTrace();
+        } finally {
+            parser.close();
+        }
+    }
+
+    /**
      * 检查targetSdkVersion 是否符合要求
      *
      * @param requestPermissions            请求的权限组
@@ -356,7 +404,8 @@ final class PermissionChecker {
             targetSdkMinVersion = AndroidVersion.ANDROID_9;
         } else if (PermissionUtils.containsPermission(requestPermissions, Permission.REQUEST_INSTALL_PACKAGES) ||
                 PermissionUtils.containsPermission(requestPermissions, Permission.ANSWER_PHONE_CALLS) ||
-                PermissionUtils.containsPermission(requestPermissions, Permission.READ_PHONE_NUMBERS)) {
+                PermissionUtils.containsPermission(requestPermissions, Permission.READ_PHONE_NUMBERS) ||
+                PermissionUtils.containsPermission(requestPermissions, Permission.PICTURE_IN_PICTURE)) {
             targetSdkMinVersion = AndroidVersion.ANDROID_8;
         } else {
             targetSdkMinVersion = AndroidVersion.ANDROID_6;
@@ -388,7 +437,8 @@ final class PermissionChecker {
 
             if (PermissionUtils.equalsPermission(permission, Permission.NOTIFICATION_SERVICE) ||
                     PermissionUtils.equalsPermission(permission, Permission.BIND_NOTIFICATION_LISTENER_SERVICE) ||
-                    PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE)) {
+                    PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE) ||
+                    PermissionUtils.equalsPermission(permission, Permission.PICTURE_IN_PICTURE)) {
                 // 不检测权限有没有在清单文件中注册，因为这几个权限是框架虚拟出来的，有没有在清单文件中注册都没关系
                 continue;
             }
@@ -396,6 +446,7 @@ final class PermissionChecker {
             if (PermissionUtils.equalsPermission(permission, Permission.BODY_SENSORS_BACKGROUND)) {
                 // 申请后台的传感器权限必须要先注册前台的传感器权限
                 checkManifestPermission(manifestPermissions, Permission.BODY_SENSORS, Integer.MAX_VALUE);
+                continue;
             }
 
             if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION)) {
@@ -407,6 +458,7 @@ final class PermissionChecker {
                 } else {
                     checkManifestPermission(manifestPermissions, Permission.ACCESS_FINE_LOCATION, Integer.MAX_VALUE);
                 }
+                continue;
             }
 
             if (minSdkVersion < AndroidVersion.ANDROID_13) {
@@ -415,10 +467,22 @@ final class PermissionChecker {
                         PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO) ||
                         PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO)) {
                     checkManifestPermission(manifestPermissions, Permission.READ_EXTERNAL_STORAGE, AndroidVersion.ANDROID_12_L);
+                    continue;
                 }
 
                 if (PermissionUtils.equalsPermission(permission, Permission.NEARBY_WIFI_DEVICES)) {
                     checkManifestPermission(manifestPermissions, Permission.ACCESS_FINE_LOCATION, AndroidVersion.ANDROID_12_L);
+                    continue;
+                }
+
+                if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
+                    // https://developer.android.google.cn/reference/android/Manifest.permission?hl=zh_cn#USE_EXACT_ALARM
+                    if (AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_13) {
+                        checkManifestPermission(manifestPermissions, Permission.SCHEDULE_EXACT_ALARM, AndroidVersion.ANDROID_12_L);
+                    } else {
+                        checkManifestPermission(manifestPermissions, Permission.SCHEDULE_EXACT_ALARM, Integer.MAX_VALUE);
+                    }
+                    continue;
                 }
             }
 
@@ -428,14 +492,17 @@ final class PermissionChecker {
                     checkManifestPermission(manifestPermissions, Manifest.permission.BLUETOOTH_ADMIN, AndroidVersion.ANDROID_11);
                     // 这是 Android 12 之前遗留的问题，获取扫描蓝牙的结果需要精确定位权限
                     checkManifestPermission(manifestPermissions, Permission.ACCESS_FINE_LOCATION, AndroidVersion.ANDROID_11);
+                    continue;
                 }
 
                 if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_CONNECT)) {
                     checkManifestPermission(manifestPermissions, Manifest.permission.BLUETOOTH, AndroidVersion.ANDROID_11);
+                    continue;
                 }
 
                 if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_ADVERTISE)) {
                     checkManifestPermission(manifestPermissions, Manifest.permission.BLUETOOTH_ADMIN, AndroidVersion.ANDROID_11);
+                    continue;
                 }
             }
 
@@ -444,13 +511,7 @@ final class PermissionChecker {
                 if (PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
                     checkManifestPermission(manifestPermissions, Permission.READ_EXTERNAL_STORAGE, AndroidVersion.ANDROID_10);
                     checkManifestPermission(manifestPermissions, Permission.WRITE_EXTERNAL_STORAGE, AndroidVersion.ANDROID_10);
-                }
-            }
-
-            if (minSdkVersion < AndroidVersion.ANDROID_10) {
-
-                if (PermissionUtils.equalsPermission(permission, Permission.ACTIVITY_RECOGNITION)) {
-                    checkManifestPermission(manifestPermissions, Permission.BODY_SENSORS,  AndroidVersion.ANDROID_9);
+                    continue;
                 }
             }
 
@@ -458,6 +519,7 @@ final class PermissionChecker {
 
                 if (PermissionUtils.equalsPermission(permission, Permission.READ_PHONE_NUMBERS)) {
                     checkManifestPermission(manifestPermissions, Permission.READ_PHONE_STATE, AndroidVersion.ANDROID_7_1);
+                    continue;
                 }
             }
 

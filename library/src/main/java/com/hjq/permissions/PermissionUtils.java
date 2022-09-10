@@ -56,7 +56,8 @@ final class PermissionUtils {
                 equalsPermission(permission, Permission.BIND_NOTIFICATION_LISTENER_SERVICE) ||
                 equalsPermission(permission, Permission.ACCESS_NOTIFICATION_POLICY) ||
                 equalsPermission(permission, Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS) ||
-                equalsPermission(permission, Permission.BIND_VPN_SERVICE);
+                equalsPermission(permission, Permission.BIND_VPN_SERVICE) ||
+                equalsPermission(permission, Permission.PICTURE_IN_PICTURE);
     }
 
     /**
@@ -69,7 +70,8 @@ final class PermissionUtils {
 
     /**
      * 解决 Android 12 调用 shouldShowRequestPermissionRationale 出现内存泄漏的问题
-     * Android 12L 和 Android 13 版本经过测试不会出现这个问题，证明谷歌已经修复了这个问题
+     * Android 12L 和 Android 13 版本经过测试不会出现这个问题，证明 Google 在新版本上已经修复了这个问题
+     * 但是对于 Android 12 仍是一个历史遗留问题，这是我们所有应用开发者不得不面对的一个事情
      *
      * issues 地址：https://github.com/getActivity/XXPermissions/issues/133
      */

@@ -7,8 +7,8 @@ android {
         applicationId "com.hjq.permissions.demo"
         minSdkVersion 14
         targetSdkVersion 33
-        versionCode 1600
-        versionName "16.0"
+        versionCode 1620
+        versionName "16.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

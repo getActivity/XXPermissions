@@ -2,11 +2,11 @@
 
 ![](logo.png)
 
-* 项目地址：[Github](https://github.com/getActivity/XXPermissions)、[码云](https://gitee.com/getActivity/XXPermissions)
+* 项目地址：[Github](https://github.com/getActivity/XXPermissions)
 
 * 博文地址：[一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
 
-* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/16.0/XXPermissions.apk)
+* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/16.2/XXPermissions.apk)
 
 ![](picture/demo_code.png)
 
@@ -19,6 +19,8 @@
 ![](picture/7.jpg) ![](picture/8.jpg) ![](picture/9.jpg)
 
 ![](picture/10.jpg) ![](picture/11.jpg) ![](picture/12.jpg)
+
+![](picture/13.jpg) ![](picture/14.jpg) ![](picture/15.jpg)
 
 #### 集成步骤
 
@@ -57,11 +59,11 @@ android {
 
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.github.getActivity:XXPermissions:16.0'
+    implementation 'com.github.getActivity:XXPermissions:16.2'
 }
 ```
 
-#### AndroidX
+#### AndroidX 兼容
 
 * 如果项目是基于 **AndroidX** 包，请在项目 `gradle.properties` 文件中加入
 
@@ -148,7 +150,7 @@ XXPermissions.with(this)
     .request(object : OnPermissionCallback {
 
         override fun onGranted(permissions: MutableList<String>, all: Boolean) {
-            if (all) {
+            if (!all) {
                 toast("获取部分权限成功，但部分权限未正常授予")
                 return
             }
@@ -205,19 +207,20 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 * 如果想知道回调中的某个权限是否被授权或者拒绝，可以调用 **List** 类中的 **contains(Permission.XXX)** 方法来判断这个集合中是否包含了这个权限。
 
-### [其他常见疑问请点击此处查看](HelpDoc.md)
+## [其他常见疑问请点击此处查看](HelpDoc.md)
 
 #### 同类权限请求框架之间的对比
 
 |     适配细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  16.0 |  2.0.3  |  1.6.4    |  1.31.0    |   4.9.2  |  0.12   |  3.0.0   |
+|    对应版本  |  16.2 |  2.0.3  |  1.6.4    |  1.31.0    |   4.9.2  |  0.12   |  3.0.0   |
 |    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |
-|    框架体积  |  51 KB  | 127 KB  |  90 KB  |   500 KB |  99 KB  | 28 KB  | 48 KB |
-|  框架维护状态 |**维护中**|  停止维护 |**维护中**|  停止维护 |**维护中**| 停止维护 | 停止维护 |
+|    框架体积  |  52 KB  | 127 KB  |  90 KB  |   500 KB |  99 KB  | 28 KB  | 48 KB |
+|  框架维护状态 |**维护中**|  停止维护 |**维护中**|  停止维护 | 停止维护 | 停止维护 | 停止维护 |
 |       闹钟提醒权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |     所有文件管理权限      |  ✅  |  ❌  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
 |        安装包权限        |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
+|        画中画权限        |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |        悬浮窗权限        |  ✅  |  ✅  |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |
 |       系统设置权限       |  ✅  |  ✅  |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |
 |        通知栏权限        |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
@@ -256,7 +259,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 #### 后台申请权限场景介绍
 
-* 当我们做耗时操作之后申请权限（例如在闪屏页获取隐私协议再申请权限），在网络请求的过程中将 Activity 返回桌面去（退到后台），然后会导致权限请求是在后台状态中进行，在这个时机上就可能会导致权限申请不正常，表现为不会显示授权对话框，处理不当的还会导致崩溃，例如 [RxPeremission/issues/249](https://github.com/tbruyelle/RxPermissions/issues/249)。原因在于框架中的 PermissionFragment 在 **commit / commitNow** 到 Activity 的时候会做一个检测，如果 Activity 的状态是不可见时则会抛出异常，而 **RxPeremission** 正是使用了 **commitNow** 才会导致崩溃 ，使用 **commitAllowingStateLoss / commitNowAllowingStateLoss** 则可以避开这个检测，虽然这样可以避免崩溃，但是会出现另外一个问题，系统提供的 **requestPermissions** API 在 Activity 不可见时调用也不会弹出授权对话框，**XXPermissions** 的解决方式是将 **requestPermissions** 时机从 **create** 转移到了 **resume**，因为 Activity 和 Fragment 的生命周期方法是捆绑在一起的，如果 Activity 是不可见的，那么就算创建了 Fragment 也只会调用 **onCreate** 方法，而不会去调用它的 **onResume** 方法，最后当 Activity 从后台返回到前台时，不仅会触发 **Activity.onResume** 方法，同时也会触发 **PermissionFragment** 的 **onResume** 方法，在这个方法申请权限就可以保证最终 **requestPermissions** 申请的时机是在 Activity **处于可见状态的情况**下。
+* 当我们做耗时操作之后申请权限（例如在闪屏页获取隐私协议再申请权限），在网络请求的过程中将 Activity 返回桌面去（退到后台），然后会导致权限请求是在后台状态中进行，在这个时机上就可能会导致权限申请不正常，表现为不会显示授权对话框，处理不当的还会导致崩溃，例如 [RxPeremission/issues/249](https://github.com/tbruyelle/RxPermissions/issues/249)。原因在于框架中的 PermissionFragment 在 **commit / commitNow** 到 Activity 的时候会做一个检测，如果 Activity 的状态是不可见时则会抛出异常，而 **RxPeremission** 正是使用了 **commitNow** 才会导致崩溃 ，使用 **commitAllowingStateLoss / commitNowAllowingStateLoss** 则可以避开这个检测，虽然这样可以避免崩溃，但是会出现另外一个问题，系统提供的 **requestPermissions** API 在 Activity 不可见时调用也不会弹出授权对话框，**XXPermissions** 的解决方式是将 **requestPermissions** 时机从 **create** 转移到了 **resume**，因为 Activity 和 Fragment 的生命周期方法是捆绑在一起的，如果 Activity 是不可见的，那么就算创建了 Fragment 也只会调用 **onCreate** 方法，而不会去调用它的 **onResume** 方法，最后当 Activity 从后台返回到前台时，不仅会触发 **Activity.onResume** 方法，同时也会触发 **PermissionFragment** 的 **onResume** 方法，在这个方法申请权限就可以保证最终 **requestPermissions** 调用的时机是在 Activity **处于可见状态的情况**下。
 
 #### Android 12 内存泄漏问题修复介绍
 
@@ -288,7 +291,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 * 幸好 Google 没有将 PackageManager.shouldShowRequestPermissionRationale 列入到反射黑名单中，否则这次想给 Google 擦屁股都没有办法了，要不然只能用修改系统源码实现的方式，但这种方式只能等谷歌在后续的 Android 版本上面修复了，不过庆幸的是，在 Android 12 L 的版本之后，这个问题被修复了，[具体的提交记录可以点击此处查看](https://cs.android.com/android/_/android/platform/frameworks/base/+/0d47a03bfa8f4ca54b883ff3c664cd4ea4a624d9:core/java/android/permission/PermissionUsageHelper.java;dlc=cec069482f80019c12f3c06c817d33fc5ad6151f)，但是对于 Android 12 而言，这仍是一个历史遗留问题。
 
-* 值得注意的是：XXPermissions 是目前同类框架第一款也是唯一一款修复这个问题的框架，另外针对这个问题，我还给谷歌的 [AndroidX](https://github.com/androidx/androidx/pull/435) 项目提供了解决方案。
+* 值得注意的是：XXPermissions 是目前同类框架第一款也是唯一一款修复这个问题的框架，另外针对这个问题，我还给谷歌的 [AndroidX](https://github.com/androidx/androidx/pull/435) 项目无偿提供了解决方案，目前 Merge Request 已被合入主分支，我相信通过这一举措，将解决全球近 10 亿台 Android 12 设备出现的内存泄露问题。
 
 #### 错误检测机制介绍
 

@@ -1,6 +1,7 @@
 package com.hjq.permissions;
 
 import android.app.Activity;
+import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
@@ -21,6 +22,10 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
          return isGrantedInstallPermission(context);
       }
 
+      if (PermissionUtils.equalsPermission(permission, Permission.PICTURE_IN_PICTURE)) {
+         return isGrantedPictureInPicturePermission(context);
+      }
+
       if (PermissionUtils.equalsPermission(permission, Permission.READ_PHONE_NUMBERS) ||
               PermissionUtils.equalsPermission(permission, Permission.ANSWER_PHONE_CALLS)) {
          return PermissionUtils.checkSelfPermission(context, permission);
@@ -31,6 +36,10 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
    @Override
    public boolean isPermissionPermanentDenied(Activity activity, String permission) {
       if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES)) {
+         return false;
+      }
+
+      if (PermissionUtils.equalsPermission(permission, Permission.PICTURE_IN_PICTURE)) {
          return false;
       }
 
@@ -47,6 +56,10 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
       if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES)) {
          return getInstallPermissionIntent(context);
       }
+
+      if (PermissionUtils.equalsPermission(permission, Permission.PICTURE_IN_PICTURE)) {
+         return getPictureInPicturePermissionIntent(context);
+      }
       return super.getPermissionIntent(context, permission);
    }
 
@@ -62,6 +75,35 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
     */
    private static Intent getInstallPermissionIntent(Context context) {
       Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
+      intent.setData(PermissionUtils.getPackageNameUri(context));
+      if (!PermissionUtils.areActivityIntent(context, intent)) {
+         intent = PermissionUtils.getApplicationDetailsIntent(context);
+      }
+      return intent;
+   }
+
+   /**
+    * 是否有画中画权限
+    */
+   private static boolean isGrantedPictureInPicturePermission(Context context) {
+      AppOpsManager appOps = (AppOpsManager)
+              context.getSystemService(Context.APP_OPS_SERVICE);
+      int mode;
+      if (AndroidVersion.isAndroid10()) {
+         mode = appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
+                 context.getApplicationInfo().uid, context.getPackageName());
+      } else {
+         mode = appOps.checkOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
+                 context.getApplicationInfo().uid, context.getPackageName());
+      }
+      return mode == AppOpsManager.MODE_ALLOWED;
+   }
+
+   /**
+    * 获取画中画权限设置界面意图
+    */
+   private static Intent getPictureInPicturePermissionIntent(Context context) {
+      Intent intent = new Intent("android.settings.PICTURE_IN_PICTURE_SETTINGS");
       intent.setData(PermissionUtils.getPackageNameUri(context));
       if (!PermissionUtils.areActivityIntent(context, intent)) {
          intent = PermissionUtils.getApplicationDetailsIntent(context);

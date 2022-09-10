@@ -42,6 +42,13 @@ public final class Permission {
     public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES";
 
     /**
+     * 画中画权限（特殊权限，Android 8.0 新增的权限，注意此权限不需要在清单文件中注册也能申请）
+     *
+     * 需要注意的是：这个权限和其他特殊权限不同的是，默认已经是授予状态，用户也可以手动撤销授权
+     */
+    public static final String PICTURE_IN_PICTURE = "android.permission.PICTURE_IN_PICTURE";
+
+    /**
      * 悬浮窗权限（特殊权限，Android 6.0 新增的权限）
      *
      * 在 Android 10 及之前的版本能跳转到应用悬浮窗设置页面，而在 Android 11 及之后的版本只能跳转到系统设置悬浮窗管理列表了
@@ -55,7 +62,7 @@ public final class Permission {
     /** 请求忽略电池优化选项权限（特殊权限，Android 6.0 新增的权限）*/
     public static final String REQUEST_IGNORE_BATTERY_OPTIMIZATIONS = "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS";
 
-    /** 勿扰权限，可控制手机响铃模式（静音，震动）（特殊权限，Android 6.0 新增的权限）*/
+    /** 勿扰权限，可控制手机响铃模式【静音，震动】（特殊权限，Android 6.0 新增的权限）*/
     public static final String ACCESS_NOTIFICATION_POLICY = "android.permission.ACCESS_NOTIFICATION_POLICY";
 
     /** 查看应用使用情况权限，简称使用统计权限（特殊权限，Android 5.0 新增的权限） */
@@ -157,7 +164,11 @@ public final class Permission {
      */
     public static final String ACCESS_BACKGROUND_LOCATION = "android.permission.ACCESS_BACKGROUND_LOCATION";
 
-    /** 获取活动步数（Android 10.0 新增的权限） */
+    /**
+     * 获取活动步数（Android 10.0 新增的权限）
+     *
+     * 需要注意的是：Android 10 以下不需要传感器（BODY_SENSORS）权限也能获取到步数
+     */
     public static final String ACTIVITY_RECOGNITION = "android.permission.ACTIVITY_RECOGNITION";
 
     /**

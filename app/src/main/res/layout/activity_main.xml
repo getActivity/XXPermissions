@@ -49,6 +49,14 @@
                 android:text="申请传感器权限" />
 
             <Button
+                android:id="@+id/btn_main_request_activity_recognition"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="申请身体活动权限" />
+
+            <Button
                 android:id="@+id/btn_main_request_bluetooth"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -167,6 +175,14 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:text="申请忽略电池优化权限" />
+
+            <Button
+                android:id="@+id/btn_main_request_picture_in_picture"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="申请画中画权限" />
 
             <Button
                 android:id="@+id/btn_main_request_open_vpn"
