@@ -35,3 +35,7 @@ jobs:
         uses: dephraiim/translate-readme@main
         with:
           LANG: fr
+      - name: Adding README - English
+        uses: dephraiim/translate-readme@main
+        with:
+          LANG: en
