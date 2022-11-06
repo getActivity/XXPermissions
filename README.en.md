@@ -1,4 +1,9 @@
 # Permission Request Framework
+<p align="center">
+  <a href="https://github.com/getActivity/XXPermissions/releases/download/16.2/XXPermissions.apk" style="text-decoration:none" area-label="Android">
+    <img src="https://img.shields.io/badge/download-click%20to%20download-orange">
+  </a>
+</p>
 
 ![](logo.png)
 
