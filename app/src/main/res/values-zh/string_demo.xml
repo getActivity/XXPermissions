@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">XXPermissions</string>
+
+    <string name="demo_obtain_permission_success_hint">获取%s成功</string>
+    <string name="demo_return_activity_result_hint">检测到你刚刚从权限设置界面返回回来</string>
+
+    <string name="demo_android_12_bluetooth_permission_hint">当前版本不是 Android 12 及以上，旧版本的需要定位权限才能进行扫描蓝牙</string>
+    <string name="demo_android_13_wifi_permission_hint">当前版本不是 Android 13 及以上，旧版本的需要定位权限才能进行扫描 WIFI</string>
+    <string name="demo_android_10_read_media_location_permission_hint">当前版本不是 Android 10 及以上，旧版本的需要读取存储权限才能获取媒体位置权限</string>
+    <string name="demo_android_13_read_media_permission_hint">当前版本不是 Android 13 及以上，会自动变更为旧版的请求方式</string>
+    <string name="demo_android_11_manage_storage_permission_hint">当前版本不是 Android 11 及以上，会自动变更为旧版的请求方式</string>
+    <string name="demo_android_13_post_notification_permission_hint">当前版本不是 Android 13 及以上，会自动变更为旧版的请求方式</string>
+
+    <string name="demo_notification_listener_toast">监听到新的通知消息，标题为：%s，内容为：%s</string>
+
+    <string name="demo_request_single_dangerous_permission">申请单个危险权限</string>
+    <string name="demo_request_multiple_dangerous_permission">申请多个危险权限</string>
+    <string name="demo_request_location_permission">申请定位权限</string>
+    <string name="demo_request_sensors_permission">申请传感器权限</string>
+    <string name="demo_request_activity_recognition_permission">申请身体活动权限</string>
+    <string name="demo_request_bluetooth_permission">申请蓝牙权限</string>
+    <string name="demo_request_wifi_permission">申请 WIFI 权限</string>
+    <string name="demo_request_media_location_permission">申请读取图片位置权限</string>
+    <string name="demo_request_media_read_permission">申请媒体文件读取权限</string>
+    <string name="demo_request_all_file_access_permission">申请所有文件管理权限</string>
+    <string name="demo_request_install_unknown_apps_permission">申请安装包权限</string>
+    <string name="demo_request_display_over_other_apps_permission">申请悬浮窗权限</string>
+    <string name="demo_request_modify_system_settings_permission">申请系统设置权限</string>
+    <string name="demo_request_allow_notifications_permission">申请通知权限</string>
+    <string name="demo_request_send_notifications_permission_api33">申请新版通知权限</string>
+    <string name="demo_request_allow_notifications_access_permission">申请通知栏监听权限</string>
+    <string name="demo_request_apps_with_usage_access_permission">申请使用统计权限</string>
+    <string name="demo_request_alarms_reminders_permission">申请闹钟提醒权限</string>
+    <string name="demo_request_do_not_disturb_access_permission">申请勿扰权限</string>
+    <string name="demo_request_ignore_battery_optimize_permission">申请忽略电池优化权限</string>
+    <string name="demo_request_picture_in_picture_permission">申请画中画权限</string>
+    <string name="demo_request_vpn_permission">申请 VPN 权限</string>
+    <string name="demo_start_app_details_activity">跳转到应用详情页</string>
+
+</resources>

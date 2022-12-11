@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="common_permission_description">Permission description</string>
+    <string name="common_permission_message">%s needs to be granted to use this feature</string>
+    <string name="common_permission_granted">Granted</string>
+    <string name="common_permission_denied">Denied</string>
+
+    <string name="common_permission_alert">Authorization reminder</string>
+    <string name="common_permission_fail_hint">Authorization failed, please grant permission correctly</string>
+    <string name="common_permission_fail_assign_hint">Authorization failed, please grant %s correctly</string>
+    <string name="common_permission_manual_fail_hint">Failed to obtain permission, please grant permission manually</string>
+    <string name="common_permission_manual_assign_fail_hint">Failed to obtain permission, please grant %s manually</string>
+    <string name="common_permission_background_location_fail_hint">Failed to obtain background location permission,\nPlease select "Allow all the time"</string>
+    <string name="common_permission_background_sensors_fail_hint">Failed to obtain background sensor permission.\nPlease select "Allow all the time"</string>
+    <string name="common_permission_media_location_hint_fail">Failed to get media location permission\nPlease clear app data and try again</string>
+    <string name="common_permission_goto_setting_page">Go to authorization</string>
+
+    <string name="common_permission_calendar">calendar permission</string>
+    <string name="common_permission_camera">camera permission</string>
+    <string name="common_permission_contacts">contacts permission</string>
+    <string name="common_permission_location">location permission</string>
+    <string name="common_permission_location_background">background location permission</string>
+    <string name="common_permission_nearby_devices">nearby devices permission</string>
+    <string name="common_permission_microphone">microphone permission</string>
+    <string name="common_permission_phone">phone permission</string>
+    <string name="common_permission_call_logs">call logs permission</string>
+    <string name="common_permission_body_sensors">body sensors permission</string>
+    <string name="common_permission_body_sensors_background">background body sensors permission</string>
+    <string name="common_permission_activity_recognition_api29">physical activity permission</string>
+    <string name="common_permission_activity_recognition_api30">physical activity permission</string>
+    <string name="common_permission_access_media_location">read media file location permission</string>
+    <string name="common_permission_sms">sms permission</string>
+    <string name="common_permission_storage">storage permission</string>
+    <string name="common_permission_post_notifications">send notification permission</string>
+    <string name="common_permission_image_and_video">image and video permission</string>
+    <string name="common_permission_music_and_audio">music and audio permission</string>
+
+    <string name="common_permission_all_file_access">all file access permission</string>
+    <string name="common_permission_install_unknown_apps">install unknown apps permission</string>
+    <string name="common_permission_display_over_other_apps">display over other apps permission</string>
+    <string name="common_permission_modify_system_settings">modify system settings permission</string>
+    <string name="common_permission_allow_notifications">allow notifications permission</string>
+    <string name="common_permission_allow_notifications_access">allow notifications access permission</string>
+    <string name="common_permission_apps_with_usage_access">apps with usage access permission</string>
+    <string name="common_permission_alarms_reminders">alarms &amp; reminders permission</string>
+    <string name="common_permission_do_not_disturb_access">do not disturb access permission</string>
+    <string name="common_permission_ignore_battery_optimize">ignore battery optimize permission</string>
+    <string name="common_permission_picture_in_picture">picture-in-picture permission</string>
+    <string name="common_permission_vpn">\tVPN\tpermission</string>
+
+</resources>

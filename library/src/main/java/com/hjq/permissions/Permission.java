@@ -29,7 +29,8 @@ public final class Permission {
      * 为了兼容 Android 11 以下版本，需要在清单文件中注册
      * {@link Permission#READ_EXTERNAL_STORAGE} 和 {@link Permission#WRITE_EXTERNAL_STORAGE} 权限
      *
-     * 如果你的应用需要上架 GooglePlay，那么需要详细查看：https://support.google.com/googleplay/android-developer/answer/9956427
+     * 如果你的应用需要上架 GooglePlay，那么需要详细阅读谷歌应用商店的政策：
+     * https://support.google.com/googleplay/android-developer/answer/9956427
      */
     public static final String MANAGE_EXTERNAL_STORAGE = "android.permission.MANAGE_EXTERNAL_STORAGE";
 
@@ -110,21 +111,21 @@ public final class Permission {
     /**
      * 读取图片权限（Android 13.0 新增的权限）
      *
-     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} 权限
+     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} {@link #WRITE_EXTERNAL_STORAGE} 权限
      */
     public static final String READ_MEDIA_IMAGES = "android.permission.READ_MEDIA_IMAGES";
 
     /**
      * 读取视频权限（Android 13.0 新增的权限）
      *
-     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} 权限
+     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} {@link #WRITE_EXTERNAL_STORAGE} 权限
      */
     public static final String READ_MEDIA_VIDEO = "android.permission.READ_MEDIA_VIDEO";
 
     /**
      * 读取音频权限（Android 13.0 新增的权限）
      *
-     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} 权限
+     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} {@link #WRITE_EXTERNAL_STORAGE} 权限
      */
     public static final String READ_MEDIA_AUDIO = "android.permission.READ_MEDIA_AUDIO";
 
@@ -160,7 +161,7 @@ public final class Permission {
      *
      * 需要注意的是：
      * 1. 一旦你申请了该权限，在授权的时候，需要选择《始终允许》，而不能选择《仅在使用中允许》
-     * 2. 如果你的 App 只在前台状态下使用定位功能，请不要申请该权限（后台定位权限）
+     * 2. 如果你的 App 只在前台状态下使用定位功能，没有在后台使用的场景，请不要申请该权限
      */
     public static final String ACCESS_BACKGROUND_LOCATION = "android.permission.ACCESS_BACKGROUND_LOCATION";
 
@@ -174,10 +175,15 @@ public final class Permission {
     /**
      * 读取照片中的地理位置（Android 10.0 新增的权限）
      *
-     * 需要注意的是：如果这个权限申请成功了但是不能正常读取照片的地理信息，那么需要先申请存储权限：
+     * 需要注意的是：如果这个权限申请成功了但是不能正常读取照片的地理信息，那么需要先申请存储权限，具体可分别下面两种情况：
      *
-     * 如果项目 targetSdkVersion <= 29 需要申请 {@link Permission.Group#STORAGE}
-     * 如果项目 targetSdkVersion >= 30 需要申请 {@link Permission#MANAGE_EXTERNAL_STORAGE}
+     * 1. 如果适配了分区存储的情况下：
+     *     1) 如果项目 targetSdkVersion <= 32 需要申请 {@link Permission#READ_EXTERNAL_STORAGE}
+     *     2) 如果项目 targetSdkVersion >= 33 需要申请 {@link Permission#READ_MEDIA_IMAGES}
+     *
+     * 2. 如果没有适配分区存储的情况下：
+     *     1) 如果项目 targetSdkVersion <= 29 需要申请 {@link Permission#READ_EXTERNAL_STORAGE}
+     *     2) 如果项目 targetSdkVersion >= 30 需要申请 {@link Permission#MANAGE_EXTERNAL_STORAGE}
      */
     public static final String ACCESS_MEDIA_LOCATION = "android.permission.ACCESS_MEDIA_LOCATION";
 

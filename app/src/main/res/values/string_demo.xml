@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">XXPermissions</string>
+
+    <string name="demo_obtain_permission_success_hint">Obtained %s successfully</string>
+    <string name="demo_return_activity_result_hint">Detected that you just returned from the permission settings interface</string>
+
+    <string name="demo_android_12_bluetooth_permission_hint">The current version is not Android 12 and above, the old version requires location permission to scan Bluetooth</string>
+    <string name="demo_android_13_wifi_permission_hint">The current version is not Android 13 and above, the old version needs location permission to scan WIFI</string>
+    <string name="demo_android_10_read_media_location_permission_hint">The current version is not Android 10 and above, the old version needs read storage permission to get media location permission</string>
+    <string name="demo_android_13_read_media_permission_hint">The current version is not Android 13 and above, it will automatically change to the old version of the request method</string>
+    <string name="demo_android_11_manage_storage_permission_hint">The current version is not Android 11 and above, it will automatically change to the old version of the request method</string>
+    <string name="demo_android_13_post_notification_permission_hint">The current version is not Android 13 and above, it will automatically change to the old version of the request method</string>
+
+    <string name="demo_notification_listener_toast">A new notification message was listened for with the title: %s and the content: %s</string>
+
+    <string name="demo_request_single_dangerous_permission">Request single dangerous permission</string>
+    <string name="demo_request_multiple_dangerous_permission">Request multiple dangerous permission</string>
+    <string name="demo_request_location_permission">Request location permission</string>
+    <string name="demo_request_sensors_permission">Request sensors permission</string>
+    <string name="demo_request_activity_recognition_permission">Request activity recognition permission</string>
+    <string name="demo_request_bluetooth_permission">Request bluetooth permission</string>
+    <string name="demo_request_wifi_permission">Request wifi permission</string>
+    <string name="demo_request_media_location_permission">Request media location permission</string>
+    <string name="demo_request_media_read_permission">Request media read permission</string>
+    <string name="demo_request_all_file_access_permission">Request all file access permission</string>
+    <string name="demo_request_install_unknown_apps_permission">Request install unknown apps permission</string>
+    <string name="demo_request_display_over_other_apps_permission">Request display over other apps permission</string>
+    <string name="demo_request_modify_system_settings_permission">Request modify system settings permission</string>
+    <string name="demo_request_allow_notifications_permission">Request allow notifications permission</string>
+    <string name="demo_request_send_notifications_permission_api33">Request allow send notifications permission (api 33)</string>
+    <string name="demo_request_allow_notifications_access_permission">Request allow notifications access permission</string>
+    <string name="demo_request_apps_with_usage_access_permission">Request apps with usage access permission</string>
+    <string name="demo_request_alarms_reminders_permission">Request alarms &amp; reminders permission</string>
+    <string name="demo_request_do_not_disturb_access_permission">Request do not disturb access permission</string>
+    <string name="demo_request_ignore_battery_optimize_permission">Request ignore battery optimize permission</string>
+    <string name="demo_request_picture_in_picture_permission">Request picture-in-picture permission</string>
+    <string name="demo_request_vpn_permission">Request vpn permission</string>
+    <string name="demo_start_app_details_activity">Start app details activity</string>
+
+</resources>

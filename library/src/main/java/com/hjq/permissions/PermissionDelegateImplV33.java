@@ -2,6 +2,7 @@ package com.hjq.permissions;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 
 /**
@@ -14,7 +15,7 @@ import android.support.annotation.RequiresApi;
 class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
 
    @Override
-   public boolean isGrantedPermission(Context context, String permission) {
+   public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
       if (PermissionUtils.equalsPermission(permission, Permission.BODY_SENSORS_BACKGROUND)) {
          // 有后台传感器权限的前提条件是要有前台的传感器权限
          return PermissionUtils.checkSelfPermission(context, Permission.BODY_SENSORS) &&
@@ -32,7 +33,7 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
    }
 
    @Override
-   public boolean isPermissionPermanentDenied(Activity activity, String permission) {
+   public boolean isPermissionPermanentDenied(@NonNull Activity activity, @NonNull String permission) {
       if (PermissionUtils.equalsPermission(permission, Permission.BODY_SENSORS_BACKGROUND)) {
          if (!PermissionUtils.checkSelfPermission(activity, Permission.BODY_SENSORS)) {
             return !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.BODY_SENSORS);

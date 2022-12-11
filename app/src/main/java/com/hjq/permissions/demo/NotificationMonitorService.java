@@ -31,7 +31,7 @@ public final class NotificationMonitorService extends NotificationListenerServic
                 String title = extras.getString(Notification.EXTRA_TITLE);
                 // 获取通知消息内容
                 Object msgText = extras.getCharSequence(Notification.EXTRA_TEXT);
-                ToastUtils.show("监听到新的通知消息，标题为：" + title + "，内容为：" + msgText);
+                ToastUtils.show(String.format(getString(R.string.demo_notification_listener_toast), title, msgText));
             }
         }
     }

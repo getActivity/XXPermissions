@@ -5,6 +5,7 @@ import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 
 /**
@@ -17,7 +18,7 @@ import android.support.annotation.RequiresApi;
 class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
 
    @Override
-   public boolean isGrantedPermission(Context context, String permission) {
+   public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
       if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES)) {
          return isGrantedInstallPermission(context);
       }
@@ -34,7 +35,7 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
    }
 
    @Override
-   public boolean isPermissionPermanentDenied(Activity activity, String permission) {
+   public boolean isPermissionPermanentDenied(@NonNull Activity activity, @NonNull String permission) {
       if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES)) {
          return false;
       }
@@ -52,7 +53,7 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
    }
 
    @Override
-   public Intent getPermissionIntent(Context context, String permission) {
+   public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
       if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES)) {
          return getInstallPermissionIntent(context);
       }
@@ -66,14 +67,14 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
    /**
     * 是否有安装权限
     */
-   private static boolean isGrantedInstallPermission(Context context) {
+   private static boolean isGrantedInstallPermission(@NonNull Context context) {
       return context.getPackageManager().canRequestPackageInstalls();
    }
 
    /**
     * 获取安装权限设置界面意图
     */
-   private static Intent getInstallPermissionIntent(Context context) {
+   private static Intent getInstallPermissionIntent(@NonNull Context context) {
       Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
       intent.setData(PermissionUtils.getPackageNameUri(context));
       if (!PermissionUtils.areActivityIntent(context, intent)) {
@@ -85,9 +86,8 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
    /**
     * 是否有画中画权限
     */
-   private static boolean isGrantedPictureInPicturePermission(Context context) {
-      AppOpsManager appOps = (AppOpsManager)
-              context.getSystemService(Context.APP_OPS_SERVICE);
+   private static boolean isGrantedPictureInPicturePermission(@NonNull Context context) {
+      AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
       int mode;
       if (AndroidVersion.isAndroid10()) {
          mode = appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
@@ -102,7 +102,8 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
    /**
     * 获取画中画权限设置界面意图
     */
-   private static Intent getPictureInPicturePermissionIntent(Context context) {
+   private static Intent getPictureInPicturePermissionIntent(@NonNull Context context) {
+      // android.provider.Settings.ACTION_PICTURE_IN_PICTURE_SETTINGS
       Intent intent = new Intent("android.settings.PICTURE_IN_PICTURE_SETTINGS");
       intent.setData(PermissionUtils.getPackageNameUri(context));
       if (!PermissionUtils.areActivityIntent(context, intent)) {

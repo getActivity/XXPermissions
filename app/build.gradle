@@ -5,10 +5,10 @@ android {
 
     defaultConfig {
         applicationId "com.hjq.permissions.demo"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 33
-        versionCode 1620
-        versionName "16.2"
+        versionCode 1650
+        versionName "16.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -61,8 +61,8 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
 
     // 吐司框架：https://github.com/getActivity/ToastUtils
-    implementation 'com.github.getActivity:ToastUtils:10.5'
+    implementation 'com.github.getActivity:ToastUtils:11.2'
 
     // 内存泄漏检测：https://github.com/square/leakcanary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.9.1'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
 }

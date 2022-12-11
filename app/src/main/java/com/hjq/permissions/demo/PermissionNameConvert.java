@@ -78,7 +78,7 @@ public final class PermissionNameConvert {
                }
                case Permission.READ_MEDIA_AUDIO: {
                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                       String hint = context.getString(R.string.common_permission_audio);
+                       String hint = context.getString(R.string.common_permission_music_and_audio);
                        if (!permissionNames.contains(hint)) {
                            permissionNames.add(hint);
                        }
@@ -120,9 +120,9 @@ public final class PermissionNameConvert {
                    String hint;
                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                            !permissions.contains(Permission.BODY_SENSORS)) {
-                       hint = context.getString(R.string.common_permission_sensors_background);
+                       hint = context.getString(R.string.common_permission_body_sensors_background);
                    } else {
-                       hint = context.getString(R.string.common_permission_sensors);
+                       hint = context.getString(R.string.common_permission_body_sensors);
                    }
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
@@ -133,7 +133,7 @@ public final class PermissionNameConvert {
                case Permission.BLUETOOTH_CONNECT:
                case Permission.BLUETOOTH_ADVERTISE: {
                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                       String hint = context.getString(R.string.common_permission_wireless_devices);
+                       String hint = context.getString(R.string.common_permission_nearby_devices);
                        if (!permissionNames.contains(hint)) {
                            permissionNames.add(hint);
                        }
@@ -142,7 +142,7 @@ public final class PermissionNameConvert {
                }
                case Permission.NEARBY_WIFI_DEVICES: {
                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                       String hint = context.getString(R.string.common_permission_wireless_devices);
+                       String hint = context.getString(R.string.common_permission_nearby_devices);
                        if (!permissionNames.contains(hint)) {
                            permissionNames.add(hint);
                        }
@@ -182,7 +182,7 @@ public final class PermissionNameConvert {
                case Permission.WRITE_CALL_LOG:
                case Permission.PROCESS_OUTGOING_CALLS: {
                    String hint = context.getString(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ?
-                           R.string.common_permission_call_log :
+                           R.string.common_permission_call_logs :
                            R.string.common_permission_phone);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
@@ -191,8 +191,8 @@ public final class PermissionNameConvert {
                }
                case Permission.ACTIVITY_RECOGNITION: {
                    String hint = context.getString(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ?
-                           R.string.common_permission_activity_recognition_30 :
-                           R.string.common_permission_activity_recognition_29);
+                           R.string.common_permission_activity_recognition_api30 :
+                           R.string.common_permission_activity_recognition_api29);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
                    }
@@ -200,7 +200,7 @@ public final class PermissionNameConvert {
                }
                case Permission.ACCESS_MEDIA_LOCATION: {
                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                       String hint = context.getString(R.string.common_permission_media_location);
+                       String hint = context.getString(R.string.common_permission_access_media_location);
                        if (!permissionNames.contains(hint)) {
                            permissionNames.add(hint);
                        }
@@ -220,7 +220,7 @@ public final class PermissionNameConvert {
                }
                case Permission.MANAGE_EXTERNAL_STORAGE: {
                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                       String hint = context.getString(R.string.common_permission_manage_storage);
+                       String hint = context.getString(R.string.common_permission_all_file_access);
                        if (!permissionNames.contains(hint)) {
                            permissionNames.add(hint);
                        }
@@ -228,28 +228,28 @@ public final class PermissionNameConvert {
                    break;
                }
                case Permission.REQUEST_INSTALL_PACKAGES: {
-                   String hint = context.getString(R.string.common_permission_install);
+                   String hint = context.getString(R.string.common_permission_install_unknown_apps);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
                    }
                    break;
                }
                case Permission.SYSTEM_ALERT_WINDOW: {
-                   String hint = context.getString(R.string.common_permission_window);
+                   String hint = context.getString(R.string.common_permission_display_over_other_apps);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
                    }
                    break;
                }
                case Permission.WRITE_SETTINGS: {
-                   String hint = context.getString(R.string.common_permission_setting);
+                   String hint = context.getString(R.string.common_permission_modify_system_settings);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
                    }
                    break;
                }
                case Permission.NOTIFICATION_SERVICE: {
-                   String hint = context.getString(R.string.common_permission_notification);
+                   String hint = context.getString(R.string.common_permission_allow_notifications);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
                    }
@@ -265,35 +265,35 @@ public final class PermissionNameConvert {
                    break;
                }
                case Permission.BIND_NOTIFICATION_LISTENER_SERVICE: {
-                   String hint = context.getString(R.string.common_permission_notification_listener);
+                   String hint = context.getString(R.string.common_permission_allow_notifications_access);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
                    }
                    break;
                }
                case Permission.PACKAGE_USAGE_STATS: {
-                   String hint = context.getString(R.string.common_permission_task);
+                   String hint = context.getString(R.string.common_permission_apps_with_usage_access);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
                    }
                    break;
                }
                case Permission.SCHEDULE_EXACT_ALARM: {
-                   String hint = context.getString(R.string.common_permission_alarm);
+                   String hint = context.getString(R.string.common_permission_alarms_reminders);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
                    }
                    break;
                }
                case Permission.ACCESS_NOTIFICATION_POLICY: {
-                   String hint = context.getString(R.string.common_permission_not_disturb);
+                   String hint = context.getString(R.string.common_permission_do_not_disturb_access);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
                    }
                    break;
                }
                case Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: {
-                   String hint = context.getString(R.string.common_permission_ignore_battery);
+                   String hint = context.getString(R.string.common_permission_ignore_battery_optimize);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
                    }

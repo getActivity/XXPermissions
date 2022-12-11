@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
@@ -52,8 +53,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_activity_recognition).setOnClickListener(this);
         findViewById(R.id.btn_main_request_bluetooth).setOnClickListener(this);
         findViewById(R.id.btn_main_request_wifi).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_media_location).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_media_storage).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_read_media_location).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_media_read).setOnClickListener(this);
         findViewById(R.id.btn_main_request_manage_storage).setOnClickListener(this);
         findViewById(R.id.btn_main_request_install).setOnClickListener(this);
         findViewById(R.id.btn_main_request_window).setOnClickListener(this);
@@ -81,11 +82,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                         }
                     });
 
@@ -98,11 +100,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                         }
                     });
 
@@ -117,11 +120,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                         }
                     });
 
@@ -134,11 +138,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                         }
                     });
 
@@ -150,11 +155,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                             addCountStepListener();
                         }
                     });
@@ -164,7 +170,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             long delayMillis = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
                 delayMillis = 2000;
-                toast("当前版本不是 Android 12 及以上，旧版本的需要定位权限才能进行扫描蓝牙");
+                toast(getString(R.string.demo_android_12_bluetooth_permission_hint));
             }
 
             view.postDelayed(new Runnable() {
@@ -179,11 +185,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(List<String> permissions, boolean all) {
+                                public void onGranted(@NonNull List<String> permissions, boolean all) {
                                     if (!all) {
                                         return;
                                     }
-                                    toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                                    toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                                 }
                             });
                 }
@@ -194,7 +201,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             long delayMillis = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 delayMillis = 2000;
-                toast("当前版本不是 Android 13 及以上，旧版本的需要定位权限才能进行扫描 WIFI");
+                toast(getString(R.string.demo_android_13_wifi_permission_hint));
             }
 
             view.postDelayed(new Runnable() {
@@ -207,22 +214,23 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(List<String> permissions, boolean all) {
+                                public void onGranted(@NonNull List<String> permissions, boolean all) {
                                     if (!all) {
                                         return;
                                     }
-                                    toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                                    toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                                 }
                             });
                 }
             }, delayMillis);
 
-        } else if (viewId == R.id.btn_main_request_media_location) {
+        } else if (viewId == R.id.btn_main_request_read_media_location) {
 
             long delayMillis = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                 delayMillis = 2000;
-                toast("当前版本不是 Android 10 及以上，旧版本的需要读取存储权限才能获取媒体位置权限");
+                toast(getString(R.string.demo_android_10_read_media_location_permission_hint));
             }
 
             view.postDelayed(new Runnable() {
@@ -239,11 +247,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(List<String> permissions, boolean all) {
+                                public void onGranted(@NonNull List<String> permissions, boolean all) {
                                     if (!all) {
                                         return;
                                     }
-                                    toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                                    toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                                     new Thread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -255,12 +264,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 }
             }, delayMillis);
 
-        } else if (viewId == R.id.btn_main_request_media_storage) {
+        } else if (viewId == R.id.btn_main_request_media_read) {
 
             long delayMillis = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 delayMillis = 2000;
-                toast("当前版本不是 Android 13 及以上，会自动变更为旧版的请求方式");
+                toast(getString(R.string.demo_android_13_read_media_permission_hint));
             }
 
             view.postDelayed(new Runnable() {
@@ -278,11 +287,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(List<String> permissions, boolean all) {
+                                public void onGranted(@NonNull List<String> permissions, boolean all) {
                                     if (!all) {
                                         return;
                                     }
-                                    toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                                    toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                                 }
                             });
                 }
@@ -293,7 +303,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             long delayMillis = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
                 delayMillis = 2000;
-                toast("当前版本不是 Android 11 及以上，会自动变更为旧版的请求方式");
+                toast(getString(R.string.demo_android_11_manage_storage_permission_hint));
             }
 
             view.postDelayed(new Runnable() {
@@ -309,11 +319,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(List<String> permissions, boolean all) {
+                                public void onGranted(@NonNull List<String> permissions, boolean all) {
                                     if (!all) {
                                         return;
                                     }
-                                    toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                                    toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                                 }
                             });
                 }
@@ -327,11 +338,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                         }
                     });
 
@@ -343,11 +355,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                         }
                     });
 
@@ -359,11 +372,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                         }
                     });
 
@@ -375,11 +389,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                         }
                     });
 
@@ -388,7 +403,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             long delayMillis = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                 delayMillis = 2000;
-                toast("当前版本不是 Android 13 及以上，会自动变更为旧版的请求方式");
+                toast(getString(R.string.demo_android_13_post_notification_permission_hint));
             }
 
             view.postDelayed(new Runnable() {
@@ -401,11 +416,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(List<String> permissions, boolean all) {
+                                public void onGranted(@NonNull List<String> permissions, boolean all) {
                                     if (!all) {
                                         return;
                                     }
-                                    toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                                    toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                                 }
                             });
                 }
@@ -419,11 +435,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                                 toggleNotificationListenerService();
                             }
@@ -438,11 +455,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                         }
                     });
 
@@ -454,11 +472,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                         }
                     });
 
@@ -470,11 +489,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                         }
                     });
 
@@ -486,11 +506,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                         }
                     });
 
@@ -502,11 +523,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                         }
                     });
 
@@ -518,11 +540,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(List<String> permissions, boolean all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean all) {
                             if (!all) {
                                 return;
                             }
-                            toast("获取" + PermissionNameConvert.getPermissionString(MainActivity.this, permissions) + "成功");
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
                         }
                     });
 
@@ -535,9 +558,10 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == XXPermissions.REQUEST_CODE) {
-            toast("检测到你刚刚从权限设置界面返回回来");
+        if (requestCode != XXPermissions.REQUEST_CODE) {
+            return;
         }
+        toast(getString(R.string.demo_return_activity_result_hint));
     }
 
     public void toast(CharSequence text) {

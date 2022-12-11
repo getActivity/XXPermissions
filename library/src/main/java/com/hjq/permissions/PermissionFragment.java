@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,8 +37,8 @@ public final class PermissionFragment extends Fragment implements Runnable {
     /**
      * 开启权限申请
      */
-    public static void beginRequest(Activity activity, ArrayList<String> permissions,
-                                     IPermissionInterceptor interceptor, OnPermissionCallback callback) {
+    public static void launch(@NonNull Activity activity, @NonNull ArrayList<String> permissions,
+                              @NonNull IPermissionInterceptor interceptor, @Nullable OnPermissionCallback callback) {
         PermissionFragment fragment = new PermissionFragment();
         Bundle bundle = new Bundle();
         int requestCode;
@@ -73,9 +75,11 @@ public final class PermissionFragment extends Fragment implements Runnable {
     private boolean mRequestFlag;
 
     /** 权限回调对象 */
+    @Nullable
     private OnPermissionCallback mCallBack;
 
     /** 权限请求拦截器 */
+    @Nullable
     private IPermissionInterceptor mInterceptor;
 
     /** Activity 屏幕方向 */
@@ -84,21 +88,21 @@ public final class PermissionFragment extends Fragment implements Runnable {
     /**
      * 绑定 Activity
      */
-    public void attachActivity(Activity activity) {
+    public void attachActivity(@NonNull Activity activity) {
         activity.getFragmentManager().beginTransaction().add(this, this.toString()).commitAllowingStateLoss();
     }
 
     /**
      * 解绑 Activity
      */
-    public void detachActivity(Activity activity) {
+    public void detachActivity(@NonNull Activity activity) {
         activity.getFragmentManager().beginTransaction().remove(this).commitAllowingStateLoss();
     }
 
     /**
      * 设置权限监听回调监听
      */
-    public void setCallBack(OnPermissionCallback callback) {
+    public void setCallBack(@Nullable OnPermissionCallback callback) {
         mCallBack = callback;
     }
 
@@ -284,18 +288,18 @@ public final class PermissionFragment extends Fragment implements Runnable {
     /**
      * 拆分两次请求权限（有些情况下，需要先申请 A 权限，才能再申请 B 权限）
      */
-    public void splitTwiceRequestPermission(Activity activity, ArrayList<String> allPermissions,
-                                            ArrayList<String> firstPermissions, int requestCode) {
+    public void splitTwiceRequestPermission(@NonNull Activity activity, @NonNull ArrayList<String> allPermissions,
+                                            @NonNull ArrayList<String> firstPermissions, int requestCode) {
 
         ArrayList<String> secondPermissions = new ArrayList<>(allPermissions);
         for (String permission : firstPermissions) {
             secondPermissions.remove(permission);
         }
 
-        PermissionFragment.beginRequest(activity, firstPermissions, new IPermissionInterceptor() {}, new OnPermissionCallback() {
+        PermissionFragment.launch(activity, firstPermissions, new IPermissionInterceptor() {}, new OnPermissionCallback() {
 
             @Override
-            public void onGranted(List<String> permissions, boolean all) {
+            public void onGranted(@NonNull List<String> permissions, boolean all) {
                 if (!all || !isAdded()) {
                     return;
                 }
@@ -304,11 +308,11 @@ public final class PermissionFragment extends Fragment implements Runnable {
                 // 这里为了避免这种情况出现，所以加了一点延迟，这样就没有什么问题了
                 // 为什么延迟时间是 150 毫秒？ 经过实践得出 100 还是有概率会出现失败，但是换成 150 试了很多次就都没有问题了
                 long delayMillis = AndroidVersion.isAndroid13() ? 150 : 0;
-                PermissionUtils.postDelayed(() -> PermissionFragment.beginRequest(activity, secondPermissions,
+                PermissionUtils.postDelayed(() -> PermissionFragment.launch(activity, secondPermissions,
                         new IPermissionInterceptor() {}, new OnPermissionCallback() {
 
                     @Override
-                    public void onGranted(List<String> permissions, boolean all) {
+                    public void onGranted(@NonNull List<String> permissions, boolean all) {
                         if (!all || !isAdded()) {
                             return;
                         }
@@ -320,7 +324,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
                     }
 
                     @Override
-                    public void onDenied(List<String> permissions, boolean never) {
+                    public void onDenied(@NonNull List<String> permissions, boolean never) {
                         if (!isAdded()) {
                             return;
                         }
@@ -338,7 +342,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
             }
 
             @Override
-            public void onDenied(List<String> permissions, boolean never) {
+            public void onDenied(@NonNull List<String> permissions, boolean never) {
                 if (!isAdded()) {
                     return;
                 }
@@ -352,9 +356,8 @@ public final class PermissionFragment extends Fragment implements Runnable {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (permissions == null || permissions.length == 0 ||
-                grantResults == null || grantResults.length == 0) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (permissions.length == 0 || grantResults.length == 0) {
             return;
         }
 
@@ -388,7 +391,9 @@ public final class PermissionFragment extends Fragment implements Runnable {
         // 如果请求成功的权限集合大小和请求的数组一样大时证明权限已经全部授予
         if (grantedPermissions.size() == allPermissions.size()) {
             // 代表申请的所有的权限都授予了
-            interceptor.grantedPermissions(activity, allPermissions, grantedPermissions, true, callback);
+            interceptor.grantedPermissionRequest(activity, allPermissions, grantedPermissions, true, callback);
+            // 权限申请结束
+            interceptor.finishPermissionRequest(activity, allPermissions, false, callback);
             return;
         }
 
@@ -396,17 +401,20 @@ public final class PermissionFragment extends Fragment implements Runnable {
         List<String> deniedPermissions = PermissionApi.getDeniedPermissions(allPermissions, grantResults);
 
         // 代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回 true 给开发人员，让开发者引导用户去设置界面开启权限
-        interceptor.deniedPermissions(activity, allPermissions, deniedPermissions,
+        interceptor.deniedPermissionRequest(activity, allPermissions, deniedPermissions,
                 PermissionApi.isPermissionPermanentDenied(activity, deniedPermissions), callback);
 
         // 证明还有一部分权限被成功授予，回调成功接口
         if (!grantedPermissions.isEmpty()) {
-            interceptor.grantedPermissions(activity, allPermissions, grantedPermissions, false, callback);
+            interceptor.grantedPermissionRequest(activity, allPermissions, grantedPermissions, false, callback);
         }
+
+        // 权限申请结束
+        interceptor.finishPermissionRequest(activity, allPermissions, false, callback);
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         Activity activity = getActivity();
         Bundle arguments = getArguments();
         if (activity == null || arguments == null || mDangerousRequest ||

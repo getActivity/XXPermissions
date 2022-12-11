@@ -1,5 +1,6 @@
 package com.hjq.permissions;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 
@@ -9,7 +10,8 @@ import android.os.Build;
  *    time   : 2022/01/22
  *    desc   : Android 版本判断
  */
-@SuppressWarnings("all")
+@SuppressLint("AnnotateVersionCheck")
+@SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
 final class AndroidVersion {
 
     static final int ANDROID_13 = Build.VERSION_CODES.TIRAMISU;
@@ -85,6 +87,20 @@ final class AndroidVersion {
      */
     static boolean isAndroid8() {
         return Build.VERSION.SDK_INT >= ANDROID_8;
+    }
+
+    /**
+     * 是否是 Android 7.1 及以上版本
+     */
+    static boolean isAndroid7_1() {
+        return Build.VERSION.SDK_INT >= ANDROID_7_1;
+    }
+
+    /**
+     * 是否是 Android 7.0 及以上版本
+     */
+    static boolean isAndroid7() {
+        return Build.VERSION.SDK_INT >= ANDROID_7;
     }
 
     /**

@@ -16,5 +16,5 @@ public interface OnPermissionPageCallback {
     /**
      * 权限已经拒绝
      */
-    void onDenied();
+    default void onDenied() {}
 }

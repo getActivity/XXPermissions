@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:text="申请单个危险权限" />
+                android:text="@string/demo_request_single_dangerous_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_group"
@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请多个危险权限" />
+                android:text="@string/demo_request_multiple_dangerous_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_location"
@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请定位权限" />
+                android:text="@string/demo_request_location_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_sensors"
@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请传感器权限" />
+                android:text="@string/demo_request_sensors_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_activity_recognition"
@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请身体活动权限" />
+                android:text="@string/demo_request_activity_recognition_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_bluetooth"
@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请蓝牙权限" />
+                android:text="@string/demo_request_bluetooth_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_wifi"
@@ -70,23 +70,23 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请 WIFI 权限" />
+                android:text="@string/demo_request_wifi_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_media_location"
+                android:id="@+id/btn_main_request_read_media_location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请读取图片位置权限" />
+                android:text="@string/demo_request_media_location_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_media_storage"
+                android:id="@+id/btn_main_request_media_read"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请媒体文件读取权限" />
+                android:text="@string/demo_request_media_read_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_manage_storage"
@@ -94,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请所有文件管理权限" />
+                android:text="@string/demo_request_all_file_access_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_install"
@@ -102,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请安装包权限" />
+                android:text="@string/demo_request_install_unknown_apps_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_window"
@@ -110,7 +110,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请悬浮窗权限" />
+                android:text="@string/demo_request_display_over_other_apps_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_setting"
@@ -118,7 +118,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请系统设置权限" />
+                android:text="@string/demo_request_modify_system_settings_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_notification"
@@ -126,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请通知权限" />
+                android:text="@string/demo_request_allow_notifications_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_post_notification"
@@ -134,7 +134,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请新版通知权限" />
+                android:text="@string/demo_request_send_notifications_permission_api33" />
 
             <Button
                 android:id="@+id/btn_main_request_notification_listener"
@@ -142,7 +142,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请通知栏监听权限" />
+                android:text="@string/demo_request_allow_notifications_access_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_package"
@@ -150,7 +150,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请使用统计权限" />
+                android:text="@string/demo_request_apps_with_usage_access_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_alarm"
@@ -158,7 +158,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请闹钟提醒权限" />
+                android:text="@string/demo_request_alarms_reminders_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_not_disturb"
@@ -166,7 +166,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请勿扰权限" />
+                android:text="@string/demo_request_do_not_disturb_access_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_ignore_battery"
@@ -174,7 +174,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请忽略电池优化权限" />
+                android:text="@string/demo_request_ignore_battery_optimize_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_picture_in_picture"
@@ -182,7 +182,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请画中画权限" />
+                android:text="@string/demo_request_picture_in_picture_permission" />
 
             <Button
                 android:id="@+id/btn_main_request_open_vpn"
@@ -190,7 +190,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
-                android:text="申请 VPN 权限" />
+                android:text="@string/demo_request_vpn_permission" />
 
             <Button
                 android:id="@+id/btn_main_app_details"
@@ -199,7 +199,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="10dp"
-                android:text="跳转到应用详情页" />
+                android:text="@string/demo_start_app_details_activity" />
 
         </LinearLayout>
 

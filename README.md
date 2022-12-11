@@ -1,3 +1,5 @@
+## [English Doc](README-en.md)
+
 # 权限请求框架
 
 ![](logo.png)
@@ -6,25 +8,25 @@
 
 * 博文地址：[一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
 
-* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/16.2/XXPermissions.apk)
+* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/16.5/XXPermissions.apk)
 
 ![](picture/demo_code.png)
 
 * 另外想对 Android 6.0 权限需要深入了解的，可以看这篇文章[Android 6.0 运行权限解析](https://www.jianshu.com/p/6a4dff744031)
 
-![](picture/1.jpg) ![](picture/2.jpg) ![](picture/3.jpg)
+![](picture/zh/1.jpg) ![](picture/zh/2.jpg) ![](picture/zh/3.jpg)
 
-![](picture/4.jpg) ![](picture/5.jpg) ![](picture/6.jpg)
+![](picture/zh/4.jpg) ![](picture/zh/5.jpg) ![](picture/zh/6.jpg)
 
-![](picture/7.jpg) ![](picture/8.jpg) ![](picture/9.jpg)
+![](picture/zh/7.jpg) ![](picture/zh/8.jpg) ![](picture/zh/9.jpg)
 
-![](picture/10.jpg) ![](picture/11.jpg) ![](picture/12.jpg)
+![](picture/zh/10.jpg) ![](picture/zh/11.jpg) ![](picture/zh/12.jpg)
 
-![](picture/13.jpg) ![](picture/14.jpg) ![](picture/15.jpg)
+![](picture/zh/13.jpg) ![](picture/zh/14.jpg) ![](picture/zh/15.jpg)
 
 #### 集成步骤
 
-* 如果你的项目 Gradle 配置是在 `7.0 以下`，需要在 `build.gradle` 文件中加入
+* 如果你的项目 Gradle 配置是在 `7.0` 以下，需要在 `build.gradle` 文件中加入
 
 ```groovy
 allprojects {
@@ -35,7 +37,7 @@ allprojects {
 }
 ```
 
-* 如果你的 Gradle 配置是 `7.0 及以上`，则需要在 `settings.gradle` 文件中加入
+* 如果你的 Gradle 配置是 `7.0` 及以上，则需要在 `settings.gradle` 文件中加入
 
 ```groovy
 dependencyResolutionManagement {
@@ -59,7 +61,7 @@ android {
 
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.github.getActivity:XXPermissions:16.2'
+    implementation 'com.github.getActivity:XXPermissions:16.5'
 }
 ```
 
@@ -83,7 +85,7 @@ android.enableJetifier = true
 
     <application>
 
-        <!-- 表示当前项目已经适配了分区存储特性 -->
+        <!-- 告知 XXPermissions 当前项目已经适配了分区存储特性 -->
         <meta-data
             android:name="ScopedStorage"
             android:value="true" />
@@ -114,7 +116,7 @@ XXPermissions.with(this)
         .request(new OnPermissionCallback() {
 
             @Override
-            public void onGranted(List<String> permissions, boolean all) {
+            public void onGranted(@NonNull List<String> permissions, boolean all) {
                 if (!all) {
                     toast("获取部分权限成功，但部分权限未正常授予");
                     return;
@@ -123,7 +125,7 @@ XXPermissions.with(this)
             }
 
             @Override
-            public void onDenied(List<String> permissions, boolean never) {
+            public void onDenied(@NonNull List<String> permissions, boolean never) {
                 if (never) {
                     toast("被永久拒绝授权，请手动授予录音和日历权限");
                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
@@ -181,7 +183,7 @@ XXPermissions.getDenied(Context context, String... permissions);
 // 判断某个权限是否为特殊权限
 XXPermissions.isSpecial(String permission);
 
-// 判断一个或多个权限是否被永久拒绝了
+// 判断一个或多个权限是否被永久拒绝了（一定要在权限申请的回调方法中调用才有效果）
 XXPermissions.isPermanentDenied(Activity activity, String... permissions);
 
 // 跳转到应用权限设置页
@@ -199,23 +201,23 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 #### 关于权限监听回调参数说明
 
-* 我们都知道，如果用户全部授予只会调用 **onGranted** 方法，如果用户全部拒绝只会调用 **onDenied** 方法。
+* 我们都知道，如果用户全部授予只会调用 `onGranted` 方法，如果用户全部拒绝只会调用 `onDenied` 方法。
 
 * 但是还有一种情况，如果在请求多个权限的情况下，这些权限不是被全部授予或者全部拒绝了，而是部分授权部分拒绝这种情况，框架会如何处理回调呢？
 
-* 框架会先调用 **onDenied** 方法，再调用 **onGranted** 方法。其中我们可以通过 **onGranted** 方法中的 **all** 参数来判断权限是否全部授予了。
+* 框架会先调用 `onDenied` 方法，再调用 `onGranted` 方法。其中我们可以通过 `onGranted` 方法中的 `all` 参数来判断权限是否全部授予了。
 
-* 如果想知道回调中的某个权限是否被授权或者拒绝，可以调用 **List** 类中的 **contains(Permission.XXX)** 方法来判断这个集合中是否包含了这个权限。
+* 如果想知道回调中的某个权限是否被授权或者拒绝，可以调用 `List` 类中的 `contains(Permission.XXX)` 方法来判断这个集合中是否包含了这个权限。`
 
-## [其他常见疑问请点击此处查看](HelpDoc.md)
+## [其他常见疑问请点击此处查看](HelpDoc-zh.md)
 
 #### 同类权限请求框架之间的对比
 
-|     适配细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode](https://github.com/Blankj/AndroidUtilCode)   | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |
+|     适配细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode-PermissionUtils](https://github.com/Blankj/AndroidUtilCode)   | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  16.2 |  2.0.3  |  1.6.4    |  1.31.0    |   4.9.2  |  0.12   |  3.0.0   |
+|    对应版本  |  16.5 |  2.0.3  |  1.7.1    |  1.31.0    |   4.9.2  |  0.12   |  3.0.0   |
 |    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |
-|    框架体积  |  52 KB  | 127 KB  |  90 KB  |   500 KB |  99 KB  | 28 KB  | 48 KB |
+|    框架体积  |  59 KB  | 127 KB  |  97 KB  |   500 KB |  99 KB  | 28 KB  | 48 KB |
 |  框架维护状态 |**维护中**|  停止维护 |**维护中**|  停止维护 | 停止维护 | 停止维护 | 停止维护 |
 |       闹钟提醒权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |     所有文件管理权限      |  ✅  |  ❌  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
@@ -229,7 +231,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 |     忽略电池优化权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |     查看应用使用情况权限   |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |        VPN 权限         |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|    Android 13 危险权限   |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |   ❌  |  ❌  |
+|    Android 13 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
 |    Android 12 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
 |    Android 11 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
 |    Android 10 危险权限   |  ✅  |  ✅  |  ✅  |  ❌ |  ✅  |   ❌  |  ❌  |
@@ -253,13 +255,13 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 #### 屏幕旋转场景适配介绍
 
-* 当系统权限申请对话框弹出后对 Activity 进行屏幕旋转，会导致权限申请回调失效，因为屏幕旋转会导致框架中的 Fragment 销毁重建，这样会导致里面的回调对象直接被回收，最终导致回调不正常。解决方案有几种，一是在清单文件中添加  `android:configChanges="orientation"` 属性，这样屏幕旋转时不会导致 Activity 和 Fragment 销毁重建，二是直接在清单文件中固定 Activity 显示的方向，但是以上两种方案都要使用框架的人处理，这样显然是不够灵活的，解铃还须系铃人，框架的问题应当由框架来解决，而 **RxPermissions** 的解决方式是给 PermissionFragment 对象设置 `fragment.setRetainInstance(true)`，这样就算屏幕旋转了，Activity 对象会销毁重建，而 Fragment 也不会跟着销毁重建，还是复用着之前那个对象，但是存在一个问题，如果 Activity 重写了 **onSaveInstanceState** 方法会直接导致这种方式失效，这样做显然只是治标不治本，而 **XXPermissions** 的方式会更直接点，在 **PermissionFragment** 绑定到 Activity 上面时，把当前 Activity 的**屏幕方向固定住**，在权限申请结束后再把**屏幕方向还原回去**。
+* 当系统权限申请对话框弹出后对 Activity 进行屏幕旋转，会导致权限申请回调失效，因为屏幕旋转会导致框架中的 Fragment 销毁重建，这样会导致里面的回调对象直接被回收，最终导致回调不正常。解决方案有几种，一是在清单文件中添加  `android:configChanges="orientation"` 属性，这样屏幕旋转时不会导致 Activity 和 Fragment 销毁重建，二是直接在清单文件中固定 Activity 显示的方向，但是以上两种方案都要使用框架的人处理，这样显然是不够灵活的，解铃还须系铃人，框架的问题应当由框架来解决，而 **RxPermissions** 的解决方式是给 PermissionFragment 对象设置 `fragment.setRetainInstance(true)`，这样就算屏幕旋转了，Activity 对象会销毁重建，而 Fragment 也不会跟着销毁重建，还是复用着之前那个对象，但是存在一个问题，如果 Activity 重写了 `onSaveInstanceState` 方法会直接导致这种方式失效，这样做显然只是治标不治本，而 **XXPermissions** 的方式会更直接点，在 **PermissionFragment** 绑定到 Activity 上面时，把当前 Activity 的**屏幕方向固定住**，在权限申请结束后再把**屏幕方向还原回去**。
 
 * 在所有的权限请求框架中，只要使用了 Fragment 申请权限都会出现这个问题，而 AndPermission 其实是通过创建新的 Activity 来申请权限，所以不会出现这个问题，PermissionsDispatcher 则是采用了 APT 生成代码的形式来申请权限，所以也没有这个问题，而 PermissionX 则是直接借鉴了 XXPermissions 的解决方案，详情请见 [XXPermissions/issues/49](https://github.com/getActivity/XXPermissions/issues/49) 、[PermissionX/issues/51](https://github.com/guolindev/PermissionX/issues/51)。
 
 #### 后台申请权限场景介绍
 
-* 当我们做耗时操作之后申请权限（例如在闪屏页获取隐私协议再申请权限），在网络请求的过程中将 Activity 返回桌面去（退到后台），然后会导致权限请求是在后台状态中进行，在这个时机上就可能会导致权限申请不正常，表现为不会显示授权对话框，处理不当的还会导致崩溃，例如 [RxPeremission/issues/249](https://github.com/tbruyelle/RxPermissions/issues/249)。原因在于框架中的 PermissionFragment 在 **commit / commitNow** 到 Activity 的时候会做一个检测，如果 Activity 的状态是不可见时则会抛出异常，而 **RxPeremission** 正是使用了 **commitNow** 才会导致崩溃 ，使用 **commitAllowingStateLoss / commitNowAllowingStateLoss** 则可以避开这个检测，虽然这样可以避免崩溃，但是会出现另外一个问题，系统提供的 **requestPermissions** API 在 Activity 不可见时调用也不会弹出授权对话框，**XXPermissions** 的解决方式是将 **requestPermissions** 时机从 **create** 转移到了 **resume**，因为 Activity 和 Fragment 的生命周期方法是捆绑在一起的，如果 Activity 是不可见的，那么就算创建了 Fragment 也只会调用 **onCreate** 方法，而不会去调用它的 **onResume** 方法，最后当 Activity 从后台返回到前台时，不仅会触发 **Activity.onResume** 方法，同时也会触发 **PermissionFragment** 的 **onResume** 方法，在这个方法申请权限就可以保证最终 **requestPermissions** 调用的时机是在 Activity **处于可见状态的情况**下。
+* 当我们做耗时操作之后申请权限（例如在闪屏页获取隐私协议再申请权限），在网络请求的过程中将 Activity 返回桌面去（退到后台），然后会导致权限请求是在后台状态中进行，在这个时机上就可能会导致权限申请不正常，表现为不会显示授权对话框，处理不当的还会导致崩溃，例如 [RxPeremission/issues/249](https://github.com/tbruyelle/RxPermissions/issues/249)。原因在于框架中的 PermissionFragment 在 `commit` / `commitNow` 到 Activity 的时候会做一个检测，如果 Activity 的状态是不可见时则会抛出异常，而 **RxPeremission** 正是使用了 `commitNow` 才会导致崩溃 ，使用 `commitAllowingStateLoss` / `commitNowAllowingStateLoss` 则可以避开这个检测，虽然这样可以避免崩溃，但是会出现另外一个问题，系统提供的 `requestPermissions` API 在 Activity 不可见时调用也不会弹出授权对话框，**XXPermissions** 的解决方式是将 `requestPermissions` 时机从 `onCreate` 转移到了 `onResume`，这是因为 `Activity` 和 `Fragment` 的生命周期方法是捆绑在一起的，如果 `Activity` 是不可见的，那么就算创建了 `Fragment` 也只会调用 `onCreate` 方法，而不会去调用它的 `onResume` 方法，最后当 Activity 从后台返回到前台时，不仅会触发 `Activity` 的 `onResume` 方法，也会触发 `PermissionFragment` 的 `onResume` 方法，在这个方法申请权限就可以保证最终 `requestPermissions` 调用的时机是在 `Activity` 处于可见状态的情况下。
 
 #### Android 12 内存泄漏问题修复介绍
 
@@ -285,11 +287,11 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
     * AppOpsManager.startWatchingStarted
 
-* 罪魁祸首其实是 **PermissionUsageHelper** 将 Context 对象作为字段持有着，并在构造函数中调用 `AppOpsManager.startWatchingStarted` 开启监听，这样 PermissionUsageHelper 对象就会被添加进 `AppOpsManager#mStartedWatchers` 集合中，这样导致在 Activity 主动调用 finish 的时候，并没有使用 stopWatchingStarted 来移除监听，导致 Activity 对象一直被 `AppOpsManager#mStartedWatchers` 集合中持有着，所以间接导致了 Activity 对象无法被系统回收。
+* 罪魁祸首其实是 `PermissionUsageHelper` 将 `Context` 对象作为字段持有着，并在构造函数中调用 `AppOpsManager.startWatchingStarted` 开启监听，这样 PermissionUsageHelper 对象就会被添加进 `AppOpsManager#mStartedWatchers` 集合中，这样导致在 Activity 主动调用 finish 的时候，并没有使用 `stopWatchingStarted` 来移除监听，导致 `Activity` 对象一直被 `AppOpsManager#mStartedWatchers` 集合中持有着，所以间接导致了 Activity 对象无法被系统回收。
 
-* 针对这个问题处理也很简单粗暴，就是将在外层传入的 **Context** 参数从 **Activity** 对象给替换成 **Application** 对象即可，有人可能会说了，Activity 里面才有 `shouldShowRequestPermissionRationale` 方法，而 Application 里面没有这个方法怎么办？看了一下这个方法的实现，其实那个方法最终会调用 `PackageManager.shouldShowRequestPermissionRationale` 方法（**隐藏 API，但是并不在黑名单中**）里面去，所以只要能获取到 **PackageManager** 对象即可，最后再使用反射去执行这个方法，这样就能避免出现内存泄漏。
+* 针对这个问题处理也很简单粗暴，就是将在外层传入的 `Context` 参数从 `Activity` 对象给替换成 `Application` 对象即可，有人可能会说了，`Activity` 里面才有 `shouldShowRequestPermissionRationale` 方法，而 Application 里面没有这个方法怎么办？看了一下这个方法的实现，其实那个方法最终会调用 `PackageManager.shouldShowRequestPermissionRationale` 方法（**隐藏 API，但是并不在黑名单中**）里面去，所以只要能获取到 `PackageManager` 对象即可，最后再使用反射去执行这个方法，这样就能避免出现内存泄漏。
 
-* 幸好 Google 没有将 PackageManager.shouldShowRequestPermissionRationale 列入到反射黑名单中，否则这次想给 Google 擦屁股都没有办法了，要不然只能用修改系统源码实现的方式，但这种方式只能等谷歌在后续的 Android 版本上面修复了，不过庆幸的是，在 Android 12 L 的版本之后，这个问题被修复了，[具体的提交记录可以点击此处查看](https://cs.android.com/android/_/android/platform/frameworks/base/+/0d47a03bfa8f4ca54b883ff3c664cd4ea4a624d9:core/java/android/permission/PermissionUsageHelper.java;dlc=cec069482f80019c12f3c06c817d33fc5ad6151f)，但是对于 Android 12 而言，这仍是一个历史遗留问题。
+* 幸好 Google 没有将 `PackageManager.shouldShowRequestPermissionRationale` 列入到反射黑名单中，否则这次想给 Google 擦屁股都没有办法了，要不然只能用修改系统源码实现的方式，但这种方式只能等谷歌在后续的 Android 版本上面修复了，不过庆幸的是，在 `Android 12 L` 的版本之后，这个问题被修复了，[具体的提交记录可以点击此处查看](https://cs.android.com/android/_/android/platform/frameworks/base/+/0d47a03bfa8f4ca54b883ff3c664cd4ea4a624d9:core/java/android/permission/PermissionUsageHelper.java;dlc=cec069482f80019c12f3c06c817d33fc5ad6151f)，但是对于 `Android 12` 而言，这仍是一个历史遗留问题。
 
 * 值得注意的是：XXPermissions 是目前同类框架第一款也是唯一一款修复这个问题的框架，另外针对这个问题，我还给谷歌的 [AndroidX](https://github.com/androidx/androidx/pull/435) 项目无偿提供了解决方案，目前 Merge Request 已被合入主分支，我相信通过这一举措，将解决全球近 10 亿台 Android 12 设备出现的内存泄露问题。
 
@@ -327,13 +329,15 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 #### 框架亮点
 
-* 首款适配 Android 13 的权限请求框架
-
-* 首款也是唯一一款适配所有 Android 版本的权限请求框架
+* 一马当先：首款适配 Android 13 的权限请求框架
 
 * 简洁易用：采用链式调用的方式，使用只需一句代码
 
 * 体积感人：功能在同类框架中是最全的，但是框架体积是垫底的
+
+* 支持全面：首款也是唯一一款适配所有 Android 版本的权限请求框架
+
+* 技术难题攻坚：首款解决权限申请在 Android 12 出现系统内存泄漏的框架
 
 * 适配极端情况：无论在多么极端恶劣的环境下申请权限，框架依然坚挺
 
@@ -366,6 +370,8 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 * Android 版本适配：[AndroidVersionAdapter](https://github.com/getActivity/AndroidVersionAdapter) ![](https://img.shields.io/github/stars/getActivity/AndroidVersionAdapter.svg) ![](https://img.shields.io/github/forks/getActivity/AndroidVersionAdapter.svg)
 
 * Android 代码规范：[AndroidCodeStandard](https://github.com/getActivity/AndroidCodeStandard) ![](https://img.shields.io/github/stars/getActivity/AndroidCodeStandard.svg) ![](https://img.shields.io/github/forks/getActivity/AndroidCodeStandard.svg)
+
+* Android 资源大汇总：[AndroidIndex](https://github.com/getActivity/AndroidIndex) ![](https://img.shields.io/github/stars/getActivity/AndroidIndex.svg) ![](https://img.shields.io/github/forks/getActivity/AndroidIndex.svg)
 
 * Android 开源排行榜：[AndroidGithubBoss](https://github.com/getActivity/AndroidGithubBoss) ![](https://img.shields.io/github/stars/getActivity/AndroidGithubBoss.svg) ![](https://img.shields.io/github/forks/getActivity/AndroidGithubBoss.svg)
 

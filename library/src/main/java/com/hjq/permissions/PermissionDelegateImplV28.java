@@ -2,6 +2,7 @@ package com.hjq.permissions;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 
 /**
@@ -14,7 +15,7 @@ import android.support.annotation.RequiresApi;
 class PermissionDelegateImplV28 extends PermissionDelegateImplV26 {
 
    @Override
-   public boolean isGrantedPermission(Context context, String permission) {
+   public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
       if (PermissionUtils.equalsPermission(permission, Permission.ACCEPT_HANDOVER)) {
          return PermissionUtils.checkSelfPermission(context, permission);
       }
@@ -22,7 +23,7 @@ class PermissionDelegateImplV28 extends PermissionDelegateImplV26 {
    }
 
    @Override
-   public boolean isPermissionPermanentDenied(Activity activity, String permission) {
+   public boolean isPermissionPermanentDenied(@NonNull Activity activity, @NonNull String permission) {
       if (PermissionUtils.equalsPermission(permission, Permission.ACCEPT_HANDOVER)) {
          return !PermissionUtils.checkSelfPermission(activity, permission) &&
                  !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
