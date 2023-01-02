@@ -3,7 +3,6 @@ package com.hjq.permissions;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -46,7 +45,7 @@ final class PermissionChecker {
             return false;
         }
 
-        if (Build.VERSION.SDK_INT >= AndroidVersion.ANDROID_4_2 && activity.isDestroyed()) {
+        if (AndroidVersion.isAndroid4_2() && activity.isDestroyed()) {
             if (checkMode) {
                 // 这个 Activity 对象当前不能是销毁状态，这种情况常出现在执行异步请求后申请权限
                 // 请自行在外层判断 Activity 状态是否正常之后再进入权限申请
@@ -75,8 +74,8 @@ final class PermissionChecker {
             return false;
         }
 
-        if (Build.VERSION.SDK_INT > AndroidVersion.ANDROID_12_L) {
-            // 如果是 Android 12L 后面的版本，则不进行检查
+        if (AndroidVersion.getAndroidVersionCode() > AndroidVersion.ANDROID_13) {
+            // 如果是 Android 13 后面的版本，则不进行检查
             return true;
         }
 
@@ -99,12 +98,13 @@ final class PermissionChecker {
                 }
             }
             for (String permission : requestPermissions) {
-                if (!PermissionUtils.containsPermission(allPermissions, permission)) {
-                    // 请不要申请危险权限和特殊权限之外的权限
-                    throw new IllegalArgumentException("The " + permission +
-                            " is not a dangerous permission or special permission, " +
-                            "please do not request dynamically");
+                if (PermissionUtils.containsPermission(allPermissions, permission)) {
+                    continue;
                 }
+                // 请不要申请危险权限和特殊权限之外的权限
+                throw new IllegalArgumentException("The " + permission +
+                        " is not a dangerous permission or special permission, " +
+                        "please do not request dynamically");
             }
         }
         return true;
@@ -311,8 +311,8 @@ final class PermissionChecker {
     /**
      * 检查蓝牙和 WIFI 权限申请是否符合规范
      */
-    static void checkNearbyDevicesPermissions(@NonNull List<String> requestPermissions,
-                                                    @Nullable AndroidManifestInfo androidManifestInfo) {
+    static void checkNearbyDevicesPermission(@NonNull List<String> requestPermissions,
+                                             @Nullable AndroidManifestInfo androidManifestInfo) {
         // 如果请求的权限中没有蓝牙权限并且 WIFI 权限，那么就不符合条件，停止检查
         if (!PermissionUtils.containsPermission(requestPermissions, Permission.BLUETOOTH_SCAN) &&
                 !PermissionUtils.containsPermission(requestPermissions, Permission.NEARBY_WIFI_DEVICES)) {
@@ -395,7 +395,7 @@ final class PermissionChecker {
     /**
      * 检查通知栏监听权限
      */
-    static void checkPictureInPicturePermission(Activity activity, @NonNull List<String> requestPermissions,
+    static void checkPictureInPicturePermission(@NonNull Activity activity, @NonNull List<String> requestPermissions,
                                                 @Nullable AndroidManifestInfo androidManifestInfo) {
         // 如果请求的权限中没有画中画权限，那么就不符合条件，停止检查
         if (!PermissionUtils.containsPermission(requestPermissions, Permission.PICTURE_IN_PICTURE)) {
@@ -537,16 +537,6 @@ final class PermissionChecker {
                     checkManifestPermission(permissionInfoList, Permission.ACCESS_FINE_LOCATION, AndroidVersion.ANDROID_12_L);
                     continue;
                 }
-
-                if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
-                    // https://developer.android.google.cn/reference/android/Manifest.permission?hl=zh_cn#USE_EXACT_ALARM
-                    if (AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_13) {
-                        checkManifestPermission(permissionInfoList, Permission.SCHEDULE_EXACT_ALARM, AndroidVersion.ANDROID_12_L);
-                    } else {
-                        checkManifestPermission(permissionInfoList, Permission.SCHEDULE_EXACT_ALARM);
-                    }
-                    continue;
-                }
             }
 
             if (minSdkVersion < AndroidVersion.ANDROID_12) {
@@ -584,6 +574,13 @@ final class PermissionChecker {
                     checkManifestPermission(permissionInfoList, Permission.READ_PHONE_STATE, AndroidVersion.ANDROID_7_1);
                     continue;
                 }
+            }
+
+            if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
+                // 申请读取应用列表权限需要在清单文件中注册 QUERY_ALL_PACKAGES，
+                // 否则申请 GET_INSTALLED_APPS 权限成功也是白搭，是获取不到第三方安装列表信息的
+                // Manifest.permission.QUERY_ALL_PACKAGES
+                checkManifestPermission(permissionInfoList, "android.permission.QUERY_ALL_PACKAGES");
             }
 
             checkManifestPermission(permissionInfoList, permission);

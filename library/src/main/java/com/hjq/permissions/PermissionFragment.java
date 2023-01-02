@@ -299,8 +299,8 @@ public final class PermissionFragment extends Fragment implements Runnable {
         PermissionFragment.launch(activity, firstPermissions, new IPermissionInterceptor() {}, new OnPermissionCallback() {
 
             @Override
-            public void onGranted(@NonNull List<String> permissions, boolean all) {
-                if (!all || !isAdded()) {
+            public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                if (!allGranted || !isAdded()) {
                     return;
                 }
 
@@ -312,8 +312,8 @@ public final class PermissionFragment extends Fragment implements Runnable {
                         new IPermissionInterceptor() {}, new OnPermissionCallback() {
 
                     @Override
-                    public void onGranted(@NonNull List<String> permissions, boolean all) {
-                        if (!all || !isAdded()) {
+                    public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                        if (!allGranted || !isAdded()) {
                             return;
                         }
 
@@ -324,7 +324,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
                     }
 
                     @Override
-                    public void onDenied(@NonNull List<String> permissions, boolean never) {
+                    public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
                         if (!isAdded()) {
                             return;
                         }
@@ -342,7 +342,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
             }
 
             @Override
-            public void onDenied(@NonNull List<String> permissions, boolean never) {
+            public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
                 if (!isAdded()) {
                     return;
                 }

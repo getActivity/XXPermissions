@@ -48,6 +48,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
@@ -63,6 +64,10 @@
 
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
+
+    <uses-permission android:name="com.android.permission.GET_INSTALLED_APPS" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
 
     <application
         android:name=".AppApplication"

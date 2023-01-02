@@ -16,6 +16,9 @@
     <string name="common_permission_media_location_hint_fail">Failed to get media location permission\nPlease clear app data and try again</string>
     <string name="common_permission_goto_setting_page">Go to authorization</string>
 
+    <string name="common_permission_unknown">permission</string>
+    <string name="common_permission_comma">, </string>
+
     <string name="common_permission_calendar">calendar permission</string>
     <string name="common_permission_camera">camera permission</string>
     <string name="common_permission_contacts">contacts permission</string>
@@ -35,6 +38,7 @@
     <string name="common_permission_post_notifications">send notification permission</string>
     <string name="common_permission_image_and_video">image and video permission</string>
     <string name="common_permission_music_and_audio">music and audio permission</string>
+    <string name="common_permission_get_installed_apps">get info about installed apps permission</string>
 
     <string name="common_permission_all_file_access">all file access permission</string>
     <string name="common_permission_install_unknown_apps">install unknown apps permission</string>

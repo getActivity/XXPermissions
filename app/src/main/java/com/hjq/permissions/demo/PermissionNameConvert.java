@@ -21,15 +21,15 @@ public final class PermissionNameConvert {
      * 获取权限名称
      */
    public static String getPermissionString(Context context, List<String> permissions) {
-      return listToString(permissionsToNames(context, permissions));
+      return listToString(context, permissionsToNames(context, permissions));
    }
 
    /**
     * String 列表拼接成一个字符串
     */
-   public static String listToString(List<String> hints) {
+   public static String listToString(Context context, List<String> hints) {
       if (hints == null || hints.isEmpty()) {
-         return "";
+         return context.getString(R.string.common_permission_unknown);
       }
 
       StringBuilder builder = new StringBuilder();
@@ -308,6 +308,13 @@ public final class PermissionNameConvert {
                }
                case Permission.PICTURE_IN_PICTURE: {
                    String hint = context.getString(R.string.common_permission_picture_in_picture);
+                   if (!permissionNames.contains(hint)) {
+                       permissionNames.add(hint);
+                   }
+                   break;
+               }
+               case Permission.GET_INSTALLED_APPS: {
+                   String hint = context.getString(R.string.common_permission_get_installed_apps);
                    if (!permissionNames.contains(hint)) {
                        permissionNames.add(hint);
                    }

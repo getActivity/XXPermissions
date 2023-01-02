@@ -193,6 +193,14 @@
                 android:text="@string/demo_request_vpn_permission" />
 
             <Button
+                android:id="@+id/btn_main_request_get_installed_app"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="@string/demo_request_get_installed_apps_permission" />
+
+            <Button
                 android:id="@+id/btn_main_app_details"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

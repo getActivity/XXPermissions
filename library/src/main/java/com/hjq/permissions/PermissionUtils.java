@@ -22,6 +22,9 @@ import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.view.Surface;
 
+import org.xmlpull.v1.XmlPullParserException;
+
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -142,12 +145,19 @@ final class PermissionUtils {
             return null;
         }
 
-        AndroidManifestInfo androidManifestInfo = AndroidManifestParser.parseAndroidManifest(context, apkPathCookie);
-        // 如果读取到的包名和当前应用的包名不是同一个的话，证明这个清单文件的内容不是当前应用的
-        // 具体案例：https://github.com/getActivity/XXPermissions/issues/102
-        if (!TextUtils.equals(context.getPackageName(),
-                androidManifestInfo.packageName)) {
-            return null;
+        AndroidManifestInfo androidManifestInfo = null;
+        try {
+            androidManifestInfo = AndroidManifestParser.parseAndroidManifest(context, apkPathCookie);
+            // 如果读取到的包名和当前应用的包名不是同一个的话，证明这个清单文件的内容不是当前应用的
+            // 具体案例：https://github.com/getActivity/XXPermissions/issues/102
+            if (!TextUtils.equals(context.getPackageName(),
+                    androidManifestInfo.packageName)) {
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
         }
 
         return androidManifestInfo;
@@ -204,6 +214,11 @@ final class PermissionUtils {
             if (!AndroidVersion.isAndroid8() &&
                     (PermissionUtils.equalsPermission(permission, Permission.ANSWER_PHONE_CALLS) ||
                             PermissionUtils.equalsPermission(permission, Permission.READ_PHONE_NUMBERS))) {
+                recheck = true;
+            }
+
+            // 如果是读取应用列表权限（国产权限），则需要重新检查
+            if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
                 recheck = true;
             }
 
@@ -279,11 +294,14 @@ final class PermissionUtils {
     static int findApkPathCookie(@NonNull Context context, @NonNull String apkPath) {
         AssetManager assets = context.getAssets();
         Integer cookie;
+
         try {
+
             if (AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_9 &&
                     AndroidVersion.getAndroidVersionCode() >= AndroidVersion.ANDROID_9 &&
                     AndroidVersion.getAndroidVersionCode() < AndroidVersion.ANDROID_11) {
-                // 反射套娃操作：实测这种方式只在 Android 9.0 和 10.0 有效果，在 Android 11 上面就失效了
+
+                // 反射套娃操作：实测这种方式只在 Android 9.0 和 Android 10.0 有效果，在 Android 11 上面就失效了
                 Method metaGetDeclaredMethod = Class.class.getDeclaredMethod(
                         "getDeclaredMethod", String.class, Class[].class);
                 metaGetDeclaredMethod.setAccessible(true);
@@ -300,21 +318,13 @@ final class PermissionUtils {
                     }
                 }
             }
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
 
-
-        try {
             Method addAssetPathMethod = assets.getClass().getDeclaredMethod("addAssetPath", String.class);
             cookie = (Integer) addAssetPathMethod.invoke(assets, apkPath);
             if (cookie != null) {
                 return cookie;
             }
+
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -322,7 +332,10 @@ final class PermissionUtils {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
-        // 获取失败
+
+        // 获取失败直接返回 0
+        // 为什么不直接返回 Integer，而是返回 int 类型？
+        // 去看看 AssetManager.findCookieForPath 获取失败会返回什么就知道了
         return 0;
     }
 

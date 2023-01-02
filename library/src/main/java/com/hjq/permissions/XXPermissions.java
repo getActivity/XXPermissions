@@ -181,7 +181,7 @@ public final class XXPermissions {
             // 检查申请的通知栏监听权限是否符合规范
             PermissionChecker.checkNotificationListenerPermission(permissions, androidManifestInfo);
             // 检查蓝牙和 WIFI 权限申请是否符合规范
-            PermissionChecker.checkNearbyDevicesPermissions(permissions, androidManifestInfo);
+            PermissionChecker.checkNearbyDevicesPermission(permissions, androidManifestInfo);
             // 检查申请的权限和 targetSdk 版本是否能吻合
             PermissionChecker.checkTargetSdkVersion(context, permissions);
             // 检测权限有没有在清单文件中注册

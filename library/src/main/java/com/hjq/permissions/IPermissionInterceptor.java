@@ -31,16 +31,16 @@ public interface IPermissionInterceptor {
      *
      * @param allPermissions             申请的权限
      * @param grantedPermissions         已授予的权限
-     * @param all                        是否全部授予
+     * @param allGranted                 是否全部授予
      * @param callback                   权限申请回调
      */
     default void grantedPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
-                                          @NonNull List<String> grantedPermissions, boolean all,
+                                          @NonNull List<String> grantedPermissions, boolean allGranted,
                                           @Nullable OnPermissionCallback callback) {
         if (callback == null) {
             return;
         }
-        callback.onGranted(grantedPermissions, all);
+        callback.onGranted(grantedPermissions, allGranted);
     }
 
     /**
@@ -48,16 +48,16 @@ public interface IPermissionInterceptor {
      *
      * @param allPermissions            申请的权限
      * @param deniedPermissions         已拒绝的权限
-     * @param never                     是否勾选了不再询问选项
+     * @param doNotAskAgain             是否勾选了不再询问选项
      * @param callback                  权限申请回调
      */
     default void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
-                                         @NonNull List<String> deniedPermissions, boolean never,
+                                         @NonNull List<String> deniedPermissions, boolean doNotAskAgain,
                                          @Nullable OnPermissionCallback callback) {
         if (callback == null) {
             return;
         }
-        callback.onDenied(deniedPermissions, never);
+        callback.onDenied(deniedPermissions, doNotAskAgain);
     }
 
 

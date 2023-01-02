@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.PermissionInfo;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -20,6 +22,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
 
    @Override
    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
+
       // 判断是否是特殊权限
       if (PermissionUtils.isSpecialPermission(permission)) {
 
@@ -139,6 +142,18 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
 
       /* ---------------------------------------------------------------------------------------- */
 
+      if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
+         // 判断是否支持申请该权限
+         if (isSupportGetInstalledAppsPermission(context)) {
+            // 如果支持申请，那么再去判断权限是否授予
+            return PermissionUtils.checkSelfPermission(context, permission);
+         }
+         // 如果不支持申请，则直接返回 true（代表有这个权限），反正也不会崩溃，顶多就是获取不到其他应用列表
+         return true;
+      }
+
+      /* ---------------------------------------------------------------------------------------- */
+
       return PermissionUtils.checkSelfPermission(context, permission);
    }
 
@@ -238,6 +253,19 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
             return !PermissionUtils.checkSelfPermission(activity, Permission.READ_PHONE_STATE) &&
                     !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_PHONE_STATE);
          }
+      }
+
+      /* ---------------------------------------------------------------------------------------- */
+
+      if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
+         // 判断是否支持申请该权限
+         if (isSupportGetInstalledAppsPermission(activity)) {
+            // 如果支持申请，那么再去判断权限是否永久拒绝
+            return !PermissionUtils.checkSelfPermission(activity, permission) &&
+                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+         }
+         // 如果不支持申请，则直接返回 false（代表没有永久拒绝）
+         return false;
       }
 
       /* ---------------------------------------------------------------------------------------- */
@@ -362,5 +390,34 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
          intent = PermissionUtils.getApplicationDetailsIntent(context);
       }
       return intent;
+   }
+
+   /**
+    * 判断是否支持获取应用列表权限
+    */
+   private boolean isSupportGetInstalledAppsPermission(Context context) {
+      try {
+         PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(Permission.GET_INSTALLED_APPS, 0);
+         if (permissionInfo != null) {
+            if (AndroidVersion.isAndroid9()) {
+               return permissionInfo.getProtection() == PermissionInfo.PROTECTION_DANGEROUS;
+            } else {
+               return (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_MASK_BASE) == PermissionInfo.PROTECTION_DANGEROUS;
+            }
+         }
+      } catch (PackageManager.NameNotFoundException e) {
+         e.printStackTrace();
+      }
+
+      try {
+         // 移动终端应用软件列表权限实施指南：http://www.taf.org.cn/upload/AssociationStandard/TTAF%20108-2022%20%E7%A7%BB%E5%8A%A8%E7%BB%88%E7%AB%AF%E5%BA%94%E7%94%A8%E8%BD%AF%E4%BB%B6%E5%88%97%E8%A1%A8%E6%9D%83%E9%99%90%E5%AE%9E%E6%96%BD%E6%8C%87%E5%8D%97.pdf
+         // 这是兜底方案，因为测试了大量的机型，除了荣耀的 Magic UI 有按照这个规范去做，其他厂商（包括华为的 HarmonyOS）都没有按照这个规范去做
+         // 虽然可以只用上面那种判断权限是不是危险权限的方式，但是避免不了有的手机厂商用下面的这种，所以两种都写比较好，小孩子才做选择，大人我全都要
+         return Settings.Secure.getInt(context.getContentResolver(), "oem_installed_apps_runtime_permission_enable") == 1;
+      } catch (Settings.SettingNotFoundException e) {
+         e.printStackTrace();
+      }
+
+      return false;
    }
 }

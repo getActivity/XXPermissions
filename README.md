@@ -8,7 +8,7 @@
 
 * 博文地址：[一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
 
-* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/16.5/XXPermissions.apk)
+* 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/16.6/XXPermissions.apk)
 
 ![](picture/demo_code.png)
 
@@ -61,7 +61,7 @@ android {
 
 dependencies {
     // 权限请求框架：https://github.com/getActivity/XXPermissions
-    implementation 'com.github.getActivity:XXPermissions:16.5'
+    implementation 'com.github.getActivity:XXPermissions:16.6'
 }
 ```
 
@@ -116,8 +116,8 @@ XXPermissions.with(this)
         .request(new OnPermissionCallback() {
 
             @Override
-            public void onGranted(@NonNull List<String> permissions, boolean all) {
-                if (!all) {
+            public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                if (!allGranted) {
                     toast("获取部分权限成功，但部分权限未正常授予");
                     return;
                 }
@@ -125,8 +125,8 @@ XXPermissions.with(this)
             }
 
             @Override
-            public void onDenied(@NonNull List<String> permissions, boolean never) {
-                if (never) {
+            public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
+                if (doNotAskAgain) {
                     toast("被永久拒绝授权，请手动授予录音和日历权限");
                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
                     XXPermissions.startPermissionActivity(context, permissions);
@@ -151,16 +151,16 @@ XXPermissions.with(this)
     //.unchecked()
     .request(object : OnPermissionCallback {
 
-        override fun onGranted(permissions: MutableList<String>, all: Boolean) {
-            if (!all) {
+        override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {
+            if (!allGranted) {
                 toast("获取部分权限成功，但部分权限未正常授予")
                 return
             }
             toast("获取录音和日历权限成功")
         }
 
-        override fun onDenied(permissions: MutableList<String>, never: Boolean) {
-            if (never) {
+        override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
+            if (doNotAskAgain) {
                 toast("被永久拒绝授权，请手动授予录音和日历权限")
                 // 如果是被永久拒绝就跳转到应用权限系统设置页面
                 XXPermissions.startPermissionActivity(context, permissions)
@@ -205,7 +205,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 * 但是还有一种情况，如果在请求多个权限的情况下，这些权限不是被全部授予或者全部拒绝了，而是部分授权部分拒绝这种情况，框架会如何处理回调呢？
 
-* 框架会先调用 `onDenied` 方法，再调用 `onGranted` 方法。其中我们可以通过 `onGranted` 方法中的 `all` 参数来判断权限是否全部授予了。
+* 框架会先调用 `onDenied` 方法，再调用 `onGranted` 方法。其中我们可以通过 `onGranted` 方法中的 `allGranted` 参数来判断权限是否全部授予了。
 
 * 如果想知道回调中的某个权限是否被授权或者拒绝，可以调用 `List` 类中的 `contains(Permission.XXX)` 方法来判断这个集合中是否包含了这个权限。`
 
@@ -215,9 +215,9 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 |     适配细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode-PermissionUtils](https://github.com/Blankj/AndroidUtilCode)   | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  16.5 |  2.0.3  |  1.7.1    |  1.31.0    |   4.9.2  |  0.12   |  3.0.0   |
+|    对应版本  |  16.6 |  2.0.3  |  1.7.1    |  1.31.0    |   4.9.2  |  0.12   |  3.0.0   |
 |    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |
-|    框架体积  |  59 KB  | 127 KB  |  97 KB  |   500 KB |  99 KB  | 28 KB  | 48 KB |
+|    框架体积  |  60 KB  | 127 KB  |  97 KB  |   500 KB |  99 KB  | 28 KB  | 48 KB |
 |  框架维护状态 |**维护中**|  停止维护 |**维护中**|  停止维护 | 停止维护 | 停止维护 | 停止维护 |
 |       闹钟提醒权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |     所有文件管理权限      |  ✅  |  ❌  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
@@ -231,6 +231,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 |     忽略电池优化权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |     查看应用使用情况权限   |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |        VPN 权限         |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|      读取应用列表权限     |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |    Android 13 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
 |    Android 12 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
 |    Android 11 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |

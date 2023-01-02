@@ -1,7 +1,6 @@
 package com.hjq.permissions.demo;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -91,6 +90,7 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
             new AlertDialog.Builder(activity)
                     .setTitle(R.string.common_permission_description)
                     .setMessage(message)
+                    .setCancelable(false)
                     .setPositiveButton(R.string.common_permission_granted, (dialog, which) -> {
                         dialog.dismiss();
                         PermissionFragment.launch(activity, new ArrayList<>(allPermissions),
@@ -98,9 +98,10 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                     })
                     .setNegativeButton(R.string.common_permission_denied, (dialog, which) -> {
                         dialog.dismiss();
-                        if (callback != null) {
-                            callback.onDenied(deniedPermissions, false);
+                        if (callback == null) {
+                            return;
                         }
+                        callback.onDenied(deniedPermissions, false);
                     })
                     .show();
         }
@@ -108,23 +109,23 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
 
     @Override
     public void grantedPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
-                                         @NonNull List<String> grantedPermissions, boolean all,
+                                         @NonNull List<String> grantedPermissions, boolean allGranted,
                                          @Nullable OnPermissionCallback callback) {
         if (callback == null) {
             return;
         }
-        callback.onGranted(grantedPermissions, all);
+        callback.onGranted(grantedPermissions, allGranted);
     }
 
     @Override
     public void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
-                                        @NonNull List<String> deniedPermissions, boolean never,
+                                        @NonNull List<String> deniedPermissions, boolean doNotAskAgain,
                                         @Nullable OnPermissionCallback callback) {
         if (callback != null) {
-            callback.onDenied(deniedPermissions, never);
+            callback.onDenied(deniedPermissions, doNotAskAgain);
         }
 
-        if (never) {
+        if (doNotAskAgain) {
             if (deniedPermissions.size() == 1 && Permission.ACCESS_MEDIA_LOCATION.equals(deniedPermissions.get(0))) {
                 ToastUtils.show(R.string.common_permission_media_location_hint_fail);
                 return;
@@ -152,7 +153,8 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
         final String message;
         List<String> permissionNames = PermissionNameConvert.permissionsToNames(activity, deniedPermissions);
         if (!permissionNames.isEmpty()) {
-            message = activity.getString(R.string.common_permission_fail_assign_hint, PermissionNameConvert.listToString(permissionNames));
+            message = activity.getString(R.string.common_permission_fail_assign_hint,
+                    PermissionNameConvert.listToString(activity, permissionNames));
         } else {
             message = activity.getString(R.string.common_permission_fail_hint);
         }
@@ -206,7 +208,8 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
 
         List<String> permissionNames = PermissionNameConvert.permissionsToNames(activity, deniedPermissions);
         if (!permissionNames.isEmpty()) {
-            message = activity.getString(R.string.common_permission_manual_assign_fail_hint, PermissionNameConvert.listToString(permissionNames));
+            message = activity.getString(R.string.common_permission_manual_assign_fail_hint,
+                    PermissionNameConvert.listToString(activity, permissionNames));
         } else {
             message = activity.getString(R.string.common_permission_manual_fail_hint);
         }

@@ -9,11 +9,30 @@ import android.Manifest;
  *    desc   : 危险权限和特殊权限常量集，参考 {@link Manifest.permission}
  *    doc    : https://developer.android.google.cn/reference/android/Manifest.permission?hl=zh_cn
  *             https://developer.android.google.cn/guide/topics/permissions/overview?hl=zh-cn#normal-dangerous
+ *             http://www.taf.org.cn/upload/AssociationStandard/TTAF%20004-2017%20Android%E6%9D%83%E9%99%90%E8%B0%83%E7%94%A8%E5%BC%80%E5%8F%91%E8%80%85%E6%8C%87%E5%8D%97.pdf
  */
 @SuppressWarnings("unused")
 public final class Permission {
 
     private Permission() {}
+
+    /**
+     * 读取应用列表权限（危险权限，电信终端产业协会联合各大中国手机厂商搞的一个权限）
+     *
+     * Github issue 地址：https://github.com/getActivity/XXPermissions/issues/175
+     * 移动终端应用软件列表权限实施指南：http://www.taf.org.cn/StdDetail.aspx?uid=3A7D6656-43B8-4C46-8871-E379A3EA1D48&stdType=TAF
+     *
+     * 需要注意的是：
+     *   1. 需要在清单文件中注册 QUERY_ALL_PACKAGES 权限，否则在 Android 11 上面就算申请成功也是获取不到第三方安装列表信息的
+     *   2. 这个权限在有的手机上面是授予状态，在有的手机上面是还没有授予，在有的手机上面是无法申请，能支持申请该权限的的厂商系统版本有：
+     *      华为：Harmony 3.0.0 及以上版本，Harmony 2.0.1 实测不行
+     *      荣耀：Magic UI 6.0 及以上版本，Magic UI 5.0 实测不行
+     *      小米：Miui 13 及以上版本，Miui 12 实测不行，经过验证 miui 上面默认会授予此权限
+     *      OPPO：(ColorOs 12 及以上版本 && Android 11+) || (ColorOs 11.1 及以上版本 && Android 12+)
+     *      VIVO：虽然没有申请这个权限的通道，但是读取已安装第三方应用列表是没有问题的，没有任何限制
+     *      真我：realme UI 3.0 及以上版本，realme UI 2.0 实测不行
+     */
+    public static final String GET_INSTALLED_APPS = "com.android.permission.GET_INSTALLED_APPS";
 
     /**
      * 闹钟权限（特殊权限，Android 12 新增的权限）

@@ -2,6 +2,7 @@ package com.hjq.permissions.demo;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.hardware.Sensor;
@@ -68,6 +69,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_ignore_battery).setOnClickListener(this);
         findViewById(R.id.btn_main_request_picture_in_picture).setOnClickListener(this);
         findViewById(R.id.btn_main_request_open_vpn).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_get_installed_app).setOnClickListener(this);
         findViewById(R.id.btn_main_app_details).setOnClickListener(this);
     }
 
@@ -82,8 +84,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -100,8 +102,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -120,8 +122,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -138,8 +140,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -155,8 +157,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -185,8 +187,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(@NonNull List<String> permissions, boolean all) {
-                                    if (!all) {
+                                public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                                    if (!allGranted) {
                                         return;
                                     }
                                     toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -214,8 +216,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(@NonNull List<String> permissions, boolean all) {
-                                    if (!all) {
+                                public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                                    if (!allGranted) {
                                         return;
                                     }
                                     toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -247,8 +249,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(@NonNull List<String> permissions, boolean all) {
-                                    if (!all) {
+                                public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                                    if (!allGranted) {
                                         return;
                                     }
                                     toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -287,8 +289,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(@NonNull List<String> permissions, boolean all) {
-                                    if (!all) {
+                                public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                                    if (!allGranted) {
                                         return;
                                     }
                                     toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -319,8 +321,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(@NonNull List<String> permissions, boolean all) {
-                                    if (!all) {
+                                public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                                    if (!allGranted) {
                                         return;
                                     }
                                     toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -338,8 +340,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -355,8 +357,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -372,8 +374,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -389,8 +391,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -416,8 +418,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(@NonNull List<String> permissions, boolean all) {
-                                    if (!all) {
+                                public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                                    if (!allGranted) {
                                         return;
                                     }
                                     toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -435,8 +437,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -455,8 +457,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -472,8 +474,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -489,8 +491,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -506,8 +508,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -523,8 +525,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
@@ -540,12 +542,30 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<String> permissions, boolean all) {
-                            if (!all) {
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
                                     PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
+                        }
+                    });
+
+        } else if (viewId == R.id.btn_main_request_get_installed_app) {
+
+            XXPermissions.with(this)
+                    .permission(Permission.GET_INSTALLED_APPS)
+                    .interceptor(new PermissionInterceptor())
+                    .request(new OnPermissionCallback() {
+
+                        @Override
+                        public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                            if (!allGranted) {
+                                return;
+                            }
+                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionNameConvert.getPermissionString(MainActivity.this, permissions)));
+                            getAppList();
                         }
                     });
 
@@ -711,6 +731,25 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
         if (detectorSensor != null) {
             manager.registerListener(mSensorEventListener, detectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+    }
+
+    private void getAppList() {
+        try {
+            PackageManager packageManager = getPackageManager();
+            int flags = PackageManager.GET_ACTIVITIES | PackageManager.GET_SERVICES;
+            List<PackageInfo> packageInfoList;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                packageInfoList = packageManager.getInstalledPackages(PackageManager.PackageInfoFlags.of(flags));
+            } else {
+                packageInfoList = packageManager.getInstalledPackages(flags);
+            }
+
+            for (PackageInfo info : packageInfoList) {
+                Log.i("XXPermissions", "应用包名：" + info.packageName);
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();;
         }
     }
 }

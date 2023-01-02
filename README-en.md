@@ -6,7 +6,7 @@
 
 * project address: [Github](https://github.com/getActivity/XXPermissions)
 
-* You can scan the code to download the Demo for demonstration or test. If the scan code cannot be downloaded, [Click here to download directly](https://github.com/getActivity/XXPermissions/releases/download/16.2/XXPermissions.apk)
+* You can scan the code to download the Demo for demonstration or test. If the scan code cannot be downloaded, [Click here to download directly](https://github.com/getActivity/XXPermissions/releases/download/16.6/XXPermissions.apk)
 
 ![](picture/demo_code.png)
 
@@ -57,7 +57,7 @@ android {
 
 dependencies {
     // Permission Request Framework：https://github.com/getActivity/XXPermissions
-    implementation 'com.github.getActivity:XXPermissions:16.5'
+    implementation 'com.github.getActivity:XXPermissions:16.6'
 }
 ```
 
@@ -112,8 +112,8 @@ XXPermissions.with(this)
         .request(new OnPermissionCallback() {
 
             @Override
-            public void onGranted(@NonNull List<String> permissions, boolean all) {
-                if (!all) {
+            public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                if (!allGranted) {
                     toast("Some permissions were obtained successfully, but some permissions were not granted normally");
                     return;
                 }
@@ -121,8 +121,8 @@ XXPermissions.with(this)
             }
 
             @Override
-            public void onDenied(@NonNull List<String> permissions, boolean never) {
-                if (never) {
+            public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
+                if (doNotAskAgain) {
                     toast("Authorization denied permanently, please grant recording and calendar permissions manually");
                     // If it is permanently denied, jump to the application permission system settings page
                     XXPermissions.startPermissionActivity(context, permissions);
@@ -147,16 +147,16 @@ XXPermissions.with(this)
     //.unchecked()
     .request(object : OnPermissionCallback {
 
-        override fun onGranted(permissions: MutableList<String>, all: Boolean) {
-            if (!all) {
+        override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {
+            if (!allGranted) {
                 toast("Some permissions were obtained successfully, but some permissions were not granted normally")
                 return
             }
             toast("Acquired recording and calendar permissions successfully")
         }
 
-        override fun onDenied(permissions: MutableList<String>, never: Boolean) {
-            if (never) {
+        override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
+            if (doNotAskAgain) {
                 toast("Authorization denied permanently, please grant recording and calendar permissions manually")
                 // If it is permanently denied, jump to the application permission system settings page
                 XXPermissions.startPermissionActivity(context, permissions)
@@ -201,7 +201,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 * But there is another situation. If multiple permissions are requested, these permissions are not all granted or all denied, but some of the authorizations are partially denied. How will the framework handle the callback?
 
-* The framework will call first `onDenied` method, then call `onGranted` method. of which we can pass `onGranted` in the method `all` parameters to determine whether all permissions are granted.
+* The framework will call first `onDenied` method, then call `onGranted` method. of which we can pass `onGranted` in the method `allGranted` parameters to determine whether all permissions are granted.
 
 * If you want to know whether a permission in the callback is granted or denied, you can call `List` in class `contains(Permission.XXX)` method to determine whether this permission is included in this collection.
 
@@ -211,9 +211,9 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 |                      Adaptation details                       |                                  [XXPermissions](https://github.com/getActivity/XXPermissions)                                 |                                 [AndPermission](https://github.com/yanzhenjie/AndPermission)                                 |                                 [PermissionX](https://github.com/guolindev/PermissionX)                                |                              [AndroidUtilCode-PermissionUtils](https://github.com/Blankj/AndroidUtilCode)                |                                       [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher)                                       |                                 [RxPermissions](https://github.com/tbruyelle/RxPermissions)                                |                                   [EasyPermissions](https://github.com/googlesamples/easypermissions)                                  |
 | :-----------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------: |
-|                    corresponding version                      |                                                              16.5                                                              |                                                             2.0.3                                                            |                                                          1.7.1                                                         |                                                          1.31.0                                                          |                                                                                 4.9.2                                                                                |                                                            0.12                                                            |                                                                  3.0.0                                                                 |
+|                    corresponding version                      |                                                              16.6                                                              |                                                             2.0.3                                                            |                                                          1.7.1                                                         |                                                          1.31.0                                                          |                                                                                 4.9.2                                                                                |                                                            0.12                                                            |                                                                  3.0.0                                                                 |
 |                       number of issues                        | [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues) | [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues) | [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues) | [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues) | [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues) | [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues) | [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues) |
-|                       framework volume                        |                                                              59 KB                                                             |                                                            127 KB                                                            |                                                          97 KB                                                         |                                                          500 KB                                                          |                                                                                 99 KB                                                                                |                                                            28 KB                                                           |                                                                  48 KB                                                                 |
+|                       framework volume                        |                                                              60 KB                                                             |                                                            127 KB                                                            |                                                          97 KB                                                         |                                                          500 KB                                                          |                                                                                 99 KB                                                                                |                                                            28 KB                                                           |                                                                  48 KB                                                                 |
 |                 Framework Maintenance Status                  |                                                       **In maintenance**                                                       |                                                       stop maintenance                                                       |                                                    **In maintenance**                                                  |                                                     stop maintenance                                                     |                                                                             stop maintenance                                                                         |                                                      stop maintenance                                                      |                                                            stop maintenance                                                            |
 |                  Alarm reminder permission                    |                                                                ✅                                                               |                                                               ❌                                                             |                                                            ❌                                                          |                                                             ❌                                                           |                                                                                   ❌                                                                                  |                                                              ❌                                                            |                                                                    ❌                                                                  |
 |               All file management permissions                 |                                                                ✅                                                               |                                                               ❌                                                             |                                                            ✅                                                          |                                                             ❌                                                           |                                                                                   ❌                                                                                  |                                                              ❌                                                            |                                                                    ❌                                                                  |
