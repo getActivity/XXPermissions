@@ -47,36 +47,36 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.btn_main_request_single).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_group).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_location).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_sensors).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_activity_recognition).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_bluetooth).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_wifi).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_read_media_location).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_media_read).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_manage_storage).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_install).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_window).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_setting).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_notification).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_single_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_group_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_location_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_sensors_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_activity_recognition_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_bluetooth_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_wifi_devices_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_read_media_location_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_read_media_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_manage_storage_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_install_packages_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_system_alert_window_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_write_settings_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_notification_service_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_post_notification).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_notification_listener).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_package).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_alarm).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_not_disturb).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_ignore_battery).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_picture_in_picture).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_open_vpn).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_get_installed_app).setOnClickListener(this);
-        findViewById(R.id.btn_main_app_details).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_bind_notification_listener_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_usage_stats_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_schedule_exact_alarm_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_access_notification_policy_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_ignore_battery_optimizations_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_picture_in_picture_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_bind_vpn_service_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_get_installed_apps_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_start_permission_activity).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         int viewId = view.getId();
-        if (viewId == R.id.btn_main_request_single) {
+        if (viewId == R.id.btn_main_request_single_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.CAMERA)
@@ -93,7 +93,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_group) {
+        } else if (viewId == R.id.btn_main_request_group_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.RECORD_AUDIO)
@@ -111,7 +111,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_location) {
+        } else if (viewId == R.id.btn_main_request_location_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.ACCESS_COARSE_LOCATION)
@@ -131,7 +131,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_sensors) {
+        } else if (viewId == R.id.btn_main_request_sensors_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.BODY_SENSORS)
@@ -149,7 +149,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_activity_recognition) {
+        } else if (viewId == R.id.btn_main_request_activity_recognition_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.ACTIVITY_RECOGNITION)
@@ -167,7 +167,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_bluetooth) {
+        } else if (viewId == R.id.btn_main_request_bluetooth_permission) {
 
             long delayMillis = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
@@ -198,7 +198,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 }
             }, delayMillis);
 
-        } else if (viewId == R.id.btn_main_request_wifi) {
+        } else if (viewId == R.id.btn_main_request_wifi_devices_permission) {
 
             long delayMillis = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
@@ -227,7 +227,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 }
             }, delayMillis);
 
-        } else if (viewId == R.id.btn_main_request_read_media_location) {
+        } else if (viewId == R.id.btn_main_request_read_media_location_permission) {
 
             long delayMillis = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -266,7 +266,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 }
             }, delayMillis);
 
-        } else if (viewId == R.id.btn_main_request_media_read) {
+        } else if (viewId == R.id.btn_main_request_read_media_permission) {
 
             long delayMillis = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
@@ -300,7 +300,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 }
             }, delayMillis);
 
-        } else if (viewId == R.id.btn_main_request_manage_storage) {
+        } else if (viewId == R.id.btn_main_request_manage_storage_permission) {
 
             long delayMillis = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
@@ -332,7 +332,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 }
             }, delayMillis);
 
-        } else if (viewId == R.id.btn_main_request_install) {
+        } else if (viewId == R.id.btn_main_request_install_packages_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.REQUEST_INSTALL_PACKAGES)
@@ -349,7 +349,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_window) {
+        } else if (viewId == R.id.btn_main_request_system_alert_window_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.SYSTEM_ALERT_WINDOW)
@@ -366,7 +366,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_setting) {
+        } else if (viewId == R.id.btn_main_request_write_settings_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.WRITE_SETTINGS)
@@ -383,7 +383,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_notification) {
+        } else if (viewId == R.id.btn_main_request_notification_service_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.NOTIFICATION_SERVICE)
@@ -429,7 +429,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 }
             }, delayMillis);
 
-        } else if (viewId == R.id.btn_main_request_notification_listener) {
+        } else if (viewId == R.id.btn_main_request_bind_notification_listener_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.BIND_NOTIFICATION_LISTENER_SERVICE)
@@ -449,7 +449,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_package) {
+        } else if (viewId == R.id.btn_main_request_usage_stats_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.PACKAGE_USAGE_STATS)
@@ -466,7 +466,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_alarm) {
+        } else if (viewId == R.id.btn_main_request_schedule_exact_alarm_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.SCHEDULE_EXACT_ALARM)
@@ -483,7 +483,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_not_disturb) {
+        } else if (viewId == R.id.btn_main_request_access_notification_policy_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.ACCESS_NOTIFICATION_POLICY)
@@ -500,7 +500,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_ignore_battery) {
+        } else if (viewId == R.id.btn_main_request_ignore_battery_optimizations_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
@@ -517,7 +517,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_picture_in_picture) {
+        } else if (viewId == R.id.btn_main_request_picture_in_picture_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.PICTURE_IN_PICTURE)
@@ -534,7 +534,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_open_vpn) {
+        } else if (viewId == R.id.btn_main_request_bind_vpn_service_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.BIND_VPN_SERVICE)
@@ -551,7 +551,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_get_installed_app) {
+        } else if (viewId == R.id.btn_main_request_get_installed_apps_permission) {
 
             XXPermissions.with(this)
                     .permission(Permission.GET_INSTALLED_APPS)
@@ -569,7 +569,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_app_details) {
+        } else if (viewId == R.id.btn_main_start_permission_activity) {
 
             XXPermissions.startPermissionActivity(this);
         }

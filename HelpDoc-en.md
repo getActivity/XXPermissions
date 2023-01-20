@@ -28,6 +28,8 @@
 
 * [Why cannot I access the files in the Android/data directory after authorization](#why-cannot-i-access-the-files-in-the-androiddata-directory-after-authorization)
 
+* [Is there any problem with skipping the installation permission application and installing the apk directly](#Is-there-any-problem-with-skipping-the-installation-permission-application-and-installing-the-apk-directly)
+
 * [How to deal with the problem that some china application stores are not allowed to apply again within 48 hours after they explicitly refuse permission](#how-to-deal-with-the-problem-that-some-china-application-stores-are-not-allowed-to-apply-again-within-48-hours-after-they-explicitly-refuse-permission)
 
 #### Android 11 Location Permission Adaptation
@@ -40,9 +42,7 @@
 
 * And if your application only needs to use the location function in the foreground, but does not need to use the location function in the background, please do not apply for `Permission.ACCESS_BACKGROUND_LOCATION` permission.
 
-![](picture/en/location_1.jpg)
-
-![](picture/en/location_2.jpg)
+![](picture/en/help_doc_android_11_location_adapter_1.jpg) ![](picture/en/help_doc_android_11_location_adapter_2.jpg)
 
 #### Android 11 storage permission adaptation
 
@@ -95,7 +95,7 @@ XXPermissions.with(MainActivity.this)
         });
 ```
 
-![](picture/en/7.jpg)
+![](picture/en/demo_request_manage_storage_permission.jpg)
 
 #### When do I need to adapt to the characteristics of partitioned storage
 
@@ -269,23 +269,23 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 
 * In fact, not only Huawei has problems, but also millet has problems. Many people have fed back the same problem with me. **XXPermissions** jumps to the china mobile phone permission setting page. After the user grants the permission normally, it still detects that the permission is still rejected. There are many times of feedback on this problem, but the reason can not be found out. Finally, I got the answer for the last time, which [someone](https://github.com/getActivity/XXPermissions/issues/38) helped me to find out the problem of MIUI optimization switch (Xiaomi mobile phone --> developer options --> Turn on MIUl optimization). So the question is, what is the function of this switch? How does this affect **XXPermissions**?
 
-![](picture/en/miui_1.jpg)
+![](picture/en/help_doc_miui_optimization_1.jpg)
 
 * First of all, this problem should start with the principle of **XXPermissions** jumping to the china mobile phone settings page. From the native API provided by Google, we can only jump to the application details page at most, not directly to the permission settings page, but need users to click again on the application details page to enter the permission settings page. If we look at this problem from the perspective of user experience, it is definitely best to jump directly to the permission setting page, but this way is not supported by Google. Of course, there are ways to achieve it. There is a common answer on the Internet, which is to directly capture the name of the permission setting page `Activity` of a certain brand of mobile phone and then jump. The starting point of this idea is good, but there are many problems, which can not guarantee that all models of each brand can be adapted in place. The number and frequency of mobile phone manufacturers changing `Activity` the package name are relatively high, and almost all of the new Huawei models released recently have failed. That is to say `startActivity`, there will be reports `ActivityNotFoundException` or `SecurityException` exceptions. Of course, these exceptions can be captured, but only crashes can be captured. We can't learn and deal with some non-crash behaviors, such as the problems of Huawei and Xiaomi I just talked about. These problems do not cause crashes, but they do cause functional anomalies.
 
 * The MIUI optimization switch is a switch reserved by millet engineers to switch MIUI and native functions. For example, when the switch is turned on, clicking on the permission management on the application details page will jump to the permission setting page of millet. If the switch is off (the default is on), Clicking on permission management on the application details page will jump to Google's native permission setting page, as shown in the figure:
 
-![](picture/en/miui_2.jpg)
+![](picture/en/help_doc_miui_optimization_2.jpg)
 
-![](picture/en/miui_3.jpg)
+![](picture/en/help_doc_miui_optimization_3.jpg)
 
 * The biggest problem is that the two interfaces are different activities. One is the permission setting page customized by Xiaomi, and the second is the native permission setting page of Google. When the MIUI optimization is turned on, the permission granted on the permission setting page customized by Xiaomi can be effective. When the MIUI optimization is turned off, Permission can only be granted in Google's native permission settings page. Jumping to the china mobile phone page will only jump to the permission setting page customized by Xiaomi forever, so it will lead to the problem that when the MIUI optimization is turned off, the return after using the code to jump to the Xiaomi permission setting page to grant permission still fails.
 
 * Some people may say that the way to solve this problem is very simple, judge the MIUI optimization switch, if it is open, jump to the Xiaomi customized permission setting page, if it is closed, jump to Google's native permission setting page, so it is not possible? In fact, I have tried this solution, I have commissioned to contact the MIUI engineer working in Xiaomi, and someone helped me to feedback this problem to Xiaomi, and finally got the same answer.
 
-![](picture/miui_4.jpg)
+![](picture/help_doc_miui_optimization_4.jpg)
 
-![](picture/miui_5.jpg)
+![](picture/help_doc_miui_optimization_5.jpg)
 
 * It is also worth mentioning [Android 11 puts restrictions on package visibility](https://developer.android.google.cn/about/versions/11/privacy/package-visibility) that this way of skipping package names will not be feasible in the future.
 
@@ -304,6 +304,33 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 #### Why cannot I access the files in the Android/data directory after authorization
 
 * First of all, no matter what kind of storage permission you apply for, you cannot directly read the android/data directory on Android 11. This is a new feature on Android 11, and you need to make additional adaptation. You can refer to this open source project for the specific adaptation process.
+
+#### Is there any problem with skipping the installation permission application and installing the apk directly
+
+* If you are careful, you may find that you can install apk without installation permissions. So why should I apply for `REQUEST_INSTALL_PACKAGES` permissions? Isn't that unnecessary?
+
+* Here I want to say, is not what you imagine, next let us experiment, here selected `Google piexl 3XL (Android 12)` and `Xiaomi phone 12 (Android 12)` respectively do a test
+
+```java
+Intent intent = new Intent(Intent.ACTION_VIEW);
+Uri uri;
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+} else {
+    uri = Uri.fromFile(file);
+}
+
+intent.setDataAndType(uri, "application/vnd.android.package-archive");
+intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+context.startActivity(intent);
+```
+
+![](picture/en/help_doc_install_package_android_1.jpg) ![](picture/en/help_doc_install_package_android_2.jpg)
+
+![](picture/en/help_doc_install_package_miui_1.jpg) ![](picture/en/help_doc_install_package_miui_2.jpg)
+
+* See here, I believe you have noticed some differences, also jump to install apk page, on the Android native system, will show the `Cancel` and `Settings` option, click `Cancel` option will cancel the installation, only click `Settings` option, will let you grant the installation package permissions, On top of miui, the `Allow` and `Restrict` options are displayed, as well as a `Don't show again` option. If the user checks `Don't show again` and clicks the `Restrict` option, The next time the application goes to the install apk page, it will be directly rejected by the system, and only a toast prompt will be displayed. The conclusion of the problem is: You can directly jump to the page of installing apk, but it is not recommended to do so, because on some mobile phones, the system may directly reject the request to install apk, so the standard writing should be, first judge whether there is no installation permission, if not, apply for, if there is, then jump to the page of installing apk.
 
 #### How to deal with the problem that some china application stores are not allowed to apply again within 48 hours after they explicitly refuse permission
 

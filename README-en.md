@@ -8,17 +8,17 @@
 
 * You can scan the code to download the Demo for demonstration or test. If the scan code cannot be downloaded, [Click here to download directly](https://github.com/getActivity/XXPermissions/releases/download/16.6/XXPermissions.apk)
 
-![](picture/demo_code.png)
+![](picture/download_demo_apk_qr_code.png)
 
-![](picture/en/1.jpg) ![](picture/en/2.jpg) ![](picture/en/3.jpg)
+![](picture/en/demo_request_permission_activity.jpg) ![](picture/en/demo_request_single_permission.jpg) ![](picture/en/demo_request_group_permission.jpg)
 
-![](picture/en/4.jpg) ![](picture/en/5.jpg) ![](picture/en/6.jpg)
+![](picture/en/demo_request_system_alert_window_permission.jpg) ![](picture/en/demo_request_notification_service_permission.jpg) ![](picture/en/demo_request_write_settings_permission.jpg)
 
-![](picture/en/7.jpg) ![](picture/en/8.jpg) ![](picture/en/9.jpg)
+![](picture/en/demo_request_manage_storage_permission.jpg) ![](picture/en/demo_request_usage_stats_permission.jpg) ![](picture/en/demo_request_schedule_exact_alarm_permission.jpg)
 
-![](picture/en/10.jpg) ![](picture/en/11.jpg) ![](picture/en/12.jpg)
+![](picture/en/demo_request_bind_notification_listener_permission.jpg) ![](picture/en/demo_request_access_notification_policy_permission.jpg) ![](picture/en/demo_request_ignore_battery_optimizations_permission.jpg)
 
-![](picture/en/13.jpg) ![](picture/en/14.jpg) ![](picture/en/15.jpg)
+![](picture/en/demo_request_bind_vpn_service_permission.jpg) ![](picture/en/demo_request_picture_in_picture_permission.jpg)
 
 #### Integration steps
 

@@ -17,7 +17,7 @@
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/btn_main_request_single"
+                android:id="@+id/btn_main_request_single_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -25,7 +25,7 @@
                 android:text="@string/demo_request_single_dangerous_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_group"
+                android:id="@+id/btn_main_request_group_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -33,7 +33,7 @@
                 android:text="@string/demo_request_multiple_dangerous_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_location"
+                android:id="@+id/btn_main_request_location_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -41,7 +41,7 @@
                 android:text="@string/demo_request_location_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_sensors"
+                android:id="@+id/btn_main_request_sensors_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -49,7 +49,7 @@
                 android:text="@string/demo_request_sensors_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_activity_recognition"
+                android:id="@+id/btn_main_request_activity_recognition_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -57,7 +57,7 @@
                 android:text="@string/demo_request_activity_recognition_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_bluetooth"
+                android:id="@+id/btn_main_request_bluetooth_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -65,7 +65,7 @@
                 android:text="@string/demo_request_bluetooth_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_wifi"
+                android:id="@+id/btn_main_request_wifi_devices_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -73,7 +73,7 @@
                 android:text="@string/demo_request_wifi_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_read_media_location"
+                android:id="@+id/btn_main_request_read_media_location_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -81,7 +81,7 @@
                 android:text="@string/demo_request_media_location_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_media_read"
+                android:id="@+id/btn_main_request_read_media_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -89,7 +89,7 @@
                 android:text="@string/demo_request_media_read_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_manage_storage"
+                android:id="@+id/btn_main_request_manage_storage_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -97,7 +97,7 @@
                 android:text="@string/demo_request_all_file_access_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_install"
+                android:id="@+id/btn_main_request_install_packages_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -105,7 +105,7 @@
                 android:text="@string/demo_request_install_unknown_apps_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_window"
+                android:id="@+id/btn_main_request_system_alert_window_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -113,7 +113,7 @@
                 android:text="@string/demo_request_display_over_other_apps_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_setting"
+                android:id="@+id/btn_main_request_write_settings_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -121,7 +121,7 @@
                 android:text="@string/demo_request_modify_system_settings_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_notification"
+                android:id="@+id/btn_main_request_notification_service_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -137,7 +137,7 @@
                 android:text="@string/demo_request_send_notifications_permission_api33" />
 
             <Button
-                android:id="@+id/btn_main_request_notification_listener"
+                android:id="@+id/btn_main_request_bind_notification_listener_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -145,7 +145,7 @@
                 android:text="@string/demo_request_allow_notifications_access_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_package"
+                android:id="@+id/btn_main_request_usage_stats_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -153,7 +153,7 @@
                 android:text="@string/demo_request_apps_with_usage_access_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_alarm"
+                android:id="@+id/btn_main_request_schedule_exact_alarm_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -161,7 +161,7 @@
                 android:text="@string/demo_request_alarms_reminders_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_not_disturb"
+                android:id="@+id/btn_main_request_access_notification_policy_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -169,7 +169,7 @@
                 android:text="@string/demo_request_do_not_disturb_access_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_ignore_battery"
+                android:id="@+id/btn_main_request_ignore_battery_optimizations_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -177,7 +177,7 @@
                 android:text="@string/demo_request_ignore_battery_optimize_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_picture_in_picture"
+                android:id="@+id/btn_main_request_picture_in_picture_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -185,7 +185,7 @@
                 android:text="@string/demo_request_picture_in_picture_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_open_vpn"
+                android:id="@+id/btn_main_request_bind_vpn_service_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -193,7 +193,7 @@
                 android:text="@string/demo_request_vpn_permission" />
 
             <Button
-                android:id="@+id/btn_main_request_get_installed_app"
+                android:id="@+id/btn_main_request_get_installed_apps_permission"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -201,7 +201,7 @@
                 android:text="@string/demo_request_get_installed_apps_permission" />
 
             <Button
-                android:id="@+id/btn_main_app_details"
+                android:id="@+id/btn_main_start_permission_activity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

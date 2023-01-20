@@ -28,6 +28,8 @@
 
 * [为什么授权了还是无法访问 Android/data 目录下的文件](#为什么授权了还是无法访问-android-data-目录下的文件)
 
+* [跳过安装权限申请然后直接安装 apk 会有什么问题吗](#跳过安装权限申请然后直接安装-apk-会有什么问题吗)
+
 * [如何应对国内某些应用商店在明确拒绝权限后 48 小时内不允许再次申请的问题](#如何应对国内某些应用商店在明确拒绝权限后-48-小时内不允许再次申请的问题)
 
 #### Android 11 定位权限适配
@@ -40,9 +42,7 @@
 
 * 还有如果你的应用只需要在前台使用定位功能， 而不需要在后台中使用定位功能，那么请不要连带申请 `Permission.ACCESS_BACKGROUND_LOCATION` 权限。
 
-![](picture/zh/location_1.jpg)
-
-![](picture/zh/location_2.jpg)
+![](picture/zh/help_doc_android_11_location_adapter_1.jpg) ![](picture/zh/help_doc_android_11_location_adapter_2.jpg)
 
 #### Android 11 存储权限适配
 
@@ -95,7 +95,7 @@ XXPermissions.with(MainActivity.this)
         });
 ```
 
-![](picture/zh/7.jpg)
+![](picture/zh/demo_request_manage_storage_permission.jpg)
 
 #### 什么情况下需要适配分区存储特性
 
@@ -269,23 +269,23 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 
 * 其实不止华为有问题，小米同样有问题，有很多人跟我反馈过同一个问题，**XXPermissions** 跳转到国产手机权限设置页，用户正常授予了权限之后返回仍然检测到权限仍然是拒绝的状态，这个问题反馈的次数很多，但是迟迟不能排查到原因，终于在最后一次得到答案了，[有人](https://github.com/getActivity/XXPermissions/issues/38)帮我排查到是 miui 优化开关的问题（小米手机 ---> 开发者选项 ---> 启用 miui 优化），那么问题来了，这个开关有什么作用？是如何影响到 **XXPermissions** 的？
 
-![](picture/zh/miui_1.jpg)
+![](picture/zh/help_doc_miui_optimization_1.jpg)
 
 * 首先这个问题要从 **XXPermissions** 跳转到国产手机设置页的原理讲起，从谷歌提供的原生 API 我们最多只能跳转到应用详情页，并不能直接跳转到权限设置页，而需要用户在应用详情页再次点击才能进入权限设置页。如果从用户体验的角度上看待这个问题，肯定是直接跳转到权限设置页是最好的，但是这种方式是不受谷歌支持的，当然也有方法实现，网上都有一个通用的答案，就是直接捕获某个品牌手机的权限设置页 `Activity` 包名然后进行跳转。这种想法的起点是好的，但是存在许多问题，并不能保证每个品牌的所有机型都能适配到位，手机产商更改这个 `Activity` 的包名的次数和频率比较高，在最近发布的一些新的华为机型上面几乎已经全部失效，也就是 `startActivity` 的时候会报 `ActivityNotFoundException` 或 `SecurityException` 异常，当然这些异常是可以被捕捉到的，但是仅仅只能捕获到崩溃，一些非崩溃的行为我们并不能从中得知和处理，例如我刚刚讲过的华为和小米的问题，这些问题并不能导致崩溃，但是会导致功能出现异常。
 
 * 而 miui 优化开关是小米工程师预留的切换 miui 和原生的功能开关，例如在这个开关开启的时候，在应用详情页点击权限管理会跳转到小米的权限设置页，如果这个开关是关闭状态（默认是开启状态），在应用详情页点击权限管理会跳转到谷歌原生的权限设置页，具体效果如图：
 
-![](picture/zh/miui_2.jpg)
+![](picture/zh/help_doc_miui_optimization_2.jpg)
 
-![](picture/zh/miui_3.jpg)
+![](picture/zh/help_doc_miui_optimization_3.jpg)
 
 * 最大的问题在于：这两个界面是不同的 Activity，一个是小米定制的权限设置页，第二个是谷歌原生的权限设置页，当 miui 优化开启的时候，在小米定制的权限设置页授予权限才能有效果，当这个 miui 优化关闭的时候，在谷歌原生的权限设置页授予权限才能有效果。而跳转到国产手机页永远只会跳转到小米定制的那个权限设置页，所以就会导致当 miui 优化关闭的时候，使用代码跳转到小米权限设置页授予了权限之后返回仍然显示失败的问题。
 
 * 有人可能会说，解决这个问题的方式很简单，判断 miui 优化开关，如果是开启状态就跳转到小米定制的权限设置页，如果是关闭状态就跳转到谷歌原生的权限设置页，这样不就可以了？其实这个解决方案我也有尝试过，我曾委托联系到在小米工作的 miui 工程师，也有人帮我反馈这个问题给小米那边，最后得到答复都是一致的。
 
-![](picture/miui_4.jpg)
+![](picture/help_doc_miui_optimization_4.jpg)
 
-![](picture/miui_5.jpg)
+![](picture/help_doc_miui_optimization_5.jpg)
 
 * 另外值得一提的是 [Android 11 对软件包可见性进行了限制](https://developer.android.google.cn/about/versions/11/privacy/package-visibility)，所以这种跳包名的方式在未来将会完全不可行。
 
@@ -304,6 +304,33 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 #### 为什么授权了还是无法访问 Android/data 目录下的文件
 
 * 首先无论你申请了哪种存储权限，在 Android 11 上面就是无法直接读取 Android/data 目录的，这个是 Android 11 上的新特性，需要你进行额外适配，具体适配流程可以参考这个开源项目 [https://github.com/getActivity/AndroidVersionAdapter](https://github.com/getActivity/AndroidVersionAdapter)
+
+#### 跳过安装权限申请然后直接安装 apk 会有什么问题吗
+
+* 有细心的同学可能发现了，不需要安装权限也可以直接调起安装 apk，那我为什么还要申请 `REQUEST_INSTALL_PACKAGES` 权限？这不是脱裤子放屁，多此一举吗？
+
+* 在这里我想说的是，并不是你想象的那样，接下来让我们试验一下，这里选用了 `Google piexl 3XL（Android 12）` 和 `小米手机 12（Android 12）` 分别做一下测试
+
+```java
+Intent intent = new Intent(Intent.ACTION_VIEW);
+Uri uri;
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    uri = FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+} else {
+    uri = Uri.fromFile(file);
+}
+
+intent.setDataAndType(uri, "application/vnd.android.package-archive");
+intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+context.startActivity(intent);
+```
+
+![](picture/zh/help_doc_install_package_android_1.jpg) ![](picture/zh/help_doc_install_package_android_2.jpg)
+
+![](picture/zh/help_doc_install_package_miui_1.jpg) ![](picture/zh/help_doc_install_package_miui_2.jpg)
+
+* 看到这里，我相信大家已经发现了一些差异，同样是跳转到安装 apk 页面，在 Android 原生系统上面，会显示 `取消` 和 `设置` 的选项，点击 `取消` 的选项会取消安装，只有点击 `设置` 的选项，才会让你授予安装包权限，授予了才能进行安装，而在 miui 上面，会显示 `允许` 和 `禁止` 的选项，另外还有一个 `记住我的选择` 的选项，如果用户勾选了这个 `记住我的选择` 并且点击了 `禁止` 的选项，那么应用下次跳转到安装 apk 页面会被系统直接拒绝，并且只会显示一个 toast 提示，问题结论是：可以直接跳转到安装 apk 页面，但是不建议那么做，因为在有些手机上面，系统可能会直接拒绝这个安装 apk 的请求，所以标准的写法应该是，先判断有没有安装权限，没有的话就申请，有的话再去跳转到安装 apk 的页面。
 
 #### 如何应对国内某些应用商店在明确拒绝权限后 48 小时内不允许再次申请的问题
 

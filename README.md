@@ -10,19 +10,19 @@
 
 * 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/16.6/XXPermissions.apk)
 
-![](picture/demo_code.png)
+![](picture/download_demo_apk_qr_code.png)
 
 * 另外想对 Android 6.0 权限需要深入了解的，可以看这篇文章[Android 6.0 运行权限解析](https://www.jianshu.com/p/6a4dff744031)
 
-![](picture/zh/1.jpg) ![](picture/zh/2.jpg) ![](picture/zh/3.jpg)
+![](picture/zh/demo_request_permission_activity.jpg) ![](picture/zh/demo_request_single_permission.jpg) ![](picture/zh/demo_request_group_permission.jpg)
 
-![](picture/zh/4.jpg) ![](picture/zh/5.jpg) ![](picture/zh/6.jpg)
+![](picture/zh/demo_request_system_alert_window_permission.jpg) ![](picture/zh/demo_request_notification_service_permission.jpg) ![](picture/zh/demo_request_write_settings_permission.jpg)
 
-![](picture/zh/7.jpg) ![](picture/zh/8.jpg) ![](picture/zh/9.jpg)
+![](picture/zh/demo_request_manage_storage_permission.jpg) ![](picture/zh/demo_request_usage_stats_permission.jpg) ![](picture/zh/demo_request_schedule_exact_alarm_permission.jpg)
 
-![](picture/zh/10.jpg) ![](picture/zh/11.jpg) ![](picture/zh/12.jpg)
+![](picture/zh/demo_request_bind_notification_listener_permission.jpg) ![](picture/zh/demo_request_access_notification_policy_permission.jpg) ![](picture/zh/demo_request_ignore_battery_optimizations_permission.jpg)
 
-![](picture/zh/13.jpg) ![](picture/zh/14.jpg) ![](picture/zh/15.jpg)
+![](picture/zh/demo_request_bind_vpn_service_permission.jpg) ![](picture/zh/demo_request_picture_in_picture_permission.jpg) ![](picture/demo_request_get_installed_apps_permission.jpg)
 
 #### 集成步骤
 
@@ -218,7 +218,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 |    对应版本  |  16.6 |  2.0.3  |  1.7.1    |  1.31.0    |   4.9.2  |  0.12   |  3.0.0   |
 |    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |
 |    框架体积  |  60 KB  | 127 KB  |  97 KB  |   500 KB |  99 KB  | 28 KB  | 48 KB |
-|  框架维护状态 |**维护中**|  停止维护 |**维护中**|  停止维护 | 停止维护 | 停止维护 | 停止维护 |
+|  框架维护状态 |**维护中**|  停止维护 | 停止维护 |  停止维护 | 停止维护 | 停止维护 | 停止维护 |
 |       闹钟提醒权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |     所有文件管理权限      |  ✅  |  ❌  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
 |        安装包权限        |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
@@ -243,6 +243,33 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 |    后台申请权限场景适配    |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
 | Android 12 内存泄漏问题修复 |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |   ❌  |  ❌  |
 |       错误检测机制        |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
+
+#### 读取应用列表权限介绍
+
+* 这个权限非常特殊，它不属于 Android 原生的权限，而是由[工信部](http://www.taf.org.cn/StdDetail.aspx?uid=3A7D6656-43B8-4C46-8871-E379A3EA1D48&stdType=TAF)牵头，联合各大中国手机厂商搞的一个权限，目前支持手机厂商有：
+
+|     品牌    |                版本要求           | 是否默认授予 |
+| :--------: | :------------------------------: | :--------: |
+|     华为   |       Harmony 3.0.0 及以上版本     |      否     |
+|     荣耀   |       Magic UI 6.0 及以上版本      |      否     |
+|     小米   |         Miui 13 及以上版本         |      是     |
+|     红米   |             和小米雷同             |   和小米雷同  |
+|     OPPO  |       (ColorOs 12 及以上版本 && Android 11+) 或者 </br> (ColorOs 11.1 及以上版本 && Android 12+)        |      否     |
+|     一加   |      和 OPPO 雷同  |    和 OPPO 雷同   |
+|     真我   |       realme UI 3.0 及以上版本         |      否     |
+
+* 目前不支持的手机厂商有：
+
+|   品牌    |   测试的手机机型    |             测试的版本                | 是否有申请该权限的入口 |
+| :------: | :---------------: | :---------------------------------: | :-----------------: |
+|     三星  |  三星 galaxy s22  |       One UI 5.0 && Android 13      |          否         |
+|    VIVO  |    iQOO Neo7 SE   |       OriginOS 3 && Android 13      |          否         |
+|     魅族  |     魅族 18x      |     Flyme 9.2.3.1A && Android 11    |          是         |
+|    锤子   |   坚果手机 Pro 2S  | Smartisan OS 7.2.0.2 && Android 8.1 |          否         |
+|    奇虎   |  360 手机 N7 Lite |      360 Os 3.0 && Android 8.1      |          否         |
+|   小辣椒   |     小辣椒S6      |    小辣椒 Os 3.0 && Android 7.1.1    |          否         |
+
+* 另外还有一些厂商没有列出来，不是我没有做测试，而是他们的系统本身就是直接用 Android 的，Android 原生目前不支持申请该权限
 
 #### 新权限自动兼容旧设备介绍
 
@@ -381,6 +408,8 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 * 表情包大集合：[EmojiPackage](https://github.com/getActivity/EmojiPackage) ![](https://img.shields.io/github/stars/getActivity/EmojiPackage.svg) ![](https://img.shields.io/github/forks/getActivity/EmojiPackage.svg)
 
 * 省市区 Json 数据：[ProvinceJson](https://github.com/getActivity/ProvinceJson) ![](https://img.shields.io/github/stars/getActivity/ProvinceJson.svg) ![](https://img.shields.io/github/forks/getActivity/ProvinceJson.svg)
+
+* Markdown 语法文档：[MarkdownDoc](https://github.com/getActivity/MarkdownDoc) ![](https://img.shields.io/github/stars/getActivity/MarkdownDoc.svg) ![](https://img.shields.io/github/forks/getActivity/MarkdownDoc.svg)
 
 #### 微信公众号：Android轮子哥
 
