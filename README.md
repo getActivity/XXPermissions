@@ -1,4 +1,4 @@
-## [English Doc](README-en.md)
+# [English Doc](README-en.md)
 
 # 权限请求框架
 
@@ -10,7 +10,7 @@
 
 * 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/16.6/XXPermissions.apk)
 
-![](picture/download_demo_apk_qr_code.png)
+![](picture/zh/download_demo_apk_qr_code.png)
 
 * 另外想对 Android 6.0 权限需要深入了解的，可以看这篇文章[Android 6.0 运行权限解析](https://www.jianshu.com/p/6a4dff744031)
 
@@ -22,7 +22,7 @@
 
 ![](picture/zh/demo_request_bind_notification_listener_permission.jpg) ![](picture/zh/demo_request_access_notification_policy_permission.jpg) ![](picture/zh/demo_request_ignore_battery_optimizations_permission.jpg)
 
-![](picture/zh/demo_request_bind_vpn_service_permission.jpg) ![](picture/zh/demo_request_picture_in_picture_permission.jpg) ![](picture/demo_request_get_installed_apps_permission.jpg)
+![](picture/zh/demo_request_bind_vpn_service_permission.jpg) ![](picture/zh/demo_request_picture_in_picture_permission.jpg) ![](picture/zh/demo_request_get_installed_apps_permission.jpg)
 
 #### 集成步骤
 
@@ -379,7 +379,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 * 安卓技术中台 Kt 版：[AndroidProject-Kotlin](https://github.com/getActivity/AndroidProject-Kotlin) ![](https://img.shields.io/github/stars/getActivity/AndroidProject-Kotlin.svg) ![](https://img.shields.io/github/forks/getActivity/AndroidProject-Kotlin.svg)
 
-* 吐司框架：[ToastUtils](https://github.com/getActivity/ToastUtils) ![](https://img.shields.io/github/stars/getActivity/ToastUtils.svg) ![](https://img.shields.io/github/forks/getActivity/ToastUtils.svg)
+* 吐司框架：[Toaster](https://github.com/getActivity/Toaster) ![](https://img.shields.io/github/stars/getActivity/Toaster.svg) ![](https://img.shields.io/github/forks/getActivity/Toaster.svg)
 
 * 网络框架：[EasyHttp](https://github.com/getActivity/EasyHttp) ![](https://img.shields.io/github/stars/getActivity/EasyHttp.svg) ![](https://img.shields.io/github/forks/getActivity/EasyHttp.svg)
 

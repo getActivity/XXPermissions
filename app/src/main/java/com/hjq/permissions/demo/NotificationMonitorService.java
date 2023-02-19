@@ -7,7 +7,7 @@ import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.support.annotation.RequiresApi;
 
-import com.hjq.toast.ToastUtils;
+import com.hjq.toast.Toaster;
 
 /**
  *    author : Android 轮子哥
@@ -31,7 +31,7 @@ public final class NotificationMonitorService extends NotificationListenerServic
                 String title = extras.getString(Notification.EXTRA_TITLE);
                 // 获取通知消息内容
                 Object msgText = extras.getCharSequence(Notification.EXTRA_TEXT);
-                ToastUtils.show(String.format(getString(R.string.demo_notification_listener_toast), title, msgText));
+                Toaster.show(String.format(getString(R.string.demo_notification_listener_toast), title, msgText));
             }
         }
     }

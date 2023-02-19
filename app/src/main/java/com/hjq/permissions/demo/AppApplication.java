@@ -2,7 +2,7 @@ package com.hjq.permissions.demo;
 
 import android.app.Application;
 
-import com.hjq.toast.ToastUtils;
+import com.hjq.toast.Toaster;
 import com.hjq.toast.style.WhiteToastStyle;
 
 /**
@@ -18,6 +18,6 @@ public final class AppApplication extends Application {
         super.onCreate();
 
         // 初始化吐司工具类
-        ToastUtils.init(this, new WhiteToastStyle());
+        Toaster.init(this, new WhiteToastStyle());
     }
 }

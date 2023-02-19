@@ -283,9 +283,9 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 
 * 有人可能会说，解决这个问题的方式很简单，判断 miui 优化开关，如果是开启状态就跳转到小米定制的权限设置页，如果是关闭状态就跳转到谷歌原生的权限设置页，这样不就可以了？其实这个解决方案我也有尝试过，我曾委托联系到在小米工作的 miui 工程师，也有人帮我反馈这个问题给小米那边，最后得到答复都是一致的。
 
-![](picture/help_doc_miui_optimization_4.jpg)
+![](picture/zh/help_doc_miui_optimization_4.jpg)
 
-![](picture/help_doc_miui_optimization_5.jpg)
+![](picture/zh/help_doc_miui_optimization_5.jpg)
 
 * 另外值得一提的是 [Android 11 对软件包可见性进行了限制](https://developer.android.google.cn/about/versions/11/privacy/package-visibility)，所以这种跳包名的方式在未来将会完全不可行。
 

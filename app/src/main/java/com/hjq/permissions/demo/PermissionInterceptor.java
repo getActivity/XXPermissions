@@ -24,7 +24,7 @@ import com.hjq.permissions.OnPermissionPageCallback;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.PermissionFragment;
 import com.hjq.permissions.XXPermissions;
-import com.hjq.toast.ToastUtils;
+import com.hjq.toast.Toaster;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,7 +127,7 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
 
         if (doNotAskAgain) {
             if (deniedPermissions.size() == 1 && Permission.ACCESS_MEDIA_LOCATION.equals(deniedPermissions.get(0))) {
-                ToastUtils.show(R.string.common_permission_media_location_hint_fail);
+                Toaster.show(R.string.common_permission_media_location_hint_fail);
                 return;
             }
 
@@ -140,12 +140,12 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
             String deniedPermission = deniedPermissions.get(0);
 
             if (Permission.ACCESS_BACKGROUND_LOCATION.equals(deniedPermission)) {
-                ToastUtils.show(R.string.common_permission_background_location_fail_hint);
+                Toaster.show(R.string.common_permission_background_location_fail_hint);
                 return;
             }
 
             if (Permission.BODY_SENSORS_BACKGROUND.equals(deniedPermission)) {
-                ToastUtils.show(R.string.common_permission_background_sensors_fail_hint);
+                Toaster.show(R.string.common_permission_background_sensors_fail_hint);
                 return;
             }
         }
@@ -158,7 +158,7 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
         } else {
             message = activity.getString(R.string.common_permission_fail_hint);
         }
-        ToastUtils.show(message);
+        Toaster.show(message);
     }
 
     @Override

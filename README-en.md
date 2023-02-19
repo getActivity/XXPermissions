@@ -1,14 +1,12 @@
-## [中文文档](README.md)
+# [中文文档](README.md)
 
-# Permission Request Framework
+# Permission request framework
 
 ![](logo.png)
 
 * project address: [Github](https://github.com/getActivity/XXPermissions)
 
-* You can scan the code to download the Demo for demonstration or test. If the scan code cannot be downloaded, [Click here to download directly](https://github.com/getActivity/XXPermissions/releases/download/16.6/XXPermissions.apk)
-
-![](picture/download_demo_apk_qr_code.png)
+* [Click here to download demo apk directly](https://github.com/getActivity/XXPermissions/releases/download/16.6/XXPermissions.apk)
 
 ![](picture/en/demo_request_permission_activity.jpg) ![](picture/en/demo_request_single_permission.jpg) ![](picture/en/demo_request_group_permission.jpg)
 
@@ -22,23 +20,23 @@
 
 #### Integration steps
 
-* If your project Gradle configuration is in below `7.0`, needs to be in `build.gradle` file added
+* If your project Gradle configuration is in `7.0` below, needs to be in `build.gradle` file added
 
 ```groovy
 allprojects {
     repositories {
-        // JitPack 远程仓库：https://jitpack.io
+        // JitPack remote repository：https://jitpack.io
         maven { url 'https://jitpack.io' }
     }
 }
 ```
 
-* If your Gradle configuration is `7.0` or above, you need to `settings.gradle` file added
+* If your Gradle configuration is `7.0` or above, needs to be in `settings.gradle` file added
 
 ```groovy
 dependencyResolutionManagement {
     repositories {
-        // JitPack 远程仓库：https://jitpack.io
+        // JitPack remote repository：https://jitpack.io
         maven { url 'https://jitpack.io' }
     }
 }
@@ -56,7 +54,7 @@ android {
 }
 
 dependencies {
-    // Permission Request Framework：https://github.com/getActivity/XXPermissions
+    // Permission request framework：https://github.com/getActivity/XXPermissions
     implementation 'com.github.getActivity:XXPermissions:16.6'
 }
 ```
@@ -211,9 +209,9 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 |                      Adaptation details                       |                                  [XXPermissions](https://github.com/getActivity/XXPermissions)                                 |                                 [AndPermission](https://github.com/yanzhenjie/AndPermission)                                 |                                 [PermissionX](https://github.com/guolindev/PermissionX)                                |                              [AndroidUtilCode-PermissionUtils](https://github.com/Blankj/AndroidUtilCode)                |                                       [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher)                                       |                                 [RxPermissions](https://github.com/tbruyelle/RxPermissions)                                |                                   [EasyPermissions](https://github.com/googlesamples/easypermissions)                                  |
 | :-----------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------: |
-|                    corresponding version                      |                                                              16.6                                                              |                                                             2.0.3                                                            |                                                          1.7.1                                                         |                                                          1.31.0                                                          |                                                                                 4.9.2                                                                                |                                                            0.12                                                            |                                                                  3.0.0                                                                 |
-|                       number of issues                        | [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues) | [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues) | [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues) | [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues) | [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues) | [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues) | [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues) |
-|                       framework volume                        |                                                              60 KB                                                             |                                                            127 KB                                                            |                                                          97 KB                                                         |                                                          500 KB                                                          |                                                                                 99 KB                                                                                |                                                            28 KB                                                           |                                                                  48 KB                                                                 |
+|                    Corresponding version                      |                                                              16.6                                                              |                                                             2.0.3                                                            |                                                          1.7.1                                                         |                                                          1.31.0                                                          |                                                                                 4.9.2                                                                                |                                                            0.12                                                            |                                                                  3.0.0                                                                 |
+|                       Number of issues                        | [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues) | [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues) | [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues) | [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues) | [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues) | [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues) | [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues) |
+|                       Framework volume                        |                                                              60 KB                                                             |                                                            127 KB                                                            |                                                          97 KB                                                         |                                                          500 KB                                                          |                                                                                 99 KB                                                                                |                                                            28 KB                                                           |                                                                  48 KB                                                                 |
 |                 Framework Maintenance Status                  |                                                       **In maintenance**                                                       |                                                       stop maintenance                                                       |                                                    **In maintenance**                                                  |                                                     stop maintenance                                                     |                                                                             stop maintenance                                                                         |                                                      stop maintenance                                                      |                                                            stop maintenance                                                            |
 |                  Alarm reminder permission                    |                                                                ✅                                                               |                                                               ❌                                                             |                                                            ❌                                                          |                                                             ❌                                                           |                                                                                   ❌                                                                                  |                                                              ❌                                                            |                                                                    ❌                                                                  |
 |               All file management permissions                 |                                                                ✅                                                               |                                                               ❌                                                             |                                                            ✅                                                          |                                                             ❌                                                           |                                                                                   ❌                                                                                  |                                                              ❌                                                            |                                                                    ❌                                                                  |
@@ -323,7 +321,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 * When there is a problem with the permission application, do you hope that someone will come to remind you and tell you what is wrong? How to correct it? However, these XXPermissions have done it. Among all the permission request frameworks, I am the first person to do this. I think **make a frame** is not only to do a good job of function, but also to make complex The scene is handled well, and more importantly, **people oriented**, because the framework itself serves people, and what we need to do is not only to solve everyone's needs, but also to help everyone avoid detours in the process.
 
-#### Framework Highlights
+#### Framework highlights
 
 * Take the lead: the first permission request framework adapted to Android 13
 
@@ -345,9 +343,9 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 * Android middle office: [AndroidProject](https://github.com/getActivity/AndroidProject)![](https://img.shields.io/github/stars/getActivity/AndroidProject.svg)![](https://img.shields.io/github/forks/getActivity/AndroidProject.svg)
 
-* Android middle office Kt version: [AndroidProject-Kotlin](https://github.com/getActivity/AndroidProject-Kotlin)![](https://img.shields.io/github/stars/getActivity/AndroidProject-Kotlin.svg)![](https://img.shields.io/github/forks/getActivity/AndroidProject-Kotlin.svg)
+* Android middle office kt version: [AndroidProject-Kotlin](https://github.com/getActivity/AndroidProject-Kotlin)![](https://img.shields.io/github/stars/getActivity/AndroidProject-Kotlin.svg)![](https://img.shields.io/github/forks/getActivity/AndroidProject-Kotlin.svg)
 
-* Toast framework: [ToastUtils](https://github.com/getActivity/ToastUtils)![](https://img.shields.io/github/stars/getActivity/ToastUtils.svg)![](https://img.shields.io/github/forks/getActivity/ToastUtils.svg)
+* Toast framework: [Toaster](https://github.com/getActivity/Toaster)![](https://img.shields.io/github/stars/getActivity/Toaster.svg)![](https://img.shields.io/github/forks/getActivity/Toaster.svg)
 
 * Network framework: [EasyHttp](https://github.com/getActivity/EasyHttp)![](https://img.shields.io/github/stars/getActivity/EasyHttp.svg)![](https://img.shields.io/github/forks/getActivity/EasyHttp.svg)
 
@@ -367,6 +365,8 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 * Android code standard: [AndroidCodeStandard](https://github.com/getActivity/AndroidCodeStandard)![](https://img.shields.io/github/stars/getActivity/AndroidCodeStandard.svg)![](https://img.shields.io/github/forks/getActivity/AndroidCodeStandard.svg)
 
+* Android resource summary：[AndroidIndex](https://github.com/getActivity/AndroidIndex) ![](https://img.shields.io/github/stars/getActivity/AndroidIndex.svg) ![](https://img.shields.io/github/forks/getActivity/AndroidIndex.svg)
+
 * Android open source leaderboard: [AndroidGithubBoss](https://github.com/getActivity/AndroidGithubBoss)![](https://img.shields.io/github/stars/getActivity/AndroidGithubBoss.svg)![](https://img.shields.io/github/forks/getActivity/AndroidGithubBoss.svg)
 
 * Studio boutique plugins: [StudioPlugins](https://github.com/getActivity/StudioPlugins)![](https://img.shields.io/github/stars/getActivity/StudioPlugins.svg)![](https://img.shields.io/github/forks/getActivity/StudioPlugins.svg)
@@ -374,6 +374,8 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 * Emoji collection: [emoji pa c shadow](https://github.com/getActivity/EmojiPackage)![](https://img.shields.io/github/stars/getActivity/EmojiPackage.svg)![](https://img.shields.io/github/forks/getActivity/EmojiPackage.svg)
 
 * China provinces json: [ProvinceJson](https://github.com/getActivity/ProvinceJson)![](https://img.shields.io/github/stars/getActivity/ProvinceJson.svg)![](https://img.shields.io/github/forks/getActivity/ProvinceJson.svg)
+
+* Markdown documentation：[MarkdownDoc](https://github.com/getActivity/MarkdownDoc) ![](https://img.shields.io/github/stars/getActivity/MarkdownDoc.svg) ![](https://img.shields.io/github/forks/getActivity/MarkdownDoc.svg)
 
 ## License
 

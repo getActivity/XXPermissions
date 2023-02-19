@@ -26,7 +26,7 @@ import android.view.View;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
-import com.hjq.toast.ToastUtils;
+import com.hjq.toast.Toaster;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -585,7 +585,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
     }
 
     public void toast(CharSequence text) {
-        ToastUtils.show(text);
+        Toaster.show(text);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
