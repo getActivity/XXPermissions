@@ -78,8 +78,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
          if (PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES) ||
                  PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO) ||
                  PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO)) {
-            return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE) &&
-                    PermissionUtils.checkSelfPermission(context, Permission.WRITE_EXTERNAL_STORAGE);
+            return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE);
          }
       }
 
@@ -148,7 +147,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
             // 如果支持申请，那么再去判断权限是否授予
             return PermissionUtils.checkSelfPermission(context, permission);
          }
-         // 如果不支持申请，则直接返回 true（代表有这个权限），反正也不会崩溃，顶多就是获取不到其他应用列表
+         // 如果不支持申请，则直接返回 true（代表有这个权限），反正也不会崩溃，顶多就是获取不到第三方应用列表
          return true;
       }
 
@@ -187,9 +186,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
                  PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO) ||
                  PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO)) {
             return !PermissionUtils.checkSelfPermission(activity, Permission.READ_EXTERNAL_STORAGE) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_EXTERNAL_STORAGE) &&
-                    !PermissionUtils.checkSelfPermission(activity, Permission.WRITE_EXTERNAL_STORAGE) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.WRITE_EXTERNAL_STORAGE);
+                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_EXTERNAL_STORAGE);
          }
       }
 

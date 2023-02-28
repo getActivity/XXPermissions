@@ -178,6 +178,12 @@ final class PermissionUtils {
                 recheck = true;
             }
 
+            if (AndroidVersion.isAndroid13() && AndroidVersion.getTargetSdkVersionCode(activity) >= AndroidVersion.ANDROID_13 &&
+                    PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
+                // 在 Android 13 不能申请 WRITE_EXTERNAL_STORAGE，会被系统直接拒绝
+                recheck = true;
+            }
+
             if (!AndroidVersion.isAndroid13() &&
                     (PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS) ||
                             PermissionUtils.equalsPermission(permission, Permission.NEARBY_WIFI_DEVICES) ||

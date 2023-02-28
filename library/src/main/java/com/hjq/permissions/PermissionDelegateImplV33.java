@@ -29,6 +29,13 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
               PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO)) {
          return PermissionUtils.checkSelfPermission(context, permission);
       }
+
+      // 亲测当这两个条件满足的时候，在 Android 13 不能申请 WRITE_EXTERNAL_STORAGE，会被系统直接拒绝
+      // 不会弹出系统授权对话框，框架为了保证不同 Android 版本的回调结果一致性，这里直接返回 true 给到外层
+      if (AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_13 &&
+              PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
+         return true;
+      }
       return super.isGrantedPermission(context, permission);
    }
 
@@ -49,6 +56,11 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
               PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO)) {
          return !PermissionUtils.checkSelfPermission(activity, permission) &&
                  !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+      }
+
+      if (AndroidVersion.getTargetSdkVersionCode(activity) >= AndroidVersion.ANDROID_13 &&
+              PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
+         return false;
       }
       return super.isPermissionPermanentDenied(activity, permission);
    }

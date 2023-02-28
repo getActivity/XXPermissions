@@ -166,13 +166,12 @@ final class PermissionChecker {
         }
 
         if (AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_13 &&
-                (PermissionUtils.containsPermission(requestPermissions, Permission.READ_EXTERNAL_STORAGE) ||
-                        PermissionUtils.containsPermission(requestPermissions, Permission.WRITE_EXTERNAL_STORAGE))) {
-            // 当 targetSdkVersion >= 33 应该使用 READ_MEDIA_IMAGES、READ_MEDIA_VIDEO、READ_MEDIA_AUDIO 来代替 READ_EXTERNAL_STORAGE、WRITE_EXTERNAL_STORAGE
+                PermissionUtils.containsPermission(requestPermissions, Permission.READ_EXTERNAL_STORAGE)) {
+            // 当 targetSdkVersion >= 33 应该使用 READ_MEDIA_IMAGES、READ_MEDIA_VIDEO、READ_MEDIA_AUDIO 来代替 READ_EXTERNAL_STORAGE
             // 因为经过测试，如果当 targetSdkVersion >= 33 申请 READ_EXTERNAL_STORAGE 或者 WRITE_EXTERNAL_STORAGE 会被系统直接拒绝，不会弹出任何授权框
             throw new IllegalArgumentException("When targetSdkVersion >= 33 should use " +
                     Permission.READ_MEDIA_IMAGES + ", " + Permission.READ_MEDIA_VIDEO + ", " + Permission.READ_MEDIA_AUDIO +
-                    " instead of " + Permission.READ_EXTERNAL_STORAGE + ", " + Permission.WRITE_EXTERNAL_STORAGE);
+                    " instead of " + Permission.READ_EXTERNAL_STORAGE);
         }
 
         // 如果申请的是 Android 13 读取照片权限，则绕过本次检查
@@ -260,23 +259,25 @@ final class PermissionChecker {
      * 检查定位权限
      */
     static void checkLocationPermission(@NonNull List<String> requestPermissions) {
-        // 为什么要注释这段代码，因为经过测试，没有官方说得那么严重，我用 Android 模拟器做测试
-        // 愣是没测出来只申请 ACCESS_FINE_LOCATION 会有什么异常，估计是 Google 将代码改回去了，但是文档忘记改了
-        // 总结出来：耳听为虚，眼见不一定为实，要自己动手实践，实践出真理，光说不练假把式
-//        if (AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_12) {
-//            if (PermissionUtils.containsPermission(requestPermissions, Permission.ACCESS_FINE_LOCATION) &&
-//                    !PermissionUtils.containsPermission(requestPermissions, Permission.ACCESS_COARSE_LOCATION) ) {
-//                // 如果您的应用以 Android 12 为目标平台并且您请求 ACCESS_FINE_LOCATION 权限
-//                // 则还必须请求 ACCESS_COARSE_LOCATION 权限。您必须在单个运行时请求中包含这两项权限
-//                // 如果您尝试仅请求 ACCESS_FINE_LOCATION，则系统会忽略该请求并在 Logcat 中记录以下错误消息：
-//                // ACCESS_FINE_LOCATION must be requested with ACCESS_COARSE_LOCATION
-//                // 官方适配文档：https://developer.android.google.cn/about/versions/12/approximate-location
-//                throw new IllegalArgumentException("If your app targets Android 12 or higher " +
-//                        "and requests the ACCESS_FINE_LOCATION runtime permission, " +
-//                        "you must also request the ACCESS_COARSE_LOCATION permission. " +
-//                        "You must include both permissions in a single runtime request.");
-//            }
-//        }
+        /*
+        为什么要注释这段代码，因为经过测试，没有官方说得那么严重，我用 Android 模拟器做测试
+        愣是没测出来只申请 ACCESS_FINE_LOCATION 会有什么异常，估计是 Google 将代码改回去了，但是文档忘记改了
+        总结出来：耳听为虚，眼见不一定为实，要自己动手实践，实践出真理，光说不练假把式
+        if (AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_12) {
+            if (PermissionUtils.containsPermission(requestPermissions, Permission.ACCESS_FINE_LOCATION) &&
+                    !PermissionUtils.containsPermission(requestPermissions, Permission.ACCESS_COARSE_LOCATION) ) {
+                // 如果您的应用以 Android 12 为目标平台并且您请求 ACCESS_FINE_LOCATION 权限
+                // 则还必须请求 ACCESS_COARSE_LOCATION 权限。您必须在单个运行时请求中包含这两项权限
+                // 如果您尝试仅请求 ACCESS_FINE_LOCATION，则系统会忽略该请求并在 Logcat 中记录以下错误消息：
+                // ACCESS_FINE_LOCATION must be requested with ACCESS_COARSE_LOCATION
+                // 官方适配文档：https://developer.android.google.cn/about/versions/12/approximate-location
+                throw new IllegalArgumentException("If your app targets Android 12 or higher " +
+                        "and requests the ACCESS_FINE_LOCATION runtime permission, " +
+                        "you must also request the ACCESS_COARSE_LOCATION permission. " +
+                        "You must include both permissions in a single runtime request.");
+            }
+        }
+        */
 
         // 判断是否包含后台定位权限
         if (!PermissionUtils.containsPermission(requestPermissions, Permission.ACCESS_BACKGROUND_LOCATION)) {
@@ -529,7 +530,6 @@ final class PermissionChecker {
                         PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO) ||
                         PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO)) {
                     checkManifestPermission(permissionInfoList, Permission.READ_EXTERNAL_STORAGE, AndroidVersion.ANDROID_12_L);
-                    checkManifestPermission(permissionInfoList, Permission.WRITE_EXTERNAL_STORAGE, AndroidVersion.ANDROID_12_L);
                     continue;
                 }
 
@@ -661,13 +661,9 @@ final class PermissionChecker {
                     PermissionUtils.containsPermission(requestPermissions, Permission.READ_MEDIA_VIDEO) ||
                     PermissionUtils.containsPermission(requestPermissions, Permission.READ_MEDIA_AUDIO))) {
 
-                // 添加旧版的存储权限
+                // 添加旧版的读取外部存储权限
                 if (!PermissionUtils.containsPermission(requestPermissions, Permission.READ_EXTERNAL_STORAGE)) {
                     requestPermissions.add(Permission.READ_EXTERNAL_STORAGE);
-                }
-
-                if (!PermissionUtils.containsPermission(requestPermissions, Permission.WRITE_EXTERNAL_STORAGE)) {
-                    requestPermissions.add(Permission.WRITE_EXTERNAL_STORAGE);
                 }
             }
         }
