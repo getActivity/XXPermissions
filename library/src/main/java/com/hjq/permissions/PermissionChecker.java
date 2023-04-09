@@ -502,9 +502,12 @@ final class PermissionChecker {
                     PermissionUtils.equalsPermission(permission, Permission.BIND_NOTIFICATION_LISTENER_SERVICE) ||
                     PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE) ||
                     PermissionUtils.equalsPermission(permission, Permission.PICTURE_IN_PICTURE)) {
-                // 不检测权限有没有在清单文件中注册，因为这几个权限是框架虚拟出来的，有没有在清单文件中注册都没关系
+                // 不检测这些权限有没有在清单文件中注册，因为这几个权限是框架虚拟出来的，有没有在清单文件中注册都没关系
                 continue;
             }
+
+            // 检查这个权限有没有在清单文件中注册
+            checkManifestPermission(permissionInfoList, permission);
 
             if (PermissionUtils.equalsPermission(permission, Permission.BODY_SENSORS_BACKGROUND)) {
                 // 申请后台的传感器权限必须要先注册前台的传感器权限
@@ -582,8 +585,6 @@ final class PermissionChecker {
                 // Manifest.permission.QUERY_ALL_PACKAGES
                 checkManifestPermission(permissionInfoList, "android.permission.QUERY_ALL_PACKAGES");
             }
-
-            checkManifestPermission(permissionInfoList, permission);
         }
     }
 

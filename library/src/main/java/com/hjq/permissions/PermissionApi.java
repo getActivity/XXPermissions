@@ -35,6 +35,12 @@ final class PermissionApi {
             DELEGATE = new PermissionDelegateImplV26();
         } else if (AndroidVersion.isAndroid6()) {
             DELEGATE = new PermissionDelegateImplV23();
+        } else if (AndroidVersion.isAndroid5()) {
+            DELEGATE = new PermissionDelegateImplV21();
+        } else if (AndroidVersion.isAndroid4_4()) {
+            DELEGATE = new PermissionDelegateImplV19();
+        } else if (AndroidVersion.isAndroid4_3()) {
+            DELEGATE = new PermissionDelegateImplV18();
         } else {
             DELEGATE = new PermissionDelegateImplV14();
         }

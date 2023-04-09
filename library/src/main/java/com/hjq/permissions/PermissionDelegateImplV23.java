@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.PermissionInfo;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -18,47 +16,10 @@ import android.support.annotation.RequiresApi;
  *    desc   : Android 6.0 权限委托实现
  */
 @RequiresApi(api = AndroidVersion.ANDROID_6)
-class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
+class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
 
    @Override
    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
-
-      // 判断是否是特殊权限
-      if (PermissionUtils.isSpecialPermission(permission)) {
-
-         // 检测悬浮窗权限
-         if (PermissionUtils.equalsPermission(permission, Permission.SYSTEM_ALERT_WINDOW)) {
-            return isGrantedWindowPermission(context);
-         }
-
-         // 检测系统权限
-         if (PermissionUtils.equalsPermission(permission, Permission.WRITE_SETTINGS)) {
-            return isGrantedSettingPermission(context);
-         }
-
-         // 检测勿扰权限
-         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_NOTIFICATION_POLICY)) {
-            return isGrantedNotDisturbPermission(context);
-         }
-
-         // 检测电池优化选项权限
-         if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
-            return isGrantedIgnoreBatteryPermission(context);
-         }
-
-         if (!AndroidVersion.isAndroid11()) {
-            // 检测管理所有文件权限
-            if (PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
-               return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE) &&
-                       PermissionUtils.checkSelfPermission(context, Permission.WRITE_EXTERNAL_STORAGE);
-            }
-         }
-
-         return super.isGrantedPermission(context, permission);
-      }
-
-      /* ---------------------------------------------------------------------------------------- */
-
       // 向下兼容 Android 13 新权限
       if (!AndroidVersion.isAndroid13()) {
 
@@ -82,8 +43,6 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
          }
       }
 
-      /* ---------------------------------------------------------------------------------------- */
-
       // 向下兼容 Android 12 新权限
       if (!AndroidVersion.isAndroid12()) {
 
@@ -97,7 +56,15 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
          }
       }
 
-      /* ---------------------------------------------------------------------------------------- */
+      // 向下兼容 Android 11 新权限
+      if (!AndroidVersion.isAndroid11()) {
+
+         // 检测管理所有文件权限
+         if (PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
+            return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE) &&
+                    PermissionUtils.checkSelfPermission(context, Permission.WRITE_EXTERNAL_STORAGE);
+         }
+      }
 
       // 向下兼容 Android 10 新权限
       if (!AndroidVersion.isAndroid10()) {
@@ -115,8 +82,6 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
          }
       }
 
-      /* ---------------------------------------------------------------------------------------- */
-
       // 向下兼容 Android 9.0 新权限
       if (!AndroidVersion.isAndroid9()) {
 
@@ -124,8 +89,6 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
             return true;
          }
       }
-
-      /* ---------------------------------------------------------------------------------------- */
 
       // 向下兼容 Android 8.0 新权限
       if (!AndroidVersion.isAndroid8()) {
@@ -139,32 +102,36 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
          }
       }
 
-      /* ---------------------------------------------------------------------------------------- */
-
-      if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
-         // 判断是否支持申请该权限
-         if (isSupportGetInstalledAppsPermission(context)) {
-            // 如果支持申请，那么再去判断权限是否授予
-            return PermissionUtils.checkSelfPermission(context, permission);
-         }
-         // 如果不支持申请，则直接返回 true（代表有这个权限），反正也不会崩溃，顶多就是获取不到第三方应用列表
-         return true;
+      // 交给父类处理
+      if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS) ||
+              PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS)) {
+         return super.isGrantedPermission(context, permission);
       }
 
-      /* ---------------------------------------------------------------------------------------- */
+      if (PermissionUtils.isSpecialPermission(permission)) {
+         // 检测系统权限
+         if (PermissionUtils.equalsPermission(permission, Permission.WRITE_SETTINGS)) {
+            return isGrantedSettingPermission(context);
+         }
+
+         // 检测勿扰权限
+         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_NOTIFICATION_POLICY)) {
+            return isGrantedNotDisturbPermission(context);
+         }
+
+         // 检测电池优化选项权限
+         if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
+            return isGrantedIgnoreBatteryPermission(context);
+         }
+
+         return super.isGrantedPermission(context, permission);
+      }
 
       return PermissionUtils.checkSelfPermission(context, permission);
    }
 
    @Override
    public boolean isPermissionPermanentDenied(@NonNull Activity activity, @NonNull String permission) {
-      if (PermissionUtils.isSpecialPermission(permission)) {
-         // 特殊权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回 false
-         return false;
-      }
-
-      /* ---------------------------------------------------------------------------------------- */
-
       // 向下兼容 Android 13 新权限
       if (!AndroidVersion.isAndroid13()) {
 
@@ -190,8 +157,6 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
          }
       }
 
-      /* ---------------------------------------------------------------------------------------- */
-
       // 向下兼容 Android 12 新权限
       if (!AndroidVersion.isAndroid12()) {
 
@@ -205,8 +170,6 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
             return false;
          }
       }
-
-      /* ---------------------------------------------------------------------------------------- */
 
       // 向下兼容 Android 10 新权限
       if (!AndroidVersion.isAndroid10()) {
@@ -226,8 +189,6 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
          }
       }
 
-      /* ---------------------------------------------------------------------------------------- */
-
       // 向下兼容 Android 9.0 新权限
       if (!AndroidVersion.isAndroid9()) {
 
@@ -235,8 +196,6 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
             return false;
          }
       }
-
-      /* ---------------------------------------------------------------------------------------- */
 
       // 向下兼容 Android 8.0 新权限
 
@@ -252,20 +211,16 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
          }
       }
 
-      /* ---------------------------------------------------------------------------------------- */
-
-      if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
-         // 判断是否支持申请该权限
-         if (isSupportGetInstalledAppsPermission(activity)) {
-            // 如果支持申请，那么再去判断权限是否永久拒绝
-            return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
-         }
-         // 如果不支持申请，则直接返回 false（代表没有永久拒绝）
-         return false;
+      // 交给父类处理
+      if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS) ||
+              PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS)) {
+         return super.isPermissionPermanentDenied(activity, permission);
       }
 
-      /* ---------------------------------------------------------------------------------------- */
+      if (PermissionUtils.isSpecialPermission(permission)) {
+         // 特殊权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回 false
+         return false;
+      }
 
       return !PermissionUtils.checkSelfPermission(activity, permission) &&
               !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
@@ -273,10 +228,6 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
 
    @Override
    public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
-      if (PermissionUtils.equalsPermission(permission, Permission.SYSTEM_ALERT_WINDOW)) {
-         return getWindowPermissionIntent(context);
-      }
-
       if (PermissionUtils.equalsPermission(permission, Permission.WRITE_SETTINGS)) {
          return getSettingPermissionIntent(context);
       }
@@ -290,28 +241,6 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
       }
 
       return super.getPermissionIntent(context, permission);
-   }
-
-   /**
-    * 是否授予了悬浮窗权限
-    */
-   private static boolean isGrantedWindowPermission(@NonNull Context context) {
-      return Settings.canDrawOverlays(context);
-   }
-
-   /**
-    * 获取悬浮窗权限设置界面意图
-    */
-   private static Intent getWindowPermissionIntent(@NonNull Context context) {
-      Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-      // 在 Android 11 加包名跳转也是没有效果的，官方文档链接：
-      // https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION
-      intent.setData(PermissionUtils.getPackageNameUri(context));
-
-      if (!PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionUtils.getApplicationDetailsIntent(context);
-      }
-      return intent;
    }
 
    /**
@@ -349,13 +278,18 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
    private static Intent getNotDisturbPermissionIntent(@NonNull Context context) {
       Intent intent = null;
 
-      if (AndroidVersion.isAndroid10()) {
+      // issue 地址：https://github.com/getActivity/XXPermissions/issues/190
+      // 这里解释一下，为什么要排除鸿蒙系统，因为用代码能检测到有这个 Intent，也能跳转过去，但是会被马上拒绝
+      // 测试过了其他厂商系统及 Android 原生系统都没有这个问题，就只有鸿蒙有这个问题
+      // 只因为这个 Intent 是隐藏的意图，所以就不让用，鸿蒙 2.0 和 3.0 都有这个问题
+      // 别问鸿蒙 1.0 有没有问题，问就是鸿蒙一发布就 2.0 了，1.0 版本都没有问世过
+      if (AndroidVersion.isAndroid10() && !PhoneRomUtils.isHarmonyOs()) {
          // android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS
          intent = new Intent("android.settings.NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS");
          intent.setData(PermissionUtils.getPackageNameUri(context));
       }
 
-      if (intent == null || !PermissionUtils.areActivityIntent(context, intent)) {
+      if (!PermissionUtils.areActivityIntent(context, intent)) {
          intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
       }
 
@@ -387,34 +321,5 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV14 {
          intent = PermissionUtils.getApplicationDetailsIntent(context);
       }
       return intent;
-   }
-
-   /**
-    * 判断是否支持获取应用列表权限
-    */
-   private boolean isSupportGetInstalledAppsPermission(Context context) {
-      try {
-         PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(Permission.GET_INSTALLED_APPS, 0);
-         if (permissionInfo != null) {
-            if (AndroidVersion.isAndroid9()) {
-               return permissionInfo.getProtection() == PermissionInfo.PROTECTION_DANGEROUS;
-            } else {
-               return (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_MASK_BASE) == PermissionInfo.PROTECTION_DANGEROUS;
-            }
-         }
-      } catch (PackageManager.NameNotFoundException e) {
-         e.printStackTrace();
-      }
-
-      try {
-         // 移动终端应用软件列表权限实施指南：http://www.taf.org.cn/upload/AssociationStandard/TTAF%20108-2022%20%E7%A7%BB%E5%8A%A8%E7%BB%88%E7%AB%AF%E5%BA%94%E7%94%A8%E8%BD%AF%E4%BB%B6%E5%88%97%E8%A1%A8%E6%9D%83%E9%99%90%E5%AE%9E%E6%96%BD%E6%8C%87%E5%8D%97.pdf
-         // 这是兜底方案，因为测试了大量的机型，除了荣耀的 Magic UI 有按照这个规范去做，其他厂商（包括华为的 HarmonyOS）都没有按照这个规范去做
-         // 虽然可以只用上面那种判断权限是不是危险权限的方式，但是避免不了有的手机厂商用下面的这种，所以两种都写比较好，小孩子才做选择，大人我全都要
-         return Settings.Secure.getInt(context.getContentResolver(), "oem_installed_apps_runtime_permission_enable") == 1;
-      } catch (Settings.SettingNotFoundException e) {
-         e.printStackTrace();
-      }
-
-      return false;
    }
 }

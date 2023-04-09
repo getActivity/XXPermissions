@@ -24,16 +24,20 @@ public final class NotificationMonitorService extends NotificationListenerServic
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
         super.onNotificationPosted(sbn);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Bundle extras = sbn.getNotification().extras;
-            if (extras != null) {
-                //获取通知消息标题
-                String title = extras.getString(Notification.EXTRA_TITLE);
-                // 获取通知消息内容
-                Object msgText = extras.getCharSequence(Notification.EXTRA_TEXT);
-                Toaster.show(String.format(getString(R.string.demo_notification_listener_toast), title, msgText));
-            }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            return;
         }
+
+        Bundle extras = sbn.getNotification().extras;
+        if (extras == null) {
+            return;
+        }
+
+        //获取通知消息标题
+        String title = extras.getString(Notification.EXTRA_TITLE);
+        // 获取通知消息内容
+        Object msgText = extras.getCharSequence(Notification.EXTRA_TEXT);
+        Toaster.show(String.format(getString(R.string.demo_notification_listener_toast), title, msgText));
     }
 
     /**

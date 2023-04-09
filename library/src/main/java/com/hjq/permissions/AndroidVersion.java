@@ -125,6 +125,13 @@ final class AndroidVersion {
     }
 
     /**
+     * 是否是 Android 4.4 及以上版本
+     */
+    static boolean isAndroid4_4() {
+        return Build.VERSION.SDK_INT >= ANDROID_4_4;
+    }
+
+    /**
      * 是否是 Android 4.3 及以上版本
      */
     static boolean isAndroid4_3() {

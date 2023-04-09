@@ -19,6 +19,8 @@ assignees: getActivity
 
 * Whether the problem can be reproduced [Required]: Yes/No
 
+* Android Project targetSdkVersion [Required]: Please fill in your project target sdk version
+
 * Phone information in question [Required]: Please fill in the phone brand and model in question
 
 * Android version in question [Required]: Please fill in the Android version in question

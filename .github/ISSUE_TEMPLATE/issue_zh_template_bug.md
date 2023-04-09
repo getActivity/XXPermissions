@@ -18,6 +18,8 @@ assignees: getActivity
 
 * 是否必现【必填】：是/否
 
+* 项目 targetSdkVersion【必填】：XX
+
 * 出现问题的手机信息【必填】：请填写出现问题的品牌和机型
 
 * 出现问题的安卓版本【必填】：请填写出现问题的 Android 版本
