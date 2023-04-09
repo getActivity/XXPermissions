@@ -1,6 +1,6 @@
 name: 提交 Bug
 description: 请告诉我框架存在的问题，我会协助你解决此问题！
-title: ""
+title: "[Bug]："
 labels: ["bug"]
 
 body:

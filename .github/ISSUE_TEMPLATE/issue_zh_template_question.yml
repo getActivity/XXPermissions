@@ -1,6 +1,6 @@
 name: 提出疑问
 description: 提出你的困惑，我会给你解答
-title: ""
+title: "[疑惑]："
 labels: ["question"]
 
 body:
