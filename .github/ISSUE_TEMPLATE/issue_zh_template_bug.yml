@@ -15,7 +15,7 @@ body:
       description: 请输入你使用的框架版本
     validations:
       required: true
-  - type: input
+  - type: textarea
     id: input_id_2
     attributes:
       label: 问题描述【必填】
@@ -35,6 +35,7 @@ body:
       label: 是否必现【必填】
       multiple: false
       options:
+        - 未选择
         - 是
         - 否
     validations:
@@ -84,6 +85,7 @@ body:
       description: 如果用的是旧版本的话，建议升级看问题是否还存在
       multiple: false
       options:
+        - 未选择
         - 是
         - 否
     validations:
@@ -95,6 +97,7 @@ body:
       description: 文档会提供最常见的问题解答，可以先看看是否有自己想要的
       multiple: false
       options:
+        - 未选择
         - 是
         - 否
     validations:
@@ -106,6 +109,7 @@ body:
       description: 看看曾经有人提过类似的问题，先参考一下别人是怎么解决的
       multiple: false
       options:
+        - 未选择
         - 是
         - 否
     validations:
@@ -117,6 +121,7 @@ body:
       description: 排查一下是不是自己的项目代码写得有问题导致的
       multiple: false
       options:
+        - 未选择
         - 是
         - 否
     validations:
@@ -124,27 +129,17 @@ body:
   - type: dropdown
     id: input_id_14
     attributes:
-      label: 是否可以通过 Demo 来复现该问题【必答】
-      description: 排查一下是不是自己的项目代码写得有问题导致的
-      multiple: false
-      options:
-        - 是
-        - 否
-    validations:
-      required: true
-  - type: dropdown
-    id: input_id_15
-    attributes:
       label: 使用原生的权限 API 是否会出现该问题【必答】
       description: 排查一下是不是框架的代码存在问题导致的
       multiple: false
       options:
+        - 未选择
         - 是
         - 否
     validations:
       required: true
   - type: textarea
-    id: input_id_16
+    id: input_id_15
     attributes:
       label: 提供报错堆栈
       description: 如果有报错的话必填，注意不要拿被混淆过的代码堆栈上来
@@ -152,18 +147,16 @@ body:
     validations:
       required: false
   - type: textarea
-    id: input_id_17
+    id: input_id_16
     attributes:
       label: 提供截图或视频
       description: 根据需要提供，此项不强制
-      render: text
     validations:
       required: false
   - type: textarea
-    id: input_id_18
+    id: input_id_17
     attributes:
       label: 提供解决方案
       description: 如果已经解决了的话，此项不强制
-      render: text
     validations:
       required: false

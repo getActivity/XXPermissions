@@ -8,33 +8,35 @@ body:
     attributes:
       value: |
         ## 【警告：请务必按照 issue 模板填写，不要抱有侥幸心理，一旦发现 issue 没有按照模板认真填写，一律直接关闭】
-  - type: dropdown
+  - type: textarea
     id: input_id_1
     attributes:
-      label: issue 是否有人曾提过类似的建议？【必答】
-      description: 一旦出现重复提问我将不会再次解答
-      multiple: false
-      options:
-        - 是
-        - 否
+      label: 你觉得框架有什么不足之处？【必答】
+      description: 你可以描述框架有什么令你不满意的地方
     validations:
       required: true
   - type: dropdown
     id: input_id_2
     attributes:
-      label: 框架文档是否有提及到此问题？【必答】
-      description: 请先看完框架的文档后再来提建议
+      label: issue 是否有人曾提过类似的建议？【必答】
+      description: 一旦出现重复提问我将不会再次解答
       multiple: false
       options:
+        - 未选择
         - 是
         - 否
     validations:
       required: true
-  - type: textarea
+  - type: dropdown
     id: input_id_3
     attributes:
-      label: 你觉得框架有什么不足之处？【必答】
-      description: 你可以描述框架有什么令你不满意的地方
+      label: 框架文档是否有提及到此问题？【必答】
+      description: 请先看完框架的文档后再来提建议
+      multiple: false
+      options:
+        - 未选择
+        - 是
+        - 否
     validations:
       required: true
   - type: textarea

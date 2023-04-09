@@ -8,7 +8,7 @@ body:
     attributes:
       value: |
         ## 【警告：请务必按照 issue 模板填写，不要抱有侥幸心理，一旦发现 issue 没有按照模板认真填写，一律直接关闭】
-  - type: input
+  - type: textarea
     id: input_id_1
     attributes:
       label: 问题描述【必填】
@@ -22,6 +22,7 @@ body:
       description: 一旦出现重复提问我将不会再次解答
       multiple: false
       options:
+        - 未选择
         - 是
         - 否
     validations:
@@ -33,6 +34,7 @@ body:
       description: 请先看完框架的文档后再来提建议
       multiple: false
       options:
+        - 未选择
         - 是
         - 否
     validations:
