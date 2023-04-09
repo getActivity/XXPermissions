@@ -1,0 +1,36 @@
+name: 提出疑问
+description: 提出你的困惑，我会给你解答
+title: ""
+labels: ["question"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 【警告：请务必按照 issue 模板填写，不要抱有侥幸心理，一旦发现 issue 没有按照模板认真填写，一律直接关闭】
+  - type: input
+    attributes:
+      label: 问题描述【必填】
+      description: 请描述一下你的问题（注意：如果确定是框架 bug 请不要在这里提，否则一概不受理）
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: issue 是否有人曾提过类似的问题？【必答】
+      description: 一旦出现重复提问我将不会再次解答
+      multiple: false
+      options:
+        - 是
+        - 否
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: 框架文档是否有提及到此问题？【必答】
+      description: 请先看完框架的文档后再来提建议
+      multiple: false
+      options:
+        - 是
+        - 否
+    validations:
+      required: true
