@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## 【警告：请务必按照 issue 模板填写，不要抱有侥幸心理，一旦发现 issue 没有按照模板认真填写，一律直接关闭】
+        ## ![【警告：请务必按照 issue 模板填写，不要抱有侥幸心理，一旦发现 issue 没有按照模板认真填写，一律直接关闭】](https://github.com/getActivity/IssueTemplateGuide)
   - type: input
     id: input_id_1
     attributes:
@@ -93,7 +93,7 @@ body:
   - type: dropdown
     id: input_id_11
     attributes:
-      label: 是否已经查阅框架文档但还未能解决的【必答】
+      label: 框架文档是否提及了该问题【必答】
       description: 文档会提供最常见的问题解答，可以先看看是否有自己想要的
       multiple: false
       options:
@@ -105,8 +105,8 @@ body:
   - type: dropdown
     id: input_id_12
     attributes:
-      label: issue 是否有人曾提过类似的问题【必答】
-      description: 看看曾经有人提过类似的问题，先参考一下别人是怎么解决的
+      label: 是否已经查阅框架文档但还未能解决的【必答】
+      description: 如果查阅了文档但还是没有解决的话，可以选择是
       multiple: false
       options:
         - 未选择
@@ -117,8 +117,8 @@ body:
   - type: dropdown
     id: input_id_13
     attributes:
-      label: 是否可以通过 Demo 来复现该问题【必答】
-      description: 排查一下是不是自己的项目代码写得有问题导致的
+      label: issue 列表中是否有人曾提过类似的问题【必答】
+      description: 可以在 issue 列表在搜索问题关键字，参考一下别人的解决方案
       multiple: false
       options:
         - 未选择
@@ -129,8 +129,20 @@ body:
   - type: dropdown
     id: input_id_14
     attributes:
-      label: 使用原生的权限 API 是否会出现该问题【必答】
-      description: 排查一下是不是框架的代码存在问题导致的
+      label: 是否已经搜索过了 issue 列表但还未能解决的【必答】
+      description: 如果搜索过了 issue 列表但是问题没有解决的话，可以选择是
+      multiple: false
+      options:
+        - 未选择
+        - 是
+        - 否
+    validations:
+      required: true
+  - type: dropdown
+    id: input_id_15
+    attributes:
+      label: 是否可以通过 Demo 来复现该问题【必答】
+      description: 排查一下是不是自己的项目代码写得有问题导致的
       multiple: false
       options:
         - 未选择
@@ -139,7 +151,7 @@ body:
     validations:
       required: true
   - type: textarea
-    id: input_id_15
+    id: input_id_16
     attributes:
       label: 提供报错堆栈
       description: 如果有报错的话必填，注意不要拿被混淆过的代码堆栈上来
@@ -147,14 +159,14 @@ body:
     validations:
       required: false
   - type: textarea
-    id: input_id_16
+    id: input_id_17
     attributes:
       label: 提供截图或视频
       description: 根据需要提供，此项不强制
     validations:
       required: false
   - type: textarea
-    id: input_id_17
+    id: input_id_18
     attributes:
       label: 提供解决方案
       description: 如果已经解决了的话，此项不强制
