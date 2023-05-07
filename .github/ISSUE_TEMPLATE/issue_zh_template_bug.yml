@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## ![【警告：请务必按照 issue 模板填写，不要抱有侥幸心理，一旦发现 issue 没有按照模板认真填写，一律直接关闭】](https://github.com/getActivity/IssueTemplateGuide)
+        ## [【警告：请务必按照 issue 模板填写，不要抱有侥幸心理，一旦发现 issue 没有按照模板认真填写，一律直接关闭】](https://github.com/getActivity/IssueTemplateGuide)
   - type: input
     id: input_id_1
     attributes:
