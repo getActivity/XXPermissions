@@ -82,7 +82,7 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
       Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
       intent.setData(PermissionUtils.getPackageNameUri(context));
       if (!PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionUtils.getApplicationDetailsIntent(context);
+         intent = PermissionIntentManager.getApplicationDetailsIntent(context);
       }
       return intent;
    }

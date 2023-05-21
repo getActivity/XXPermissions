@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 /**
@@ -271,6 +272,30 @@ final class PermissionIntentManager {
             return intent;
         }
         return null;
+    }
+
+    /* ---------------------------------------------------------------------------------------- */
+
+    /**
+     * 获取应用详情界面意图
+     */
+    static Intent getApplicationDetailsIntent(@NonNull Context context) {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        intent.setData(PermissionUtils.getPackageNameUri(context));
+        if (PermissionUtils.areActivityIntent(context, intent)) {
+            return intent;
+        }
+
+        intent = new Intent(Settings.ACTION_APPLICATION_SETTINGS);
+        if (PermissionUtils.areActivityIntent(context, intent)) {
+            return intent;
+        }
+
+        intent = new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
+        if (PermissionUtils.areActivityIntent(context, intent)) {
+            return intent;
+        }
+        return getAndroidSettingAppIntent(context);
     }
 
     /** 跳转到系统设置页面 */

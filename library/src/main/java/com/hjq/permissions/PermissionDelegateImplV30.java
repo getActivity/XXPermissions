@@ -60,7 +60,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
       }
 
       if (!PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionUtils.getApplicationDetailsIntent(context);
+         intent = PermissionIntentManager.getApplicationDetailsIntent(context);
       }
       return intent;
    }

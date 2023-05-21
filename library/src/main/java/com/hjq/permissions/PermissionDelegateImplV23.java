@@ -260,7 +260,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
       Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
       intent.setData(PermissionUtils.getPackageNameUri(context));
       if (!PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionUtils.getApplicationDetailsIntent(context);
+         intent = PermissionIntentManager.getApplicationDetailsIntent(context);
       }
       return intent;
    }
@@ -294,7 +294,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
       }
 
       if (!PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionUtils.getApplicationDetailsIntent(context);
+         intent = PermissionIntentManager.getApplicationDetailsIntent(context);
       }
       return intent;
    }
@@ -318,7 +318,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
       }
 
       if (!PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionUtils.getApplicationDetailsIntent(context);
+         intent = PermissionIntentManager.getApplicationDetailsIntent(context);
       }
       return intent;
    }

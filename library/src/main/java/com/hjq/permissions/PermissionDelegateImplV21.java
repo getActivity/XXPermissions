@@ -60,7 +60,7 @@ class PermissionDelegateImplV21 extends PermissionDelegateImplV19 {
          intent.setData(PermissionUtils.getPackageNameUri(context));
       }
       if (!PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionUtils.getApplicationDetailsIntent(context);
+         intent = PermissionIntentManager.getApplicationDetailsIntent(context);
       }
       return intent;
    }

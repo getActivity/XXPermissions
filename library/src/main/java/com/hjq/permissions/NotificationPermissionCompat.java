@@ -41,7 +41,7 @@ final class NotificationPermissionCompat {
             intent.putExtra("app_uid", context.getApplicationInfo().uid);
         }
         if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = PermissionUtils.getApplicationDetailsIntent(context);
+            intent = PermissionIntentManager.getApplicationDetailsIntent(context);
         }
         return intent;
     }

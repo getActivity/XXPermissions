@@ -2,6 +2,7 @@ package com.hjq.permissions;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 
@@ -83,5 +84,15 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
       }
 
       return super.isPermissionPermanentDenied(activity, permission);
+   }
+
+   @Override
+   public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
+      // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/208
+      // POST_NOTIFICATIONS 要跳转到权限设置页和 NOTIFICATION_SERVICE 权限是一样的
+      if (PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS)) {
+         return NotificationPermissionCompat.getPermissionIntent(context);
+      }
+      return super.getPermissionIntent(context, permission);
    }
 }

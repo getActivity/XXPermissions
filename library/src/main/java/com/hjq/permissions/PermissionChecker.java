@@ -580,8 +580,8 @@ final class PermissionChecker {
             }
 
             if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
-                // 申请读取应用列表权限需要在清单文件中注册 QUERY_ALL_PACKAGES，
-                // 否则申请 GET_INSTALLED_APPS 权限成功也是白搭，是获取不到第三方安装列表信息的
+                // 申请读取应用列表权限需要在清单文件中注册 QUERY_ALL_PACKAGES 权限
+                // 否则就算申请 GET_INSTALLED_APPS 权限成功也是白搭，也是获取不到第三方安装列表信息的
                 // Manifest.permission.QUERY_ALL_PACKAGES
                 checkManifestPermission(permissionInfoList, "android.permission.QUERY_ALL_PACKAGES");
             }

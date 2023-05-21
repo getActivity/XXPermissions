@@ -37,7 +37,7 @@ class PermissionDelegateImplV14 implements PermissionDelegate {
          return getVpnPermissionIntent(context);
       }
 
-      return PermissionUtils.getApplicationDetailsIntent(context);
+      return PermissionIntentManager.getApplicationDetailsIntent(context);
    }
 
    /**
@@ -53,7 +53,7 @@ class PermissionDelegateImplV14 implements PermissionDelegate {
    private static Intent getVpnPermissionIntent(@NonNull Context context) {
       Intent intent = VpnService.prepare(context);
       if (!PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionUtils.getApplicationDetailsIntent(context);
+         intent = PermissionIntentManager.getApplicationDetailsIntent(context);
       }
       return intent;
    }

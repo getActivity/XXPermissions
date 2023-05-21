@@ -78,7 +78,7 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
       Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
       intent.setData(PermissionUtils.getPackageNameUri(context));
       if (!PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionUtils.getApplicationDetailsIntent(context);
+         intent = PermissionIntentManager.getApplicationDetailsIntent(context);
       }
       return intent;
    }
@@ -98,7 +98,7 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
       Intent intent = new Intent("android.settings.PICTURE_IN_PICTURE_SETTINGS");
       intent.setData(PermissionUtils.getPackageNameUri(context));
       if (!PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionUtils.getApplicationDetailsIntent(context);
+         intent = PermissionIntentManager.getApplicationDetailsIntent(context);
       }
       return intent;
    }

@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -472,33 +471,6 @@ final class PermissionUtils {
     }
 
     /**
-     * 获取应用详情界面意图
-     */
-    static Intent getApplicationDetailsIntent(@NonNull Context context) {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        intent.setData(getPackageNameUri(context));
-
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
-        }
-
-        intent = new Intent(Settings.ACTION_APPLICATION_SETTINGS);
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
-        }
-
-        intent = new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
-        return intent;
-    }
-
-    /**
-     * 获取包名 uri
-     */
-    static Uri getPackageNameUri(@NonNull Context context) {
-        return Uri.parse("package:" + context.getPackageName());
-    }
-
-    /**
      * 根据传入的权限自动选择最合适的权限设置页
      *
      * @param permissions                 请求失败的权限
@@ -506,7 +478,7 @@ final class PermissionUtils {
     static Intent getSmartPermissionIntent(@NonNull Context context, @Nullable List<String> permissions) {
         // 如果失败的权限里面不包含特殊权限
         if (permissions == null || permissions.isEmpty()) {
-            return getApplicationDetailsIntent(context);
+            return PermissionIntentManager.getApplicationDetailsIntent(context);
         }
 
         // 危险权限统一处理
@@ -514,7 +486,7 @@ final class PermissionUtils {
             if (permissions.size() == 1) {
                 return PermissionApi.getPermissionIntent(context, permissions.get(0));
             }
-            return getApplicationDetailsIntent(context);
+            return PermissionIntentManager.getApplicationDetailsIntent(context);
         }
 
         // 特殊权限统一处理
@@ -540,7 +512,7 @@ final class PermissionUtils {
             default:
                 break;
         }
-        return getApplicationDetailsIntent(context);
+        return PermissionIntentManager.getApplicationDetailsIntent(context);
     }
 
     /**
@@ -576,5 +548,12 @@ final class PermissionUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * 获取包名 uri
+     */
+    static Uri getPackageNameUri(@NonNull Context context) {
+        return Uri.parse("package:" + context.getPackageName());
     }
 }

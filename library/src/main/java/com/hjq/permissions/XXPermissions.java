@@ -71,7 +71,7 @@ public final class XXPermissions {
 
     /** 申请的权限列表 */
     @NonNull
-    private List<String> mPermissions = new ArrayList<>();
+    private final List<String> mPermissions = new ArrayList<>();
 
     /** Context 对象 */
     @Nullable
@@ -149,7 +149,7 @@ public final class XXPermissions {
 
         final IPermissionInterceptor interceptor = mInterceptor;
 
-        // 权限请求列表（为什么直接不用字段？因为框架要兼容新旧权限，在低版本下会自动添加旧权限申请）
+        // 权限请求列表（为什么直接不用字段？因为框架要兼容新旧权限，在低版本下会自动添加旧权限申请，为了避免重复添加）
         final List<String> permissions = new ArrayList<>(mPermissions);
 
         boolean checkMode = isCheckMode(context);
@@ -400,7 +400,7 @@ public final class XXPermissions {
                                                @NonNull List<String> permissions,
                                                @Nullable OnPermissionPageCallback callback) {
         if (permissions.isEmpty()) {
-            StartActivityManager.startActivity(activity, PermissionUtils.getApplicationDetailsIntent(activity));
+            StartActivityManager.startActivity(activity, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
         PermissionPageFragment.beginRequest(activity, (ArrayList<String>) permissions, callback);
@@ -435,7 +435,7 @@ public final class XXPermissions {
             return;
         }
         if (permissions.isEmpty()) {
-            StartActivityManager.startActivity(fragment, PermissionUtils.getApplicationDetailsIntent(activity));
+            StartActivityManager.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
         Intent intent = PermissionUtils.getSmartPermissionIntent(activity, permissions);
@@ -465,7 +465,7 @@ public final class XXPermissions {
             return;
         }
         if (permissions.isEmpty()) {
-            StartActivityManager.startActivity(fragment, PermissionUtils.getApplicationDetailsIntent(activity));
+            StartActivityManager.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
         PermissionPageFragment.beginRequest(activity, (ArrayList<String>) permissions, callback);
@@ -500,7 +500,7 @@ public final class XXPermissions {
             return;
         }
         if (permissions.isEmpty()) {
-            StartActivityManager.startActivity(fragment, PermissionUtils.getApplicationDetailsIntent(activity));
+            StartActivityManager.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
         Intent intent = PermissionUtils.getSmartPermissionIntent(activity, permissions);
@@ -530,7 +530,7 @@ public final class XXPermissions {
             return;
         }
         if (permissions.isEmpty()) {
-            StartActivityManager.startActivity(fragment, PermissionUtils.getApplicationDetailsIntent(activity));
+            StartActivityManager.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
         PermissionPageFragment.beginRequest(activity, (ArrayList<String>) permissions, callback);
