@@ -14,8 +14,8 @@ android {
 
     // 使用 JDK 1.8
     compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_8
-        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_11
     }
 
     // Apk 签名的那些事：https://www.jianshu.com/p/a1f8e5896aa2
