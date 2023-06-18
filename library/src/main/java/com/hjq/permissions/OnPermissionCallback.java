@@ -1,6 +1,6 @@
 package com.hjq.permissions;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.List;
 

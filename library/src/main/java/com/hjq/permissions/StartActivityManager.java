@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  *    author : Android 轮子哥
@@ -59,7 +59,7 @@ final class StartActivityManager {
       return startActivity(new StartActivityDelegateFragmentImpl(fragment), intent);
    }
 
-   static boolean startActivity(@NonNull android.support.v4.app.Fragment fragment, Intent intent) {
+   static boolean startActivity(@NonNull androidx.fragment.app.Fragment fragment, Intent intent) {
       return startActivity(new StartActivityDelegateSupportFragmentImpl(fragment), intent);
    }
 
@@ -85,7 +85,7 @@ final class StartActivityManager {
       return startActivityForResult(new StartActivityDelegateFragmentImpl(fragment), intent, requestCode);
    }
 
-   static boolean startActivityForResult(@NonNull android.support.v4.app.Fragment fragment, @NonNull Intent intent, int requestCode) {
+   static boolean startActivityForResult(@NonNull androidx.fragment.app.Fragment fragment, @NonNull Intent intent, int requestCode) {
       return startActivityForResult(new StartActivityDelegateSupportFragmentImpl(fragment), intent, requestCode);
    }
 
@@ -174,9 +174,9 @@ final class StartActivityManager {
 
    private static class StartActivityDelegateSupportFragmentImpl implements IStartActivityDelegate {
 
-      private final android.support.v4.app.Fragment mFragment;
+      private final androidx.fragment.app.Fragment mFragment;
 
-      private StartActivityDelegateSupportFragmentImpl(@NonNull android.support.v4.app.Fragment fragment) {
+      private StartActivityDelegateSupportFragmentImpl(@NonNull androidx.fragment.app.Fragment fragment) {
          mFragment = fragment;
       }
 
