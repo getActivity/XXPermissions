@@ -42,7 +42,7 @@ afterEvaluate {
 
 dependencies {
     // noinspection GradleCompatible
-    implementation 'androidx.fragment:fragment:1.0.0'
+    implementation 'androidx.fragment:fragment:1.5.7'
 }
 
 tasks.withType(Javadoc) {
