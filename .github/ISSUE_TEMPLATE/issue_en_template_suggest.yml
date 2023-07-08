@@ -22,9 +22,9 @@ body:
       description: If a similar suggestion has already been made, I will not address it again.
       multiple: false
       options:
-        - Not Selected
-        - Yes
-        - No
+        - "Not Selected"
+        - "Yes"
+        - "No"
     validations:
       required: true
   - type: dropdown
@@ -34,9 +34,9 @@ body:
       description: The documentation provides answers to frequently asked questions. Please check if the information you are looking for is already provided.
       multiple: false
       options:
-        - Not Selected
-        - Yes
-        - No
+        - "Not Selected"
+        - "Yes"
+        - "No"
     validations:
       required: true
   - type: dropdown
@@ -46,9 +46,9 @@ body:
       description: If you have consulted the documentation but still couldn't find a solution, you can select "Yes."
       multiple: false
       options:
-        - Not Selected
-        - Yes
-        - No
+        - "Not Selected"
+        - "Yes"
+        - "No"
     validations:
       required: true
   - type: textarea

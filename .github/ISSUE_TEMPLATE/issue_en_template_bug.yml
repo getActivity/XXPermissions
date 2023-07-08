@@ -35,9 +35,9 @@ body:
       label: Is the Issue Reproducible? [Required]
       multiple: false
       options:
-        - Not Selected
-        - Yes
-        - No
+        - "Not Selected"
+        - "Yes"
+        - "No"
     validations:
       required: true
   - type: input
@@ -84,9 +84,9 @@ body:
       description: If you are using an older version, it is recommended to upgrade and check if the issue still persists.
       multiple: false
       options:
-        - Not Selected
-        - Yes
-        - No
+        - "Not Selected"
+        - "Yes"
+        - "No"
     validations:
       required: true
   - type: dropdown
@@ -96,9 +96,9 @@ body:
       description: The documentation provides answers to frequently asked questions. Please check if the information you are looking for is already provided.
       multiple: false
       options:
-        - Not Selected
-        - Yes
-        - No
+        - "Not Selected"
+        - "Yes"
+        - "No"
     validations:
       required: true
   - type: dropdown
@@ -108,9 +108,9 @@ body:
       description: If you have consulted the documentation but still couldn't find a solution, you can select "Yes."
       multiple: false
       options:
-        - Not Selected
-        - Yes
-        - No
+        - "Not Selected"
+        - "Yes"
+        - "No"
     validations:
       required: true
   - type: dropdown
@@ -120,9 +120,9 @@ body:
       description: You can search the issue list for keywords related to your problem and refer to the solutions provided by others.
       multiple: false
       options:
-        - Not Selected
-        - Yes
-        - No
+        - "Not Selected"
+        - "Yes"
+        - "No"
     validations:
       required: true
   - type: dropdown
@@ -132,9 +132,9 @@ body:
       description: If you have searched the issue list and couldn't find a solution, you can select "Yes."
       multiple: false
       options:
-        - Not Selected
-        - Yes
-        - No
+        - "Not Selected"
+        - "Yes"
+        - "No"
     validations:
       required: true
   - type: dropdown
@@ -144,9 +144,9 @@ body:
       description: Check if the issue can be reproduced in a minimal demo project to isolate potential issues in your own code.
       multiple: false
       options:
-        - Not Selected
-        - Yes
-        - No
+        - "Not Selected"
+        - "Yes"
+        - "No"
     validations:
       required: true
   - type: textarea
