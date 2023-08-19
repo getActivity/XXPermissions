@@ -11,8 +11,10 @@
     <string name="common_permission_fail_assign_hint">授权失败，请正确授予%s</string>
     <string name="common_permission_manual_fail_hint">获取权限失败，请手动授予权限</string>
     <string name="common_permission_manual_assign_fail_hint">获取权限失败，请手动授予%s</string>
-    <string name="common_permission_background_location_fail_hint">获取后台定位权限失败，\n请您选择《%s》选项</string>
-    <string name="common_permission_background_sensors_fail_hint">获取后台传感器权限失败，\n请您选择《%s》选项</string>
+    <string name="common_permission_manual_assign_fail_background_location_hint">获取后台定位权限失败，请在定位权限中选择%s</string>
+    <string name="common_permission_manual_assign_fail_background_sensors_hint">获取后台传感器权限失败，请在传感器权限中选择%s</string>
+    <string name="common_permission_background_location_fail_hint">获取后台定位权限失败，\n请选择%s选项</string>
+    <string name="common_permission_background_sensors_fail_hint">获取后台传感器权限失败，\n请选择%s选项</string>
     <string name="common_permission_background_default_option_label">始终允许</string>
     <string name="common_permission_media_location_hint_fail">获取媒体位置权限失败\n请清除应用数据后重试</string>
     <string name="common_permission_goto_setting_page">前往授权</string>

@@ -5,8 +5,8 @@ android {
 
     defaultConfig {
         minSdkVersion 14
-        versionCode 1802
-        versionName "18.2"
+        versionCode 1803
+        versionName "18.3"
     }
 
     // 使用 JDK 1.8
@@ -42,7 +42,7 @@ afterEvaluate {
 
 dependencies {
     // noinspection GradleCompatible
-    implementation 'com.android.support:support-fragment:24.2.0'
+    compileOnly 'com.android.support:support-fragment:24.2.0'
 }
 
 tasks.withType(Javadoc) {

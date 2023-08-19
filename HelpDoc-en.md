@@ -40,7 +40,7 @@
 
 #### Android 11 storage permission adaptation
 
-* If your project needs to adapt to Android 11storage permissions, you need to upgrade targetSdkVersion first.
+* If your project needs to adapt to Android 11 storage permissions, you need to upgrade targetSdkVersion first.
 
 ```groovy
 android 

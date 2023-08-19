@@ -289,7 +289,7 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 
 * 另外值得一提的是 [Android 11 对软件包可见性进行了限制](https://developer.android.google.cn/about/versions/11/privacy/package-visibility)，所以这种跳包名的方式在未来将会完全不可行。
 
-* 最终决定：这个功能的出发点是好的，但是我们没办法做好它，经过慎重考虑，决定将这个功能在 [**XXPermissions** 9.2 版本](https://github.com/getActivity/XXPermissions/releases/tag/9.2)及之后的版本进行移除。
+* 最终决定：这个功能的出发点是好的，但是我们没办法做好它，经过慎重考虑，决定将这个功能在 [9.2](https://github.com/getActivity/XXPermissions/releases/tag/9.2) 及之后的版本进行移除。
 
 #### 为什么不用 ActivityResultContract 来申请权限
 

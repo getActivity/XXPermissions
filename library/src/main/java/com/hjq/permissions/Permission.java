@@ -130,21 +130,21 @@ public final class Permission {
     /**
      * 读取图片权限（Android 13.0 新增的权限）
      *
-     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} {@link #WRITE_EXTERNAL_STORAGE} 权限
+     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} 权限
      */
     public static final String READ_MEDIA_IMAGES = "android.permission.READ_MEDIA_IMAGES";
 
     /**
      * 读取视频权限（Android 13.0 新增的权限）
      *
-     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} {@link #WRITE_EXTERNAL_STORAGE} 权限
+     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} 权限
      */
     public static final String READ_MEDIA_VIDEO = "android.permission.READ_MEDIA_VIDEO";
 
     /**
      * 读取音频权限（Android 13.0 新增的权限）
      *
-     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} {@link #WRITE_EXTERNAL_STORAGE} 权限
+     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} 权限
      */
     public static final String READ_MEDIA_AUDIO = "android.permission.READ_MEDIA_AUDIO";
 

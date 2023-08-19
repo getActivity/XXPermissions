@@ -5,7 +5,6 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,6 +33,7 @@ final class PhoneRomUtils {
    private static final String[] ROM_ONEPLUS   = {"oneplus"};
    private static final String[] ROM_NUBIA     = {"nubia"};
    private static final String[] ROM_SAMSUNG = {"samsung"};
+   private static final String[] ROM_HONOR = {"honor"};
 
    private static final String ROM_NAME_MIUI = "ro.miui.ui.version.name";
 
@@ -46,6 +46,12 @@ final class PhoneRomUtils {
    private static final String VERSION_PROPERTY_ZTE     = "ro.build.MiFavor_version";
    private static final String VERSION_PROPERTY_ONEPLUS = "ro.rom.version";
    private static final String VERSION_PROPERTY_NUBIA   = "ro.build.rom.id";
+   /**
+    * 经过测试，得出以下结论
+    * Magic 7.0 存放系统版本的属性是 msc.config.magic.version，
+    * Magic 4.0 和 Magic 4.1 用的是 ro.build.version.magic 属性
+    */
+   private static final String[] VERSION_PROPERTY_MAGIC = {"msc.config.magic.version", "ro.build.version.magic"};
 
    private PhoneRomUtils() {}
 
@@ -110,6 +116,10 @@ final class PhoneRomUtils {
     * 判断当前是否为鸿蒙系统
     */
    static boolean isHarmonyOs() {
+      // 鸿蒙系统没有 Android 10 以下的
+      if (!AndroidVersion.isAndroid10()) {
+          return false;
+      }
       try {
          Class<?> buildExClass = Class.forName("com.huawei.system.BuildEx");
          Object osBrand = buildExClass.getMethod("getOsBrand").invoke(buildExClass);
@@ -118,6 +128,13 @@ final class PhoneRomUtils {
          throwable.printStackTrace();
          return false;
       }
+   }
+
+    /**
+     * 判断当前是否为 MagicOs 系统（荣耀）
+     */
+   static boolean isMagicOs() {
+       return isRightRom(getBrand(), getManufacturer(), ROM_HONOR);
    }
 
    /**
@@ -199,6 +216,16 @@ final class PhoneRomUtils {
       if (isRightRom(brand, manufacturer, ROM_NUBIA)) {
          return getPropertyName(VERSION_PROPERTY_NUBIA);
       }
+       if (isRightRom(brand, manufacturer, ROM_HONOR)) {
+           for (String property : VERSION_PROPERTY_MAGIC) {
+               String versionName = getPropertyName(property);
+               if (TextUtils.isEmpty(property)) {
+                   continue;
+               }
+               return versionName;
+           }
+           return "";
+       }
 
       return getPropertyName("");
    }

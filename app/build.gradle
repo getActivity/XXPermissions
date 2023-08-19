@@ -7,8 +7,8 @@ android {
         applicationId "com.hjq.permissions.demo"
         minSdkVersion 16
         targetSdkVersion 33
-        versionCode 1802
-        versionName "18.2"
+        versionCode 1803
+        versionName "18.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -61,8 +61,8 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
 
     // 吐司框架：https://github.com/getActivity/Toaster
-    implementation 'com.github.getActivity:Toaster:12.2'
+    implementation 'com.github.getActivity:Toaster:12.3'
 
     // 内存泄漏检测：https://github.com/square/leakcanary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.10'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
 }

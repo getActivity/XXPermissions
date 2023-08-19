@@ -6,7 +6,7 @@
 
 * project address: [Github](https://github.com/getActivity/XXPermissions)
 
-* [Click here to download demo apk directly](https://github.com/getActivity/XXPermissions/releases/download/18.2/XXPermissions.apk)
+* [Click here to download demo apk directly](https://github.com/getActivity/XXPermissions/releases/download/18.3/XXPermissions.apk)
 
 ![](picture/en/demo_request_permission_activity.jpg) ![](picture/en/demo_request_single_permission.jpg) ![](picture/en/demo_request_group_permission.jpg)
 
@@ -55,7 +55,7 @@ android {
 
 dependencies {
     // Permission request framework：https://github.com/getActivity/XXPermissions
-    implementation 'com.github.getActivity:XXPermissions:18.2'
+    implementation 'com.github.getActivity:XXPermissions:18.3'
 }
 ```
 
@@ -103,7 +103,7 @@ XXPermissions.with(this)
         .permission(Permission.RECORD_AUDIO)
         // Request multiple permission
         .permission(Permission.Group.CALENDAR)
-        // Set permission request interceptor (local settings)
+        // Set permission request interceptor (local setting)
         //.interceptor(new PermissionInterceptor())
         // Setting does not trigger error detection mechanism (local setting)
         //.unchecked()
@@ -193,6 +193,14 @@ XXPermissions.setCheckMode(false);
 XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 ```
 
+#### Framework proguard rules
+
+* Added in the `proguard-rules.pro` file:
+
+```text
+-keep class com.hjq.permissions.** {*;}
+```
+
 #### About the permission monitoring callback parameter description
 
 * We all know that if the user grants all it will only call `onGranted` method, which will only be called if the user rejects all `onDenied` method.
@@ -209,7 +217,7 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 |                      Adaptation details                       |                                  [XXPermissions](https://github.com/getActivity/XXPermissions)                                 |                                 [AndPermission](https://github.com/yanzhenjie/AndPermission)                                 |                                 [PermissionX](https://github.com/guolindev/PermissionX)                                |                              [AndroidUtilCode-PermissionUtils](https://github.com/Blankj/AndroidUtilCode)                |                                       [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher)                                       |                                 [RxPermissions](https://github.com/tbruyelle/RxPermissions)                                |                                   [EasyPermissions](https://github.com/googlesamples/easypermissions)                                  |
 | :-----------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------: |
-|                    Corresponding version                      |                                                              18.2                                                              |                                                             2.0.3                                                            |                                                          1.7.1                                                         |                                                          1.31.0                                                          |                                                                                 4.9.2                                                                                |                                                            0.12                                                            |                                                                  3.0.0                                                                 |
+|                    Corresponding version                      |                                                              18.3                                                              |                                                             2.0.3                                                            |                                                          1.7.1                                                         |                                                          1.31.0                                                          |                                                                                 4.9.2                                                                                |                                                            0.12                                                            |                                                                  3.0.0                                                                 |
 |                       Number of issues                        | [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues) | [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues) | [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues) | [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues) | [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues) | [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues) | [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues) |
 |                       Framework volume                        |                                                              82 KB                                                             |                                                            127 KB                                                            |                                                          97 KB                                                         |                                                          500 KB                                                          |                                                                                 99 KB                                                                                |                                                            28 KB                                                           |                                                                  48 KB                                                                 |
 |                 Framework Maintenance Status                  |                                                       **In maintenance**                                                       |                                                       stop maintenance                                                       |                                                    **In maintenance**                                                  |                                                     stop maintenance                                                     |                                                                             stop maintenance                                                                         |                                                      stop maintenance                                                      |                                                            stop maintenance                                                            |
@@ -355,11 +363,15 @@ XXPermissions.setInterceptor(new IPermissionInterceptor() {});
 
 * Shape view framework: [ShapeView](https://github.com/getActivity/ShapeView)![](https://img.shields.io/github/stars/getActivity/ShapeView.svg)![](https://img.shields.io/github/forks/getActivity/ShapeView.svg)
 
+* Shape drawable framework: [ShapeDrawable](https://github.com/getActivity/ShapeDrawable)![](https://img.shields.io/github/stars/getActivity/ShapeDrawable.svg)![](https://img.shields.io/github/forks/getActivity/ShapeDrawable.svg)
+
 * Language switching framework: [Multi Languages](https://github.com/getActivity/MultiLanguages)![](https://img.shields.io/github/stars/getActivity/MultiLanguages.svg)![](https://img.shields.io/github/forks/getActivity/MultiLanguages.svg)
 
 * Gson parsing fault tolerance: [GsonFactory](https://github.com/getActivity/GsonFactory)![](https://img.shields.io/github/stars/getActivity/GsonFactory.svg)![](https://img.shields.io/github/forks/getActivity/GsonFactory.svg)
 
 * Logcat viewing framework: [Logcat](https://github.com/getActivity/Logcat)![](https://img.shields.io/github/stars/getActivity/Logcat.svg)![](https://img.shields.io/github/forks/getActivity/Logcat.svg)
+
+* Nested scrolling layout framework：[NestedScrollLayout](https://github.com/getActivity/NestedScrollLayout) ![](https://img.shields.io/github/stars/getActivity/NestedScrollLayout.svg) ![](https://img.shields.io/github/forks/getActivity/NestedScrollLayout.svg)
 
 * Android version guide: [AndroidVersionAdapter](https://github.com/getActivity/AndroidVersionAdapter)![](https://img.shields.io/github/stars/getActivity/AndroidVersionAdapter.svg)![](https://img.shields.io/github/forks/getActivity/AndroidVersionAdapter.svg)
 

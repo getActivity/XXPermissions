@@ -1,6 +1,7 @@
 package com.hjq.permissions.demo;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -18,7 +19,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-
 import com.hjq.permissions.IPermissionInterceptor;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.OnPermissionPageCallback;
@@ -26,7 +26,6 @@ import com.hjq.permissions.Permission;
 import com.hjq.permissions.PermissionFragment;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.toast.Toaster;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -142,13 +141,7 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
 
             String deniedPermission = deniedPermissions.get(0);
 
-            String backgroundPermissionOptionLabel = null;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                backgroundPermissionOptionLabel = String.valueOf(activity.getPackageManager().getBackgroundPermissionOptionLabel());
-            }
-            if (TextUtils.isEmpty(backgroundPermissionOptionLabel)) {
-                backgroundPermissionOptionLabel = activity.getString(R.string.common_permission_background_default_option_label);
-            }
+            String backgroundPermissionOptionLabel = getBackgroundPermissionOptionLabel(activity);
 
             if (Permission.ACCESS_BACKGROUND_LOCATION.equals(deniedPermission)) {
                 Toaster.show(activity.getString(R.string.common_permission_background_location_fail_hint, backgroundPermissionOptionLabel));
@@ -215,12 +208,23 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
             return;
         }
 
-        final String message;
+        String message = null;
 
         List<String> permissionNames = PermissionNameConvert.permissionsToNames(activity, deniedPermissions);
         if (!permissionNames.isEmpty()) {
-            message = activity.getString(R.string.common_permission_manual_assign_fail_hint,
+            if (deniedPermissions.size() == 1) {
+                String deniedPermission = deniedPermissions.get(0);
+
+                if (Permission.ACCESS_BACKGROUND_LOCATION.equals(deniedPermission)) {
+                    message = activity.getString(R.string.common_permission_manual_assign_fail_background_location_hint, getBackgroundPermissionOptionLabel(activity));
+                } else if (Permission.BODY_SENSORS_BACKGROUND.equals(deniedPermission)) {
+                    message = activity.getString(R.string.common_permission_manual_assign_fail_background_sensors_hint, getBackgroundPermissionOptionLabel(activity));
+                }
+            }
+            if (TextUtils.isEmpty(message)) {
+                message = activity.getString(R.string.common_permission_manual_assign_fail_hint,
                     PermissionNameConvert.listToString(activity, permissionNames));
+            }
         } else {
             message = activity.getString(R.string.common_permission_manual_fail_hint);
         }
@@ -250,5 +254,20 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                     });
                 })
                 .show();
+    }
+
+    /**
+     * 获取后台权限的《始终允许》选项的文案
+     */
+    @NonNull
+    private String getBackgroundPermissionOptionLabel(Context context) {
+        String backgroundPermissionOptionLabel = "";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            backgroundPermissionOptionLabel = String.valueOf(context.getPackageManager().getBackgroundPermissionOptionLabel());
+        }
+        if (TextUtils.isEmpty(backgroundPermissionOptionLabel)) {
+            backgroundPermissionOptionLabel = context.getString(R.string.common_permission_background_default_option_label);
+        }
+        return backgroundPermissionOptionLabel;
     }
 }

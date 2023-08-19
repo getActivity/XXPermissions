@@ -279,6 +279,7 @@ final class PermissionIntentManager {
     /**
      * 获取应用详情界面意图
      */
+    @NonNull
     static Intent getApplicationDetailsIntent(@NonNull Context context) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(PermissionUtils.getPackageNameUri(context));
@@ -295,16 +296,12 @@ final class PermissionIntentManager {
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;
         }
-        return getAndroidSettingAppIntent(context);
+        return getAndroidSettingAppIntent();
     }
 
     /** 跳转到系统设置页面 */
-    @Nullable
-    static Intent getAndroidSettingAppIntent(Context context) {
-        Intent intent = new Intent(Settings.ACTION_SETTINGS);
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
-        }
-        return null;
+    @NonNull
+    static Intent getAndroidSettingAppIntent() {
+        return new Intent(Settings.ACTION_SETTINGS);
     }
 }
