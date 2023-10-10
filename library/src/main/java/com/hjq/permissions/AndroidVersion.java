@@ -14,6 +14,7 @@ import android.os.Build;
 @SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
 final class AndroidVersion {
 
+    static final int ANDROID_14 = Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     static final int ANDROID_13 = Build.VERSION_CODES.TIRAMISU;
     static final int ANDROID_12_L = Build.VERSION_CODES.S_V2;
     static final int ANDROID_12 = Build.VERSION_CODES.S;
@@ -45,6 +46,13 @@ final class AndroidVersion {
      */
     static int getTargetSdkVersionCode(Context context) {
         return context.getApplicationInfo().targetSdkVersion;
+    }
+
+    /**
+     * 是否是 Android 14 及以上版本
+     */
+    static boolean isAndroid14() {
+        return Build.VERSION.SDK_INT >= ANDROID_14;
     }
 
     /**
@@ -111,7 +119,7 @@ final class AndroidVersion {
     }
 
     /**
-     * 是否是 Android 5.0 及以上版本
+     * 是否是 Android 5.1 及以上版本
      */
     static boolean isAndroid5_1() {
         return Build.VERSION.SDK_INT >= ANDROID_5_1;

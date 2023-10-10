@@ -185,8 +185,8 @@ XXPermissions.with(this)
             @Override
             public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
                 if (doNotAskAgain && permissions.contains(Permission.RECORD_AUDIO) &&
-                        XXPermissions.isPermanentDenied(MainActivity.this, Permission.RECORD_AUDIO)) {
-                    toast("录音权限被永久拒绝了");
+                        XXPermissions.isDoNotAskAgainPermissions(MainActivity.this, Permission.RECORD_AUDIO)) {
+                    toast("录音权限请求被拒绝了，并且用户勾选了不再询问");
                 }
             }
         });

@@ -26,11 +26,11 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
    }
 
    @Override
-   public boolean isPermissionPermanentDenied(@NonNull Activity activity, @NonNull String permission) {
+   public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
       if (PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
          return false;
       }
-      return super.isPermissionPermanentDenied(activity, permission);
+      return super.isDoNotAskAgainPermission(activity, permission);
    }
 
    @Override

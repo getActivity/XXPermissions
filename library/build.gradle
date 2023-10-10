@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
 
     defaultConfig {
         minSdkVersion 14
-        versionCode 1803
-        versionName "18.3"
+        versionCode 1805
+        versionName "18.5"
     }
 
     // 使用 JDK 1.8
@@ -19,9 +19,9 @@ android {
         abortOnError false
     }
 
-    android.libraryVariants.all { variant ->
+    android.libraryVariants.configureEach { variant ->
         // aar 输出文件名配置
-        variant.outputs.all { output ->
+        variant.outputs.configureEach { output ->
             outputFileName = "${rootProject.name}-${android.defaultConfig.versionName}.aar"
         }
     }
@@ -45,23 +45,26 @@ dependencies {
     compileOnly 'com.android.support:support-fragment:24.2.0'
 }
 
-tasks.withType(Javadoc) {
+tasks.withType(Javadoc).configureEach {
+    // prevent Javadoc from failing gradle build：https://stackoverflow.com/questions/35435173/prevent-javadoc-from-failing-gradle-build
+    failOnError false
     options.addStringOption('Xdoclint:none', '-quiet')
     options.addStringOption('encoding', 'UTF-8')
     options.addStringOption('charSet', 'UTF-8')
 }
 
-task sourcesJar(type: Jar) {
+tasks.register('sourcesJar', Jar) {
     from android.sourceSets.main.java.srcDirs
     classifier = 'sources'
 }
 
-task javadoc(type: Javadoc) {
+tasks.register('javadoc', Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
+tasks.register('javadocJar', Jar) {
+    dependsOn javadoc
     classifier = 'javadoc'
     from javadoc.destinationDir
 }

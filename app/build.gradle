@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
 
     defaultConfig {
         applicationId "com.hjq.permissions.demo"
         minSdkVersion 16
-        targetSdkVersion 33
-        versionCode 1803
-        versionName "18.3"
+        targetSdkVersion 34
+        versionCode 1805
+        versionName "18.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -42,9 +42,9 @@ android {
         }
     }
 
-    applicationVariants.all { variant ->
+    applicationVariants.configureEach { variant ->
         // apk 输出文件名配置
-        variant.outputs.all { output ->
+        variant.outputs.configureEach { output ->
             outputFileName = rootProject.getName() + '.apk'
         }
     }
@@ -61,7 +61,7 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
 
     // 吐司框架：https://github.com/getActivity/Toaster
-    implementation 'com.github.getActivity:Toaster:12.3'
+    implementation 'com.github.getActivity:Toaster:12.5'
 
     // 内存泄漏检测：https://github.com/square/leakcanary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'

@@ -33,7 +33,7 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
    }
 
    @Override
-   public boolean isPermissionPermanentDenied(@NonNull Activity activity, @NonNull String permission) {
+   public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
       if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
          return false;
       }
@@ -56,7 +56,7 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
          return !PermissionUtils.checkSelfPermission(activity, permission) &&
                  !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
       }
-      return super.isPermissionPermanentDenied(activity, permission);
+      return super.isDoNotAskAgainPermission(activity, permission);
    }
 
    @Override

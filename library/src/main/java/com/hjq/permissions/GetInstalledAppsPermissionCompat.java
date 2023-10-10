@@ -45,7 +45,7 @@ final class GetInstalledAppsPermissionCompat {
         return true;
     }
 
-    static boolean isPermissionPermanentDenied(@NonNull Activity activity) {
+    static boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
         if (!AndroidVersion.isAndroid4_4()) {
             return false;
         }
@@ -86,6 +86,7 @@ final class GetInstalledAppsPermissionCompat {
      * 判断是否支持获取应用列表权限
      */
     @RequiresApi(api = AndroidVersion.ANDROID_6)
+    @SuppressWarnings("deprecation")
     private static boolean isSupportGetInstalledAppsPermission(Context context) {
         try {
             PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(Permission.GET_INSTALLED_APPS, 0);
@@ -97,6 +98,7 @@ final class GetInstalledAppsPermissionCompat {
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {
+            // 没有这个权限时会抛出：android.content.pm.PackageManager$NameNotFoundException: com.android.permission.GET_INSTALLED_APPS
             e.printStackTrace();
         }
 
@@ -106,6 +108,7 @@ final class GetInstalledAppsPermissionCompat {
             // 虽然可以只用上面那种判断权限是不是危险权限的方式，但是避免不了有的手机厂商用下面的这种，所以两种都写比较好，小孩子才做选择，大人我全都要
             return Settings.Secure.getInt(context.getContentResolver(), "oem_installed_apps_runtime_permission_enable") == 1;
         } catch (Settings.SettingNotFoundException e) {
+            // 没有这个系统属性时会抛出：android.provider.Settings$SettingNotFoundException: oem_installed_apps_runtime_permission_enable
             e.printStackTrace();
         }
 

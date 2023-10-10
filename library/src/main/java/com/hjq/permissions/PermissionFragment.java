@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -116,7 +115,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
     /**
      * 设置权限请求拦截器
      */
-    public void setInterceptor(IPermissionInterceptor interceptor) {
+    public void setInterceptor(@Nullable IPermissionInterceptor interceptor) {
         mInterceptor = interceptor;
     }
 
@@ -188,6 +187,9 @@ public final class PermissionFragment extends Fragment implements Runnable {
         }
 
         List<String> allPermissions = arguments.getStringArrayList(REQUEST_PERMISSIONS);
+        if (allPermissions == null || allPermissions.isEmpty()) {
+            return;
+        }
 
         // 是否需要申请特殊权限
         boolean requestSpecialPermission = false;
@@ -356,7 +358,11 @@ public final class PermissionFragment extends Fragment implements Runnable {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/236
+        if (permissions == null || grantResults == null) {
+            return;
+        }
         if (permissions.length == 0 || grantResults.length == 0) {
             return;
         }
@@ -402,7 +408,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
         // 代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回 true 给开发人员，让开发者引导用户去设置界面开启权限
         interceptor.deniedPermissionRequest(activity, allPermissions, deniedPermissions,
-                PermissionApi.isPermissionPermanentDenied(activity, deniedPermissions), callback);
+                PermissionApi.isDoNotAskAgainPermissions(activity, deniedPermissions), callback);
 
         // 证明还有一部分权限被成功授予，回调成功接口
         if (!grantedPermissions.isEmpty()) {

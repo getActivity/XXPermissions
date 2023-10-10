@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,6 +94,17 @@ public final class XXPermissions {
     /**
      * 添加权限组
      */
+    public XXPermissions permission(@PermissionLimit @Nullable String permission) {
+        if (permission == null) {
+            return this;
+        }
+        if (PermissionUtils.containsPermission(mPermissions, permission)) {
+            return this;
+        }
+        mPermissions.add(permission);
+        return this;
+    }
+
     public XXPermissions permission(@Nullable String... permissions) {
         return permission(PermissionUtils.asArrayList(permissions));
     }
@@ -182,6 +192,8 @@ public final class XXPermissions {
             PermissionChecker.checkNotificationListenerPermission(permissions, androidManifestInfo);
             // 检查蓝牙和 WIFI 权限申请是否符合规范
             PermissionChecker.checkNearbyDevicesPermission(permissions, androidManifestInfo);
+            // 检查对照片和视频的部分访问权限申请是否符合规范
+            PermissionChecker.checkReadMediaVisualUserSelectedPermission(permissions);
             // 检查申请的权限和 targetSdk 版本是否能吻合
             PermissionChecker.checkTargetSdkVersion(context, permissions);
             // 检测权限有没有在清单文件中注册
@@ -306,22 +318,22 @@ public final class XXPermissions {
     }
 
     /**
-     * 判断一个或多个权限是否被永久拒绝了
+     * 判断一个或多个权限是否被勾选了不再询问的选项
      *
      * 注意不能在请求权限之前调用，一定要在 {@link OnPermissionCallback#onDenied(List, boolean)} 方法中调用
-     * 如果你在应用启动后，没有申请过这个权限，然后去判断它有没有永久拒绝，这样系统会一直返回 true，也就是永久拒绝
-     * 但是实际并没有永久拒绝，系统只是不想让你知道权限是否被永久拒绝了，你必须要申请过这个权限，才能去判断这个权限是否被永久拒绝
+     * 如果你在应用启动后，没有申请过这个权限，然后去判断它有没有勾选不再询问的选项，这样系统会一直返回 true，也就是不再询问
+     * 但是实际上还能继续申请，系统只是不想让你知道权限是否勾选了不再询问的选项，你必须要申请过这个权限，才能去判断这个权限是否勾选了不再询问的选项
      */
-    public static boolean isPermanentDenied(@NonNull Activity activity, @NonNull String... permissions) {
-        return isPermanentDenied(activity, PermissionUtils.asArrayList(permissions));
+    public static boolean isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull String... permissions) {
+        return isDoNotAskAgainPermissions(activity, PermissionUtils.asArrayList(permissions));
     }
 
-    public static boolean isPermanentDenied(@NonNull Activity activity, @NonNull String[]... permissions) {
-        return isPermanentDenied(activity, PermissionUtils.asArrayLists(permissions));
+    public static boolean isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull String[]... permissions) {
+        return isDoNotAskAgainPermissions(activity, PermissionUtils.asArrayLists(permissions));
     }
 
-    public static boolean isPermanentDenied(@NonNull Activity activity, @NonNull List<String> permissions) {
-        return PermissionApi.isPermissionPermanentDenied(activity, permissions);
+    public static boolean isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull List<String> permissions) {
+        return PermissionApi.isDoNotAskAgainPermissions(activity, permissions);
     }
 
     /* android.content.Context */

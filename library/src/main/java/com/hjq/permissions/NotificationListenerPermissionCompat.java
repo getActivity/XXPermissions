@@ -32,6 +32,9 @@ final class NotificationListenerPermissionCompat {
         final String[] components = enabledNotificationListeners.split(":");
         for (String component : components) {
             ComponentName componentName = ComponentName.unflattenFromString(component);
+            if (componentName == null) {
+                continue;
+            }
             if (!TextUtils.equals(componentName.getPackageName(), context.getPackageName())) {
                 continue;
             }

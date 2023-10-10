@@ -20,9 +20,6 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.view.Surface;
-
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -30,6 +27,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.xmlpull.v1.XmlPullParserException;
 
 /**
  *    author : Android 轮子哥
@@ -41,24 +39,6 @@ final class PermissionUtils {
 
     /** Handler 对象 */
     private static final Handler HANDLER = new Handler(Looper.getMainLooper());
-
-    /**
-     * 判断某个权限是否是特殊权限
-     */
-    static boolean isSpecialPermission(@NonNull String permission) {
-        return equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE) ||
-                equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES) ||
-                equalsPermission(permission, Permission.SYSTEM_ALERT_WINDOW) ||
-                equalsPermission(permission, Permission.WRITE_SETTINGS) ||
-                equalsPermission(permission, Permission.NOTIFICATION_SERVICE) ||
-                equalsPermission(permission, Permission.PACKAGE_USAGE_STATS) ||
-                equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM) ||
-                equalsPermission(permission, Permission.BIND_NOTIFICATION_LISTENER_SERVICE) ||
-                equalsPermission(permission, Permission.ACCESS_NOTIFICATION_POLICY) ||
-                equalsPermission(permission, Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS) ||
-                equalsPermission(permission, Permission.BIND_VPN_SERVICE) ||
-                equalsPermission(permission, Permission.PICTURE_IN_PICTURE);
-    }
 
     /**
      * 判断某个危险权限是否授予了
@@ -206,71 +186,43 @@ final class PermissionUtils {
     /**
      * 优化权限回调结果
      */
-    static void optimizePermissionResults(Activity activity, String[] permissions, int[] grantResults) {
+    static void optimizePermissionResults(Activity activity, @NonNull String[] permissions, @NonNull int[] grantResults) {
         for (int i = 0; i < permissions.length; i++) {
-
-            boolean recheck = false;
 
             String permission = permissions[i];
 
-            // 如果这个权限是特殊权限，那么就重新进行权限检测
+            // 如果这个权限是特殊权限，则需要重新检查权限的状态
             if (PermissionApi.isSpecialPermission(permission)) {
-                recheck = true;
+                grantResults[i] = PermissionApi.getPermissionResult(activity, permission);
+                continue;
+            }
+
+            // 如果是读取应用列表权限（国产权限），则需要重新检查权限的状态
+            if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
+                grantResults[i] = PermissionApi.getPermissionResult(activity, permission);
+                continue;
+            }
+
+            // 如果是在 Android 14 上面，并且是图片权限或者视频权限，则需要重新检查权限的状态
+            // 这是因为用户授权部分图片或者视频的时候，READ_MEDIA_VISUAL_USER_SELECTED 权限状态是授予的
+            // 但是 READ_MEDIA_IMAGES 和 READ_MEDIA_VIDEO 的权限状态是拒绝的
+            if (AndroidVersion.isAndroid14() &&
+                (PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES) ||
+                PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO))) {
+                grantResults[i] = PermissionApi.getPermissionResult(activity, permission);
+                continue;
             }
 
             if (AndroidVersion.isAndroid13() && AndroidVersion.getTargetSdkVersionCode(activity) >= AndroidVersion.ANDROID_13 &&
-                    PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
-                // 在 Android 13 不能申请 WRITE_EXTERNAL_STORAGE，会被系统直接拒绝
-                recheck = true;
+                PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
+                // 在 Android 13 不能申请 WRITE_EXTERNAL_STORAGE，会被系统直接拒绝，在这里需要重新检查权限的状态
+                grantResults[i] = PermissionApi.getPermissionResult(activity, permission);
+                continue;
             }
 
-            if (!AndroidVersion.isAndroid13() &&
-                    (PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS) ||
-                            PermissionUtils.equalsPermission(permission, Permission.NEARBY_WIFI_DEVICES) ||
-                            PermissionUtils.equalsPermission(permission, Permission.BODY_SENSORS_BACKGROUND) ||
-                            PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES) ||
-                            PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO) ||
-                            PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO))) {
-                recheck = true;
-            }
-
-            // 重新检查 Android 12 的三个新权限
-            if (!AndroidVersion.isAndroid12() &&
-                    (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_SCAN) ||
-                            PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_CONNECT) ||
-                            PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_ADVERTISE))) {
-                recheck = true;
-            }
-
-            // 重新检查 Android 10.0 的三个新权限
-            if (!AndroidVersion.isAndroid10() &&
-                    (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION) ||
-                            PermissionUtils.equalsPermission(permission, Permission.ACTIVITY_RECOGNITION) ||
-                            PermissionUtils.equalsPermission(permission, Permission.ACCESS_MEDIA_LOCATION))) {
-                recheck = true;
-            }
-
-            // 重新检查 Android 9.0 的一个新权限
-            if (!AndroidVersion.isAndroid9() &&
-                    PermissionUtils.equalsPermission(permission, Permission.ACCEPT_HANDOVER)) {
-                recheck = true;
-            }
-
-            // 重新检查 Android 8.0 的两个新权限
-            if (!AndroidVersion.isAndroid8() &&
-                    (PermissionUtils.equalsPermission(permission, Permission.ANSWER_PHONE_CALLS) ||
-                            PermissionUtils.equalsPermission(permission, Permission.READ_PHONE_NUMBERS))) {
-                recheck = true;
-            }
-
-            // 如果是读取应用列表权限（国产权限），则需要重新检查
-            if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
-                recheck = true;
-            }
-
-            if (recheck) {
-                grantResults[i] = PermissionApi.isGrantedPermission(activity, permission) ?
-                        PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
+            if (Permission.getDangerPermissionFromAndroidVersion(permission) > AndroidVersion.getAndroidVersionCode()) {
+                // 如果是申请了新权限，但却是旧设备上面运行的，会被系统直接拒绝，在这里需要重新检查权限的状态
+                grantResults[i] = PermissionApi.getPermissionResult(activity, permission);
             }
         }
     }

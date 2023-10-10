@@ -22,12 +22,10 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.toast.Toaster;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -285,6 +283,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .permission(Permission.READ_MEDIA_IMAGES)
                             .permission(Permission.READ_MEDIA_VIDEO)
                             .permission(Permission.READ_MEDIA_AUDIO)
+                            .permission(Permission.READ_MEDIA_VISUAL_USER_SELECTED)
                             .interceptor(new PermissionInterceptor())
                             .request(new OnPermissionCallback() {
 
@@ -749,7 +748,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 Log.i("XXPermissions", "应用包名：" + info.packageName);
             }
         } catch (Throwable t) {
-            t.printStackTrace();;
+            t.printStackTrace();
         }
     }
 }

@@ -29,10 +29,25 @@ allprojects {
         jcenter()
     }
 
-    // 将构建文件统一输出到项目根目录下的 build 文件夹
-    setBuildDir(new File(rootDir, "build/${path.replaceAll(':', '/')}"))
+    // 读取 local.properties 文件配置
+    def properties = new Properties()
+    def localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.withInputStream { inputStream ->
+            properties.load(inputStream)
+        }
+    }
+
+    String buildDirPath = properties.getProperty("build.dir")
+    if (buildDirPath != null && buildDirPath != "") {
+        // 将构建文件统一输出到指定的目录下
+        setBuildDir(new File(buildDirPath, rootProject.name + "/build/${path.replaceAll(':', '/')}"))
+    } else {
+        // 将构建文件统一输出到项目根目录下的 build 文件夹
+        setBuildDir(new File(rootDir, "build/${path.replaceAll(':', '/')}"))
+    }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }

@@ -19,9 +19,9 @@ public interface PermissionDelegate {
    boolean isGrantedPermission(@NonNull Context context, @NonNull String permission);
 
    /**
-    * 判断某个权限是否永久拒绝了
+    * 判断某个权限是否勾选了不再询问
     */
-   boolean isPermissionPermanentDenied(@NonNull Activity activity, @NonNull String permission);
+   boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission);
 
    /**
     * 获取权限设置页的意图

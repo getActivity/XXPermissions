@@ -49,7 +49,7 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
    }
 
    @Override
-   public boolean isPermissionPermanentDenied(@NonNull Activity activity, @NonNull String permission) {
+   public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
       if (PermissionUtils.equalsPermission(permission, Permission.BODY_SENSORS_BACKGROUND)) {
          if (!PermissionUtils.checkSelfPermission(activity, Permission.BODY_SENSORS)) {
             return !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.BODY_SENSORS);
@@ -83,7 +83,7 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
          }
       }
 
-      return super.isPermissionPermanentDenied(activity, permission);
+      return super.isDoNotAskAgainPermission(activity, permission);
    }
 
    @Override

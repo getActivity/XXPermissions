@@ -27,11 +27,11 @@ class PermissionDelegateImplV21 extends PermissionDelegateImplV19 {
    }
 
    @Override
-   public boolean isPermissionPermanentDenied(@NonNull Activity activity, @NonNull String permission) {
+   public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
       if (PermissionUtils.equalsPermission(permission, Permission.PACKAGE_USAGE_STATS)) {
          return false;
       }
-      return super.isPermissionPermanentDenied(activity, permission);
+      return super.isDoNotAskAgainPermission(activity, permission);
    }
 
    @Override
