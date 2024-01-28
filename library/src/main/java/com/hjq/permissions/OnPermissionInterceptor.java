@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,7 +12,7 @@ import java.util.List;
  *    time   : 2020/12/26
  *    desc   : 权限请求拦截器
  */
-public interface IPermissionInterceptor {
+public interface OnPermissionInterceptor {
 
     /**
      * 发起权限申请（可在此处先弹 Dialog 再申请权限，如果用户已经授予权限，则不会触发此回调）
@@ -23,7 +22,7 @@ public interface IPermissionInterceptor {
      */
     default void launchPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
                                          @Nullable OnPermissionCallback callback) {
-        PermissionFragment.launch(activity, new ArrayList<>(allPermissions), this, callback);
+        PermissionFragment.launch(activity, allPermissions, this, callback);
     }
 
     /**

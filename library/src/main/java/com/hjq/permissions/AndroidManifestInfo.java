@@ -26,6 +26,7 @@ final class AndroidManifestInfo {
    final List<PermissionInfo> permissionInfoList = new ArrayList<>();
 
    /** Application 节点信息 */
+   @Nullable
    ApplicationInfo applicationInfo;
 
    /** Activity 节点信息 */

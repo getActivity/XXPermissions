@@ -19,7 +19,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
+import android.view.Display;
 import android.view.Surface;
+import android.view.WindowManager;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -93,7 +95,7 @@ final class PermissionUtils {
     /**
      * 解决 Android 12 调用 shouldShowRequestPermissionRationale 出现内存泄漏的问题
      * Android 12L 和 Android 13 版本经过测试不会出现这个问题，证明 Google 在新版本上已经修复了这个问题
-     * 但是对于 Android 12 仍是一个历史遗留问题，这是我们所有应用开发者不得不面对的一个事情
+     * 但是对于 Android 12 仍是一个历史遗留问题，这是我们所有 Android App 开发者不得不面对的一个事情
      *
      * issues 地址：https://github.com/getActivity/XXPermissions/issues/133
      */
@@ -130,15 +132,13 @@ final class PermissionUtils {
             } else {
                 delayMillis = 500;
             }
-        } else if (PhoneRomUtils.isMiui()) {
-            // 经过测试，发现小米 Android 11 及以上的版本，申请这个权限需要 1 秒钟才能判断到
+        } else if (PhoneRomUtils.isMiui() && AndroidVersion.isAndroid11() &&
+            PermissionUtils.containsPermission(permissions, Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
+            // 经过测试，发现小米 Android 11 及以上的版本，申请这个权限需要 1000 毫秒才能判断到（测试了 800 毫秒还不行）
             // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
             // 然而在 Android 11 之后的，这个权限页面被小米改成了自己定制化的页面
             // 测试了原生的模拟器和 vivo 云测并发现没有这个问题，所以断定这个 Bug 就是小米特有的
-            if (AndroidVersion.isAndroid11() &&
-                    PermissionUtils.containsPermission(permissions, Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
-                delayMillis = 1000;
-            }
+            delayMillis = 1000;
         }
         postDelayed(runnable, delayMillis);
     }
@@ -174,9 +174,7 @@ final class PermissionUtils {
                     androidManifestInfo.packageName)) {
                 return null;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (XmlPullParserException e) {
+        } catch (IOException | XmlPullParserException e) {
             e.printStackTrace();
         }
 
@@ -344,9 +342,9 @@ final class PermissionUtils {
         try {
             String metaKey = "ScopedStorage";
             Bundle metaData = context.getPackageManager().getApplicationInfo(
-                    context.getPackageName(), PackageManager.GET_META_DATA).metaData;
+                context.getPackageName(), PackageManager.GET_META_DATA).metaData;
             if (metaData != null && metaData.containsKey(metaKey)) {
-                return Boolean.parseBoolean(String.valueOf(metaData.get(metaKey)));
+                return metaData.getBoolean(metaKey);
             }
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -386,13 +384,22 @@ final class PermissionUtils {
      * 判断 Activity 是否反方向旋转了
      */
     static boolean isActivityReverse(@NonNull Activity activity) {
-        // 获取 Activity 旋转的角度
-        int activityRotation;
+        Display display = null;
         if (AndroidVersion.isAndroid11()) {
-            activityRotation = activity.getDisplay().getRotation();
+            display = activity.getDisplay();
         } else {
-            activityRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+            WindowManager windowManager = activity.getWindowManager();
+            if (windowManager != null) {
+                display = windowManager.getDefaultDisplay();
+            }
         }
+
+        if (display == null) {
+            return false;
+        }
+
+        // 获取 Activity 旋转的角度
+        int activityRotation = display.getRotation();
         switch (activityRotation) {
             case Surface.ROTATION_180:
             case Surface.ROTATION_270:

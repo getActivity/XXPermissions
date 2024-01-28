@@ -19,14 +19,13 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import com.hjq.permissions.IPermissionInterceptor;
+import com.hjq.permissions.OnPermissionInterceptor;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.OnPermissionPageCallback;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.PermissionFragment;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.toast.Toaster;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,7 +34,7 @@ import java.util.List;
  *    time   : 2021/01/04
  *    desc   : 权限申请拦截器
  */
-public final class PermissionInterceptor implements IPermissionInterceptor {
+public final class PermissionInterceptor implements OnPermissionInterceptor {
 
     public static final Handler HANDLER = new Handler(Looper.getMainLooper());
 
@@ -45,11 +44,26 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
     /** 权限申请说明 Popup */
     private PopupWindow mPermissionPopup;
 
+    /** 权限说明文案 */
+    @Nullable
+    private String mPermissionDescription;
+
+    public PermissionInterceptor() {
+        this(null);
+    }
+
+    public PermissionInterceptor(@Nullable String permissionDescription) {
+        mPermissionDescription = permissionDescription;
+    }
+
     @Override
     public void launchPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions, @Nullable OnPermissionCallback callback) {
         mRequestFlag = true;
         List<String> deniedPermissions = XXPermissions.getDenied(activity, allPermissions);
-        String message = activity.getString(R.string.common_permission_message, PermissionNameConvert.getPermissionString(activity, deniedPermissions));
+
+        if (TextUtils.isEmpty(mPermissionDescription)) {
+            mPermissionDescription = generatePermissionDescription(activity, deniedPermissions);
+        }
 
         ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
         int activityOrientation = activity.getResources().getConfiguration().orientation;
@@ -73,7 +87,7 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
         }
 
         if (showPopupWindow) {
-            PermissionFragment.launch(activity, new ArrayList<>(allPermissions), this, callback);
+            PermissionFragment.launch(activity, allPermissions, this, callback);
             // 延迟 300 毫秒是为了避免出现 PopupWindow 显示然后立马消失的情况
             // 因为框架没有办法在还没有申请权限的情况下，去判断权限是否永久拒绝了，必须要在发起权限申请之后
             // 所以只能通过延迟显示 PopupWindow 来做这件事，如果 300 毫秒内权限申请没有结束，证明本次申请的权限没有永久拒绝
@@ -85,17 +99,17 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                         (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed())) {
                     return;
                 }
-                showPopupWindow(activity, decorView, message);
+                showPopupWindow(activity, decorView, mPermissionDescription);
             }, 300);
         } else {
             // 注意：这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
             new AlertDialog.Builder(activity)
-                    .setTitle(R.string.common_permission_description)
-                    .setMessage(message)
+                    .setTitle(R.string.common_permission_description_title)
+                    .setMessage(mPermissionDescription)
                     .setCancelable(false)
                     .setPositiveButton(R.string.common_permission_granted, (dialog, which) -> {
                         dialog.dismiss();
-                        PermissionFragment.launch(activity, new ArrayList<>(allPermissions),
+                        PermissionFragment.launch(activity, allPermissions,
                                 PermissionInterceptor.this, callback);
                     })
                     .setNegativeButton(R.string.common_permission_denied, (dialog, which) -> {
@@ -170,6 +184,13 @@ public final class PermissionInterceptor implements IPermissionInterceptor {
                                         boolean skipRequest, @Nullable OnPermissionCallback callback) {
         mRequestFlag = false;
         dismissPopupWindow();
+    }
+
+    /**
+     * 生成权限说明文案
+     */
+    protected String generatePermissionDescription(Context context, @NonNull List<String> permissions) {
+        return PermissionDescriptionConvert.getPermissionDescription(context, permissions);
     }
 
     private void showPopupWindow(Activity activity, ViewGroup decorView, String message) {

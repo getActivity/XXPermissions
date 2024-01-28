@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="common_permission_description">权限说明</string>
-    <string name="common_permission_message">使用此功能需要先授予%s</string>
+    <string name="common_permission_description_title">权限说明</string>
     <string name="common_permission_granted">授予</string>
     <string name="common_permission_denied">取消</string>
 
@@ -21,6 +20,7 @@
 
     <string name="common_permission_unknown">权限</string>
     <string name="common_permission_comma">、</string>
+    <string name="common_permission_colon">：</string>
 
     <string name="common_permission_calendar">日历权限</string>
     <string name="common_permission_camera">相机权限</string>

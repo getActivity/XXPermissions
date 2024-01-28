@@ -63,7 +63,7 @@ final class StartActivityManager {
       return startActivity(new StartActivityDelegateSupportFragmentImpl(fragment), intent);
    }
 
-   static boolean startActivity(@NonNull IStartActivityDelegate delegate, @NonNull Intent intent) {
+   static boolean startActivity(@NonNull StartActivityDelegate delegate, @NonNull Intent intent) {
       try {
          delegate.startActivity(intent);
          return true;
@@ -89,7 +89,7 @@ final class StartActivityManager {
       return startActivityForResult(new StartActivityDelegateSupportFragmentImpl(fragment), intent, requestCode);
    }
 
-   static boolean startActivityForResult(@NonNull IStartActivityDelegate delegate, @NonNull Intent intent, int requestCode) {
+   static boolean startActivityForResult(@NonNull StartActivityDelegate delegate, @NonNull Intent intent, int requestCode) {
       try {
          delegate.startActivityForResult(intent, requestCode);
          return true;
@@ -103,14 +103,14 @@ final class StartActivityManager {
       }
    }
 
-   private interface IStartActivityDelegate {
+   private interface StartActivityDelegate {
 
       void startActivity(@NonNull Intent intent);
 
       void startActivityForResult(@NonNull Intent intent, int requestCode);
    }
 
-   private static class StartActivityDelegateContextImpl implements IStartActivityDelegate {
+   private static class StartActivityDelegateContextImpl implements StartActivityDelegate {
 
       private final Context mContext;
 
@@ -134,7 +134,7 @@ final class StartActivityManager {
       }
    }
 
-   private static class StartActivityDelegateActivityImpl implements IStartActivityDelegate {
+   private static class StartActivityDelegateActivityImpl implements StartActivityDelegate {
 
       private final Activity mActivity;
 
@@ -153,7 +153,7 @@ final class StartActivityManager {
       }
    }
 
-   private static class StartActivityDelegateFragmentImpl implements IStartActivityDelegate {
+   private static class StartActivityDelegateFragmentImpl implements StartActivityDelegate {
 
       private final Fragment mFragment;
 
@@ -172,7 +172,7 @@ final class StartActivityManager {
       }
    }
 
-   private static class StartActivityDelegateSupportFragmentImpl implements IStartActivityDelegate {
+   private static class StartActivityDelegateSupportFragmentImpl implements StartActivityDelegate {
 
       private final android.support.v4.app.Fragment mFragment;
 

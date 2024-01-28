@@ -22,7 +22,7 @@ public final class XXPermissions {
     public static final int REQUEST_CODE = 1024 + 1;
 
     /** 权限请求拦截器 */
-    private static IPermissionInterceptor sInterceptor;
+    private static OnPermissionInterceptor sInterceptor;
 
     /** 当前是否为检查模式 */
     private static Boolean sCheckMode;
@@ -54,16 +54,16 @@ public final class XXPermissions {
     /**
      * 设置全局权限请求拦截器
      */
-    public static void setInterceptor(IPermissionInterceptor interceptor) {
+    public static void setInterceptor(OnPermissionInterceptor interceptor) {
         sInterceptor = interceptor;
     }
 
     /**
      * 获取全局权限请求拦截器
      */
-    public static IPermissionInterceptor getInterceptor() {
+    public static OnPermissionInterceptor getInterceptor() {
         if (sInterceptor == null) {
-            sInterceptor = new IPermissionInterceptor() {};
+            sInterceptor = new OnPermissionInterceptor() {};
         }
         return sInterceptor;
     }
@@ -78,7 +78,7 @@ public final class XXPermissions {
 
     /** 权限请求拦截器 */
     @Nullable
-    private IPermissionInterceptor mInterceptor;
+    private OnPermissionInterceptor mInterceptor;
 
     /** 设置不检查 */
     @Nullable
@@ -130,7 +130,7 @@ public final class XXPermissions {
     /**
      * 设置权限请求拦截器
      */
-    public XXPermissions interceptor(@Nullable IPermissionInterceptor interceptor) {
+    public XXPermissions interceptor(@Nullable OnPermissionInterceptor interceptor) {
         mInterceptor = interceptor;
         return this;
     }
@@ -157,7 +157,7 @@ public final class XXPermissions {
 
         final Context context = mContext;
 
-        final IPermissionInterceptor interceptor = mInterceptor;
+        final OnPermissionInterceptor interceptor = mInterceptor;
 
         // 权限请求列表（为什么直接不用字段？因为框架要兼容新旧权限，在低版本下会自动添加旧权限申请，为了避免重复添加）
         final List<String> permissions = new ArrayList<>(mPermissions);
@@ -415,7 +415,7 @@ public final class XXPermissions {
             StartActivityManager.startActivity(activity, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
-        PermissionPageFragment.beginRequest(activity, (ArrayList<String>) permissions, callback);
+        PermissionPageFragment.launch(activity, permissions, callback);
     }
 
     /* android.app.Fragment */
@@ -480,7 +480,7 @@ public final class XXPermissions {
             StartActivityManager.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
-        PermissionPageFragment.beginRequest(activity, (ArrayList<String>) permissions, callback);
+        PermissionPageFragment.launch(activity, permissions, callback);
     }
 
     /* android.support.v4.app.Fragment */
@@ -545,6 +545,6 @@ public final class XXPermissions {
             StartActivityManager.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
-        PermissionPageFragment.beginRequest(activity, (ArrayList<String>) permissions, callback);
+        PermissionPageFragment.launch(activity, permissions, callback);
     }
 }

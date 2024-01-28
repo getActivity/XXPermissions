@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="common_permission_description">Permission description</string>
-    <string name="common_permission_message">%s needs to be granted to use this feature</string>
+    <string name="common_permission_description_title">Permission description</string>
     <string name="common_permission_granted">Granted</string>
     <string name="common_permission_denied">Denied</string>
 
@@ -21,6 +20,7 @@
 
     <string name="common_permission_unknown">permission</string>
     <string name="common_permission_comma">, </string>
+    <string name="common_permission_colon">: </string>
 
     <string name="common_permission_calendar">calendar permission</string>
     <string name="common_permission_camera">camera permission</string>

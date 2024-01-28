@@ -20,7 +20,7 @@
             android:layout_marginLeft="15dp"
             android:layout_marginTop="12dp"
             android:layout_marginRight="15dp"
-            android:text="@string/common_permission_description"
+            android:text="@string/common_permission_description_title"
             android:textColor="#333333"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -34,8 +34,9 @@
             android:layout_marginRight="15dp"
             android:layout_marginBottom="12dp"
             android:textColor="#666666"
+            android:lineSpacingExtra="3dp"
             android:textSize="13sp"
-            tools:text="@string/common_permission_message" />
+            tools:text="xxx" />
 
     </LinearLayout>
 
