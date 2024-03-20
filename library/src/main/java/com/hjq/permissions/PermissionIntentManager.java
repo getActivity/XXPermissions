@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -276,13 +278,28 @@ final class PermissionIntentManager {
 
     /* ---------------------------------------------------------------------------------------- */
 
+    @NonNull
+    static Intent getApplicationDetailsIntent(@NonNull Context context) {
+        return getApplicationDetailsIntent(context, null);
+    }
+
     /**
      * 获取应用详情界面意图
      */
     @NonNull
-    static Intent getApplicationDetailsIntent(@NonNull Context context) {
+    static Intent getApplicationDetailsIntent(@NonNull Context context, @Nullable List<String> permissions) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(PermissionUtils.getPackageNameUri(context));
+        if (permissions != null && !permissions.isEmpty() && PhoneRomUtils.isColorOs()) {
+            // OPPO 应用权限受阻跳转优化适配：https://open.oppomobile.com/new/developmentDoc/info?id=12983
+            Bundle bundle = new Bundle();
+            // 元素为受阻权限的原生权限名字符串常量
+            bundle.putStringArrayList("permissionList", permissions instanceof ArrayList ?
+                (ArrayList<String>) permissions : new ArrayList<>(permissions));
+            intent.putExtras(bundle);
+            // 传入跳转优化标识
+            intent.putExtra("isGetPermission", true);
+        }
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;
         }

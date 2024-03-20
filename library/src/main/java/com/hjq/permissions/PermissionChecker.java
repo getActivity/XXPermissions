@@ -121,6 +121,7 @@ final class PermissionChecker {
         for (String permission : requestPermissions) {
             if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_MEDIA_LOCATION)
                     || PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES)
+                    || PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO)
                     || PermissionUtils.equalsPermission(permission, Permission.READ_EXTERNAL_STORAGE)
                     || PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)
                     || PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
@@ -134,9 +135,10 @@ final class PermissionChecker {
 
         if (AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_13) {
             if (!PermissionUtils.containsPermission(requestPermissions, Permission.READ_MEDIA_IMAGES) &&
+                    !PermissionUtils.containsPermission(requestPermissions, Permission.READ_MEDIA_VIDEO) &&
                     !PermissionUtils.containsPermission(requestPermissions, Permission.MANAGE_EXTERNAL_STORAGE)) {
-                // 你需要在外层手动添加 READ_MEDIA_IMAGES 或者 MANAGE_EXTERNAL_STORAGE 才可以申请 ACCESS_MEDIA_LOCATION 权限
-                throw new IllegalArgumentException("You must add " + Permission.READ_MEDIA_IMAGES + " or " +
+                // 你需要在外层手动添加 READ_MEDIA_IMAGES、READ_MEDIA_VIDEO、MANAGE_EXTERNAL_STORAGE 任一权限才可以申请 ACCESS_MEDIA_LOCATION 权限
+                throw new IllegalArgumentException("You must add " + Permission.READ_MEDIA_IMAGES + " or " + Permission.READ_MEDIA_VIDEO + " or " +
                         Permission.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + Permission.ACCESS_MEDIA_LOCATION + " rights");
             }
         } else {
@@ -173,11 +175,37 @@ final class PermissionChecker {
                     " instead of " + Permission.READ_EXTERNAL_STORAGE);
         }
 
-        // 如果申请的是 Android 13 读取媒体权限，则绕过本次检查
         if (PermissionUtils.containsPermission(requestPermissions, Permission.READ_MEDIA_IMAGES) ||
             PermissionUtils.containsPermission(requestPermissions, Permission.READ_MEDIA_VIDEO) ||
             PermissionUtils.containsPermission(requestPermissions, Permission.READ_MEDIA_AUDIO)) {
+
+            if (PermissionUtils.containsPermission(requestPermissions, Permission.READ_EXTERNAL_STORAGE) ||
+                PermissionUtils.containsPermission(requestPermissions, Permission.WRITE_EXTERNAL_STORAGE)) {
+                // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这两个权限
+                // 框架会在 Android 13 以下的版本上自动添加并申请这两个权限
+                throw new IllegalArgumentException("If you have applied for media permissions, " +
+                    "do not apply for the READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE permissions");
+            }
+
+            if (PermissionUtils.containsPermission(requestPermissions, Permission.MANAGE_EXTERNAL_STORAGE)) {
+                // 因为 MANAGE_EXTERNAL_STORAGE 权限范围很大，有了它就可以读取媒体文件，不需要再叠加申请媒体权限
+                throw new IllegalArgumentException("Because the MANAGE_EXTERNAL_STORAGE permission range is very large, "
+                    + "you can read media files with it, and there is no need to apply for additional media permissions.");
+            }
+
+            // 到此结束，不需要往下走是否有分区存储的判断
             return;
+        }
+
+        if (PermissionUtils.containsPermission(requestPermissions, Permission.MANAGE_EXTERNAL_STORAGE)) {
+
+            if (PermissionUtils.containsPermission(requestPermissions, Permission.READ_EXTERNAL_STORAGE) ||
+                PermissionUtils.containsPermission(requestPermissions, Permission.WRITE_EXTERNAL_STORAGE)) {
+                // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这两个权限
+                // 框架会在 Android 10 以下的版本上自动添加并申请这两个权限
+                throw new IllegalArgumentException("If you have applied for MANAGE_EXTERNAL_STORAGE permissions, " +
+                    "do not apply for the READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE permissions");
+            }
         }
 
         // 如果申请的是 Android 10 获取媒体位置权限，则绕过本次检查
@@ -683,18 +711,15 @@ final class PermissionChecker {
         // 如果本次申请包含了 Android 11 存储权限
         if (PermissionUtils.containsPermission(requestPermissions, Permission.MANAGE_EXTERNAL_STORAGE)) {
 
-            if (PermissionUtils.containsPermission(requestPermissions, Permission.READ_EXTERNAL_STORAGE) ||
-                    PermissionUtils.containsPermission(requestPermissions, Permission.WRITE_EXTERNAL_STORAGE)) {
-                // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这两个权限
-                // 框架会在 Android 10 以下的版本上自动添加并申请这两个权限
-                throw new IllegalArgumentException("If you have applied for MANAGE_EXTERNAL_STORAGE permissions, " +
-                        "do not apply for the READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE permissions");
-            }
-
             if (!AndroidVersion.isAndroid11()) {
                 // 自动添加旧版的存储权限，因为旧版的系统不支持申请新版的存储权限
-                requestPermissions.add(Permission.READ_EXTERNAL_STORAGE);
-                requestPermissions.add(Permission.WRITE_EXTERNAL_STORAGE);
+                if (!PermissionUtils.containsPermission(requestPermissions, Permission.READ_EXTERNAL_STORAGE)) {
+                    requestPermissions.add(Permission.READ_EXTERNAL_STORAGE);
+                }
+
+                if (!PermissionUtils.containsPermission(requestPermissions, Permission.WRITE_EXTERNAL_STORAGE)) {
+                    requestPermissions.add(Permission.WRITE_EXTERNAL_STORAGE);
+                }
             }
         }
 

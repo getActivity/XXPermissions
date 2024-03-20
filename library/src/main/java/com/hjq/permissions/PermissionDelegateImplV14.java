@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.VpnService;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import java.util.Collections;
 
 /**
  *    author : Android 轮子哥
@@ -37,7 +38,7 @@ class PermissionDelegateImplV14 implements PermissionDelegate {
          return getVpnPermissionIntent(context);
       }
 
-      return PermissionIntentManager.getApplicationDetailsIntent(context);
+      return PermissionIntentManager.getApplicationDetailsIntent(context, Collections.singletonList(permission));
    }
 
    /**

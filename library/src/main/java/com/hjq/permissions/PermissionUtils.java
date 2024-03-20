@@ -445,7 +445,7 @@ final class PermissionUtils {
             if (permissions.size() == 1) {
                 return PermissionApi.getPermissionIntent(context, permissions.get(0));
             }
-            return PermissionIntentManager.getApplicationDetailsIntent(context);
+            return PermissionIntentManager.getApplicationDetailsIntent(context, permissions);
         }
 
         // 特殊权限统一处理
