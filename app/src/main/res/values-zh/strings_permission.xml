@@ -27,7 +27,7 @@
     <string name="common_permission_contacts">通讯录权限</string>
     <string name="common_permission_location">定位权限</string>
     <string name="common_permission_location_background">后台定位权限</string>
-    <string name="common_permission_nearby_devices">附近的设备权限</string>
+    <string name="common_permission_nearby_devices">附近设备权限</string>
     <string name="common_permission_microphone">麦克风权限</string>
     <string name="common_permission_phone">电话权限</string>
     <string name="common_permission_call_logs">通话记录权限</string>

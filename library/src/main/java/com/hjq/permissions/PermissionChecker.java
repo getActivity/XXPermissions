@@ -179,9 +179,8 @@ final class PermissionChecker {
             PermissionUtils.containsPermission(requestPermissions, Permission.READ_MEDIA_VIDEO) ||
             PermissionUtils.containsPermission(requestPermissions, Permission.READ_MEDIA_AUDIO)) {
 
-            if (PermissionUtils.containsPermission(requestPermissions, Permission.READ_EXTERNAL_STORAGE) ||
-                PermissionUtils.containsPermission(requestPermissions, Permission.WRITE_EXTERNAL_STORAGE)) {
-                // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这两个权限
+            if (PermissionUtils.containsPermission(requestPermissions, Permission.READ_EXTERNAL_STORAGE)) {
+                // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这个权限
                 // 框架会在 Android 13 以下的版本上自动添加并申请这两个权限
                 throw new IllegalArgumentException("If you have applied for media permissions, " +
                     "do not apply for the READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE permissions");
@@ -485,6 +484,10 @@ final class PermissionChecker {
                 // READ_MEDIA_VISUAL_USER_SELECTED 这个权限比较特殊，不需要调高 targetSdk 的版本才能申请，但是需要和 READ_MEDIA_IMAGES 和 READ_MEDIA_VIDEO 组合使用
                 // 这个权限不能单独申请，只能和 READ_MEDIA_IMAGES、READ_MEDIA_VIDEO 一起申请，否则会有问题，所以这个权限的 targetSdk 最低要求为 33 及以上
                 targetSdkMinVersion = AndroidVersion.ANDROID_13;
+            } else if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_SCAN)) {
+                // 部分厂商修改了蓝牙权限机制，在 targetSdk 不满足条件的情况下（小于 31），仍需要让应用申请这个权限
+                // issue 地址：https://github.com/getActivity/XXPermissions/issues/123
+                targetSdkMinVersion = AndroidVersion.ANDROID_6;
             } else {
                 targetSdkMinVersion = Permission.getPermissionFromAndroidVersion(permission);
             }
