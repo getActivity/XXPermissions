@@ -27,10 +27,13 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
          return isGrantedPictureInPicturePermission(context);
       }
 
-      if (PermissionUtils.equalsPermission(permission, Permission.READ_PHONE_NUMBERS) ||
-              PermissionUtils.equalsPermission(permission, Permission.ANSWER_PHONE_CALLS)) {
-         return PermissionUtils.checkSelfPermission(context, permission);
-      }
+       if (PermissionUtils.containsPermission(new String[] {
+               Permission.READ_PHONE_NUMBERS,
+               Permission.ANSWER_PHONE_CALLS
+           }, permission)) {
+           return PermissionUtils.checkSelfPermission(context, permission);
+       }
+
       return super.isGrantedPermission(context, permission);
    }
 
@@ -44,11 +47,14 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
          return false;
       }
 
-      if (PermissionUtils.equalsPermission(permission, Permission.READ_PHONE_NUMBERS) ||
-              PermissionUtils.equalsPermission(permission, Permission.ANSWER_PHONE_CALLS)) {
-         return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                 !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
-      }
+       if (PermissionUtils.containsPermission(new String[] {
+               Permission.READ_PHONE_NUMBERS,
+               Permission.ANSWER_PHONE_CALLS
+           }, permission)) {
+           return !PermissionUtils.checkSelfPermission(activity, permission) &&
+               !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+       }
+
       return super.isDoNotAskAgainPermission(activity, permission);
    }
 

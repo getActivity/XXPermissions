@@ -22,10 +22,12 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
                  PermissionUtils.checkSelfPermission(context, Permission.ACCESS_MEDIA_LOCATION);
       }
 
-      if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION) ||
-              PermissionUtils.equalsPermission(permission, Permission.ACTIVITY_RECOGNITION)) {
-         return PermissionUtils.checkSelfPermission(context, permission);
-      }
+       if (PermissionUtils.containsPermission(new String[] {
+               Permission.ACCESS_BACKGROUND_LOCATION,
+               Permission.ACTIVITY_RECOGNITION
+           }, permission)) {
+           return PermissionUtils.checkSelfPermission(context, permission);
+       }
 
       // 向下兼容 Android 11 新权限
       if (!AndroidVersion.isAndroid11()) {

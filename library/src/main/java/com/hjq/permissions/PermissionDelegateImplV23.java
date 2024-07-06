@@ -41,9 +41,11 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
                return PermissionUtils.checkSelfPermission(context, Permission.BODY_SENSORS);
            }
 
-           if (PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES) ||
-               PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO) ||
-               PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO)) {
+           if (PermissionUtils.containsPermission(new String[] {
+                   Permission.READ_MEDIA_IMAGES,
+                   Permission.READ_MEDIA_VIDEO,
+                   Permission.READ_MEDIA_AUDIO
+               }, permission)) {
                return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE);
            }
 
@@ -52,8 +54,10 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
                return PermissionUtils.checkSelfPermission(context, Permission.ACCESS_FINE_LOCATION);
            }
 
-           if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_CONNECT) ||
-               PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_ADVERTISE)) {
+           if (PermissionUtils.containsPermission(new String[] {
+                   Permission.BLUETOOTH_CONNECT,
+                   Permission.BLUETOOTH_ADVERTISE
+               }, permission)) {
                return true;
            }
 
@@ -92,11 +96,13 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
            }
        }
 
-      // 交给父类处理
-      if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS) ||
-              PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS)) {
-         return super.isGrantedPermission(context, permission);
-      }
+       // 交给父类处理
+       if (PermissionUtils.containsPermission(new String[] {
+               Permission.GET_INSTALLED_APPS,
+               Permission.POST_NOTIFICATIONS
+           }, permission)) {
+           return super.isGrantedPermission(context, permission);
+       }
 
       if (Permission.isSpecialPermission(permission)) {
          // 检测系统权限
@@ -144,9 +150,11 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.BODY_SENSORS);
            }
 
-           if (PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES) ||
-               PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO) ||
-               PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO)) {
+           if (PermissionUtils.containsPermission(new String[] {
+                   Permission.READ_MEDIA_IMAGES,
+                   Permission.READ_MEDIA_VIDEO,
+                   Permission.READ_MEDIA_AUDIO
+               }, permission)) {
                return !PermissionUtils.checkSelfPermission(activity, Permission.READ_EXTERNAL_STORAGE) &&
                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_EXTERNAL_STORAGE);
            }
@@ -157,8 +165,10 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION);
            }
 
-           if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_CONNECT) ||
-               PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_ADVERTISE)) {
+           if (PermissionUtils.containsPermission(new String[] {
+                   Permission.BLUETOOTH_CONNECT,
+                   Permission.BLUETOOTH_ADVERTISE
+               }, permission)) {
                return false;
            }
 
@@ -194,10 +204,12 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
        }
 
       // 交给父类处理
-      if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS) ||
-              PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS)) {
-         return super.isDoNotAskAgainPermission(activity, permission);
-      }
+       if (PermissionUtils.containsPermission(new String[] {
+               Permission.GET_INSTALLED_APPS,
+               Permission.POST_NOTIFICATIONS
+           }, permission)) {
+           return super.isDoNotAskAgainPermission(activity, permission);
+       }
 
       if (Permission.isSpecialPermission(permission)) {
          // 特殊权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回 false

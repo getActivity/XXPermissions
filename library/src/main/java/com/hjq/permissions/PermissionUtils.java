@@ -27,6 +27,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.xmlpull.v1.XmlPullParserException;
@@ -205,8 +206,8 @@ final class PermissionUtils {
             // 这是因为用户授权部分图片或者视频的时候，READ_MEDIA_VISUAL_USER_SELECTED 权限状态是授予的
             // 但是 READ_MEDIA_IMAGES 和 READ_MEDIA_VIDEO 的权限状态是拒绝的
             if (AndroidVersion.isAndroid14() &&
-                (PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES) ||
-                PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO))) {
+                PermissionUtils.containsPermission(
+                    new String[] {Permission.READ_MEDIA_IMAGES, Permission.READ_MEDIA_VIDEO}, permission)) {
                 grantResults[i] = PermissionApi.getPermissionResult(activity, permission);
                 continue;
             }
@@ -496,12 +497,16 @@ final class PermissionUtils {
     /**
      * 判断权限集合中是否包含某个权限
      */
+    static boolean containsPermission(@NonNull String[] permissions, @NonNull String permission) {
+        return containsPermission(Arrays.asList(permissions), permission);
+    }
+
     static boolean containsPermission(@NonNull Collection<String> permissions, @NonNull String permission) {
         if (permissions.isEmpty()) {
             return false;
         }
         for (String s : permissions) {
-            // 使用 equalsPermission 来判断可以提升代码效率
+            // 使用 equalsPermission 来判断可以提升代码执行效率
             if (equalsPermission(s, permission)) {
                 return true;
             }

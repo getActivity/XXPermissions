@@ -119,12 +119,14 @@ final class PermissionChecker {
         }
 
         for (String permission : requestPermissions) {
-            if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_MEDIA_LOCATION)
-                    || PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES)
-                    || PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO)
-                    || PermissionUtils.equalsPermission(permission, Permission.READ_EXTERNAL_STORAGE)
-                    || PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)
-                    || PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
+            if (PermissionUtils.containsPermission(new String[] {
+                    Permission.ACCESS_MEDIA_LOCATION,
+                    Permission.READ_MEDIA_IMAGES,
+                    Permission.READ_MEDIA_VIDEO,
+                    Permission.READ_EXTERNAL_STORAGE,
+                    Permission.WRITE_EXTERNAL_STORAGE,
+                    Permission.MANAGE_EXTERNAL_STORAGE
+                }, permission)) {
                 continue;
             }
 
@@ -172,7 +174,7 @@ final class PermissionChecker {
             // 因为经过测试，如果当 targetSdkVersion >= 33 申请 READ_EXTERNAL_STORAGE 或者 WRITE_EXTERNAL_STORAGE 会被系统直接拒绝，不会弹出任何授权框
             throw new IllegalArgumentException("When targetSdkVersion >= 33 should use " +
                     Permission.READ_MEDIA_IMAGES + ", " + Permission.READ_MEDIA_VIDEO + ", " + Permission.READ_MEDIA_AUDIO +
-                    " instead of " + Permission.READ_EXTERNAL_STORAGE);
+                    ", rather than " + Permission.READ_EXTERNAL_STORAGE);
         }
 
         if (PermissionUtils.containsPermission(requestPermissions, Permission.READ_MEDIA_IMAGES) ||
@@ -322,9 +324,11 @@ final class PermissionChecker {
         }
 
         for (String permission : requestPermissions) {
-            if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_FINE_LOCATION)
-                    || PermissionUtils.equalsPermission(permission, Permission.ACCESS_COARSE_LOCATION)
-                    || PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION)) {
+            if (PermissionUtils.containsPermission(new String[] {
+                    Permission.ACCESS_FINE_LOCATION,
+                    Permission.ACCESS_COARSE_LOCATION,
+                    Permission.ACCESS_BACKGROUND_LOCATION
+                }, permission)) {
                 continue;
             }
 
@@ -360,9 +364,11 @@ final class PermissionChecker {
         List<AndroidManifestInfo.PermissionInfo> permissionInfoList = androidManifestInfo.permissionInfoList;
 
         for (AndroidManifestInfo.PermissionInfo permissionInfo : permissionInfoList) {
-
-            if (!PermissionUtils.equalsPermission(permissionInfo.name, Permission.BLUETOOTH_SCAN) &&
-                    !PermissionUtils.equalsPermission(permissionInfo.name, Permission.NEARBY_WIFI_DEVICES)) {
+            // 必须是蓝牙扫描权限或者 WIFI 权限才需要走这个检查
+            if (!PermissionUtils.containsPermission(new String[] {
+                    Permission.BLUETOOTH_SCAN,
+                    Permission.NEARBY_WIFI_DEVICES
+                }, permissionInfo.name)) {
                 continue;
             }
 
@@ -377,8 +383,8 @@ final class PermissionChecker {
                 String maxSdkVersionString = (permissionInfo.maxSdkVersion != Integer.MAX_VALUE) ?
                         "android:maxSdkVersion=\"" + permissionInfo.maxSdkVersion + "\" " : "";
                 // 根据不同的需求场景决定，解决方法分为两种：
-                //   1. 不需要使用蓝牙权限或者 WIFI 权限来获取物理位置：只需要在清单文件中注册的权限上面加上 android:usesPermissionFlags="neverForLocation"即可
-                //   2. 需要使用蓝牙权限或者 WIFI 权限来获取物理位置：在申请蓝牙权限或者 WIFI 权限时，还要申请 ACCESS_FINE_LOCATION 权限
+                //   1. 不需要使用蓝牙权限或者 WIFI 权限来获取物理位置：只需要在清单文件中注册的权限上面加上 android:usesPermissionFlags="neverForLocation" 即可
+                //   2. 需要使用蓝牙权限或者 WIFI 权限来获取物理位置：在申请蓝牙权限或者 WIFI 权限时，还需要动态申请 ACCESS_FINE_LOCATION 权限
                 // 通常情况下，我们都不需要使用蓝牙权限或者 WIFI 权限来获取物理位置，所以选择第一种方法即可
                 throw new IllegalArgumentException("If your app doesn't use " + permissionInfo.name +
                         " to get physical location, " + "please change the <uses-permission android:name=\"" +
@@ -484,9 +490,15 @@ final class PermissionChecker {
                 // READ_MEDIA_VISUAL_USER_SELECTED 这个权限比较特殊，不需要调高 targetSdk 的版本才能申请，但是需要和 READ_MEDIA_IMAGES 和 READ_MEDIA_VIDEO 组合使用
                 // 这个权限不能单独申请，只能和 READ_MEDIA_IMAGES、READ_MEDIA_VIDEO 一起申请，否则会有问题，所以这个权限的 targetSdk 最低要求为 33 及以上
                 targetSdkMinVersion = AndroidVersion.ANDROID_13;
-            } else if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_SCAN)) {
+            } else if (PermissionUtils.containsPermission(new String[] {
+                            Permission.BLUETOOTH_SCAN,
+                            Permission.BLUETOOTH_CONNECT,
+                            Permission.BLUETOOTH_ADVERTISE
+                        }, permission)) {
                 // 部分厂商修改了蓝牙权限机制，在 targetSdk 不满足条件的情况下（小于 31），仍需要让应用申请这个权限
-                // issue 地址：https://github.com/getActivity/XXPermissions/issues/123
+                // 相关的 issue 地址：
+                // 1. https://github.com/getActivity/XXPermissions/issues/123
+                // 2. https://github.com/getActivity/XXPermissions/issues/302
                 targetSdkMinVersion = AndroidVersion.ANDROID_6;
             } else {
                 targetSdkMinVersion = Permission.getPermissionFromAndroidVersion(permission);
@@ -574,10 +586,11 @@ final class PermissionChecker {
             }
 
             // Android 13
-
-            if (PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES) ||
-                PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO) ||
-                PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO)) {
+            if (PermissionUtils.containsPermission(new String[] {
+                    Permission.READ_MEDIA_IMAGES,
+                    Permission.READ_MEDIA_VIDEO,
+                    Permission.READ_MEDIA_AUDIO
+                }, permission)) {
                 checkManifestPermission(permissionInfoList, Permission.READ_EXTERNAL_STORAGE, AndroidVersion.ANDROID_12_L);
                 continue;
             }

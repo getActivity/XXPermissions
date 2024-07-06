@@ -24,10 +24,12 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
          return isGrantedAlarmPermission(context);
       }
 
-      if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_SCAN) ||
-              PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_CONNECT) ||
-              PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_ADVERTISE)) {
-         return PermissionUtils.checkSelfPermission(context, permission);
+      if (PermissionUtils.containsPermission(new String[] {
+              Permission.BLUETOOTH_SCAN,
+              Permission.BLUETOOTH_CONNECT,
+              Permission.BLUETOOTH_ADVERTISE
+          }, permission)) {
+          return PermissionUtils.checkSelfPermission(context, permission);
       }
       return super.isGrantedPermission(context, permission);
    }
@@ -38,11 +40,13 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
          return false;
       }
 
-      if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_SCAN) ||
-              PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_CONNECT) ||
-              PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_ADVERTISE)) {
-         return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                 !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+      if (PermissionUtils.containsPermission(new String[] {
+              Permission.BLUETOOTH_SCAN,
+              Permission.BLUETOOTH_CONNECT,
+              Permission.BLUETOOTH_ADVERTISE
+          }, permission)) {
+          return !PermissionUtils.checkSelfPermission(activity, permission) &&
+              !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
       }
 
       if (activity.getApplicationInfo().targetSdkVersion >= AndroidVersion.ANDROID_12 &&

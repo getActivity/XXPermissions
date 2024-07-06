@@ -23,12 +23,14 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
                  PermissionUtils.checkSelfPermission(context, Permission.BODY_SENSORS_BACKGROUND);
       }
 
-      if (PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS) ||
-              PermissionUtils.equalsPermission(permission, Permission.NEARBY_WIFI_DEVICES) ||
-              PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES) ||
-              PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO) ||
-              PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO)) {
-         return PermissionUtils.checkSelfPermission(context, permission);
+      if (PermissionUtils.containsPermission(new String[] {
+              Permission.POST_NOTIFICATIONS,
+              Permission.NEARBY_WIFI_DEVICES,
+              Permission.READ_MEDIA_IMAGES,
+              Permission.READ_MEDIA_VIDEO,
+              Permission.READ_MEDIA_AUDIO
+          }, permission)) {
+          return PermissionUtils.checkSelfPermission(context, permission);
       }
 
       if (AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_13) {
@@ -58,13 +60,15 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
                  !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
       }
 
-      if (PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS) ||
-              PermissionUtils.equalsPermission(permission, Permission.NEARBY_WIFI_DEVICES) ||
-              PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES) ||
-              PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO) ||
-              PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO)) {
-         return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                 !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+      if (PermissionUtils.containsPermission(new String[] {
+              Permission.POST_NOTIFICATIONS,
+              Permission.NEARBY_WIFI_DEVICES,
+              Permission.READ_MEDIA_IMAGES,
+              Permission.READ_MEDIA_VIDEO,
+              Permission.READ_MEDIA_AUDIO
+        }, permission)) {
+          return !PermissionUtils.checkSelfPermission(activity, permission) &&
+               !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
       }
 
       if (AndroidVersion.getTargetSdkVersionCode(activity) >= AndroidVersion.ANDROID_13) {

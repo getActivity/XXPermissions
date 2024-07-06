@@ -120,7 +120,7 @@ public final class Permission {
      * <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
      *
      * 为了兼容 Android 13 以下版本，需要清单文件中注册 {@link #ACCESS_FINE_LOCATION} 权限
-     * 还有 Android 13 以下设备，使用 WIFI 需要精确定位权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
+     * 还有 Android 13 以下设备，使用 WIFI 需要 {@link #ACCESS_FINE_LOCATION} 权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
      */
     public static final String NEARBY_WIFI_DEVICES = "android.permission.NEARBY_WIFI_DEVICES";
 
@@ -162,7 +162,7 @@ public final class Permission {
      * <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
      *
      * 为了兼容 Android 12 以下版本，需要清单文件中注册 {@link Manifest.permission#BLUETOOTH_ADMIN} 权限
-     * 还有 Android 12 以下设备，获取蓝牙扫描结果需要精确定位权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
+     * 还有 Android 12 以下设备，获取蓝牙扫描结果需要 {@link #ACCESS_FINE_LOCATION} 权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
      */
     public static final String BLUETOOTH_SCAN = "android.permission.BLUETOOTH_SCAN";
 
@@ -340,22 +340,26 @@ public final class Permission {
                 Permission.BLUETOOTH_ADVERTISE};
     }
 
+    /** 特殊权限列表（仅供框架内部使用） */
+    private static final String[] SPECIAL_PERMISSIONS = new String[] {
+                        Permission.MANAGE_EXTERNAL_STORAGE,
+                        Permission.REQUEST_INSTALL_PACKAGES,
+                        Permission.SYSTEM_ALERT_WINDOW,
+                        Permission.WRITE_SETTINGS,
+                        Permission.NOTIFICATION_SERVICE,
+                        Permission.PACKAGE_USAGE_STATS,
+                        Permission.SCHEDULE_EXACT_ALARM,
+                        Permission.BIND_NOTIFICATION_LISTENER_SERVICE,
+                        Permission.ACCESS_NOTIFICATION_POLICY,
+                        Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                        Permission.BIND_VPN_SERVICE,
+                        Permission.PICTURE_IN_PICTURE};
+
     /**
      * 判断某个权限是否是特殊权限
      */
     static boolean isSpecialPermission(@NonNull String permission) {
-        return PermissionUtils.equalsPermission(permission, MANAGE_EXTERNAL_STORAGE) ||
-            PermissionUtils.equalsPermission(permission, REQUEST_INSTALL_PACKAGES) ||
-            PermissionUtils.equalsPermission(permission, SYSTEM_ALERT_WINDOW) ||
-            PermissionUtils.equalsPermission(permission, WRITE_SETTINGS) ||
-            PermissionUtils.equalsPermission(permission, NOTIFICATION_SERVICE) ||
-            PermissionUtils.equalsPermission(permission, PACKAGE_USAGE_STATS) ||
-            PermissionUtils.equalsPermission(permission, SCHEDULE_EXACT_ALARM) ||
-            PermissionUtils.equalsPermission(permission, BIND_NOTIFICATION_LISTENER_SERVICE) ||
-            PermissionUtils.equalsPermission(permission, ACCESS_NOTIFICATION_POLICY) ||
-            PermissionUtils.equalsPermission(permission, REQUEST_IGNORE_BATTERY_OPTIMIZATIONS) ||
-            PermissionUtils.equalsPermission(permission, BIND_VPN_SERVICE) ||
-            PermissionUtils.equalsPermission(permission, PICTURE_IN_PICTURE);
+        return PermissionUtils.containsPermission(SPECIAL_PERMISSIONS, permission);
     }
 
     /**
@@ -431,24 +435,30 @@ public final class Permission {
             return AndroidVersion.ANDROID_14;
         }
 
-        if (PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS) ||
-            PermissionUtils.equalsPermission(permission, Permission.NEARBY_WIFI_DEVICES) ||
-            PermissionUtils.equalsPermission(permission, Permission.BODY_SENSORS_BACKGROUND) ||
-            PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES) ||
-            PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO) ||
-            PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO)) {
+        if (PermissionUtils.containsPermission(new String[] {
+                Permission.POST_NOTIFICATIONS,
+                Permission.NEARBY_WIFI_DEVICES,
+                Permission.BODY_SENSORS_BACKGROUND,
+                Permission.READ_MEDIA_IMAGES,
+                Permission.READ_MEDIA_VIDEO,
+                Permission.READ_MEDIA_AUDIO
+            }, permission)) {
             return AndroidVersion.ANDROID_13;
         }
 
-        if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_SCAN) ||
-            PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_CONNECT) ||
-            PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_ADVERTISE)) {
+        if (PermissionUtils.containsPermission(new String[] {
+                Permission.BLUETOOTH_SCAN,
+                Permission.BLUETOOTH_CONNECT,
+                Permission.BLUETOOTH_ADVERTISE
+            }, permission)) {
             return AndroidVersion.ANDROID_12;
         }
 
-        if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION) ||
-            PermissionUtils.equalsPermission(permission, Permission.ACTIVITY_RECOGNITION) ||
-            PermissionUtils.equalsPermission(permission, Permission.ACCESS_MEDIA_LOCATION)) {
+        if (PermissionUtils.containsPermission(new String[] {
+                Permission.ACCESS_BACKGROUND_LOCATION,
+                Permission.ACTIVITY_RECOGNITION,
+                Permission.ACCESS_MEDIA_LOCATION,
+            }, permission)) {
             return AndroidVersion.ANDROID_10;
         }
 
@@ -456,8 +466,10 @@ public final class Permission {
             return AndroidVersion.ANDROID_9;
         }
 
-        if (PermissionUtils.equalsPermission(permission, Permission.ANSWER_PHONE_CALLS) ||
-            PermissionUtils.equalsPermission(permission, Permission.READ_PHONE_NUMBERS)) {
+        if (PermissionUtils.containsPermission(new String[] {
+                Permission.ANSWER_PHONE_CALLS,
+                Permission.READ_PHONE_NUMBERS
+            }, permission)) {
             return AndroidVersion.ANDROID_8;
         }
 
@@ -468,9 +480,11 @@ public final class Permission {
      * 判断权限是否必须要在清单文件中注册
      */
     static boolean isMustRegisterInManifestFile(@NonNull String permission) {
-        return !PermissionUtils.equalsPermission(permission, Permission.NOTIFICATION_SERVICE) &&
-            !PermissionUtils.equalsPermission(permission, Permission.BIND_NOTIFICATION_LISTENER_SERVICE) &&
-            !PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE) &&
-            !PermissionUtils.equalsPermission(permission, Permission.PICTURE_IN_PICTURE);
+        return !PermissionUtils.containsPermission(new String[] {
+            Permission.NOTIFICATION_SERVICE,
+            Permission.BIND_NOTIFICATION_LISTENER_SERVICE,
+            Permission.BIND_VPN_SERVICE,
+            Permission.PICTURE_IN_PICTURE
+        }, permission);
     }
 }

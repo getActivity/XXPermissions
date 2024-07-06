@@ -209,8 +209,10 @@ public final class PermissionFragment extends Fragment implements Runnable {
         // 是否需要申请特殊权限
         boolean requestSpecialPermission = false;
 
-        // 判断当前是否包含特殊权限
-        for (String permission : allPermissions) {
+        // 使用 for 循环从最后一个元素开始遍历数组
+        // Github issue：https://github.com/getActivity/XXPermissions/issues/292
+        for (int i = allPermissions.size() - 1; i >= 0; i--) {
+            String permission = allPermissions.get(i);
             if (!PermissionApi.isSpecialPermission(permission)) {
                 continue;
             }
@@ -225,7 +227,7 @@ public final class PermissionFragment extends Fragment implements Runnable {
             }
             // 跳转到特殊权限授权页面
             StartActivityManager.startActivityForResult(this, PermissionUtils.getSmartPermissionIntent(activity,
-                    PermissionUtils.asArrayList(permission)), getArguments().getInt(REQUEST_CODE));
+                PermissionUtils.asArrayList(permission)), getArguments().getInt(REQUEST_CODE));
             requestSpecialPermission = true;
         }
 
