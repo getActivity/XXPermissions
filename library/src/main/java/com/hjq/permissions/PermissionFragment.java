@@ -376,11 +376,6 @@ public final class PermissionFragment extends Fragment implements Runnable {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/236
-        if (permissions == null || permissions.length == 0 || grantResults == null || grantResults.length == 0) {
-            return;
-        }
-
         Bundle arguments = getArguments();
         Activity activity = getActivity();
         if (activity == null || arguments == null || mInterceptor == null ||
@@ -389,10 +384,20 @@ public final class PermissionFragment extends Fragment implements Runnable {
         }
 
         OnPermissionCallback callback = mCallBack;
+        // 释放监听对象的引用
         mCallBack = null;
 
         OnPermissionInterceptor interceptor = mInterceptor;
+        // 释放拦截器对象的引用
         mInterceptor = null;
+
+        // 释放对这个请求码的占用
+        REQUEST_CODE_ARRAY.remove((Integer) requestCode);
+
+        // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/236
+        if (permissions == null || permissions.length == 0 || grantResults == null || grantResults.length == 0) {
+            return;
+        }
 
         // 优化权限回调结果
         PermissionUtils.optimizePermissionResults(activity, permissions, grantResults);
@@ -400,8 +405,6 @@ public final class PermissionFragment extends Fragment implements Runnable {
         // 将数组转换成 ArrayList
         List<String> allPermissions = PermissionUtils.asArrayList(permissions);
 
-        // 释放对这个请求码的占用
-        REQUEST_CODE_ARRAY.remove((Integer) requestCode);
         // 将 Fragment 从 Activity 移除
         detachByActivity(activity);
 
