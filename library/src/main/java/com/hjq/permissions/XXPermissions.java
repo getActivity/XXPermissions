@@ -205,10 +205,8 @@ public final class XXPermissions {
 
         if (PermissionApi.isGrantedPermissions(context, permissions)) {
             // 证明这些权限已经全部授予过，直接回调成功
-            if (callback != null) {
-                interceptor.grantedPermissionRequest(activity, permissions, permissions, true, callback);
-                interceptor.finishPermissionRequest(activity, permissions, true, callback);
-            }
+            interceptor.grantedPermissionRequest(activity, permissions, permissions, true, callback);
+            interceptor.finishPermissionRequest(activity, permissions, true, callback);
             return;
         }
 
