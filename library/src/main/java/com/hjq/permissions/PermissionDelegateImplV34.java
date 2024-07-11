@@ -20,18 +20,6 @@ class PermissionDelegateImplV34 extends PermissionDelegateImplV33 {
          return PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_VISUAL_USER_SELECTED);
       }
 
-       // 如果用户授予了部分照片访问，那么 READ_MEDIA_VISUAL_USER_SELECTED 权限状态是授予的，而 READ_MEDIA_IMAGES 权限状态是拒绝的
-       if (PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES) &&
-           !PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_IMAGES)) {
-           return PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_VISUAL_USER_SELECTED);
-       }
-
-       // 如果用户授予了部分视频访问，那么 READ_MEDIA_VISUAL_USER_SELECTED 权限状态是授予的，而 READ_MEDIA_VIDEO 权限状态是拒绝的
-       if (PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO) &&
-           !PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_VIDEO)) {
-           return PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_VISUAL_USER_SELECTED);
-       }
-
       return super.isGrantedPermission(context, permission);
    }
 

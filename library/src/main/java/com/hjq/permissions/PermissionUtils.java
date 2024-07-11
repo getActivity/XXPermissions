@@ -208,7 +208,8 @@ final class PermissionUtils {
             if (AndroidVersion.isAndroid14() &&
                 PermissionUtils.containsPermission(
                     new String[] {Permission.READ_MEDIA_IMAGES, Permission.READ_MEDIA_VIDEO}, permission)) {
-                grantResults[i] = PermissionApi.getPermissionResult(activity, permission);
+                grantResults[i] = PermissionApi.getPermissionResult(activity,
+                                    Permission.READ_MEDIA_VISUAL_USER_SELECTED);
                 continue;
             }
 
