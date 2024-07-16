@@ -300,7 +300,7 @@ final class PermissionChecker {
                 // 则还必须请求 ACCESS_COARSE_LOCATION 权限。您必须在单个运行时请求中包含这两项权限
                 // 如果您尝试仅请求 ACCESS_FINE_LOCATION，则系统会忽略该请求并在 Logcat 中记录以下错误消息：
                 // ACCESS_FINE_LOCATION must be requested with ACCESS_COARSE_LOCATION
-                // 官方适配文档：https://developer.android.google.cn/about/versions/12/approximate-location
+                // 官方适配文档：https://developer.android.google.cn/develop/sensors-and-location/location/permissions?hl=zh-cn#approximate-request
                 throw new IllegalArgumentException("If your app targets Android 12 or higher " +
                         "and requests the ACCESS_FINE_LOCATION runtime permission, " +
                         "you must also request the ACCESS_COARSE_LOCATION permission. " +
