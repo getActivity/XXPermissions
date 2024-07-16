@@ -85,7 +85,7 @@ final class GetInstalledAppsPermissionCompat {
     /**
      * 判断是否支持获取应用列表权限
      */
-    @RequiresApi(api = AndroidVersion.ANDROID_6)
+    @RequiresApi(AndroidVersion.ANDROID_6)
     @SuppressWarnings("deprecation")
     private static boolean isSupportGetInstalledAppsPermission(Context context) {
         try {
@@ -132,6 +132,6 @@ final class GetInstalledAppsPermissionCompat {
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
-        return true;
+        return false;
     }
 }
