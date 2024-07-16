@@ -46,7 +46,7 @@ final class PermissionUtils {
     /**
      * 判断某个危险权限是否授予了
      */
-    @RequiresApi(api = AndroidVersion.ANDROID_6)
+    @RequiresApi(AndroidVersion.ANDROID_6)
     static boolean checkSelfPermission(@NonNull Context context, @NonNull String permission) {
         return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
     }
