@@ -27,7 +27,7 @@ public final class PermissionPageFragment extends Fragment implements Runnable {
      * 开启权限申请
      */
     public static void launch(@NonNull Activity activity, @NonNull List<String> permissions,
-                                    @Nullable OnPermissionPageCallback callback) {
+                                @Nullable OnPermissionPageCallback callback) {
         PermissionPageFragment fragment = new PermissionPageFragment();
         Bundle bundle = new Bundle();
         if (permissions instanceof ArrayList) {

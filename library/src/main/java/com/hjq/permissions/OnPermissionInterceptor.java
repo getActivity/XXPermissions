@@ -21,7 +21,7 @@ public interface OnPermissionInterceptor {
      * @param callback                  权限申请回调
      */
     default void launchPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
-                                         @Nullable OnPermissionCallback callback) {
+                                            @Nullable OnPermissionCallback callback) {
         PermissionFragment.launch(activity, allPermissions, this, callback);
     }
 
@@ -34,8 +34,8 @@ public interface OnPermissionInterceptor {
      * @param callback                   权限申请回调
      */
     default void grantedPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
-                                          @NonNull List<String> grantedPermissions, boolean allGranted,
-                                          @Nullable OnPermissionCallback callback) {
+                                            @NonNull List<String> grantedPermissions, boolean allGranted,
+                                            @Nullable OnPermissionCallback callback) {
         if (callback == null) {
             return;
         }
@@ -51,8 +51,8 @@ public interface OnPermissionInterceptor {
      * @param callback                  权限申请回调
      */
     default void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
-                                         @NonNull List<String> deniedPermissions, boolean doNotAskAgain,
-                                         @Nullable OnPermissionCallback callback) {
+                                            @NonNull List<String> deniedPermissions, boolean doNotAskAgain,
+                                            @Nullable OnPermissionCallback callback) {
         if (callback == null) {
             return;
         }
@@ -68,5 +68,5 @@ public interface OnPermissionInterceptor {
      * @param callback                  权限申请回调
      */
     default void finishPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
-                                         boolean skipRequest, @Nullable OnPermissionCallback callback) {}
+                                            boolean skipRequest, @Nullable OnPermissionCallback callback) {}
 }

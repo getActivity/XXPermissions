@@ -319,41 +319,42 @@ public final class Permission {
 
         /** 存储权限 */
         public static final String[] STORAGE = new String[] {
-                Permission.READ_EXTERNAL_STORAGE,
-                Permission.WRITE_EXTERNAL_STORAGE};
+            Permission.READ_EXTERNAL_STORAGE,
+            Permission.WRITE_EXTERNAL_STORAGE};
 
         /** 日历权限 */
         public static final String[] CALENDAR = new String[] {
-                Permission.READ_CALENDAR,
-                Permission.WRITE_CALENDAR};
+            Permission.READ_CALENDAR,
+            Permission.WRITE_CALENDAR};
 
         /** 联系人权限 */
         public static final String[] CONTACTS = new String[] {
-                Permission.READ_CONTACTS,
-                Permission.WRITE_CONTACTS,
-                Permission.GET_ACCOUNTS};
+            Permission.READ_CONTACTS,
+            Permission.WRITE_CONTACTS,
+            Permission.GET_ACCOUNTS};
 
         /** 蓝牙权限 */
         public static final String[] BLUETOOTH = new String[] {
-                Permission.BLUETOOTH_SCAN,
-                Permission.BLUETOOTH_CONNECT,
-                Permission.BLUETOOTH_ADVERTISE};
+            Permission.BLUETOOTH_SCAN,
+            Permission.BLUETOOTH_CONNECT,
+            Permission.BLUETOOTH_ADVERTISE};
     }
 
     /** 特殊权限列表（仅供框架内部使用） */
     private static final String[] SPECIAL_PERMISSIONS = new String[] {
-                        Permission.MANAGE_EXTERNAL_STORAGE,
-                        Permission.REQUEST_INSTALL_PACKAGES,
-                        Permission.SYSTEM_ALERT_WINDOW,
-                        Permission.WRITE_SETTINGS,
-                        Permission.NOTIFICATION_SERVICE,
-                        Permission.PACKAGE_USAGE_STATS,
-                        Permission.SCHEDULE_EXACT_ALARM,
-                        Permission.BIND_NOTIFICATION_LISTENER_SERVICE,
-                        Permission.ACCESS_NOTIFICATION_POLICY,
-                        Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                        Permission.BIND_VPN_SERVICE,
-                        Permission.PICTURE_IN_PICTURE};
+        Permission.MANAGE_EXTERNAL_STORAGE,
+        Permission.REQUEST_INSTALL_PACKAGES,
+        Permission.SYSTEM_ALERT_WINDOW,
+        Permission.WRITE_SETTINGS,
+        Permission.NOTIFICATION_SERVICE,
+        Permission.PACKAGE_USAGE_STATS,
+        Permission.SCHEDULE_EXACT_ALARM,
+        Permission.BIND_NOTIFICATION_LISTENER_SERVICE,
+        Permission.ACCESS_NOTIFICATION_POLICY,
+        Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+        Permission.BIND_VPN_SERVICE,
+        Permission.PICTURE_IN_PICTURE
+    };
 
     /**
      * 判断某个权限是否是特殊权限
@@ -436,29 +437,29 @@ public final class Permission {
         }
 
         if (PermissionUtils.containsPermission(new String[] {
-                Permission.POST_NOTIFICATIONS,
-                Permission.NEARBY_WIFI_DEVICES,
-                Permission.BODY_SENSORS_BACKGROUND,
-                Permission.READ_MEDIA_IMAGES,
-                Permission.READ_MEDIA_VIDEO,
-                Permission.READ_MEDIA_AUDIO
-            }, permission)) {
+            Permission.POST_NOTIFICATIONS,
+            Permission.NEARBY_WIFI_DEVICES,
+            Permission.BODY_SENSORS_BACKGROUND,
+            Permission.READ_MEDIA_IMAGES,
+            Permission.READ_MEDIA_VIDEO,
+            Permission.READ_MEDIA_AUDIO
+        }, permission)) {
             return AndroidVersion.ANDROID_13;
         }
 
         if (PermissionUtils.containsPermission(new String[] {
-                Permission.BLUETOOTH_SCAN,
-                Permission.BLUETOOTH_CONNECT,
-                Permission.BLUETOOTH_ADVERTISE
-            }, permission)) {
+            Permission.BLUETOOTH_SCAN,
+            Permission.BLUETOOTH_CONNECT,
+            Permission.BLUETOOTH_ADVERTISE
+        }, permission)) {
             return AndroidVersion.ANDROID_12;
         }
 
         if (PermissionUtils.containsPermission(new String[] {
-                Permission.ACCESS_BACKGROUND_LOCATION,
-                Permission.ACTIVITY_RECOGNITION,
-                Permission.ACCESS_MEDIA_LOCATION,
-            }, permission)) {
+            Permission.ACCESS_BACKGROUND_LOCATION,
+            Permission.ACTIVITY_RECOGNITION,
+            Permission.ACCESS_MEDIA_LOCATION,
+        }, permission)) {
             return AndroidVersion.ANDROID_10;
         }
 
@@ -467,9 +468,9 @@ public final class Permission {
         }
 
         if (PermissionUtils.containsPermission(new String[] {
-                Permission.ANSWER_PHONE_CALLS,
-                Permission.READ_PHONE_NUMBERS
-            }, permission)) {
+            Permission.ANSWER_PHONE_CALLS,
+            Permission.READ_PHONE_NUMBERS
+        }, permission)) {
             return AndroidVersion.ANDROID_8;
         }
 

@@ -17,45 +17,45 @@ import java.util.Collections;
 @RequiresApi(api = AndroidVersion.ANDROID_4_0)
 class PermissionDelegateImplV14 implements PermissionDelegate {
 
-   @Override
-   public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
-      // 检测 VPN 权限
-      if (PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE)) {
-         return isGrantedVpnPermission(context);
-      }
+    @Override
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
+        // 检测 VPN 权限
+        if (PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE)) {
+            return isGrantedVpnPermission(context);
+        }
 
-      return true;
-   }
+        return true;
+    }
 
-   @Override
-   public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
-      return false;
-   }
+    @Override
+    public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
+        return false;
+    }
 
-   @Override
-   public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
-      if (PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE)) {
-         return getVpnPermissionIntent(context);
-      }
+    @Override
+    public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
+        if (PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE)) {
+            return getVpnPermissionIntent(context);
+        }
 
-      return PermissionIntentManager.getApplicationDetailsIntent(context, Collections.singletonList(permission));
-   }
+        return PermissionIntentManager.getApplicationDetailsIntent(context, Collections.singletonList(permission));
+    }
 
-   /**
-    * 是否有 VPN 权限
-    */
-   private static boolean isGrantedVpnPermission(@NonNull Context context) {
-      return VpnService.prepare(context) == null;
-   }
+    /**
+     * 是否有 VPN 权限
+     */
+    private static boolean isGrantedVpnPermission(@NonNull Context context) {
+        return VpnService.prepare(context) == null;
+    }
 
-   /**
-    * 获取 VPN 权限设置界面意图
-    */
-   private static Intent getVpnPermissionIntent(@NonNull Context context) {
-      Intent intent = VpnService.prepare(context);
-      if (!PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionIntentManager.getApplicationDetailsIntent(context);
-      }
-      return intent;
-   }
+    /**
+     * 获取 VPN 权限设置界面意图
+     */
+    private static Intent getVpnPermissionIntent(@NonNull Context context) {
+        Intent intent = VpnService.prepare(context);
+        if (!PermissionUtils.areActivityIntent(context, intent)) {
+            intent = PermissionIntentManager.getApplicationDetailsIntent(context);
+        }
+        return intent;
+    }
 }

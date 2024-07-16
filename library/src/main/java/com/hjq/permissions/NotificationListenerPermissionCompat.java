@@ -24,7 +24,7 @@ final class NotificationListenerPermissionCompat {
             return true;
         }
         final String enabledNotificationListeners = Settings.Secure.getString(
-                context.getContentResolver(), SETTING_ENABLED_NOTIFICATION_LISTENERS);
+            context.getContentResolver(), SETTING_ENABLED_NOTIFICATION_LISTENERS);
         if (TextUtils.isEmpty(enabledNotificationListeners)) {
             return false;
         }
@@ -75,7 +75,7 @@ final class NotificationListenerPermissionCompat {
             if (serviceInfo != null) {
                 intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS);
                 intent.putExtra(Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME,
-                        new ComponentName(context, serviceInfo.name).flattenToString());
+                    new ComponentName(context, serviceInfo.name).flattenToString());
                 if (!PermissionUtils.areActivityIntent(context, intent)) {
                     intent = null;
                 }

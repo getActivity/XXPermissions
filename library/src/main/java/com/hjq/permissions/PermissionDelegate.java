@@ -13,18 +13,18 @@ import android.support.annotation.NonNull;
  */
 public interface PermissionDelegate {
 
-   /**
-    * 判断某个权限是否授予了
-    */
-   boolean isGrantedPermission(@NonNull Context context, @NonNull String permission);
+    /**
+     * 判断某个权限是否授予了
+     */
+    boolean isGrantedPermission(@NonNull Context context, @NonNull String permission);
 
-   /**
-    * 判断某个权限是否勾选了不再询问
-    */
-   boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission);
+    /**
+     * 判断某个权限是否勾选了不再询问
+     */
+    boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission);
 
-   /**
-    * 获取权限设置页的意图
-    */
-   Intent getPermissionIntent(@NonNull Context context, @NonNull String permission);
+    /**
+     * 获取权限设置页的意图
+     */
+    Intent getPermissionIntent(@NonNull Context context, @NonNull String permission);
 }

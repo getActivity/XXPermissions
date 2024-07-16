@@ -173,8 +173,8 @@ final class PermissionIntentManager {
     @Nullable
     static Intent getMiuiPermissionPageIntent(Context context) {
         Intent appPermEditorActionIntent = new Intent()
-                .setAction("miui.intent.action.APP_PERM_EDITOR")
-                .putExtra("extra_pkgname", context.getPackageName());
+            .setAction("miui.intent.action.APP_PERM_EDITOR")
+            .putExtra("extra_pkgname", context.getPackageName());
 
         Intent xiaoMiMobileManagerAppIntent = getXiaoMiMobileManagerAppIntent(context);
 

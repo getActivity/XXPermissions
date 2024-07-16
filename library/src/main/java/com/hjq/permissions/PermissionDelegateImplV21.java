@@ -17,51 +17,51 @@ import android.support.annotation.RequiresApi;
 @RequiresApi(api = AndroidVersion.ANDROID_5)
 class PermissionDelegateImplV21 extends PermissionDelegateImplV19 {
 
-   @Override
-   public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
-      // 检测获取使用统计权限
-      if (PermissionUtils.equalsPermission(permission, Permission.PACKAGE_USAGE_STATS)) {
-         return isGrantedPackagePermission(context);
-      }
-      return super.isGrantedPermission(context, permission);
-   }
+    @Override
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
+        // 检测获取使用统计权限
+        if (PermissionUtils.equalsPermission(permission, Permission.PACKAGE_USAGE_STATS)) {
+            return isGrantedPackagePermission(context);
+        }
+        return super.isGrantedPermission(context, permission);
+    }
 
-   @Override
-   public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
-      if (PermissionUtils.equalsPermission(permission, Permission.PACKAGE_USAGE_STATS)) {
-         return false;
-      }
-      return super.isDoNotAskAgainPermission(activity, permission);
-   }
+    @Override
+    public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
+        if (PermissionUtils.equalsPermission(permission, Permission.PACKAGE_USAGE_STATS)) {
+            return false;
+        }
+        return super.isDoNotAskAgainPermission(activity, permission);
+    }
 
-   @Override
-   public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
-      if (PermissionUtils.equalsPermission(permission, Permission.PACKAGE_USAGE_STATS)) {
-         return getPackagePermissionIntent(context);
-      }
-      return super.getPermissionIntent(context, permission);
-   }
+    @Override
+    public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
+        if (PermissionUtils.equalsPermission(permission, Permission.PACKAGE_USAGE_STATS)) {
+            return getPackagePermissionIntent(context);
+        }
+        return super.getPermissionIntent(context, permission);
+    }
 
-   /**
-    * 是否有使用统计权限
-    */
-   private static boolean isGrantedPackagePermission(@NonNull Context context) {
-      return PermissionUtils.checkOpNoThrow(context, AppOpsManager.OPSTR_GET_USAGE_STATS);
-   }
+    /**
+     * 是否有使用统计权限
+     */
+    private static boolean isGrantedPackagePermission(@NonNull Context context) {
+        return PermissionUtils.checkOpNoThrow(context, AppOpsManager.OPSTR_GET_USAGE_STATS);
+    }
 
-   /**
-    * 获取使用统计权限设置界面意图
-    */
-   private static Intent getPackagePermissionIntent(@NonNull Context context) {
-      Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-      if (AndroidVersion.isAndroid10()) {
-         // 经过测试，只有在 Android 10 及以上加包名才有效果
-         // 如果在 Android 10 以下加包名会导致无法跳转
-         intent.setData(PermissionUtils.getPackageNameUri(context));
-      }
-      if (!PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionIntentManager.getApplicationDetailsIntent(context);
-      }
-      return intent;
-   }
+    /**
+     * 获取使用统计权限设置界面意图
+     */
+    private static Intent getPackagePermissionIntent(@NonNull Context context) {
+        Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+        if (AndroidVersion.isAndroid10()) {
+            // 经过测试，只有在 Android 10 及以上加包名才有效果
+            // 如果在 Android 10 以下加包名会导致无法跳转
+            intent.setData(PermissionUtils.getPackageNameUri(context));
+        }
+        if (!PermissionUtils.areActivityIntent(context, intent)) {
+            intent = PermissionIntentManager.getApplicationDetailsIntent(context);
+        }
+        return intent;
+    }
 }

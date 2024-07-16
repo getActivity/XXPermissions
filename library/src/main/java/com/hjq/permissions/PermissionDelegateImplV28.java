@@ -14,20 +14,20 @@ import android.support.annotation.RequiresApi;
 @RequiresApi(api = AndroidVersion.ANDROID_9)
 class PermissionDelegateImplV28 extends PermissionDelegateImplV26 {
 
-   @Override
-   public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
-      if (PermissionUtils.equalsPermission(permission, Permission.ACCEPT_HANDOVER)) {
-         return PermissionUtils.checkSelfPermission(context, permission);
-      }
-      return super.isGrantedPermission(context, permission);
-   }
+    @Override
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
+        if (PermissionUtils.equalsPermission(permission, Permission.ACCEPT_HANDOVER)) {
+            return PermissionUtils.checkSelfPermission(context, permission);
+        }
+        return super.isGrantedPermission(context, permission);
+    }
 
-   @Override
-   public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
-      if (PermissionUtils.equalsPermission(permission, Permission.ACCEPT_HANDOVER)) {
-         return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                 !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
-      }
-      return super.isDoNotAskAgainPermission(activity, permission);
-   }
+    @Override
+    public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
+        if (PermissionUtils.equalsPermission(permission, Permission.ACCEPT_HANDOVER)) {
+            return !PermissionUtils.checkSelfPermission(activity, permission) &&
+                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+        }
+        return super.isDoNotAskAgainPermission(activity, permission);
+    }
 }

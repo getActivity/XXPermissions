@@ -17,77 +17,77 @@ import android.support.annotation.RequiresApi;
 @RequiresApi(api = AndroidVersion.ANDROID_12)
 class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
 
-   @Override
-   public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
-      // 检测闹钟权限
-      if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
-         return isGrantedAlarmPermission(context);
-      }
+    @Override
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
+        // 检测闹钟权限
+        if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
+            return isGrantedAlarmPermission(context);
+        }
 
-      if (PermissionUtils.containsPermission(new String[] {
-              Permission.BLUETOOTH_SCAN,
-              Permission.BLUETOOTH_CONNECT,
-              Permission.BLUETOOTH_ADVERTISE
-          }, permission)) {
-          return PermissionUtils.checkSelfPermission(context, permission);
-      }
-      return super.isGrantedPermission(context, permission);
-   }
+        if (PermissionUtils.containsPermission(new String[] {
+            Permission.BLUETOOTH_SCAN,
+            Permission.BLUETOOTH_CONNECT,
+            Permission.BLUETOOTH_ADVERTISE
+        }, permission)) {
+            return PermissionUtils.checkSelfPermission(context, permission);
+        }
+        return super.isGrantedPermission(context, permission);
+    }
 
-   @Override
-   public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
-      if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
-         return false;
-      }
+    @Override
+    public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
+        if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
+            return false;
+        }
 
-      if (PermissionUtils.containsPermission(new String[] {
-              Permission.BLUETOOTH_SCAN,
-              Permission.BLUETOOTH_CONNECT,
-              Permission.BLUETOOTH_ADVERTISE
-          }, permission)) {
-          return !PermissionUtils.checkSelfPermission(activity, permission) &&
-              !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
-      }
+        if (PermissionUtils.containsPermission(new String[] {
+            Permission.BLUETOOTH_SCAN,
+            Permission.BLUETOOTH_CONNECT,
+            Permission.BLUETOOTH_ADVERTISE
+        }, permission)) {
+            return !PermissionUtils.checkSelfPermission(activity, permission) &&
+                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+        }
 
-      if (activity.getApplicationInfo().targetSdkVersion >= AndroidVersion.ANDROID_12 &&
-              PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION)) {
-         if (!PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
-                 !PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_COARSE_LOCATION)) {
-            return !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION) &&
+        if (activity.getApplicationInfo().targetSdkVersion >= AndroidVersion.ANDROID_12 &&
+            PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION)) {
+            if (!PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
+                !PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_COARSE_LOCATION)) {
+                return !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION) &&
                     !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_COARSE_LOCATION);
-         }
+            }
 
-         return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                 !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
-      }
-      return super.isDoNotAskAgainPermission(activity, permission);
-   }
+            return !PermissionUtils.checkSelfPermission(activity, permission) &&
+                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+        }
+        return super.isDoNotAskAgainPermission(activity, permission);
+    }
 
-   @Override
-   public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
-      if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
-         return getAlarmPermissionIntent(context);
-      }
+    @Override
+    public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
+        if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
+            return getAlarmPermissionIntent(context);
+        }
 
-      return super.getPermissionIntent(context, permission);
-   }
+        return super.getPermissionIntent(context, permission);
+    }
 
-   /**
-    * 是否有闹钟权限
-    */
-   private static boolean isGrantedAlarmPermission(@NonNull Context context) {
-      return context.getSystemService(AlarmManager.class).canScheduleExactAlarms();
-   }
+    /**
+     * 是否有闹钟权限
+     */
+    private static boolean isGrantedAlarmPermission(@NonNull Context context) {
+        return context.getSystemService(AlarmManager.class).canScheduleExactAlarms();
+    }
 
-   /**
-    * 获取闹钟权限设置界面意图
-    */
-   private static Intent getAlarmPermissionIntent(@NonNull Context context) {
-      Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
-      intent.setData(PermissionUtils.getPackageNameUri(context));
-      if (!PermissionUtils.areActivityIntent(context, intent)) {
-         intent = PermissionIntentManager.getApplicationDetailsIntent(context);
-      }
-      return intent;
-   }
+    /**
+     * 获取闹钟权限设置界面意图
+     */
+    private static Intent getAlarmPermissionIntent(@NonNull Context context) {
+        Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+        intent.setData(PermissionUtils.getPackageNameUri(context));
+        if (!PermissionUtils.areActivityIntent(context, intent)) {
+            intent = PermissionIntentManager.getApplicationDetailsIntent(context);
+        }
+        return intent;
+    }
 }

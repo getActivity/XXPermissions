@@ -68,12 +68,10 @@ final class PermissionUtils {
                 e.printStackTrace();
                 opValue = opDefaultValue;
             }
-            Method checkOpNoThrowMethod = appOpsClass.getMethod("checkOpNoThrow", Integer.TYPE,
-                    Integer.TYPE, String.class);
-            return ((int) checkOpNoThrowMethod.invoke(appOps, opValue, uid, pkg)
-                    == AppOpsManager.MODE_ALLOWED);
+            Method checkOpNoThrowMethod = appOpsClass.getMethod("checkOpNoThrow", Integer.TYPE, Integer.TYPE, String.class);
+            return ((int) checkOpNoThrowMethod.invoke(appOps, opValue, uid, pkg) == AppOpsManager.MODE_ALLOWED);
         } catch (ClassNotFoundException | NoSuchMethodException |
-                InvocationTargetException | IllegalAccessException | RuntimeException e) {
+                 InvocationTargetException | IllegalAccessException | RuntimeException e) {
             return true;
         }
     }
@@ -81,14 +79,12 @@ final class PermissionUtils {
     @RequiresApi(AndroidVersion.ANDROID_4_4)
     static boolean checkOpNoThrow(Context context, String opName) {
         AppOpsManager appOps = (AppOpsManager)
-                context.getSystemService(Context.APP_OPS_SERVICE);
+            context.getSystemService(Context.APP_OPS_SERVICE);
         int mode;
         if (AndroidVersion.isAndroid10()) {
-            mode = appOps.unsafeCheckOpNoThrow(opName,
-                    context.getApplicationInfo().uid, context.getPackageName());
+            mode = appOps.unsafeCheckOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
         } else {
-            mode = appOps.checkOpNoThrow(opName,
-                    context.getApplicationInfo().uid, context.getPackageName());
+            mode = appOps.checkOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
         }
         return mode == AppOpsManager.MODE_ALLOWED;
     }
@@ -171,8 +167,7 @@ final class PermissionUtils {
             androidManifestInfo = AndroidManifestParser.parseAndroidManifest(context, apkPathCookie);
             // 如果读取到的包名和当前应用的包名不是同一个的话，证明这个清单文件的内容不是当前应用的
             // 具体案例：https://github.com/getActivity/XXPermissions/issues/102
-            if (!TextUtils.equals(context.getPackageName(),
-                    androidManifestInfo.packageName)) {
+            if (!TextUtils.equals(context.getPackageName(), androidManifestInfo.packageName)) {
                 return null;
             }
         } catch (IOException | XmlPullParserException e) {
@@ -208,8 +203,7 @@ final class PermissionUtils {
             if (AndroidVersion.isAndroid14() &&
                 PermissionUtils.containsPermission(
                     new String[] {Permission.READ_MEDIA_IMAGES, Permission.READ_MEDIA_VIDEO}, permission)) {
-                grantResults[i] = PermissionApi.getPermissionResult(activity,
-                                    Permission.READ_MEDIA_VISUAL_USER_SELECTED);
+                grantResults[i] = PermissionApi.getPermissionResult(activity, Permission.READ_MEDIA_VISUAL_USER_SELECTED);
                 continue;
             }
 
@@ -296,18 +290,18 @@ final class PermissionUtils {
         try {
 
             if (AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_9 &&
-                    AndroidVersion.getAndroidVersionCode() >= AndroidVersion.ANDROID_9 &&
-                    AndroidVersion.getAndroidVersionCode() < AndroidVersion.ANDROID_11) {
+                AndroidVersion.getAndroidVersionCode() >= AndroidVersion.ANDROID_9 &&
+                AndroidVersion.getAndroidVersionCode() < AndroidVersion.ANDROID_11) {
 
                 // 反射套娃操作：实测这种方式只在 Android 9.0 和 Android 10.0 有效果，在 Android 11 上面就失效了
                 Method metaGetDeclaredMethod = Class.class.getDeclaredMethod(
-                        "getDeclaredMethod", String.class, Class[].class);
+                    "getDeclaredMethod", String.class, Class[].class);
                 metaGetDeclaredMethod.setAccessible(true);
                 // 注意 AssetManager.findCookieForPath 是 Android 9.0（API 28）的时候才添加的方法
                 // 而 Android 9.0 用的是 AssetManager.addAssetPath 来获取 cookie
                 // 具体可以参考 PackageParser.parseBaseApk 方法源码的实现
                 Method findCookieForPathMethod = (Method) metaGetDeclaredMethod.invoke(AssetManager.class,
-                        "findCookieForPath", new Class[]{String.class});
+                    "findCookieForPath", new Class[]{String.class});
                 if (findCookieForPathMethod != null) {
                     findCookieForPathMethod.setAccessible(true);
                     cookie = (Integer) findCookieForPathMethod.invoke(context.getAssets(), apkPath);
@@ -365,13 +359,11 @@ final class PermissionUtils {
             switch (activity.getResources().getConfiguration().orientation) {
                 case Configuration.ORIENTATION_LANDSCAPE:
                     activity.setRequestedOrientation(PermissionUtils.isActivityReverse(activity) ?
-                            ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE :
-                            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                        ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                     break;
                 case Configuration.ORIENTATION_PORTRAIT:
                     activity.setRequestedOrientation(PermissionUtils.isActivityReverse(activity) ?
-                            ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT :
-                            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                        ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                     break;
                 default:
                     break;
@@ -457,16 +449,16 @@ final class PermissionUtils {
                 return PermissionApi.getPermissionIntent(context, permissions.get(0));
             case 2:
                 if (!AndroidVersion.isAndroid13() &&
-                        PermissionUtils.containsPermission(permissions, Permission.NOTIFICATION_SERVICE) &&
-                        PermissionUtils.containsPermission(permissions, Permission.POST_NOTIFICATIONS)) {
+                    PermissionUtils.containsPermission(permissions, Permission.NOTIFICATION_SERVICE) &&
+                    PermissionUtils.containsPermission(permissions, Permission.POST_NOTIFICATIONS)) {
                     return PermissionApi.getPermissionIntent(context, Permission.NOTIFICATION_SERVICE);
                 }
                 break;
             case 3:
                 if (AndroidVersion.isAndroid11() &&
-                        PermissionUtils.containsPermission(permissions, Permission.MANAGE_EXTERNAL_STORAGE) &&
-                        PermissionUtils.containsPermission(permissions, Permission.READ_EXTERNAL_STORAGE) &&
-                        PermissionUtils.containsPermission(permissions, Permission.WRITE_EXTERNAL_STORAGE)) {
+                    PermissionUtils.containsPermission(permissions, Permission.MANAGE_EXTERNAL_STORAGE) &&
+                    PermissionUtils.containsPermission(permissions, Permission.READ_EXTERNAL_STORAGE) &&
+                    PermissionUtils.containsPermission(permissions, Permission.WRITE_EXTERNAL_STORAGE)) {
                     return PermissionApi.getPermissionIntent(context, Permission.MANAGE_EXTERNAL_STORAGE);
                 }
                 break;

@@ -53,7 +53,7 @@ final class GetInstalledAppsPermissionCompat {
         if (AndroidVersion.isAndroid6() && isSupportGetInstalledAppsPermission(activity)) {
             // 如果支持申请，那么再去判断权限是否永久拒绝
             return !PermissionUtils.checkSelfPermission(activity, Permission.GET_INSTALLED_APPS) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.GET_INSTALLED_APPS);
+                !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.GET_INSTALLED_APPS);
         }
 
         if (PhoneRomUtils.isMiui() && isMiuiSupportGetInstalledAppsPermission()) {
