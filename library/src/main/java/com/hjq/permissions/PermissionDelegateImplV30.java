@@ -14,14 +14,26 @@ import android.support.annotation.RequiresApi;
  *    time   : 2022/06/11
  *    desc   : Android 11 权限委托实现
  */
-@RequiresApi(api = AndroidVersion.ANDROID_11)
 class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
+            if (!AndroidVersion.isAndroid6()) {
+                return true;
+            }
+            if (!AndroidVersion.isAndroid11()) {
+                // 这个是 Android 10 上面的历史遗留问题，假设申请的是 MANAGE_EXTERNAL_STORAGE 权限
+                // 必须要在 AndroidManifest.xml 中注册 android:requestLegacyExternalStorage="true"
+                if (AndroidVersion.isAndroid10() && !isUseDeprecationExternalStorage()) {
+                    return false;
+                }
+                return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE) &&
+                    PermissionUtils.checkSelfPermission(context, Permission.WRITE_EXTERNAL_STORAGE);
+            }
             return isGrantedManageStoragePermission();
         }
+
         return super.isGrantedPermission(context, permission);
     }
 
@@ -30,20 +42,26 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
         if (PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
             return false;
         }
+
         return super.isDoNotAskAgainPermission(activity, permission);
     }
 
     @Override
     public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
+            if (!AndroidVersion.isAndroid11()) {
+                return getApplicationDetailsIntent(context);
+            }
             return getManageStoragePermissionIntent(context);
         }
+
         return super.getPermissionIntent(context, permission);
     }
 
     /**
      * 是否有所有文件的管理权限
      */
+    @RequiresApi(AndroidVersion.ANDROID_11)
     private static boolean isGrantedManageStoragePermission() {
         return Environment.isExternalStorageManager();
     }
@@ -51,6 +69,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
     /**
      * 获取所有文件的管理权限设置界面意图
      */
+    @RequiresApi(AndroidVersion.ANDROID_11)
     private static Intent getManageStoragePermissionIntent(@NonNull Context context) {
         Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
         intent.setData(PermissionUtils.getPackageNameUri(context));
@@ -60,8 +79,17 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
         }
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = PermissionIntentManager.getApplicationDetailsIntent(context);
+            intent = getApplicationDetailsIntent(context);
         }
         return intent;
+    }
+
+    /**
+     * 是否采用的是非分区存储的模式
+     */
+    @RequiresApi(AndroidVersion.ANDROID_10)
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    private static boolean isUseDeprecationExternalStorage() {
+        return Environment.isExternalStorageLegacy();
     }
 }

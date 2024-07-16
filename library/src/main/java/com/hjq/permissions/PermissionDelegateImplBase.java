@@ -5,21 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.VpnService;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import java.util.Collections;
 
 /**
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2022/06/11
- *    desc   : Android 4.0 权限委托实现
+ *    desc   : 权限委托基础实现
  */
-@RequiresApi(api = AndroidVersion.ANDROID_4_0)
-class PermissionDelegateImplV14 implements PermissionDelegate {
+class PermissionDelegateImplBase implements PermissionDelegate {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
-        // 检测 VPN 权限
         if (PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE)) {
             return isGrantedVpnPermission(context);
         }
@@ -29,6 +26,10 @@ class PermissionDelegateImplV14 implements PermissionDelegate {
 
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
+        if (PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE)) {
+            return false;
+        }
+
         return false;
     }
 
@@ -57,5 +58,12 @@ class PermissionDelegateImplV14 implements PermissionDelegate {
             intent = PermissionIntentManager.getApplicationDetailsIntent(context);
         }
         return intent;
+    }
+
+    /**
+     * 获取应用详情页 Intent
+     */
+    static Intent getApplicationDetailsIntent(@NonNull Context context) {
+        return PermissionIntentManager.getApplicationDetailsIntent(context);
     }
 }

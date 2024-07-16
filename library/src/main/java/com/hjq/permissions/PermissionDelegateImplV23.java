@@ -15,222 +15,106 @@ import android.support.annotation.RequiresApi;
  *    time   : 2022/06/11
  *    desc   : Android 6.0 权限委托实现
  */
-@RequiresApi(api = AndroidVersion.ANDROID_6)
 class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
-        if (Permission.getPermissionFromAndroidVersion(permission) > AndroidVersion.getAndroidVersionCode()) {
+        if (!Permission.isSpecialPermission(permission)) {
+            // 读取应用列表权限是比较特殊的危险权限，它和其他危险权限的判断方式不太一样，所以需要放在这里来判断
+            if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
+                return GetInstalledAppsPermissionCompat.isGrantedPermission(context);
+            }
 
-            // 向下兼容 Android 14 新权限
-            if (PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VISUAL_USER_SELECTED)) {
+            if (!AndroidVersion.isAndroid6()) {
                 return true;
             }
-
-            // 向下兼容 Android 13 新权限
-            if (PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS)) {
-                // 交给父类处理
-                return super.isGrantedPermission(context, permission);
-            }
-
-            if (PermissionUtils.equalsPermission(permission, Permission.NEARBY_WIFI_DEVICES)) {
-                return PermissionUtils.checkSelfPermission(context, Permission.ACCESS_FINE_LOCATION);
-            }
-
-            if (PermissionUtils.equalsPermission(permission, Permission.BODY_SENSORS_BACKGROUND)) {
-                return PermissionUtils.checkSelfPermission(context, Permission.BODY_SENSORS);
-            }
-
-            if (PermissionUtils.containsPermission(new String[] {
-                Permission.READ_MEDIA_IMAGES,
-                Permission.READ_MEDIA_VIDEO,
-                Permission.READ_MEDIA_AUDIO
-            }, permission)) {
-                return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE);
-            }
-
-            // 向下兼容 Android 12 新权限
-            if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_SCAN)) {
-                return PermissionUtils.checkSelfPermission(context, Permission.ACCESS_FINE_LOCATION);
-            }
-
-            if (PermissionUtils.containsPermission(new String[] {
-                Permission.BLUETOOTH_CONNECT,
-                Permission.BLUETOOTH_ADVERTISE
-            }, permission)) {
-                return true;
-            }
-
-            // 向下兼容 Android 11 新权限
-            if (PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
-                // 检测管理所有文件权限
-                return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE) &&
-                    PermissionUtils.checkSelfPermission(context, Permission.WRITE_EXTERNAL_STORAGE);
-            }
-
-            // 向下兼容 Android 10 新权限
-            if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION)) {
-                return PermissionUtils.checkSelfPermission(context, Permission.ACCESS_FINE_LOCATION);
-            }
-
-            if (PermissionUtils.equalsPermission(permission, Permission.ACTIVITY_RECOGNITION)) {
-                return true;
-            }
-
-            if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_MEDIA_LOCATION)) {
-                return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE);
-            }
-
-            // 向下兼容 Android 9.0 新权限
-            if (PermissionUtils.equalsPermission(permission, Permission.ACCEPT_HANDOVER)) {
-                return true;
-            }
-
-            // 向下兼容 Android 8.0 新权限
-            if (PermissionUtils.equalsPermission(permission, Permission.ANSWER_PHONE_CALLS)) {
-                return true;
-            }
-
-            if (PermissionUtils.equalsPermission(permission, Permission.READ_PHONE_NUMBERS)) {
-                return PermissionUtils.checkSelfPermission(context, Permission.READ_PHONE_STATE);
-            }
+            return PermissionUtils.checkSelfPermission(context, permission);
         }
 
-        // 交给父类处理
-        if (PermissionUtils.containsPermission(new String[] {
-            Permission.GET_INSTALLED_APPS,
-            Permission.POST_NOTIFICATIONS
-        }, permission)) {
-            return super.isGrantedPermission(context, permission);
+        if (PermissionUtils.equalsPermission(permission, Permission.SYSTEM_ALERT_WINDOW)) {
+            return WindowPermissionCompat.isGrantedPermission(context);
         }
 
-        if (Permission.isSpecialPermission(permission)) {
-            // 检测系统权限
-            if (PermissionUtils.equalsPermission(permission, Permission.WRITE_SETTINGS)) {
-                return isGrantedSettingPermission(context);
+        if (PermissionUtils.equalsPermission(permission, Permission.WRITE_SETTINGS)) {
+            if (!AndroidVersion.isAndroid6()) {
+                return true;
             }
-
-            // 检测勿扰权限
-            if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_NOTIFICATION_POLICY)) {
-                return isGrantedNotDisturbPermission(context);
-            }
-
-            // 检测电池优化选项权限
-            if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
-                return isGrantedIgnoreBatteryPermission(context);
-            }
-
-            return super.isGrantedPermission(context, permission);
+            return isGrantedSettingPermission(context);
         }
 
-        return PermissionUtils.checkSelfPermission(context, permission);
+        if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_NOTIFICATION_POLICY)) {
+            if (!AndroidVersion.isAndroid6()) {
+                return true;
+            }
+            return isGrantedNotDisturbPermission(context);
+        }
+
+        if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
+            if (!AndroidVersion.isAndroid6()) {
+                return true;
+            }
+            return isGrantedIgnoreBatteryPermission(context);
+        }
+
+        // Android 6.0 及以下还有一些特殊权限需要判断
+        return super.isGrantedPermission(context, permission);
     }
 
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
-        if (Permission.getPermissionFromAndroidVersion(permission) > AndroidVersion.getAndroidVersionCode()) {
+        if (!Permission.isSpecialPermission(permission)) {
+            // 读取应用列表权限是比较特殊的危险权限，它和其他危险权限的判断方式不太一样，所以需要放在这里来判断
+            if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
+                return GetInstalledAppsPermissionCompat.isDoNotAskAgainPermission(activity);
+            }
 
-            // 向下兼容 Android 14 新权限
-            if (PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VISUAL_USER_SELECTED)) {
+            if (!AndroidVersion.isAndroid6()) {
                 return false;
             }
-
-            // 向下兼容 Android 13 新权限
-            if (PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS)) {
-                return super.isDoNotAskAgainPermission(activity, permission);
-            }
-
-            if (PermissionUtils.equalsPermission(permission, Permission.NEARBY_WIFI_DEVICES)) {
-                return !PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION);
-            }
-
-            if (PermissionUtils.equalsPermission(permission, Permission.BODY_SENSORS_BACKGROUND)) {
-                return !PermissionUtils.checkSelfPermission(activity, Permission.BODY_SENSORS) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.BODY_SENSORS);
-            }
-
-            if (PermissionUtils.containsPermission(new String[] {
-                Permission.READ_MEDIA_IMAGES,
-                Permission.READ_MEDIA_VIDEO,
-                Permission.READ_MEDIA_AUDIO
-            }, permission)) {
-                return !PermissionUtils.checkSelfPermission(activity, Permission.READ_EXTERNAL_STORAGE) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_EXTERNAL_STORAGE);
-            }
-
-            // 向下兼容 Android 12 新权限
-            if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_SCAN)) {
-                return !PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION);
-            }
-
-            if (PermissionUtils.containsPermission(new String[] {
-                Permission.BLUETOOTH_CONNECT,
-                Permission.BLUETOOTH_ADVERTISE
-            }, permission)) {
-                return false;
-            }
-
-            // 向下兼容 Android 10 新权限
-            if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION)) {
-                return !PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION);
-            }
-
-            if (PermissionUtils.equalsPermission(permission, Permission.ACTIVITY_RECOGNITION)) {
-                return false;
-            }
-
-            if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_MEDIA_LOCATION)) {
-                return !PermissionUtils.checkSelfPermission(activity, Permission.READ_EXTERNAL_STORAGE) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_EXTERNAL_STORAGE);
-            }
-
-            // 向下兼容 Android 9.0 新权限
-            if (PermissionUtils.equalsPermission(permission, Permission.ACCEPT_HANDOVER)) {
-                return false;
-            }
-
-            // 向下兼容 Android 8.0 新权限
-            if (PermissionUtils.equalsPermission(permission, Permission.ANSWER_PHONE_CALLS)) {
-                return false;
-            }
-
-            if (PermissionUtils.equalsPermission(permission, Permission.READ_PHONE_NUMBERS)) {
-                return !PermissionUtils.checkSelfPermission(activity, Permission.READ_PHONE_STATE) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_PHONE_STATE);
-            }
+            return !PermissionUtils.checkSelfPermission(activity, permission) &&
+                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
         }
 
-        // 交给父类处理
         if (PermissionUtils.containsPermission(new String[] {
-            Permission.GET_INSTALLED_APPS,
-            Permission.POST_NOTIFICATIONS
+            Permission.SYSTEM_ALERT_WINDOW,
+            Permission.WRITE_SETTINGS,
+            Permission.ACCESS_NOTIFICATION_POLICY,
+            Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
         }, permission)) {
-            return super.isDoNotAskAgainPermission(activity, permission);
-        }
-
-        if (Permission.isSpecialPermission(permission)) {
-            // 特殊权限不算，本身申请方式和危险权限申请方式不同，因为没有永久拒绝的选项，所以这里返回 false
             return false;
         }
 
-        return !PermissionUtils.checkSelfPermission(activity, permission) &&
-            !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+        return super.isDoNotAskAgainPermission(activity, permission);
     }
 
     @Override
     public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
+        if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
+            return GetInstalledAppsPermissionCompat.getPermissionIntent(context);
+        }
+
+        if (PermissionUtils.equalsPermission(permission, Permission.SYSTEM_ALERT_WINDOW)) {
+            return WindowPermissionCompat.getPermissionIntent(context);
+        }
+
         if (PermissionUtils.equalsPermission(permission, Permission.WRITE_SETTINGS)) {
+            if (!AndroidVersion.isAndroid6()) {
+                return getApplicationDetailsIntent(context);
+            }
             return getSettingPermissionIntent(context);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_NOTIFICATION_POLICY)) {
+            if (!AndroidVersion.isAndroid6()) {
+                return getApplicationDetailsIntent(context);
+            }
             return getNotDisturbPermissionIntent(context);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
+            if (!AndroidVersion.isAndroid6()) {
+                return getApplicationDetailsIntent(context);
+            }
             return getIgnoreBatteryPermissionIntent(context);
         }
 
@@ -240,21 +124,20 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
     /**
      * 是否有系统设置权限
      */
+    @RequiresApi(AndroidVersion.ANDROID_6)
     private static boolean isGrantedSettingPermission(@NonNull Context context) {
-        if (AndroidVersion.isAndroid6()) {
-            return Settings.System.canWrite(context);
-        }
-        return true;
+        return Settings.System.canWrite(context);
     }
 
     /**
      * 获取系统设置权限界面意图
      */
+    @RequiresApi(AndroidVersion.ANDROID_6)
     private static Intent getSettingPermissionIntent(@NonNull Context context) {
         Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
         intent.setData(PermissionUtils.getPackageNameUri(context));
         if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = PermissionIntentManager.getApplicationDetailsIntent(context);
+            intent = getApplicationDetailsIntent(context);
         }
         return intent;
     }
@@ -262,6 +145,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
     /**
      * 是否有勿扰模式权限
      */
+    @RequiresApi(AndroidVersion.ANDROID_6)
     private static boolean isGrantedNotDisturbPermission(@NonNull Context context) {
         return context.getSystemService(NotificationManager.class).isNotificationPolicyAccessGranted();
     }
@@ -269,6 +153,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
     /**
      * 获取勿扰模式设置界面意图
      */
+    @RequiresApi(AndroidVersion.ANDROID_6)
     private static Intent getNotDisturbPermissionIntent(@NonNull Context context) {
         Intent intent;
         if (AndroidVersion.isAndroid10()) {
@@ -296,7 +181,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
         }
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = PermissionIntentManager.getApplicationDetailsIntent(context);
+            intent = getApplicationDetailsIntent(context);
         }
         return intent;
     }
@@ -304,6 +189,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
     /**
      * 是否忽略电池优化选项
      */
+    @RequiresApi(AndroidVersion.ANDROID_6)
     private static boolean isGrantedIgnoreBatteryPermission(@NonNull Context context) {
         return context.getSystemService(PowerManager.class).isIgnoringBatteryOptimizations(context.getPackageName());
     }
@@ -311,6 +197,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
     /**
      * 获取电池优化选项设置界面意图
      */
+    @RequiresApi(AndroidVersion.ANDROID_6)
     private static Intent getIgnoreBatteryPermissionIntent(@NonNull Context context) {
         Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
         intent.setData(PermissionUtils.getPackageNameUri(context));
@@ -320,7 +207,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
         }
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = PermissionIntentManager.getApplicationDetailsIntent(context);
+            intent = getApplicationDetailsIntent(context);
         }
         return intent;
     }

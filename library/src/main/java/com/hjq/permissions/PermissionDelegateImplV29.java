@@ -2,7 +2,6 @@ package com.hjq.permissions;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 
@@ -12,32 +11,36 @@ import android.support.annotation.RequiresApi;
  *    time   : 2022/06/11
  *    desc   : Android 10 权限委托实现
  */
-@RequiresApi(api = AndroidVersion.ANDROID_10)
 class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_MEDIA_LOCATION)) {
-            return hasReadStoragePermission(context) &&
+            if (!AndroidVersion.isAndroid6()) {
+                return true;
+            }
+            if (!AndroidVersion.isAndroid10()) {
+                return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE);
+            }
+            return isGrantedReadStoragePermission(context) &&
                 PermissionUtils.checkSelfPermission(context, Permission.ACCESS_MEDIA_LOCATION);
         }
 
-        if (PermissionUtils.containsPermission(new String[] {
-            Permission.ACCESS_BACKGROUND_LOCATION,
-            Permission.ACTIVITY_RECOGNITION
-        }, permission)) {
+        if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION)) {
+            if (!AndroidVersion.isAndroid6()) {
+                return true;
+            }
+            if (!AndroidVersion.isAndroid10()) {
+                return PermissionUtils.checkSelfPermission(context, Permission.ACCESS_FINE_LOCATION);
+            }
             return PermissionUtils.checkSelfPermission(context, permission);
         }
 
-        // 向下兼容 Android 11 新权限
-        if (!AndroidVersion.isAndroid11()) {
-            if (PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
-                // 这个是 Android 10 上面的历史遗留问题，假设申请的是 MANAGE_EXTERNAL_STORAGE 权限
-                // 必须要在 AndroidManifest.xml 中注册 android:requestLegacyExternalStorage="true"
-                if (!isUseDeprecationExternalStorage()) {
-                    return false;
-                }
+        if (PermissionUtils.equalsPermission(permission, Permission.ACTIVITY_RECOGNITION)) {
+            if (!AndroidVersion.isAndroid10()) {
+                return true;
             }
+            return PermissionUtils.checkSelfPermission(context, permission);
         }
 
         return super.isGrantedPermission(context, permission);
@@ -46,49 +49,52 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION)) {
+            if (!AndroidVersion.isAndroid6()) {
+                return false;
+            }
+            if (!AndroidVersion.isAndroid10()) {
+                return !PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
+                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION);
+            }
+            // 先检查前台的定位权限是否拒绝了
             if (!PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION)) {
+                // 如果是的话就判断前台的定位权限是否被永久拒绝了
                 return !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION);
             }
+            // 如果不是的话再去判断后台的定位权限是否被拒永久拒绝了
             return !PermissionUtils.checkSelfPermission(activity, permission) &&
                 !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_MEDIA_LOCATION)) {
-            return hasReadStoragePermission(activity) &&
+            if (!AndroidVersion.isAndroid6()) {
+                return false;
+            }
+            if (!AndroidVersion.isAndroid10()) {
+                return !PermissionUtils.checkSelfPermission(activity, Permission.READ_EXTERNAL_STORAGE) &&
+                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_EXTERNAL_STORAGE);
+            }
+            return isGrantedReadStoragePermission(activity) &&
                 !PermissionUtils.checkSelfPermission(activity, permission) &&
                 !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ACTIVITY_RECOGNITION)) {
+            if (!AndroidVersion.isAndroid10()) {
+                return false;
+            }
             return !PermissionUtils.checkSelfPermission(activity, permission) &&
                 !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
-        }
-
-        // 向下兼容 Android 11 新权限
-        if (!AndroidVersion.isAndroid11()) {
-            if (PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
-                // 处理 Android 10 上面的历史遗留问题
-                if (!isUseDeprecationExternalStorage()) {
-                    return true;
-                }
-            }
         }
 
         return super.isDoNotAskAgainPermission(activity, permission);
     }
 
     /**
-     * 是否采用的是非分区存储的模式
+     * 判断是否授予了读取文件的权限
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private static boolean isUseDeprecationExternalStorage() {
-        return Environment.isExternalStorageLegacy();
-    }
-
-    /**
-     * 是否有读取文件的权限
-     */
-    private boolean hasReadStoragePermission(@NonNull Context context) {
+    @RequiresApi(AndroidVersion.ANDROID_6)
+    private boolean isGrantedReadStoragePermission(@NonNull Context context) {
         if (AndroidVersion.isAndroid13() && AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_13) {
             return PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_IMAGES) ||
                 isGrantedPermission(context, Permission.MANAGE_EXTERNAL_STORAGE);

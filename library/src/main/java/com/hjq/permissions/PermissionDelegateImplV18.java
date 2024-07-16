@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 
 /**
  *    author : Android 轮子哥
@@ -12,15 +11,14 @@ import android.support.annotation.RequiresApi;
  *    time   : 2023/03/11
  *    desc   : Android 4.3 权限委托实现
  */
-@RequiresApi(api = AndroidVersion.ANDROID_4_3)
-class PermissionDelegateImplV18 extends PermissionDelegateImplV14 {
+class PermissionDelegateImplV18 extends PermissionDelegateImplBase {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
-        // 检测通知栏监听权限
         if (PermissionUtils.equalsPermission(permission, Permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
             return NotificationListenerPermissionCompat.isGrantedPermission(context);
         }
+
         return super.isGrantedPermission(context, permission);
     }
 
@@ -29,6 +27,7 @@ class PermissionDelegateImplV18 extends PermissionDelegateImplV14 {
         if (PermissionUtils.equalsPermission(permission, Permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
             return false;
         }
+
         return super.isDoNotAskAgainPermission(activity, permission);
     }
 
@@ -37,6 +36,7 @@ class PermissionDelegateImplV18 extends PermissionDelegateImplV14 {
         if (PermissionUtils.equalsPermission(permission, Permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
             return NotificationListenerPermissionCompat.getPermissionIntent(context);
         }
+
         return super.getPermissionIntent(context, permission);
     }
 }

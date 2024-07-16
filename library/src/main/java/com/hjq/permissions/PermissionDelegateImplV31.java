@@ -14,23 +14,37 @@ import android.support.annotation.RequiresApi;
  *    time   : 2022/06/11
  *    desc   : Android 12 权限委托实现
  */
-@RequiresApi(api = AndroidVersion.ANDROID_12)
 class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
-        // 检测闹钟权限
         if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
+            if (!AndroidVersion.isAndroid12()) {
+                return true;
+            }
             return isGrantedAlarmPermission(context);
         }
 
+        if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_SCAN)) {
+            if (!AndroidVersion.isAndroid6()) {
+                return true;
+            }
+            if (!AndroidVersion.isAndroid12()) {
+                return PermissionUtils.checkSelfPermission(context, Permission.ACCESS_FINE_LOCATION);
+            }
+            return PermissionUtils.checkSelfPermission(context, permission);
+        }
+
         if (PermissionUtils.containsPermission(new String[] {
-            Permission.BLUETOOTH_SCAN,
             Permission.BLUETOOTH_CONNECT,
             Permission.BLUETOOTH_ADVERTISE
         }, permission)) {
+            if (!AndroidVersion.isAndroid12()) {
+                return true;
+            }
             return PermissionUtils.checkSelfPermission(context, permission);
         }
+
         return super.isGrantedPermission(context, permission);
     }
 
@@ -40,17 +54,32 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
             return false;
         }
 
-        if (PermissionUtils.containsPermission(new String[] {
-            Permission.BLUETOOTH_SCAN,
-            Permission.BLUETOOTH_CONNECT,
-            Permission.BLUETOOTH_ADVERTISE
-        }, permission)) {
+        if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_SCAN)) {
+            if (!AndroidVersion.isAndroid6()) {
+                return false;
+            }
+            if (!AndroidVersion.isAndroid12()) {
+                return !PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
+                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION);
+            }
             return !PermissionUtils.checkSelfPermission(activity, permission) &&
                 !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
         }
 
-        if (activity.getApplicationInfo().targetSdkVersion >= AndroidVersion.ANDROID_12 &&
-            PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION)) {
+        if (PermissionUtils.containsPermission(new String[] {
+            Permission.BLUETOOTH_CONNECT,
+            Permission.BLUETOOTH_ADVERTISE
+        }, permission)) {
+            if (!AndroidVersion.isAndroid12()) {
+                return false;
+            }
+            return !PermissionUtils.checkSelfPermission(activity, permission) &&
+                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+        }
+
+        if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION) &&
+            AndroidVersion.isAndroid6() && AndroidVersion.getTargetSdkVersionCode(activity) >= AndroidVersion.ANDROID_12) {
+
             if (!PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
                 !PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_COARSE_LOCATION)) {
                 return !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION) &&
@@ -60,12 +89,16 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
             return !PermissionUtils.checkSelfPermission(activity, permission) &&
                 !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
         }
+
         return super.isDoNotAskAgainPermission(activity, permission);
     }
 
     @Override
     public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
+            if (!AndroidVersion.isAndroid12()) {
+                return getApplicationDetailsIntent(context);
+            }
             return getAlarmPermissionIntent(context);
         }
 
@@ -75,6 +108,7 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
     /**
      * 是否有闹钟权限
      */
+    @RequiresApi(AndroidVersion.ANDROID_12)
     private static boolean isGrantedAlarmPermission(@NonNull Context context) {
         return context.getSystemService(AlarmManager.class).canScheduleExactAlarms();
     }
@@ -82,11 +116,12 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
     /**
      * 获取闹钟权限设置界面意图
      */
+    @RequiresApi(AndroidVersion.ANDROID_12)
     private static Intent getAlarmPermissionIntent(@NonNull Context context) {
         Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
         intent.setData(PermissionUtils.getPackageNameUri(context));
         if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = PermissionIntentManager.getApplicationDetailsIntent(context);
+            intent = getApplicationDetailsIntent(context);
         }
         return intent;
     }

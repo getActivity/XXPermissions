@@ -17,35 +17,7 @@ import java.util.List;
 final class PermissionApi {
 
     @NonNull
-    private static final PermissionDelegate DELEGATE;
-
-    static {
-        if (AndroidVersion.isAndroid14()) {
-            DELEGATE = new PermissionDelegateImplV34();
-        } else if (AndroidVersion.isAndroid13()) {
-            DELEGATE = new PermissionDelegateImplV33();
-        } else if (AndroidVersion.isAndroid12()) {
-            DELEGATE = new PermissionDelegateImplV31();
-        } else if (AndroidVersion.isAndroid11()) {
-            DELEGATE = new PermissionDelegateImplV30();
-        } else if (AndroidVersion.isAndroid10()) {
-            DELEGATE = new PermissionDelegateImplV29();
-        } else if (AndroidVersion.isAndroid9()) {
-            DELEGATE = new PermissionDelegateImplV28();
-        } else if (AndroidVersion.isAndroid8()) {
-            DELEGATE = new PermissionDelegateImplV26();
-        } else if (AndroidVersion.isAndroid6()) {
-            DELEGATE = new PermissionDelegateImplV23();
-        } else if (AndroidVersion.isAndroid5()) {
-            DELEGATE = new PermissionDelegateImplV21();
-        } else if (AndroidVersion.isAndroid4_4()) {
-            DELEGATE = new PermissionDelegateImplV19();
-        } else if (AndroidVersion.isAndroid4_3()) {
-            DELEGATE = new PermissionDelegateImplV18();
-        } else {
-            DELEGATE = new PermissionDelegateImplV14();
-        }
-    }
+    private static final PermissionDelegate DELEGATE = new PermissionDelegateImplV34();
 
     /**
      * 获取某个权限的申请结果
