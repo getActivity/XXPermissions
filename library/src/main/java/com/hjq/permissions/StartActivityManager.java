@@ -15,26 +15,36 @@ import android.support.annotation.Nullable;
  */
 final class StartActivityManager {
 
+    /** 存取子意图所用的 Intent Key */
     private static final String SUB_INTENT_KEY = "sub_intent_key";
 
-    static Intent getSubIntentInMainIntent(@NonNull Intent mainIntent) {
+    /**
+     * 从父意图中获取子意图
+     */
+    static Intent getSubIntentInSuperIntent(@NonNull Intent superIntent) {
         Intent subIntent;
         if (AndroidVersion.isAndroid13()) {
-            subIntent = mainIntent.getParcelableExtra(SUB_INTENT_KEY, Intent.class);
+            subIntent = superIntent.getParcelableExtra(SUB_INTENT_KEY, Intent.class);
         } else {
-            subIntent = mainIntent.getParcelableExtra(SUB_INTENT_KEY);
+            subIntent = superIntent.getParcelableExtra(SUB_INTENT_KEY);
         }
         return subIntent;
     }
 
-    static Intent getDeepSubIntent(@NonNull Intent superIntent) {
-        Intent subIntent = getSubIntentInMainIntent(superIntent);
+    /**
+     * 获取意图中最底层的子意图
+     */
+    static Intent getDeepSubIntent(@NonNull Intent intent) {
+        Intent subIntent = getSubIntentInSuperIntent(intent);
         if (subIntent != null) {
             return getDeepSubIntent(subIntent);
         }
-        return superIntent;
+        return intent;
     }
 
+    /**
+     * 将子意图添加到主意图中
+     */
     static Intent addSubIntentToMainIntent(@Nullable Intent mainIntent, @Nullable Intent subIntent) {
         if (mainIntent == null && subIntent != null) {
             return subIntent;
@@ -69,7 +79,7 @@ final class StartActivityManager {
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-            Intent subIntent = getSubIntentInMainIntent(intent);
+            Intent subIntent = getSubIntentInSuperIntent(intent);
             if (subIntent == null) {
                 return false;
             }
@@ -95,7 +105,7 @@ final class StartActivityManager {
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-            Intent subIntent = getSubIntentInMainIntent(intent);
+            Intent subIntent = getSubIntentInSuperIntent(intent);
             if (subIntent == null) {
                 return false;
             }
