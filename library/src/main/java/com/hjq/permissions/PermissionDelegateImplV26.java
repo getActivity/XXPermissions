@@ -86,7 +86,7 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
     }
 
     @Override
-    public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
+    public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES)) {
             if (!AndroidVersion.isAndroid8()) {
                 return getApplicationDetailsIntent(context);
@@ -101,7 +101,7 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
             return getPictureInPicturePermissionIntent(context);
         }
 
-        return super.getPermissionIntent(context, permission);
+        return super.getPermissionSettingIntent(context, permission);
     }
 
     /**

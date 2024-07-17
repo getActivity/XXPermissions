@@ -94,7 +94,7 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
     }
 
     @Override
-    public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
+    public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
             if (!AndroidVersion.isAndroid12()) {
                 return getApplicationDetailsIntent(context);
@@ -102,7 +102,7 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
             return getAlarmPermissionIntent(context);
         }
 
-        return super.getPermissionIntent(context, permission);
+        return super.getPermissionSettingIntent(context, permission);
     }
 
     /**

@@ -32,11 +32,11 @@ class PermissionDelegateImplV18 extends PermissionDelegateImplBase {
     }
 
     @Override
-    public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
+    public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
             return NotificationListenerPermissionCompat.getPermissionIntent(context);
         }
 
-        return super.getPermissionIntent(context, permission);
+        return super.getPermissionSettingIntent(context, permission);
     }
 }

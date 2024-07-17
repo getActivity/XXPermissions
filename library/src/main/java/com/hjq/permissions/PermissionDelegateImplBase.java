@@ -48,7 +48,7 @@ class PermissionDelegateImplBase implements PermissionDelegate {
     }
 
     @Override
-    public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
+    public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE)) {
             return getVpnPermissionIntent(context);
         }

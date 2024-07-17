@@ -38,7 +38,7 @@ class PermissionDelegateImplV21 extends PermissionDelegateImplV19 {
     }
 
     @Override
-    public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
+    public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.PACKAGE_USAGE_STATS)) {
             if (!AndroidVersion.isAndroid5()) {
                 return getApplicationDetailsIntent(context);
@@ -46,7 +46,7 @@ class PermissionDelegateImplV21 extends PermissionDelegateImplV19 {
             return getPackagePermissionIntent(context);
         }
 
-        return super.getPermissionIntent(context, permission);
+        return super.getPermissionSettingIntent(context, permission);
     }
 
     /**

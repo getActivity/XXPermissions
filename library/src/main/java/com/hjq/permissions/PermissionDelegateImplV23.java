@@ -98,7 +98,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
     }
 
     @Override
-    public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
+    public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
             return GetInstalledAppsPermissionCompat.getPermissionIntent(context);
         }
@@ -128,7 +128,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
             return getIgnoreBatteryPermissionIntent(context);
         }
 
-        return super.getPermissionIntent(context, permission);
+        return super.getPermissionSettingIntent(context, permission);
     }
 
     /**

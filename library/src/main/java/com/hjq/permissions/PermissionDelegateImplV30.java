@@ -47,7 +47,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
     }
 
     @Override
-    public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
+    public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
             if (!AndroidVersion.isAndroid11()) {
                 return getApplicationDetailsIntent(context);
@@ -55,7 +55,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
             return getManageStoragePermissionIntent(context);
         }
 
-        return super.getPermissionIntent(context, permission);
+        return super.getPermissionSettingIntent(context, permission);
     }
 
     /**

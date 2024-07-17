@@ -31,5 +31,5 @@ public interface PermissionDelegate {
     /**
      * 获取权限设置页的意图
      */
-    Intent getPermissionIntent(@NonNull Context context, @NonNull String permission);
+    Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission);
 }

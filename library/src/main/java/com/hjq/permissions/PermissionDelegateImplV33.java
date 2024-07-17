@@ -161,13 +161,13 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
     }
 
     @Override
-    public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
+    public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/208
         // POST_NOTIFICATIONS 要跳转到权限设置页和 NOTIFICATION_SERVICE 权限是一样的
         if (PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS)) {
             return NotificationPermissionCompat.getPermissionIntent(context);
         }
 
-        return super.getPermissionIntent(context, permission);
+        return super.getPermissionSettingIntent(context, permission);
     }
 }

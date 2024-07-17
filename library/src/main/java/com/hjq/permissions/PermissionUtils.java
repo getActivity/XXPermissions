@@ -393,7 +393,7 @@ final class PermissionUtils {
         // 危险权限统一处理
         if (!PermissionApi.containsSpecialPermission(permissions)) {
             if (permissions.size() == 1) {
-                return PermissionApi.getPermissionIntent(context, permissions.get(0));
+                return PermissionApi.getPermissionSettingIntent(context, permissions.get(0));
             }
             return PermissionIntentManager.getApplicationDetailsIntent(context, permissions);
         }
@@ -402,12 +402,12 @@ final class PermissionUtils {
         switch (permissions.size()) {
             case 1:
                 // 如果当前只有一个权限被拒绝了
-                return PermissionApi.getPermissionIntent(context, permissions.get(0));
+                return PermissionApi.getPermissionSettingIntent(context, permissions.get(0));
             case 2:
                 if (!AndroidVersion.isAndroid13() &&
                     PermissionUtils.containsPermission(permissions, Permission.NOTIFICATION_SERVICE) &&
                     PermissionUtils.containsPermission(permissions, Permission.POST_NOTIFICATIONS)) {
-                    return PermissionApi.getPermissionIntent(context, Permission.NOTIFICATION_SERVICE);
+                    return PermissionApi.getPermissionSettingIntent(context, Permission.NOTIFICATION_SERVICE);
                 }
                 break;
             case 3:
@@ -415,7 +415,7 @@ final class PermissionUtils {
                     PermissionUtils.containsPermission(permissions, Permission.MANAGE_EXTERNAL_STORAGE) &&
                     PermissionUtils.containsPermission(permissions, Permission.READ_EXTERNAL_STORAGE) &&
                     PermissionUtils.containsPermission(permissions, Permission.WRITE_EXTERNAL_STORAGE)) {
-                    return PermissionApi.getPermissionIntent(context, Permission.MANAGE_EXTERNAL_STORAGE);
+                    return PermissionApi.getPermissionSettingIntent(context, Permission.MANAGE_EXTERNAL_STORAGE);
                 }
                 break;
             default:

@@ -34,10 +34,10 @@ final class PermissionApi {
     }
 
     /**
-     * 获取权限设置页意图
+     * 获取权限设置页的意图
      */
-    static Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
-        return DELEGATE.getPermissionIntent(context, permission);
+    static Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
+        return DELEGATE.getPermissionSettingIntent(context, permission);
     }
 
     /**

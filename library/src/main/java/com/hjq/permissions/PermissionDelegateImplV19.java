@@ -32,11 +32,11 @@ class PermissionDelegateImplV19 extends PermissionDelegateImplV18 {
     }
 
     @Override
-    public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
+    public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.NOTIFICATION_SERVICE)) {
             return NotificationPermissionCompat.getPermissionIntent(context);
         }
 
-        return super.getPermissionIntent(context, permission);
+        return super.getPermissionSettingIntent(context, permission);
     }
 }
