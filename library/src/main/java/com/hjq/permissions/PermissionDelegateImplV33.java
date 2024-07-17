@@ -150,6 +150,17 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
     }
 
     @Override
+    public boolean recheckPermissionResult(@NonNull Context context, @NonNull String permission, boolean grantResult) {
+        if (AndroidVersion.isAndroid13() && AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_13 &&
+            PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
+            // 在 Android 13 不能申请 WRITE_EXTERNAL_STORAGE，会被系统直接拒绝，在这里需要重新检查权限的状态
+            return isGrantedPermission(context, permission);
+        }
+
+        return super.recheckPermissionResult(context, permission, grantResult);
+    }
+
+    @Override
     public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
         // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/208
         // POST_NOTIFICATIONS 要跳转到权限设置页和 NOTIFICATION_SERVICE 权限是一样的

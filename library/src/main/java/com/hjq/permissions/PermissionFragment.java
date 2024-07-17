@@ -399,8 +399,11 @@ public final class PermissionFragment extends Fragment implements Runnable {
             return;
         }
 
-        // 优化权限回调结果
-        PermissionUtils.optimizePermissionResults(activity, permissions, grantResults);
+        for (int i = 0; i < permissions.length; i++) {
+            grantResults[i] = PermissionApi.recheckPermissionResult(
+                activity, permissions[i], grantResults[i] == PackageManager.PERMISSION_GRANTED)
+                ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
+        }
 
         // 将数组转换成 ArrayList
         List<String> allPermissions = PermissionUtils.asArrayList(permissions);

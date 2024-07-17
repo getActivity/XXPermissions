@@ -88,6 +88,16 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
     }
 
     @Override
+    public boolean recheckPermissionResult(@NonNull Context context, @NonNull String permission, boolean grantResult) {
+        // 如果是读取应用列表权限（国产权限），则需要重新检查权限的状态
+        if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
+            return isGrantedPermission(context, permission);
+        }
+
+        return super.recheckPermissionResult(context, permission, grantResult);
+    }
+
+    @Override
     public Intent getPermissionIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
             return GetInstalledAppsPermissionCompat.getPermissionIntent(context);

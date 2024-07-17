@@ -178,50 +178,6 @@ final class PermissionUtils {
     }
 
     /**
-     * 优化权限回调结果
-     */
-    static void optimizePermissionResults(Activity activity, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        for (int i = 0; i < permissions.length; i++) {
-
-            String permission = permissions[i];
-
-            // 如果这个权限是特殊权限，则需要重新检查权限的状态
-            if (PermissionApi.isSpecialPermission(permission)) {
-                grantResults[i] = PermissionApi.getPermissionResult(activity, permission);
-                continue;
-            }
-
-            // 如果是读取应用列表权限（国产权限），则需要重新检查权限的状态
-            if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
-                grantResults[i] = PermissionApi.getPermissionResult(activity, permission);
-                continue;
-            }
-
-            // 如果是在 Android 14 上面，并且是图片权限或者视频权限，则需要重新检查权限的状态
-            // 这是因为用户授权部分图片或者视频的时候，READ_MEDIA_VISUAL_USER_SELECTED 权限状态是授予的
-            // 但是 READ_MEDIA_IMAGES 和 READ_MEDIA_VIDEO 的权限状态是拒绝的
-            if (AndroidVersion.isAndroid14() &&
-                PermissionUtils.containsPermission(
-                    new String[] {Permission.READ_MEDIA_IMAGES, Permission.READ_MEDIA_VIDEO}, permission)) {
-                grantResults[i] = PermissionApi.getPermissionResult(activity, Permission.READ_MEDIA_VISUAL_USER_SELECTED);
-                continue;
-            }
-
-            if (AndroidVersion.isAndroid13() && AndroidVersion.getTargetSdkVersionCode(activity) >= AndroidVersion.ANDROID_13 &&
-                PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
-                // 在 Android 13 不能申请 WRITE_EXTERNAL_STORAGE，会被系统直接拒绝，在这里需要重新检查权限的状态
-                grantResults[i] = PermissionApi.getPermissionResult(activity, permission);
-                continue;
-            }
-
-            if (Permission.getDangerPermissionFromAndroidVersion(permission) > AndroidVersion.getAndroidVersionCode()) {
-                // 如果是申请了新权限，但却是旧设备上面运行的，会被系统直接拒绝，在这里需要重新检查权限的状态
-                grantResults[i] = PermissionApi.getPermissionResult(activity, permission);
-            }
-        }
-    }
-
-    /**
      * 将数组转换成 ArrayList
      *
      * 这里解释一下为什么不用 Arrays.asList
