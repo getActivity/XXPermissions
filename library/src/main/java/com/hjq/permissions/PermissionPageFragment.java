@@ -114,7 +114,7 @@ public final class PermissionPageFragment extends Fragment implements Runnable {
             return;
         }
         List<String> permissions = arguments.getStringArrayList(REQUEST_PERMISSIONS);
-        StartActivityManager.startActivityForResult(this, PermissionUtils.getSmartPermissionIntent(getActivity(), permissions), XXPermissions.REQUEST_CODE);
+        StartActivityManager.startActivityForResult(this, PermissionApi.getSmartPermissionIntent(getActivity(), permissions), XXPermissions.REQUEST_CODE);
     }
 
     @Override

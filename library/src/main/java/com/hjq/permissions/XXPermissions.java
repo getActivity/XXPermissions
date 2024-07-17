@@ -359,7 +359,7 @@ public final class XXPermissions {
             startPermissionActivity(activity, permissions);
             return;
         }
-        Intent intent = PermissionUtils.getSmartPermissionIntent(context, permissions);
+        Intent intent = PermissionApi.getSmartPermissionIntent(context, permissions);
         if (!(context instanceof Activity)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
@@ -390,7 +390,7 @@ public final class XXPermissions {
     public static void startPermissionActivity(@NonNull Activity activity,
                                                @NonNull List<String> permissions,
                                                int requestCode) {
-        Intent intent = PermissionUtils.getSmartPermissionIntent(activity, permissions);
+        Intent intent = PermissionApi.getSmartPermissionIntent(activity, permissions);
         StartActivityManager.startActivityForResult(activity, intent, requestCode);
     }
 
@@ -448,7 +448,7 @@ public final class XXPermissions {
             StartActivityManager.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
-        Intent intent = PermissionUtils.getSmartPermissionIntent(activity, permissions);
+        Intent intent = PermissionApi.getSmartPermissionIntent(activity, permissions);
         StartActivityManager.startActivityForResult(fragment, intent, requestCode);
     }
 
@@ -513,7 +513,7 @@ public final class XXPermissions {
             StartActivityManager.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
-        Intent intent = PermissionUtils.getSmartPermissionIntent(activity, permissions);
+        Intent intent = PermissionApi.getSmartPermissionIntent(activity, permissions);
         StartActivityManager.startActivityForResult(fragment, intent, requestCode);
     }
 

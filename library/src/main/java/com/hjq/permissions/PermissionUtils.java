@@ -380,51 +380,6 @@ final class PermissionUtils {
     }
 
     /**
-     * 根据传入的权限自动选择最合适的权限设置页
-     *
-     * @param permissions                 请求失败的权限
-     */
-    static Intent getSmartPermissionIntent(@NonNull Context context, @Nullable List<String> permissions) {
-        // 如果失败的权限里面不包含特殊权限
-        if (permissions == null || permissions.isEmpty()) {
-            return PermissionIntentManager.getApplicationDetailsIntent(context);
-        }
-
-        // 危险权限统一处理
-        if (!PermissionApi.containsSpecialPermission(permissions)) {
-            if (permissions.size() == 1) {
-                return PermissionApi.getPermissionSettingIntent(context, permissions.get(0));
-            }
-            return PermissionIntentManager.getApplicationDetailsIntent(context, permissions);
-        }
-
-        // 特殊权限统一处理
-        switch (permissions.size()) {
-            case 1:
-                // 如果当前只有一个权限被拒绝了
-                return PermissionApi.getPermissionSettingIntent(context, permissions.get(0));
-            case 2:
-                if (!AndroidVersion.isAndroid13() &&
-                    PermissionUtils.containsPermission(permissions, Permission.NOTIFICATION_SERVICE) &&
-                    PermissionUtils.containsPermission(permissions, Permission.POST_NOTIFICATIONS)) {
-                    return PermissionApi.getPermissionSettingIntent(context, Permission.NOTIFICATION_SERVICE);
-                }
-                break;
-            case 3:
-                if (AndroidVersion.isAndroid11() &&
-                    PermissionUtils.containsPermission(permissions, Permission.MANAGE_EXTERNAL_STORAGE) &&
-                    PermissionUtils.containsPermission(permissions, Permission.READ_EXTERNAL_STORAGE) &&
-                    PermissionUtils.containsPermission(permissions, Permission.WRITE_EXTERNAL_STORAGE)) {
-                    return PermissionApi.getPermissionSettingIntent(context, Permission.MANAGE_EXTERNAL_STORAGE);
-                }
-                break;
-            default:
-                break;
-        }
-        return PermissionIntentManager.getApplicationDetailsIntent(context);
-    }
-
-    /**
      * 判断两个权限字符串是否为同一个
      */
     static boolean equalsPermission(@NonNull String permission1, @NonNull String permission2) {
