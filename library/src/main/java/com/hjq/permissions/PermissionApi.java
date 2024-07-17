@@ -52,7 +52,7 @@ final class PermissionApi {
      * 判断某个权限是否是特殊权限
      */
     static boolean isSpecialPermission(@NonNull String permission) {
-        return Permission.isSpecialPermission(permission);
+        return PermissionHelper.isSpecialPermission(permission);
     }
 
     /**

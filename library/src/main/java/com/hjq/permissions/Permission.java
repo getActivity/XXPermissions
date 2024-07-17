@@ -1,7 +1,6 @@
 package com.hjq.permissions;
 
 import android.Manifest;
-import android.support.annotation.NonNull;
 
 /**
  *    author : Android 轮子哥
@@ -95,7 +94,7 @@ public final class Permission {
     /** VPN 权限（特殊权限，Android 4.0 新增的权限，注意此权限不需要在清单文件中注册也能申请） */
     public static final String BIND_VPN_SERVICE = "android.permission.BIND_VPN_SERVICE";
 
-    /** 通知栏权限（特殊权限，注意此权限不需要在清单文件中注册也能申请） */
+    /** 通知栏权限（特殊权限，只有 Android 4.4 及以上设备才能判断到权限状态，注意此权限不需要在清单文件中注册也能申请） */
     public static final String NOTIFICATION_SERVICE = "android.permission.NOTIFICATION_SERVICE";
 
     /* ------------------------------------ 我是一条华丽的分割线 ------------------------------------ */
@@ -338,154 +337,5 @@ public final class Permission {
             Permission.BLUETOOTH_SCAN,
             Permission.BLUETOOTH_CONNECT,
             Permission.BLUETOOTH_ADVERTISE};
-    }
-
-    /** 特殊权限列表（仅供框架内部使用） */
-    private static final String[] SPECIAL_PERMISSIONS = new String[] {
-        Permission.MANAGE_EXTERNAL_STORAGE,
-        Permission.REQUEST_INSTALL_PACKAGES,
-        Permission.SYSTEM_ALERT_WINDOW,
-        Permission.WRITE_SETTINGS,
-        Permission.NOTIFICATION_SERVICE,
-        Permission.PACKAGE_USAGE_STATS,
-        Permission.SCHEDULE_EXACT_ALARM,
-        Permission.BIND_NOTIFICATION_LISTENER_SERVICE,
-        Permission.ACCESS_NOTIFICATION_POLICY,
-        Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-        Permission.BIND_VPN_SERVICE,
-        Permission.PICTURE_IN_PICTURE
-    };
-
-    /**
-     * 判断某个权限是否是特殊权限
-     */
-    static boolean isSpecialPermission(@NonNull String permission) {
-        return PermissionUtils.containsPermission(SPECIAL_PERMISSIONS, permission);
-    }
-
-    /**
-     * 获取权限是从哪个 Android 版本新增的
-     */
-    static int getPermissionFromAndroidVersion(@NonNull String permission) {
-        if (isSpecialPermission(permission)) {
-            return getSpecialPermissionFromAndroidVersion(permission);
-        }
-        return getDangerPermissionFromAndroidVersion(permission);
-    }
-
-    /**
-     * 获取特殊权限是从哪个 Android 版本新增的
-     */
-    static int getSpecialPermissionFromAndroidVersion(@NonNull String permission) {
-        if (PermissionUtils.equalsPermission(permission, SCHEDULE_EXACT_ALARM)) {
-            return AndroidVersion.ANDROID_12;
-        }
-
-        if (PermissionUtils.equalsPermission(permission, MANAGE_EXTERNAL_STORAGE)) {
-            return AndroidVersion.ANDROID_11;
-        }
-
-        if (PermissionUtils.equalsPermission(permission, REQUEST_INSTALL_PACKAGES)) {
-            return AndroidVersion.ANDROID_8;
-        }
-
-        if (PermissionUtils.equalsPermission(permission, PICTURE_IN_PICTURE)) {
-            return AndroidVersion.ANDROID_8;
-        }
-
-        if (PermissionUtils.equalsPermission(permission, SYSTEM_ALERT_WINDOW)) {
-            return AndroidVersion.ANDROID_6;
-        }
-
-        if (PermissionUtils.equalsPermission(permission, WRITE_SETTINGS)) {
-            return AndroidVersion.ANDROID_6;
-        }
-
-        if (PermissionUtils.equalsPermission(permission, REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
-            return AndroidVersion.ANDROID_6;
-        }
-
-        if (PermissionUtils.equalsPermission(permission, ACCESS_NOTIFICATION_POLICY)) {
-            return AndroidVersion.ANDROID_6;
-        }
-
-        if (PermissionUtils.equalsPermission(permission, PACKAGE_USAGE_STATS)) {
-            return AndroidVersion.ANDROID_5;
-        }
-
-        if (PermissionUtils.equalsPermission(permission, NOTIFICATION_SERVICE)) {
-            return AndroidVersion.ANDROID_4_4;
-        }
-
-        if (PermissionUtils.equalsPermission(permission, BIND_NOTIFICATION_LISTENER_SERVICE)) {
-            return AndroidVersion.ANDROID_4_3;
-        }
-
-        if (PermissionUtils.equalsPermission(permission, BIND_VPN_SERVICE)) {
-            return AndroidVersion.ANDROID_4_0;
-        }
-
-        return AndroidVersion.ANDROID_4_0;
-    }
-
-    /**
-     * 获取危险权限是从哪个 Android 版本新增的
-     */
-    static int getDangerPermissionFromAndroidVersion(@NonNull String permission) {
-        if (PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VISUAL_USER_SELECTED)) {
-            return AndroidVersion.ANDROID_14;
-        }
-
-        if (PermissionUtils.containsPermission(new String[] {
-            Permission.POST_NOTIFICATIONS,
-            Permission.NEARBY_WIFI_DEVICES,
-            Permission.BODY_SENSORS_BACKGROUND,
-            Permission.READ_MEDIA_IMAGES,
-            Permission.READ_MEDIA_VIDEO,
-            Permission.READ_MEDIA_AUDIO
-        }, permission)) {
-            return AndroidVersion.ANDROID_13;
-        }
-
-        if (PermissionUtils.containsPermission(new String[] {
-            Permission.BLUETOOTH_SCAN,
-            Permission.BLUETOOTH_CONNECT,
-            Permission.BLUETOOTH_ADVERTISE
-        }, permission)) {
-            return AndroidVersion.ANDROID_12;
-        }
-
-        if (PermissionUtils.containsPermission(new String[] {
-            Permission.ACCESS_BACKGROUND_LOCATION,
-            Permission.ACTIVITY_RECOGNITION,
-            Permission.ACCESS_MEDIA_LOCATION,
-        }, permission)) {
-            return AndroidVersion.ANDROID_10;
-        }
-
-        if (PermissionUtils.equalsPermission(permission, Permission.ACCEPT_HANDOVER)) {
-            return AndroidVersion.ANDROID_9;
-        }
-
-        if (PermissionUtils.containsPermission(new String[] {
-            Permission.ANSWER_PHONE_CALLS,
-            Permission.READ_PHONE_NUMBERS
-        }, permission)) {
-            return AndroidVersion.ANDROID_8;
-        }
-
-        return AndroidVersion.ANDROID_6;
-    }
-
-    /**
-     * 判断权限是否必须要在清单文件中注册
-     */
-    static boolean isMustRegisterInManifestFile(@NonNull String permission) {
-        return !PermissionUtils.containsPermission(new String[] {
-            Permission.NOTIFICATION_SERVICE,
-            Permission.BIND_NOTIFICATION_LISTENER_SERVICE,
-            Permission.BIND_VPN_SERVICE,
-            Permission.PICTURE_IN_PICTURE
-        }, permission);
     }
 }

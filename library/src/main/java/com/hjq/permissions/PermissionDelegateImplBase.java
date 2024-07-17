@@ -40,7 +40,7 @@ class PermissionDelegateImplBase implements PermissionDelegate {
             return isGrantedPermission(context, permission);
         }
 
-        if (Permission.getDangerPermissionFromAndroidVersion(permission) > AndroidVersion.getAndroidVersionCode()) {
+        if (PermissionHelper.findAndroidVersionByPermission(permission) > AndroidVersion.getAndroidVersionCode()) {
             // 如果是申请了新权限，但却是旧设备上面运行的，会被系统直接拒绝，在这里需要重新检查权限的状态
             return isGrantedPermission(context, permission);
         }

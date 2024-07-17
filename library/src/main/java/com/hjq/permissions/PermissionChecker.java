@@ -501,7 +501,7 @@ final class PermissionChecker {
                 // 2. https://github.com/getActivity/XXPermissions/issues/302
                 targetSdkMinVersion = AndroidVersion.ANDROID_6;
             } else {
-                targetSdkMinVersion = Permission.getPermissionFromAndroidVersion(permission);
+                targetSdkMinVersion = PermissionHelper.findAndroidVersionByPermission(permission);
             }
 
             // 必须设置正确的 targetSdkVersion 才能正常检测权限
@@ -545,7 +545,7 @@ final class PermissionChecker {
 
         for (String permission : requestPermissions) {
 
-            if (!Permission.isMustRegisterInManifestFile(permission)) {
+            if (PermissionHelper.isVirtualPermission(permission)) {
                 // 不检测这些权限有没有在清单文件中注册，因为这几个权限是框架虚拟出来的，有没有在清单文件中注册都没关系
                 continue;
             }
@@ -581,7 +581,7 @@ final class PermissionChecker {
             }
 
             // 如果 minSdkVersion 已经大于等于权限出现的版本，则不需要做向下兼容
-            if (minSdkVersion >= Permission.getPermissionFromAndroidVersion(permission)) {
+            if (minSdkVersion >= PermissionHelper.findAndroidVersionByPermission(permission)) {
                 return;
             }
 

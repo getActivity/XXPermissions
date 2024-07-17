@@ -19,7 +19,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
-        if (!Permission.isSpecialPermission(permission)) {
+        if (!PermissionHelper.isSpecialPermission(permission)) {
             // 读取应用列表权限是比较特殊的危险权限，它和其他危险权限的判断方式不太一样，所以需要放在这里来判断
             if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
                 return GetInstalledAppsPermissionCompat.isGrantedPermission(context);
@@ -62,7 +62,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
 
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
-        if (!Permission.isSpecialPermission(permission)) {
+        if (!PermissionHelper.isSpecialPermission(permission)) {
             // 读取应用列表权限是比较特殊的危险权限，它和其他危险权限的判断方式不太一样，所以需要放在这里来判断
             if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
                 return GetInstalledAppsPermissionCompat.isDoNotAskAgainPermission(activity);
