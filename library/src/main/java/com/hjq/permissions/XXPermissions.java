@@ -160,7 +160,7 @@ public final class XXPermissions {
         final OnPermissionInterceptor interceptor = mInterceptor;
 
         // 权限请求列表（为什么直接不用字段？因为框架要兼容新旧权限，在低版本下会自动添加旧权限申请，为了避免重复添加）
-        final List<String> permissions = new ArrayList<>(mPermissions);
+        List<String> permissions = new ArrayList<>(mPermissions);
 
         boolean checkMode = isCheckMode(context);
 
@@ -201,7 +201,7 @@ public final class XXPermissions {
         }
 
         // 优化所申请的权限列表
-        PermissionChecker.optimizeDeprecatedPermission(permissions);
+        permissions = PermissionApi.compatibleOldPermissionByNewPermission(permissions);
 
         if (PermissionApi.isGrantedPermissions(context, permissions)) {
             // 证明这些权限已经全部授予过，直接回调成功

@@ -207,4 +207,33 @@ final class PermissionApi {
         }
         return PermissionIntentManager.getApplicationDetailsIntent(context);
     }
+
+    /**
+     * 通过新权限兼容旧权限
+     *
+     * @param requestPermissions            请求的权限组
+     */
+    static List<String> compatibleOldPermissionByNewPermission(@NonNull List<String> requestPermissions) {
+        List<String> permissions = new ArrayList<>(requestPermissions);
+        for (String permission : requestPermissions) {
+            // 如果当前运行的 Android 版本大于权限出现的 Android 版本，则证明这个权限在当前设备上不用向下兼容
+            if (AndroidVersion.getAndroidVersionCode() >= PermissionHelper.findAndroidVersionByPermission(permission)) {
+                continue;
+            }
+            // 通过新权限查询到对应的旧权限
+            String[] oldPermissions = PermissionHelper.queryOldPermissionByNewPermission(permission);
+            if (oldPermissions == null) {
+                continue;
+            }
+            for (String oldPermission : oldPermissions) {
+                // 如果请求列表已经包含此权限，就不重复添加，直接跳过
+                if (PermissionUtils.containsPermission(permissions, oldPermission)) {
+                    continue;
+                }
+                // 添加旧版的权限
+                permissions.add(oldPermission);
+            }
+        }
+        return permissions;
+    }
 }

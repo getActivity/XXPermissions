@@ -1,6 +1,7 @@
 package com.hjq.permissions;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +23,9 @@ final class PermissionHelper {
 
     /** 框架自己虚拟出来的权限列表（此类权限不需要清单文件中静态注册也能动态申请） */
     private static final List<String> VIRTUAL_PERMISSION_LIST = new ArrayList<>(4);
+
+    /** 新旧权限映射集合 */
+    private static final Map<String, String[]> NEW_AND_OLD_PERMISSION_MAP = new HashMap<>(10);
 
     static {
         SPECIAL_PERMISSION_LIST.add(Permission.SCHEDULE_EXACT_ALARM);
@@ -96,6 +100,24 @@ final class PermissionHelper {
         VIRTUAL_PERMISSION_LIST.add(Permission.BIND_NOTIFICATION_LISTENER_SERVICE);
         VIRTUAL_PERMISSION_LIST.add(Permission.BIND_VPN_SERVICE);
         VIRTUAL_PERMISSION_LIST.add(Permission.PICTURE_IN_PICTURE);
+
+        // Android 13 以下开启通知栏服务，需要用到旧的通知栏权限（框架自己虚拟出来的）
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.POST_NOTIFICATIONS, new String[] { Permission.NOTIFICATION_SERVICE });
+        // Android 13 以下使用 WIFI 功能需要用到精确定位的权限
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.NEARBY_WIFI_DEVICES, new String[] { Permission.ACCESS_FINE_LOCATION });
+        // Android 13 以下访问媒体文件需要用到读取外部存储的权限
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_MEDIA_IMAGES, new String[] { Permission.READ_EXTERNAL_STORAGE });
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_MEDIA_VIDEO, new String[] { Permission.READ_EXTERNAL_STORAGE });
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_MEDIA_AUDIO, new String[] { Permission.READ_EXTERNAL_STORAGE });
+        // Android 12 以下扫描蓝牙需要精确定位权限
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.BLUETOOTH_SCAN, new String[] { Permission.ACCESS_FINE_LOCATION });
+        // Android 11 以下访问完整的文件管理需要用到读写外部存储的权限
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.MANAGE_EXTERNAL_STORAGE, new String[] {
+                                                    Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE });
+        // Android 10 以下获取运动步数需要用到传感器权限（因为 ACTIVITY_RECOGNITION 是从 Android 10 开始才从传感器权限中剥离成独立权限）
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.ACTIVITY_RECOGNITION, new String[] { Permission.BODY_SENSORS });
+        // Android 8.0 以下读取电话号码需要用到读取电话状态的权限
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_PHONE_NUMBERS, new String[] { Permission.READ_PHONE_STATE });
     }
 
     /**
@@ -121,5 +143,13 @@ final class PermissionHelper {
      */
     static boolean isVirtualPermission(@NonNull String permission) {
         return PermissionUtils.containsPermission(VIRTUAL_PERMISSION_LIST, permission);
+    }
+
+    /**
+     * 通过新权限查询到对应的旧权限
+     */
+    @Nullable
+    static String[] queryOldPermissionByNewPermission(@NonNull String permission) {
+        return NEW_AND_OLD_PERMISSION_MAP.get(permission);
     }
 }
