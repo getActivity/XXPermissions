@@ -38,7 +38,8 @@ public final class PermissionFragment extends Fragment implements Runnable {
      * 开启权限申请
      */
     public static void launch(@NonNull Activity activity, @NonNull List<String> permissions,
-                                @NonNull OnPermissionInterceptor interceptor, @Nullable OnPermissionCallback callback) {
+                                @NonNull OnPermissionInterceptor interceptor,
+                                @Nullable OnPermissionCallback callback) {
         PermissionFragment fragment = new PermissionFragment();
         int requestCode;
         Random random = new Random();
@@ -221,13 +222,16 @@ public final class PermissionFragment extends Fragment implements Runnable {
                 // 已经授予过了，可以跳过
                 continue;
             }
-            if (!AndroidVersion.isAndroid11() && PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
-                // 当前必须是 Android 11 及以上版本，因为在旧版本上是拿旧权限做的判断
+
+            // 如果当前设备的版本还没有出现过这个特殊权限，并且权限还没有授权的情况，证明这个特殊权限有向下兼容的权限
+            // 这种情况就不要跳转到权限设置页，例如 MANAGE_EXTERNAL_STORAGE 权限
+            if (AndroidVersion.getAndroidVersionCode() < PermissionHelper.findAndroidVersionByPermission(permission)) {
                 continue;
             }
+
             // 跳转到特殊权限授权页面
             StartActivityManager.startActivityForResult(this, PermissionApi.getSmartPermissionIntent(activity,
-                PermissionUtils.asArrayList(permission)), getArguments().getInt(REQUEST_CODE));
+                PermissionUtils.asArrayList(permission)), arguments.getInt(REQUEST_CODE));
             requestSpecialPermission = true;
         }
 
