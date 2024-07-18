@@ -27,6 +27,9 @@ final class PermissionHelper {
     /** 新旧权限映射集合 */
     private static final Map<String, String[]> NEW_AND_OLD_PERMISSION_MAP = new HashMap<>(10);
 
+    /** 需要单独申请的权限列表 */
+    private static final List<String> SEPARATE_REQUEST_PERMISSION_LIST = new ArrayList<>(3);
+
     static {
         SPECIAL_PERMISSION_LIST.add(Permission.SCHEDULE_EXACT_ALARM);
         SPECIAL_PERMISSION_LIST.add(Permission.MANAGE_EXTERNAL_STORAGE);
@@ -118,6 +121,13 @@ final class PermissionHelper {
         NEW_AND_OLD_PERMISSION_MAP.put(Permission.ACTIVITY_RECOGNITION, new String[] { Permission.BODY_SENSORS });
         // Android 8.0 以下读取电话号码需要用到读取电话状态的权限
         NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_PHONE_NUMBERS, new String[] { Permission.READ_PHONE_STATE });
+
+        // 后台传感器权限需要单独申请
+        SEPARATE_REQUEST_PERMISSION_LIST.add(Permission.BODY_SENSORS_BACKGROUND);
+        // 后台定位权限需要单独申请
+        SEPARATE_REQUEST_PERMISSION_LIST.add(Permission.ACCESS_BACKGROUND_LOCATION);
+        // 媒体文件地理位置需要单独申请
+        SEPARATE_REQUEST_PERMISSION_LIST.add(Permission.ACCESS_MEDIA_LOCATION);
     }
 
     /**
@@ -151,5 +161,12 @@ final class PermissionHelper {
     @Nullable
     static String[] queryOldPermissionByNewPermission(@NonNull String permission) {
         return NEW_AND_OLD_PERMISSION_MAP.get(permission);
+    }
+
+    /**
+     * 获取需要单独申请的权限列表
+     */
+    static List<String> getSeparateRequestPermissionList() {
+        return SEPARATE_REQUEST_PERMISSION_LIST;
     }
 }

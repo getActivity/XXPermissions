@@ -118,23 +118,6 @@ final class PermissionChecker {
             return;
         }
 
-        for (String permission : requestPermissions) {
-            if (PermissionUtils.containsPermission(new String[] {
-                Permission.ACCESS_MEDIA_LOCATION,
-                Permission.READ_MEDIA_IMAGES,
-                Permission.READ_MEDIA_VIDEO,
-                Permission.READ_EXTERNAL_STORAGE,
-                Permission.WRITE_EXTERNAL_STORAGE,
-                Permission.MANAGE_EXTERNAL_STORAGE
-            }, permission)) {
-                continue;
-            }
-
-            // 因为包含了获取媒体位置权限，所以请不要申请和获取媒体位置无关的权限
-            throw new IllegalArgumentException("Because it includes access media location permissions, " +
-                "do not apply for permissions unrelated to access media location");
-        }
-
         if (AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_13) {
             if (!PermissionUtils.containsPermission(requestPermissions, Permission.READ_MEDIA_IMAGES) &&
                 !PermissionUtils.containsPermission(requestPermissions, Permission.READ_MEDIA_VIDEO) &&
@@ -269,20 +252,6 @@ final class PermissionChecker {
             // 必须要申请前台传感器权限才能申请后台传感器权限
             throw new IllegalArgumentException("Applying for background sensor permissions must contain " + Permission.BODY_SENSORS);
         }
-
-        for (String permission : requestPermissions) {
-            if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION)) {
-                // 不支持同时申请后台传感器权限和后台定位权限
-                throw new IllegalArgumentException("Applying for permissions " + Permission.BODY_SENSORS_BACKGROUND +
-                    " and " + Permission.ACCESS_BACKGROUND_LOCATION + " at the same time is not supported");
-            }
-
-            if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_MEDIA_LOCATION)) {
-                // 不支持同时申请后台传感器权限和获取媒体位置权限
-                throw new IllegalArgumentException("Applying for permissions " + Permission.BODY_SENSORS_BACKGROUND +
-                    " and " + Permission.ACCESS_MEDIA_LOCATION + " at the same time is not supported");
-            }
-        }
     }
 
     /**
@@ -321,22 +290,6 @@ final class PermissionChecker {
             !PermissionUtils.containsPermission(requestPermissions, Permission.ACCESS_FINE_LOCATION)) {
             throw new IllegalArgumentException("Applying for background positioning permissions must include " +
                 Permission.ACCESS_FINE_LOCATION);
-        }
-
-        for (String permission : requestPermissions) {
-            if (PermissionUtils.containsPermission(new String[] {
-                Permission.ACCESS_FINE_LOCATION,
-                Permission.ACCESS_COARSE_LOCATION,
-                Permission.ACCESS_BACKGROUND_LOCATION
-            }, permission)) {
-                continue;
-            }
-
-            // 因为包含了后台定位权限，所以请不要申请和定位无关的权限，因为在 Android 11 上面，后台定位权限不能和其他非定位的权限一起申请
-            // 否则会出现只申请了后台定位权限，其他权限会被回绝掉的情况，因为在 Android 11 上面，后台定位权限是要跳单独的界面，并非弹一个对话框
-            // 另外如果你的应用没有后台定位的需求，请不要一同申请 Permission.ACCESS_BACKGROUND_LOCATION 权限
-            throw new IllegalArgumentException("Because it includes background location permissions, " +
-                "do not apply for permissions unrelated to location");
         }
     }
 
