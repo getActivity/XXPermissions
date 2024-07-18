@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,7 +113,10 @@ public final class PermissionPageFragment extends Fragment implements Runnable {
             return;
         }
         List<String> permissions = arguments.getStringArrayList(REQUEST_PERMISSIONS);
-        StartActivityManager.startActivityForResult(this, PermissionApi.getSmartPermissionIntent(getActivity(), permissions), XXPermissions.REQUEST_CODE);
+        if (permissions == null || permissions.isEmpty()) {
+            return;
+        }
+        StartActivityManager.startActivityForResult(this, PermissionApi.getSmartPermissionIntent(activity, permissions), XXPermissions.REQUEST_CODE);
     }
 
     @Override
@@ -128,7 +130,7 @@ public final class PermissionPageFragment extends Fragment implements Runnable {
         if (activity == null || arguments == null) {
             return;
         }
-        final ArrayList<String> allPermissions = arguments.getStringArrayList(REQUEST_PERMISSIONS);
+        final List<String> allPermissions = arguments.getStringArrayList(REQUEST_PERMISSIONS);
         if (allPermissions == null || allPermissions.isEmpty()) {
             return;
         }
