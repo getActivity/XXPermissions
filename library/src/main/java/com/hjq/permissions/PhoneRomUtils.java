@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,36 +17,36 @@ import java.lang.reflect.Method;
 import java.util.Properties;
 
 /**
- *    author : Android 轮子哥
- *    github : https://github.com/getActivity/XXPermissions
- *    time   : 2023/04/05
- *    desc   : 厂商 Rom 工具类
+ * author : Android 轮子哥
+ * github : https://github.com/getActivity/XXPermissions
+ * time   : 2023/04/05
+ * desc   : 厂商 Rom 工具类
  */
 final class PhoneRomUtils {
 
-    private static final String[] ROM_HUAWEI    = {"huawei"};
-    private static final String[] ROM_VIVO      = {"vivo"};
-    private static final String[] ROM_XIAOMI    = {"xiaomi"};
-    private static final String[] ROM_OPPO      = {"oppo"};
-    private static final String[] ROM_LEECO     = {"leeco", "letv"};
-    private static final String[] ROM_360       = {"360", "qiku"};
-    private static final String[] ROM_ZTE       = {"zte"};
-    private static final String[] ROM_ONEPLUS   = {"oneplus"};
-    private static final String[] ROM_NUBIA     = {"nubia"};
+    private static final String[] ROM_HUAWEI = {"huawei"};
+    private static final String[] ROM_VIVO = {"vivo"};
+    private static final String[] ROM_XIAOMI = {"xiaomi"};
+    private static final String[] ROM_OPPO = {"oppo"};
+    private static final String[] ROM_LEECO = {"leeco", "letv"};
+    private static final String[] ROM_360 = {"360", "qiku"};
+    private static final String[] ROM_ZTE = {"zte"};
+    private static final String[] ROM_ONEPLUS = {"oneplus"};
+    private static final String[] ROM_NUBIA = {"nubia"};
     private static final String[] ROM_SAMSUNG = {"samsung"};
     private static final String[] ROM_HONOR = {"honor"};
 
     private static final String ROM_NAME_MIUI = "ro.miui.ui.version.name";
 
-    private static final String VERSION_PROPERTY_HUAWEI  = "ro.build.version.emui";
-    private static final String VERSION_PROPERTY_VIVO    = "ro.vivo.os.build.display.id";
-    private static final String VERSION_PROPERTY_XIAOMI  = "ro.build.version.incremental";
-    private static final String[] VERSION_PROPERTY_OPPO  = {"ro.build.version.opporom", "ro.build.version.oplusrom.display"};
-    private static final String VERSION_PROPERTY_LEECO   = "ro.letv.release.version";
-    private static final String VERSION_PROPERTY_360     = "ro.build.uiversion";
-    private static final String VERSION_PROPERTY_ZTE     = "ro.build.MiFavor_version";
+    private static final String VERSION_PROPERTY_HUAWEI = "ro.build.version.emui";
+    private static final String VERSION_PROPERTY_VIVO = "ro.vivo.os.build.display.id";
+    private static final String VERSION_PROPERTY_XIAOMI = "ro.build.version.incremental";
+    private static final String[] VERSION_PROPERTY_OPPO = {"ro.build.version.opporom", "ro.build.version.oplusrom.display"};
+    private static final String VERSION_PROPERTY_LEECO = "ro.letv.release.version";
+    private static final String VERSION_PROPERTY_360 = "ro.build.uiversion";
+    private static final String VERSION_PROPERTY_ZTE = "ro.build.MiFavor_version";
     private static final String VERSION_PROPERTY_ONEPLUS = "ro.rom.version";
-    private static final String VERSION_PROPERTY_NUBIA   = "ro.build.rom.id";
+    private static final String VERSION_PROPERTY_NUBIA = "ro.build.rom.id";
     /**
      * 经过测试，得出以下结论
      * Magic 7.0 存放系统版本的属性是 msc.config.magic.version，
@@ -53,7 +54,8 @@ final class PhoneRomUtils {
      */
     private static final String[] VERSION_PROPERTY_MAGIC = {"msc.config.magic.version", "ro.build.version.magic"};
 
-    private PhoneRomUtils() {}
+    private PhoneRomUtils() {
+    }
 
     /**
      * 判断当前厂商系统是否为 emui
@@ -98,18 +100,18 @@ final class PhoneRomUtils {
         return isRightRom(getBrand(), getManufacturer(), ROM_SAMSUNG);
         // 暂时无法通过下面的方式判断是否为 OneUI，只能通过品牌和机型来判断
         // https://stackoverflow.com/questions/60122037/how-can-i-detect-samsung-one-ui
-//      try {
-//         Field semPlatformIntField = Build.VERSION.class.getDeclaredField("SEM_PLATFORM_INT");
-//         semPlatformIntField.setAccessible(true);
-//         int semPlatformVersion = semPlatformIntField.getInt(null);
-//         return semPlatformVersion >= 100000;
-//      } catch (NoSuchFieldException  e) {
-//         e.printStackTrace();
-//         return false;
-//      } catch (IllegalAccessException e) {
-//         e.printStackTrace();
-//         return false;
-//      }
+        // try {
+        //     Field semPlatformIntField = Build.VERSION.class.getDeclaredField("SEM_PLATFORM_INT");
+        //     semPlatformIntField.setAccessible(true);
+        //     int semPlatformVersion = semPlatformIntField.getInt(null);
+        //     return semPlatformVersion >= 100000;
+        // } catch (NoSuchFieldException e) {
+        //     e.printStackTrace();
+        //     return false;
+        // } catch (IllegalAccessException e) {
+        //     e.printStackTrace();
+        //     return false;
+        // }
     }
 
     /**
@@ -121,8 +123,10 @@ final class PhoneRomUtils {
             return false;
         }
         try {
-            Class<?> buildExClass = Class.forName("com.huawei.system.BuildEx");
-            Object osBrand = buildExClass.getMethod("getOsBrand").invoke(buildExClass);
+            // Class<?> buildExClass = Class.forName("com.huawei.system.BuildEx");
+            // Object osBrand = buildExClass.getMethod("getOsBrand").invoke(buildExClass); // static 方法直接传 null
+            Object osBrand = InvokeUtils.callStaticMethod(InvokeUtils.findClass("com.huawei.system.BuildEx"),
+                    "getOsBrand", new Class[]{});
             return "Harmony".equalsIgnoreCase(String.valueOf(osBrand));
         } catch (Throwable throwable) {
             throwable.printStackTrace();
@@ -145,22 +149,8 @@ final class PhoneRomUtils {
      */
     @SuppressLint("PrivateApi")
     static boolean isMiuiOptimization() {
-        try {
-            Class<?> clazz = Class.forName("android.os.SystemProperties");
-            Method getMethod = clazz.getMethod("get", String.class, String.class);
-            String ctsValue = String.valueOf(getMethod.invoke(clazz, "ro.miui.cts", ""));
-            Method getBooleanMethod = clazz.getMethod("getBoolean", String.class, boolean.class);
-            return Boolean.parseBoolean(String.valueOf(getBooleanMethod.invoke(clazz, "persist.sys.miui_optimization", !"1".equals(ctsValue))));
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return true;
+        String ctsValue = InvokeUtils.PropUtils.getProp("ro.miui.cts");
+        return InvokeUtils.PropUtils.getProp("persist.sys.miui_optimization", !"1".equals(ctsValue));
     }
 
     /**
@@ -248,13 +238,14 @@ final class PhoneRomUtils {
     }
 
     private static String getPropertyName(final String propertyName) {
-        String result = "";
-        if (!TextUtils.isEmpty(propertyName)) {
-            result = getSystemProperty(propertyName);
-        }
-        return result;
+        // String result = getSystemProperty(propertyName);
+        return InvokeUtils.PropUtils.getProp(propertyName);
     }
 
+    /*
+     * 弃用旧的实现方式。
+     * */
+    @Deprecated
     private static String getSystemProperty(final String name) {
         String prop = getSystemPropertyByShell(name);
         if (!TextUtils.isEmpty(prop)) {
@@ -264,12 +255,16 @@ final class PhoneRomUtils {
         if (!TextUtils.isEmpty(prop)) {
             return prop;
         }
-        if (Build.VERSION.SDK_INT < 28) {
+        if (Build.VERSION.SDK_INT < 28) { // sdk 28 以上也可以使用反射获取 prop
             return getSystemPropertyByReflect(name);
         }
         return prop;
     }
 
+    /*
+     * 启用 shell 是耗时耗力的。
+     * */
+    @Deprecated
     private static String getSystemPropertyByShell(final String propName) {
         BufferedReader input = null;
         try {
@@ -293,11 +288,16 @@ final class PhoneRomUtils {
         return "";
     }
 
+    /*
+     * 部分 prop 不存在于 build.prop 内，
+     * 并且直接读取大概率被权限拒绝，最后耗时耗力。
+     * */
+    @Deprecated
     private static String getSystemPropertyByStream(final String key) {
         try {
             Properties prop = new Properties();
             FileInputStream is = new FileInputStream(
-                new File(Environment.getRootDirectory(), "build.prop")
+                    new File(Environment.getRootDirectory(), "build.prop")
             );
             prop.load(is);
             return prop.getProperty(key, "");
@@ -310,7 +310,12 @@ final class PhoneRomUtils {
         return "";
     }
 
+    /*
+     * 不健全，没有关闭语言访问检查，
+     * 并且有更好的实现方法。
+     * */
     @SuppressLint("PrivateApi")
+    @Deprecated
     private static String getSystemPropertyByReflect(String key) {
         try {
             Class<?> clz = Class.forName("android.os.SystemProperties");
