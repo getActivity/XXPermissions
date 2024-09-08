@@ -9,10 +9,13 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.PackageManager.ResolveInfoFlags;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -22,7 +25,11 @@ import android.text.TextUtils;
 import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
 import org.xmlpull.v1.XmlPullParserException;
 
 /**
@@ -298,7 +306,7 @@ final class PermissionUtils {
             if (metaData != null && metaData.containsKey(metaKey)) {
                 return metaData.getBoolean(metaKey);
             }
-        } catch (PackageManager.NameNotFoundException e) {
+        } catch (NameNotFoundException e) {
             e.printStackTrace();
         }
         return false;
@@ -374,7 +382,7 @@ final class PermissionUtils {
         PackageManager packageManager = context.getPackageManager();
         if (AndroidVersion.isAndroid13()) {
             return !packageManager.queryIntentActivities(intent,
-                    PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY)).isEmpty();
+                    ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY)).isEmpty();
         }
         return !packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY).isEmpty();
     }
@@ -423,5 +431,88 @@ final class PermissionUtils {
      */
     static Uri getPackageNameUri(@NonNull Context context) {
         return Uri.parse("package:" + context.getPackageName());
+    }
+
+    /**
+     * 获取系统属性值（多种方式）
+     */
+    @NonNull
+    public static String getSystemPropertyValue(final String propertyName) {
+        String prop;
+        try {
+            prop = getSystemPropertyByReflect(propertyName);
+            if (prop != null && !prop.isEmpty()) {
+                return prop;
+            }
+        } catch (Exception ignored) {}
+
+        try {
+            prop = getSystemPropertyByShell(propertyName);
+            if (prop != null && !prop.isEmpty()) {
+                return prop;
+            }
+        } catch (IOException ignored) {}
+
+        try {
+            prop = getSystemPropertyByStream(propertyName);
+            if (prop != null && !prop.isEmpty()) {
+                return prop;
+            }
+        } catch (IOException ignored) {}
+
+        return "";
+    }
+
+    /**
+     * 获取系统属性值（通过反射系统类）
+     */
+    @SuppressLint("PrivateApi")
+    private static String getSystemPropertyByReflect(String key) throws ClassNotFoundException, InvocationTargetException,
+                                                                        NoSuchMethodException, IllegalAccessException  {
+        Class<?> clz = Class.forName("android.os.SystemProperties");
+        Method getMethod = clz.getMethod("get", String.class, String.class);
+        return (String) getMethod.invoke(clz, key, "");
+    }
+
+    /**
+     * 获取系统属性值（通过 shell 命令）
+     */
+    private static String getSystemPropertyByShell(final String propName) throws IOException {
+        BufferedReader input = null;
+        try {
+            Process p = Runtime.getRuntime().exec("getprop " + propName);
+            input = new BufferedReader(new InputStreamReader(p.getInputStream()), 1024);
+            String firstLine = input.readLine();
+            if (firstLine != null) {
+                return firstLine;
+            }
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException ignored) {}
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获取系统属性值（通过读取系统文件）
+     */
+    private static String getSystemPropertyByStream(final String key) throws IOException {
+        FileInputStream inputStream = null;
+        try {
+            Properties prop = new Properties();
+            File file = new File(Environment.getRootDirectory(), "build.prop");
+            inputStream = new FileInputStream(file);
+            prop.load(inputStream);
+            return prop.getProperty(key, "");
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException ignored) {}
+            }
+        }
     }
 }

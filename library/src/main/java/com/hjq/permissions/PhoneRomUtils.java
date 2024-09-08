@@ -2,18 +2,10 @@ package com.hjq.permissions;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Properties;
 
 /**
  *    author : Android 轮子哥
@@ -59,14 +51,14 @@ final class PhoneRomUtils {
      * 判断当前厂商系统是否为 emui
      */
     static boolean isEmui() {
-        return !TextUtils.isEmpty(getPropertyName(VERSION_PROPERTY_HUAWEI));
+        return !TextUtils.isEmpty(PermissionUtils.getSystemPropertyValue(VERSION_PROPERTY_HUAWEI));
     }
 
     /**
      * 判断当前厂商系统是否为 miui
      */
     static boolean isMiui() {
-        return !TextUtils.isEmpty(getPropertyName(ROM_NAME_MIUI));
+        return !TextUtils.isEmpty(PermissionUtils.getSystemPropertyValue(ROM_NAME_MIUI));
     }
 
     /**
@@ -74,7 +66,7 @@ final class PhoneRomUtils {
      */
     static boolean isColorOs() {
         for (String property : VERSION_PROPERTY_OPPO) {
-            String versionName = getPropertyName(property);
+            String versionName = PermissionUtils.getSystemPropertyValue(property);
             if (TextUtils.isEmpty(versionName)) {
                 continue;
             }
@@ -87,7 +79,7 @@ final class PhoneRomUtils {
      * 判断当前厂商系统是否为 OriginOS
      */
     static boolean isOriginOs() {
-        return !TextUtils.isEmpty(getPropertyName(VERSION_PROPERTY_VIVO));
+        return !TextUtils.isEmpty(PermissionUtils.getSystemPropertyValue(VERSION_PROPERTY_VIVO));
     }
 
     /**
@@ -171,7 +163,7 @@ final class PhoneRomUtils {
         final String brand = getBrand();
         final String manufacturer = getManufacturer();
         if (isRightRom(brand, manufacturer, ROM_HUAWEI)) {
-            String version = getPropertyName(VERSION_PROPERTY_HUAWEI);
+            String version = PermissionUtils.getSystemPropertyValue(VERSION_PROPERTY_HUAWEI);
             String[] temp = version.split("_");
             if (temp.length > 1) {
                 return temp[1];
@@ -185,14 +177,14 @@ final class PhoneRomUtils {
         }
         if (isRightRom(brand, manufacturer, ROM_VIVO)) {
             // 需要注意的是 vivo iQOO 9 Pro Android 12 获取到的厂商版本号是 OriginOS Ocean
-            return getPropertyName(VERSION_PROPERTY_VIVO);
+            return PermissionUtils.getSystemPropertyValue(VERSION_PROPERTY_VIVO);
         }
         if (isRightRom(brand, manufacturer, ROM_XIAOMI)) {
-            return getPropertyName(VERSION_PROPERTY_XIAOMI);
+            return PermissionUtils.getSystemPropertyValue(VERSION_PROPERTY_XIAOMI);
         }
         if (isRightRom(brand, manufacturer, ROM_OPPO)) {
             for (String property : VERSION_PROPERTY_OPPO) {
-                String versionName = getPropertyName(property);
+                String versionName = PermissionUtils.getSystemPropertyValue(property);
                 if (TextUtils.isEmpty(property)) {
                     continue;
                 }
@@ -201,24 +193,24 @@ final class PhoneRomUtils {
             return "";
         }
         if (isRightRom(brand, manufacturer, ROM_LEECO)) {
-            return getPropertyName(VERSION_PROPERTY_LEECO);
+            return PermissionUtils.getSystemPropertyValue(VERSION_PROPERTY_LEECO);
         }
 
         if (isRightRom(brand, manufacturer, ROM_360)) {
-            return getPropertyName(VERSION_PROPERTY_360);
+            return PermissionUtils.getSystemPropertyValue(VERSION_PROPERTY_360);
         }
         if (isRightRom(brand, manufacturer, ROM_ZTE)) {
-            return getPropertyName(VERSION_PROPERTY_ZTE);
+            return PermissionUtils.getSystemPropertyValue(VERSION_PROPERTY_ZTE);
         }
         if (isRightRom(brand, manufacturer, ROM_ONEPLUS)) {
-            return getPropertyName(VERSION_PROPERTY_ONEPLUS);
+            return PermissionUtils.getSystemPropertyValue(VERSION_PROPERTY_ONEPLUS);
         }
         if (isRightRom(brand, manufacturer, ROM_NUBIA)) {
-            return getPropertyName(VERSION_PROPERTY_NUBIA);
+            return PermissionUtils.getSystemPropertyValue(VERSION_PROPERTY_NUBIA);
         }
         if (isRightRom(brand, manufacturer, ROM_HONOR)) {
             for (String property : VERSION_PROPERTY_MAGIC) {
-                String versionName = getPropertyName(property);
+                String versionName = PermissionUtils.getSystemPropertyValue(property);
                 if (TextUtils.isEmpty(property)) {
                     continue;
                 }
@@ -227,7 +219,7 @@ final class PhoneRomUtils {
             return "";
         }
 
-        return getPropertyName("");
+        return PermissionUtils.getSystemPropertyValue("");
     }
 
     private static boolean isRightRom(final String brand, final String manufacturer, final String... names) {
@@ -245,86 +237,5 @@ final class PhoneRomUtils {
 
     private static String getManufacturer() {
         return Build.MANUFACTURER.toLowerCase();
-    }
-
-    private static String getPropertyName(final String propertyName) {
-        String result = "";
-        if (!TextUtils.isEmpty(propertyName)) {
-            result = getSystemProperty(propertyName);
-        }
-        return result;
-    }
-
-    private static String getSystemProperty(final String name) {
-        String prop = getSystemPropertyByShell(name);
-        if (!TextUtils.isEmpty(prop)) {
-            return prop;
-        }
-        prop = getSystemPropertyByStream(name);
-        if (!TextUtils.isEmpty(prop)) {
-            return prop;
-        }
-        if (Build.VERSION.SDK_INT < 28) {
-            return getSystemPropertyByReflect(name);
-        }
-        return prop;
-    }
-
-    private static String getSystemPropertyByShell(final String propName) {
-        BufferedReader input = null;
-        try {
-            Process p = Runtime.getRuntime().exec("getprop " + propName);
-            input = new BufferedReader(new InputStreamReader(p.getInputStream()), 1024);
-            String ret = input.readLine();
-            if (ret != null) {
-                return ret;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return "";
-    }
-
-    private static String getSystemPropertyByStream(final String key) {
-        try {
-            Properties prop = new Properties();
-            FileInputStream is = new FileInputStream(
-                new File(Environment.getRootDirectory(), "build.prop")
-            );
-            prop.load(is);
-            return prop.getProperty(key, "");
-        } catch (FileNotFoundException e) {
-            // java.io.FileNotFoundException: /system/build.prop (Permission denied)
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    @SuppressLint("PrivateApi")
-    private static String getSystemPropertyByReflect(String key) {
-        try {
-            Class<?> clz = Class.forName("android.os.SystemProperties");
-            Method getMethod = clz.getMethod("get", String.class, String.class);
-            return (String) getMethod.invoke(clz, key, "");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return "";
     }
 }
