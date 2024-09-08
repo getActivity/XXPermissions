@@ -168,15 +168,6 @@ final class InvokeUtils {
                     .orElse("");
         }
 
-        /**
-         * 只有系统核心可以调用。
-         * 返回 true 表示成功。
-         */
-        static boolean setProp(String key, String vale) {
-            invokeMethod("set", new Class[]{String.class, String.class}, key, vale);
-            return true;
-        }
-
         private static String classLoaderMethod(ClassLoader classLoader, String name) {
             return (String) Optional.ofNullable(callStaticMethod(
                     findClass("android.os.SystemProperties", classLoader),
