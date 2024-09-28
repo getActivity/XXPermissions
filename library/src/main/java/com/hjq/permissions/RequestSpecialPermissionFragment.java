@@ -14,10 +14,10 @@ import java.util.List;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2022/01/17
- *    desc   : 权限页跳转 Fragment
+ *    desc   : 特殊权限申请专用的 Fragment
  */
 @SuppressWarnings("deprecation")
-public final class PermissionPageFragment extends Fragment implements Runnable {
+public final class RequestSpecialPermissionFragment extends Fragment implements Runnable {
 
     /** 请求的权限组 */
     private static final String REQUEST_PERMISSIONS = "request_permissions";
@@ -27,7 +27,7 @@ public final class PermissionPageFragment extends Fragment implements Runnable {
      */
     public static void launch(@NonNull Activity activity, @NonNull List<String> permissions,
                                 @Nullable OnPermissionPageCallback callback) {
-        PermissionPageFragment fragment = new PermissionPageFragment();
+        RequestSpecialPermissionFragment fragment = new RequestSpecialPermissionFragment();
         Bundle bundle = new Bundle();
         if (permissions instanceof ArrayList) {
             bundle.putStringArrayList(REQUEST_PERMISSIONS, (ArrayList<String>) permissions);

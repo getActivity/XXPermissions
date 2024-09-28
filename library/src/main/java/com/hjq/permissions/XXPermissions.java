@@ -413,7 +413,7 @@ public final class XXPermissions {
             StartActivityManager.startActivity(activity, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
-        PermissionPageFragment.launch(activity, permissions, callback);
+        RequestSpecialPermissionFragment.launch(activity, permissions, callback);
     }
 
     /* android.app.Fragment */
@@ -478,7 +478,7 @@ public final class XXPermissions {
             StartActivityManager.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
-        PermissionPageFragment.launch(activity, permissions, callback);
+        RequestSpecialPermissionFragment.launch(activity, permissions, callback);
     }
 
     /* android.support.v4.app.Fragment */
@@ -543,6 +543,6 @@ public final class XXPermissions {
             StartActivityManager.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
-        PermissionPageFragment.launch(activity, permissions, callback);
+        RequestSpecialPermissionFragment.launch(activity, permissions, callback);
     }
 }

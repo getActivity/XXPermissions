@@ -21,10 +21,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2018/06/15
- *    desc   : 权限请求 Fragment
+ *    desc   : 运行时权限（包含危险权限和特殊权限）申请专用的 Fragment
  */
 @SuppressWarnings("deprecation")
-public final class PermissionFragment extends Fragment {
+public final class RequestRuntimePermissionFragment extends Fragment {
 
     /** 请求的权限组 */
     private static final String REQUEST_PERMISSIONS = "request_permissions";
@@ -41,7 +41,7 @@ public final class PermissionFragment extends Fragment {
     public static void launch(@NonNull Activity activity, @NonNull List<String> permissions,
                                 @NonNull OnPermissionInterceptor interceptor,
                                 @Nullable OnPermissionCallback callback) {
-        PermissionFragment fragment = new PermissionFragment();
+        RequestRuntimePermissionFragment fragment = new RequestRuntimePermissionFragment();
         int requestCode;
         Random random = new Random();
         // 请求码随机生成，避免随机产生之前的请求码，必须进行循环判断
@@ -266,7 +266,7 @@ public final class PermissionFragment extends Fragment {
     private void requestSingleSpecialPermission(@NonNull Activity activity,
                                                 @NonNull String specialPermission,
                                                 @NonNull Runnable finishRunnable) {
-        PermissionPageFragment.launch(activity, Collections.singletonList(specialPermission), new OnPermissionPageCallback() {
+        RequestSpecialPermissionFragment.launch(activity, Collections.singletonList(specialPermission), new OnPermissionPageCallback() {
             @Override
             public void onGranted() {
                 finishRunnable.run();
@@ -364,7 +364,7 @@ public final class PermissionFragment extends Fragment {
     private void requestSingleDangerousPermission(@NonNull Activity activity,
                                                     @NonNull List<String> permissions,
                                                     @NonNull Runnable finishRunnable) {
-        PermissionFragment.launch(activity, permissions, new OnPermissionInterceptor() {}, new OnPermissionCallback() {
+        RequestRuntimePermissionFragment.launch(activity, permissions, new OnPermissionInterceptor() {}, new OnPermissionCallback() {
 
             @Override
             public void onGranted(@NonNull List<String> permissions, boolean allGranted) {

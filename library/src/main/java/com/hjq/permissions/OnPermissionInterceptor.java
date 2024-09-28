@@ -22,7 +22,7 @@ public interface OnPermissionInterceptor {
      */
     default void launchPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
                                             @Nullable OnPermissionCallback callback) {
-        PermissionFragment.launch(activity, allPermissions, this, callback);
+        RequestRuntimePermissionFragment.launch(activity, allPermissions, this, callback);
     }
 
     /**
