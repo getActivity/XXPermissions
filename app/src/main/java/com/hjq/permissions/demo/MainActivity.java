@@ -95,7 +95,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
             XXPermissions.with(this)
                     .permission(Permission.RECORD_AUDIO)
-                    .permission(Permission.Group.CALENDAR)
+                    .permission(Permission.READ_CALENDAR)
+                    .permission(Permission.WRITE_CALENDAR)
                     .interceptor(new PermissionInterceptor())
                     .request(new OnPermissionCallback() {
 
