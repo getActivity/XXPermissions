@@ -45,14 +45,14 @@ public final class XXPermissions {
     }
 
     /**
-     * 是否为检查模式
+     * 设置全局的检查模式
      */
     public static void setCheckMode(boolean checkMode) {
         sCheckMode = checkMode;
     }
 
     /**
-     * 设置全局权限请求拦截器
+     * 设置全局的权限请求拦截器
      */
     public static void setInterceptor(OnPermissionInterceptor interceptor) {
         sInterceptor = interceptor;
