@@ -2,8 +2,6 @@ package com.hjq.permissions;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -24,10 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *    desc   : 运行时权限（包含危险权限和特殊权限）申请专用的 Fragment
  */
 @SuppressWarnings("deprecation")
-public final class RequestRuntimePermissionFragment extends Fragment {
-
-    /** 请求的权限组 */
-    private static final String REQUEST_PERMISSIONS = "request_permissions";
+public final class RequestRuntimePermissionFragment extends RequestBasePermissionFragment {
 
     /** 请求码（自动生成）*/
     private static final String REQUEST_CODE = "request_code";
@@ -73,12 +68,6 @@ public final class RequestRuntimePermissionFragment extends Fragment {
         fragment.attachByActivity(activity);
     }
 
-    /** 权限请求是否已经发起 */
-    private boolean mAlreadyRequest;
-
-    /** 权限申请标记 */
-    private boolean mRequestFlag;
-
     /** 权限回调对象 */
     @Nullable
     private OnPermissionCallback mCallBack;
@@ -91,39 +80,10 @@ public final class RequestRuntimePermissionFragment extends Fragment {
     private int mScreenOrientation;
 
     /**
-     * 绑定 Activity
-     */
-    public void attachByActivity(@NonNull Activity activity) {
-        FragmentManager fragmentManager = activity.getFragmentManager();
-        if (fragmentManager == null) {
-            return;
-        }
-        fragmentManager.beginTransaction().add(this, this.toString()).commitAllowingStateLoss();
-    }
-
-    /**
-     * 解绑 Activity
-     */
-    public void detachByActivity(@NonNull Activity activity) {
-        FragmentManager fragmentManager = activity.getFragmentManager();
-        if (fragmentManager == null) {
-            return;
-        }
-        fragmentManager.beginTransaction().remove(this).commitAllowingStateLoss();
-    }
-
-    /**
      * 设置权限监听回调监听
      */
     public void setOnPermissionCallback(@Nullable OnPermissionCallback callback) {
         mCallBack = callback;
-    }
-
-    /**
-     * 权限申请标记（防止系统杀死应用后重新触发请求的问题）
-     */
-    public void setRequestFlag(boolean flag) {
-        mRequestFlag = flag;
     }
 
     /**
@@ -170,30 +130,11 @@ public final class RequestRuntimePermissionFragment extends Fragment {
         mCallBack = null;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        // 如果当前 Fragment 是通过系统重启应用触发的，则不进行权限申请
-        if (!mRequestFlag) {
-            detachByActivity(getActivity());
-            return;
-        }
-
-        // 如果在 Activity 不可见的状态下添加 Fragment 并且去申请权限会导致授权对话框显示不出来
-        // 所以必须要在 Fragment 的 onResume 来申请权限，这样就可以保证应用回到前台的时候才去申请权限
-        if (mAlreadyRequest) {
-            return;
-        }
-
-        mAlreadyRequest = true;
-        startPermissionRequest();
-    }
-
     /**
      * 开始权限请求
      */
-    private void startPermissionRequest() {
+    @Override
+    public void startPermissionRequest() {
         Bundle arguments = getArguments();
         Activity activity = getActivity();
         if (arguments == null || activity == null) {

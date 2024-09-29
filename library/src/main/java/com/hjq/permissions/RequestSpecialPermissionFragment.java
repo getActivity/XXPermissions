@@ -1,8 +1,6 @@
 package com.hjq.permissions;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,10 +15,7 @@ import java.util.List;
  *    desc   : 特殊权限申请专用的 Fragment
  */
 @SuppressWarnings("deprecation")
-public final class RequestSpecialPermissionFragment extends Fragment implements Runnable {
-
-    /** 请求的权限组 */
-    private static final String REQUEST_PERMISSIONS = "request_permissions";
+public final class RequestSpecialPermissionFragment extends RequestBasePermissionFragment implements Runnable {
 
     /**
      * 开启权限申请
@@ -49,34 +44,6 @@ public final class RequestSpecialPermissionFragment extends Fragment implements 
     @Nullable
     private OnPermissionPageCallback mCallBack;
 
-    /** 权限申请标记 */
-    private boolean mRequestFlag;
-
-    /** 是否申请了权限 */
-    private boolean mStartActivityFlag;
-
-    /**
-     * 绑定 Activity
-     */
-    public void attachByActivity(@NonNull Activity activity) {
-        FragmentManager fragmentManager = activity.getFragmentManager();
-        if (fragmentManager == null) {
-            return;
-        }
-        fragmentManager.beginTransaction().add(this, this.toString()).commitAllowingStateLoss();
-    }
-
-    /**
-     * 解绑 Activity
-     */
-    public void detachByActivity(@NonNull Activity activity) {
-        FragmentManager fragmentManager = activity.getFragmentManager();
-        if (fragmentManager == null) {
-            return;
-        }
-        fragmentManager.beginTransaction().remove(this).commitAllowingStateLoss();
-    }
-
     /**
      * 设置权限监听回调监听
      */
@@ -84,29 +51,8 @@ public final class RequestSpecialPermissionFragment extends Fragment implements 
         mCallBack = callback;
     }
 
-    /**
-     * 权限申请标记（防止系统杀死应用后重新触发请求的问题）
-     */
-    public void setRequestFlag(boolean flag) {
-        mRequestFlag = flag;
-    }
-
     @Override
-    public void onResume() {
-        super.onResume();
-
-        // 如果当前 Fragment 是通过系统重启应用触发的，则不进行权限申请
-        if (!mRequestFlag) {
-            detachByActivity(getActivity());
-            return;
-        }
-
-        if (mStartActivityFlag) {
-            return;
-        }
-
-        mStartActivityFlag = true;
-
+    public void startPermissionRequest() {
         Bundle arguments = getArguments();
         Activity activity = getActivity();
         if (arguments == null || activity == null) {
