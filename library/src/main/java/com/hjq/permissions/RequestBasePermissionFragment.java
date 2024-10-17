@@ -1,8 +1,11 @@
 package com.hjq.permissions;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.support.annotation.NonNull;
 
 /**
@@ -21,6 +24,39 @@ public abstract class RequestBasePermissionFragment extends Fragment  {
 
     /** 权限请求是否已经发起 */
     private boolean mAlreadyRequest;
+
+    /** Activity 屏幕方向 */
+    private int mScreenOrientation;
+
+    @SuppressLint("SourceLockedOrientationActivity")
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+        // 如果当前没有锁定屏幕方向就获取当前屏幕方向并进行锁定
+        mScreenOrientation = activity.getRequestedOrientation();
+        if (mScreenOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
+            return;
+        }
+
+        // 锁定当前 Activity 方向
+        PermissionUtils.lockActivityOrientation(activity);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Activity activity = getActivity();
+        if (activity == null || mScreenOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED ||
+            activity.getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
+            return;
+        }
+        // 为什么这里不用跟上面一样 try catch ？因为这里是把 Activity 方向取消固定，只有设置横屏或竖屏的时候才可能触发 crash
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    }
 
     @Override
     public void onResume() {

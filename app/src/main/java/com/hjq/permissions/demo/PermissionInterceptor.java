@@ -23,7 +23,7 @@ import com.hjq.permissions.OnPermissionInterceptor;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.OnPermissionPageCallback;
 import com.hjq.permissions.Permission;
-import com.hjq.permissions.RequestRuntimePermissionFragment;
+import com.hjq.permissions.PermissionHandler;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.toast.Toaster;
 import java.util.List;
@@ -87,7 +87,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
         }
 
         if (showPopupWindow) {
-            RequestRuntimePermissionFragment.launch(activity, allPermissions, this, callback);
+            PermissionHandler.request(activity, allPermissions, callback, this);
             // 延迟 300 毫秒是为了避免出现 PopupWindow 显示然后立马消失的情况
             // 因为框架没有办法在还没有申请权限的情况下，去判断权限是否永久拒绝了，必须要在发起权限申请之后
             // 所以只能通过延迟显示 PopupWindow 来做这件事，如果 300 毫秒内权限申请没有结束，证明本次申请的权限没有永久拒绝
@@ -109,8 +109,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
                     .setCancelable(false)
                     .setPositiveButton(R.string.common_permission_granted, (dialog, which) -> {
                         dialog.dismiss();
-                        RequestRuntimePermissionFragment.launch(activity, allPermissions,
-                                PermissionInterceptor.this, callback);
+                        PermissionHandler.request(activity, allPermissions, callback, this);
                     })
                     .setNegativeButton(R.string.common_permission_denied, (dialog, which) -> {
                         dialog.dismiss();
