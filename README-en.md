@@ -314,8 +314,6 @@ XXPermissions.setInterceptor(new OnPermissionInterceptor() {});
 
         * If the current project is already adapted to partitioned storage, you only need to register a meta-data attribute in the manifest file: `<meta-data android:name="ScopedStorage" android:value="true"/>`
 
-    * If the requested permission includes background location permission, then it cannot include permission not related to location, otherwise the framework will throw an exception, because `ACCESS_BACKGROUND_LOCATION` is applied together with other non-location permission location, on Android 11, there will be a situation where no application is directly rejected.
-
     * If the requested permissions do not match the **targetSdkVersion** in the project, the framework will throw an exception because **targetSdkVersion** represents which Android version the project is adapted to, and the system will Automatically do backward compatibility, assuming that the application permission only appeared on Android 11, but **targetSdkVersion** is still at 29, then the application on some models will have authorization exceptions, and also That is, the user has clearly authorized, but the system always returns false.
 
     * If the dynamically applied permission is not registered in `AndroidManifest.xml`, the framework will throw an exception, because if you don’t do this, you can apply for permission, but there will be no authorization pop-up window, and it will be directly rejected by the system, and the system will not give any pop-up windows and prompts, and this problem is **Must-have** on every phone model.
