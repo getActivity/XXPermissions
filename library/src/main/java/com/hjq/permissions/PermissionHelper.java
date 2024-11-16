@@ -3,6 +3,7 @@ package com.hjq.permissions;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +28,14 @@ final class PermissionHelper {
     /** 新旧权限映射集合 */
     private static final Map<String, String[]> NEW_AND_OLD_PERMISSION_MAP = new HashMap<>(10);
 
-    /** 需要单独申请的权限列表 */
-    private static final List<String> SEPARATE_REQUEST_PERMISSION_LIST = new ArrayList<>(3);
+    /** 后台权限列表 */
+    private static final List<String> BACKGROUND_PERMISSION_LIST = new ArrayList<>(2);
+
+    /** 危险权限组集合 */
+    private static final Map<String, List<String>> DANGEROUS_PERMISSION_GROUP_MAP = new HashMap<>(9);
+
+    /** 危险权限对应的类型集合 */
+    private static final Map<String, String> DANGEROUS_PERMISSION_GROUP_TYPE_MAP = new HashMap<>(25);
 
     static {
         SPECIAL_PERMISSION_LIST.add(Permission.SCHEDULE_EXACT_ALARM);
@@ -122,12 +129,81 @@ final class PermissionHelper {
         // Android 8.0 以下读取电话号码需要用到读取电话状态的权限
         NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_PHONE_NUMBERS, new String[] { Permission.READ_PHONE_STATE });
 
-        // 后台传感器权限需要单独申请
-        SEPARATE_REQUEST_PERMISSION_LIST.add(Permission.BODY_SENSORS_BACKGROUND);
-        // 后台定位权限需要单独申请
-        SEPARATE_REQUEST_PERMISSION_LIST.add(Permission.ACCESS_BACKGROUND_LOCATION);
-        // 媒体文件地理位置需要单独申请
-        SEPARATE_REQUEST_PERMISSION_LIST.add(Permission.ACCESS_MEDIA_LOCATION);
+        // 后台定位权限
+        BACKGROUND_PERMISSION_LIST.add(Permission.ACCESS_BACKGROUND_LOCATION);
+        // 后台传感器权限
+        BACKGROUND_PERMISSION_LIST.add(Permission.BODY_SENSORS_BACKGROUND);
+
+        // 存储权限组
+        List<String> storagePermissionGroup = Arrays.asList(Permission.READ_EXTERNAL_STORAGE,
+                                                            Permission.WRITE_EXTERNAL_STORAGE);
+        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.STORAGE, storagePermissionGroup);
+        for (String permission : storagePermissionGroup) {
+            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.STORAGE);
+        }
+        // 日历权限组
+        List<String> calendarPermissionGroup = Arrays.asList(Permission.READ_CALENDAR,
+                                                            Permission.WRITE_CALENDAR);
+        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.CALENDAR, calendarPermissionGroup);
+        for (String permission : calendarPermissionGroup) {
+            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.CALENDAR);
+        }
+        // 联系人权限组
+        List<String> contactsPermissionGroup = Arrays.asList(Permission.READ_CONTACTS,
+                                                            Permission.WRITE_CONTACTS);
+        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.CONTACTS, contactsPermissionGroup);
+        for (String permission : contactsPermissionGroup) {
+            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.CONTACTS);
+        }
+        // 短信权限组
+        List<String> smsPermissionGroup = Arrays.asList(Permission.SEND_SMS,
+                                                        Permission.READ_SMS,
+                                                        Permission.RECEIVE_SMS,
+                                                        Permission.RECEIVE_WAP_PUSH,
+                                                        Permission.RECEIVE_MMS);
+        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.SMS, smsPermissionGroup);
+        for (String permission : smsPermissionGroup) {
+            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.SMS);
+        }
+        // 定位权限组
+        List<String> locationPermissionGroup = Arrays.asList(Permission.ACCESS_COARSE_LOCATION,
+                                                            Permission.ACCESS_FINE_LOCATION,
+                                                            Permission.ACCESS_BACKGROUND_LOCATION);
+        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.LOCATION, locationPermissionGroup);
+        for (String permission : locationPermissionGroup) {
+            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.LOCATION);
+        }
+        // 传感器权限组
+        List<String> sensorsPermissionGroup = Arrays.asList(Permission.BODY_SENSORS,
+                                                            Permission.BODY_SENSORS_BACKGROUND);
+        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.SENSORS, sensorsPermissionGroup);
+        for (String permission : sensorsPermissionGroup) {
+            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.SENSORS);
+        }
+        // 通话记录权限组
+        List<String> callLogPermissionGroup = Arrays.asList(Permission.READ_CALL_LOG,
+                                                            Permission.WRITE_CALL_LOG);
+        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.CALL_LOG, callLogPermissionGroup);
+        for (String permission : callLogPermissionGroup) {
+            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.CALL_LOG);
+        }
+        // 附近设备权限组
+        List<String> nearbyDevicesPermissionGroup = Arrays.asList(Permission.BLUETOOTH_SCAN,
+                                                                Permission.BLUETOOTH_CONNECT,
+                                                                Permission.BLUETOOTH_ADVERTISE,
+                                                                Permission.NEARBY_WIFI_DEVICES);
+        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.NEARBY_DEVICES, nearbyDevicesPermissionGroup);
+        for (String permission : nearbyDevicesPermissionGroup) {
+            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.NEARBY_DEVICES);
+        }
+        // 读取照片和视频媒体文件权限组
+        List<String> imageAndVideoPermissionGroup = Arrays.asList(Permission.READ_MEDIA_IMAGES,
+                                                                Permission.READ_MEDIA_VIDEO,
+                                                                Permission.READ_MEDIA_VISUAL_USER_SELECTED);
+        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.IMAGE_AND_VIDEO_MEDIA, imageAndVideoPermissionGroup);
+        for (String permission : imageAndVideoPermissionGroup) {
+            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.IMAGE_AND_VIDEO_MEDIA);
+        }
     }
 
     /**
@@ -164,9 +240,50 @@ final class PermissionHelper {
     }
 
     /**
-     * 获取需要单独申请的权限列表
+     * 查询危险权限所在的权限组类型
      */
-    static List<String> getSeparateRequestPermissionList() {
-        return SEPARATE_REQUEST_PERMISSION_LIST;
+    @Nullable
+    static String queryDangerousPermissionsGroupType(@NonNull String permission) {
+        return DANGEROUS_PERMISSION_GROUP_TYPE_MAP.get(permission);
+    }
+
+    /**
+     * 查询危险权限所在的权限组
+     */
+    @Nullable
+    static List<String> getDangerousPermissionGroup(@NonNull String permissionsGroupType) {
+        return DANGEROUS_PERMISSION_GROUP_MAP.get(permissionsGroupType);
+    }
+
+    /**
+     * 判断申请的权限列表中是否包含后台权限
+     */
+    static boolean containsBackgroundPermission(List<String> permissions) {
+        for (String backgroundPermission : BACKGROUND_PERMISSION_LIST) {
+            if (permissions.contains(backgroundPermission)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断某个权限是否为后台权限
+     */
+    static boolean isBackgroundPermission(String permission) {
+        return BACKGROUND_PERMISSION_LIST.contains(permission);
+    }
+
+    /**
+     * 从权限组中获取到后台权限
+     */
+    @Nullable
+    static String getBackgroundPermissionByGroup(List<String> permissions) {
+        for (String permission : permissions) {
+            if (isBackgroundPermission(permission)) {
+                return permission;
+            }
+        }
+        return null;
     }
 }
