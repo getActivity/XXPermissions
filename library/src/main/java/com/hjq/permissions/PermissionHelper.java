@@ -32,10 +32,10 @@ final class PermissionHelper {
     private static final List<String> BACKGROUND_PERMISSION_LIST = new ArrayList<>(2);
 
     /** 危险权限组集合 */
-    private static final Map<String, List<String>> DANGEROUS_PERMISSION_GROUP_MAP = new HashMap<>(9);
+    private static final Map<PermissionGroupType, List<String>> DANGEROUS_PERMISSION_GROUP_MAP = new HashMap<>(9);
 
     /** 危险权限对应的类型集合 */
-    private static final Map<String, String> DANGEROUS_PERMISSION_GROUP_TYPE_MAP = new HashMap<>(25);
+    private static final Map<String, PermissionGroupType> DANGEROUS_PERMISSION_GROUP_TYPE_MAP = new HashMap<>(25);
 
     static {
         SPECIAL_PERMISSION_LIST.add(Permission.SCHEDULE_EXACT_ALARM);
@@ -243,7 +243,7 @@ final class PermissionHelper {
      * 查询危险权限所在的权限组类型
      */
     @Nullable
-    static String queryDangerousPermissionsGroupType(@NonNull String permission) {
+    static PermissionGroupType queryDangerousPermissionGroupType(@NonNull String permission) {
         return DANGEROUS_PERMISSION_GROUP_TYPE_MAP.get(permission);
     }
 
@@ -251,7 +251,7 @@ final class PermissionHelper {
      * 查询危险权限所在的权限组
      */
     @Nullable
-    static List<String> getDangerousPermissionGroup(@NonNull String permissionsGroupType) {
+    static List<String> getDangerousPermissionGroup(@NonNull PermissionGroupType permissionsGroupType) {
         return DANGEROUS_PERMISSION_GROUP_MAP.get(permissionsGroupType);
     }
 

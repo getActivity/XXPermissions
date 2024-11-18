@@ -144,15 +144,15 @@ public final class PermissionHandler {
             alreadyProcessedDangerousPermissions.add(dangerousPermission);
 
             // 查询权限所在的权限组类型
-            String dangerousPermissionsGroupType = PermissionHelper.queryDangerousPermissionsGroupType(dangerousPermission);
-            if (TextUtils.isEmpty(dangerousPermissionsGroupType)) {
+            PermissionGroupType permissionGroupType = PermissionHelper.queryDangerousPermissionGroupType(dangerousPermission);
+            if (permissionGroupType == null) {
                 // 如果这个权限没有组别，就直接单独做为一次权限申请
                 unauthorizedDangerousPermissions.add(PermissionUtils.asArrayList(dangerousPermission));
                 continue;
             }
 
             // 如果这个权限有组别，那么就获取这个组别的全部权限
-            List<String> dangerousPermissionGroup = new ArrayList<>(PermissionHelper.getDangerousPermissionGroup(dangerousPermissionsGroupType));
+            List<String> dangerousPermissionGroup = new ArrayList<>(PermissionHelper.getDangerousPermissionGroup(permissionGroupType));
             // 对这个组别的权限进行逐个遍历
             Iterator<String> iterator = dangerousPermissionGroup.iterator();
             while (iterator.hasNext()) {

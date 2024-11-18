@@ -6,32 +6,32 @@ package com.hjq.permissions;
  *    time   : 2024/10/19
  *    desc   : 权限组分类
  */
-public final class PermissionGroupType {
+public enum PermissionGroupType {
 
     /** 存储权限 */
-    public static final String STORAGE = "storage";
+    STORAGE,
 
     /** 日历权限组 */
-    public static final String CALENDAR = "calendar";
+    CALENDAR,
 
     /** 联系人权限组 */
-    public static final String CONTACTS = "contacts";
+    CONTACTS,
 
     /** 短信权限组 */
-    public static final String SMS = "sms";
+    SMS,
 
     /** 位置权限组 */
-    public static final String LOCATION = "location";
+    LOCATION,
 
     /** 传感器权限组 */
-    public static final String SENSORS = "sensors";
+    SENSORS,
 
     /** 通话记录权限组 */
-    public static final String CALL_LOG = "call_log";
+    CALL_LOG,
 
     /** 附近设备权限组 */
-    public static final String NEARBY_DEVICES = "nearby_devices";
+    NEARBY_DEVICES,
 
     /** 照片和视频权限组 */
-    public static final String IMAGE_AND_VIDEO_MEDIA = "image_and_video_media";
+    IMAGE_AND_VIDEO_MEDIA
 }
