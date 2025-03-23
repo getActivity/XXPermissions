@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 
 /**
  *    author : Android 轮子哥
@@ -33,6 +34,18 @@ final class WindowPermissionCompat {
 
     static Intent getPermissionIntent(@NonNull Context context) {
         if (AndroidVersion.isAndroid6()) {
+            // 如果当前系统是 HyperOs，那么就不要跳转到 miui 权限设置页了，因为还要点一下《其他权限》入口才能找到悬浮窗权限设置选项
+            // 这样的效果还不如直接跳转到所有应用的悬浮窗权限设置列表，然后再点进去来得更直观
+            // 需要注意的是：该逻辑需要在判断 miui 系统之前判断，因为在 HyperOs 系统上面判断当前系统是否为 miui 系统也会返回 true
+            // 这是因为 HyperOs 系统本身就是从 miui 系统演变而来，有这个问题也很正常，主要是厂商为了系统兼容性而保留的
+            // 相关 Github issue 地址：https://github.com/getActivity/XXPermissions/issues/342
+            if (PhoneRomUtils.isHyperOs()) {
+                Intent intent = getManageOverlayPermissionIntent(context);
+                if (PermissionUtils.areActivityIntent(context, intent)) {
+                    return intent;
+                }
+            }
+
             if (AndroidVersion.isAndroid11() && PhoneRomUtils.isMiui() && PhoneRomUtils.isMiuiOptimization()) {
                 // 因为 Android 11 及后面的版本无法直接跳转到具体权限设置页面，只能跳转到悬浮窗权限应用列表，十分地麻烦的，这里做了一下简化
                 // miui 做得比较人性化的，不会出现跳转不过去的问题，其他厂商就不一定了，就是不想让你跳转过去
@@ -42,13 +55,7 @@ final class WindowPermissionCompat {
                 return intent;
             }
 
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-            // 在 Android 11 加包名跳转也是没有效果的，官方文档链接：
-            // https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION
-            if (!AndroidVersion.isAndroid11()) {
-                intent.setData(PermissionUtils.getPackageNameUri(context));
-            }
-
+            Intent intent = getManageOverlayPermissionIntent(context);
             if (PermissionUtils.areActivityIntent(context, intent)) {
                 return intent;
             }
@@ -100,5 +107,16 @@ final class WindowPermissionCompat {
         // 经过测试，魅族手机 6.0 可以直接通过直接跳转到应用详情开启悬浮窗权限
 
         return PermissionIntentManager.getApplicationDetailsIntent(context);
+    }
+
+    @RequiresApi(AndroidVersion.ANDROID_6)
+    private static Intent getManageOverlayPermissionIntent(Context context) {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+        // 在 Android 11 加包名跳转也是没有效果的，官方文档链接：
+        // https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION
+        if (!AndroidVersion.isAndroid11()) {
+            intent.setData(PermissionUtils.getPackageNameUri(context));
+        }
+        return intent;
     }
 }

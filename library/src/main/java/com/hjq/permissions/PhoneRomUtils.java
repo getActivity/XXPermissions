@@ -28,6 +28,7 @@ final class PhoneRomUtils {
     private static final String[] ROM_HONOR = {"honor"};
 
     private static final String ROM_NAME_MIUI = "ro.miui.ui.version.name";
+    private static final String ROM_NAME_HYPER_OS = "ro.mi.os.version.name";
 
     private static final String VERSION_PROPERTY_HUAWEI  = "ro.build.version.emui";
     private static final String VERSION_PROPERTY_VIVO    = "ro.vivo.os.build.display.id";
@@ -59,6 +60,13 @@ final class PhoneRomUtils {
      */
     static boolean isMiui() {
         return !TextUtils.isEmpty(PermissionUtils.getSystemPropertyValue(ROM_NAME_MIUI));
+    }
+
+    /**
+     * 判断当前厂商系统是否为澎湃系统
+     */
+    static boolean isHyperOs() {
+        return !TextUtils.isEmpty(PermissionUtils.getSystemPropertyValue(ROM_NAME_HYPER_OS));
     }
 
     /**
