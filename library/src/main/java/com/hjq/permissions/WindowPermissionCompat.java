@@ -45,7 +45,9 @@ final class WindowPermissionCompat {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
             // 在 Android 11 加包名跳转也是没有效果的，官方文档链接：
             // https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION
-            intent.setData(PermissionUtils.getPackageNameUri(context));
+            if (!AndroidVersion.isAndroid11()) {
+                intent.setData(PermissionUtils.getPackageNameUri(context));
+            }
 
             if (PermissionUtils.areActivityIntent(context, intent)) {
                 return intent;
