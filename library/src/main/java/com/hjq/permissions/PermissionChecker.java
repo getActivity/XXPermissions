@@ -381,7 +381,7 @@ final class PermissionChecker {
     }
 
     /**
-     * 检查通知栏监听权限
+     * 检查画中画权限
      */
     static void checkPictureInPicturePermission(@NonNull Activity activity, @NonNull List<String> requestPermissions,
         @Nullable AndroidManifestInfo androidManifestInfo) {
