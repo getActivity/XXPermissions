@@ -11,9 +11,9 @@ import android.support.annotation.Nullable;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2023/04/05
- *    desc   : startActivity 管理器
+ *    desc   : 权限页意图处理器
  */
-final class StartActivityManager {
+final class PermissionActivityIntentHandler {
 
     /** 存取子意图所用的 Intent Key */
     private static final String SUB_INTENT_KEY = "sub_intent_key";

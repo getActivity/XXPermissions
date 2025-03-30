@@ -51,7 +51,7 @@ final class WindowPermissionCompat {
                 // miui 做得比较人性化的，不会出现跳转不过去的问题，其他厂商就不一定了，就是不想让你跳转过去
                 Intent intent = PermissionIntentManager.getMiuiPermissionPageIntent(context);
                 // 另外跳转到应用详情页也可以开启悬浮窗权限
-                intent = StartActivityManager.addSubIntentToMainIntent(intent, PermissionIntentManager.getApplicationDetailsIntent(context));
+                intent = PermissionActivityIntentHandler.addSubIntentToMainIntent(intent, PermissionIntentManager.getApplicationDetailsIntent(context));
                 return intent;
             }
 
@@ -67,7 +67,7 @@ final class WindowPermissionCompat {
         // 需要注意的是，这里不需要判断鸿蒙，因为鸿蒙 2.0 用代码判断是 API 等级是 29（Android 10）会直接走上面的逻辑，而不会走到下面来
         if (PhoneRomUtils.isEmui()) {
             Intent intent = PermissionIntentManager.getEmuiWindowPermissionPageIntent(context);
-            intent = StartActivityManager.addSubIntentToMainIntent(intent, PermissionIntentManager.getApplicationDetailsIntent(context));
+            intent = PermissionActivityIntentHandler.addSubIntentToMainIntent(intent, PermissionIntentManager.getApplicationDetailsIntent(context));
             return intent;
         }
 
@@ -80,25 +80,25 @@ final class WindowPermissionCompat {
             }
 
             // 小米手机也可以通过应用详情页开启悬浮窗权限（只不过会多一步操作）
-            intent = StartActivityManager.addSubIntentToMainIntent(intent, PermissionIntentManager.getApplicationDetailsIntent(context));
+            intent = PermissionActivityIntentHandler.addSubIntentToMainIntent(intent, PermissionIntentManager.getApplicationDetailsIntent(context));
             return intent;
         }
 
         if (PhoneRomUtils.isColorOs()) {
             Intent intent = PermissionIntentManager.getColorOsWindowPermissionPageIntent(context);
-            intent = StartActivityManager.addSubIntentToMainIntent(intent, PermissionIntentManager.getApplicationDetailsIntent(context));
+            intent = PermissionActivityIntentHandler.addSubIntentToMainIntent(intent, PermissionIntentManager.getApplicationDetailsIntent(context));
             return intent;
         }
 
         if (PhoneRomUtils.isOriginOs()) {
             Intent intent = PermissionIntentManager.getOriginOsWindowPermissionPageIntent(context);
-            intent = StartActivityManager.addSubIntentToMainIntent(intent, PermissionIntentManager.getApplicationDetailsIntent(context));
+            intent = PermissionActivityIntentHandler.addSubIntentToMainIntent(intent, PermissionIntentManager.getApplicationDetailsIntent(context));
             return intent;
         }
 
         if (PhoneRomUtils.isOneUi()) {
             Intent intent = PermissionIntentManager.getOneUiWindowPermissionPageIntent(context);
-            intent = StartActivityManager.addSubIntentToMainIntent(intent, PermissionIntentManager.getApplicationDetailsIntent(context));
+            intent = PermissionActivityIntentHandler.addSubIntentToMainIntent(intent, PermissionIntentManager.getApplicationDetailsIntent(context));
             return intent;
         }
 

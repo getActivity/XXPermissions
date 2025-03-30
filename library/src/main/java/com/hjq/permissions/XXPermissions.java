@@ -363,7 +363,7 @@ public final class XXPermissions {
         if (!(context instanceof Activity)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
-        StartActivityManager.startActivity(context, intent);
+        PermissionActivityIntentHandler.startActivity(context, intent);
     }
 
     /* android.app.Activity */
@@ -391,7 +391,7 @@ public final class XXPermissions {
                                                @NonNull List<String> permissions,
                                                int requestCode) {
         Intent intent = PermissionApi.getSmartPermissionIntent(activity, permissions);
-        StartActivityManager.startActivityForResult(activity, intent, requestCode);
+        PermissionActivityIntentHandler.startActivityForResult(activity, intent, requestCode);
     }
 
     public static void startPermissionActivity(@NonNull Activity activity,
@@ -410,7 +410,7 @@ public final class XXPermissions {
                                                @NonNull List<String> permissions,
                                                @Nullable OnPermissionPageCallback callback) {
         if (permissions.isEmpty()) {
-            StartActivityManager.startActivity(activity, PermissionIntentManager.getApplicationDetailsIntent(activity));
+            PermissionActivityIntentHandler.startActivity(activity, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
         RequestSpecialPermissionFragment.launch(activity, permissions, callback);
@@ -445,11 +445,11 @@ public final class XXPermissions {
             return;
         }
         if (permissions.isEmpty()) {
-            StartActivityManager.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
+            PermissionActivityIntentHandler.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
         Intent intent = PermissionApi.getSmartPermissionIntent(activity, permissions);
-        StartActivityManager.startActivityForResult(fragment, intent, requestCode);
+        PermissionActivityIntentHandler.startActivityForResult(fragment, intent, requestCode);
     }
 
     public static void startPermissionActivity(@NonNull Fragment fragment,
@@ -475,7 +475,7 @@ public final class XXPermissions {
             return;
         }
         if (permissions.isEmpty()) {
-            StartActivityManager.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
+            PermissionActivityIntentHandler.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
         RequestSpecialPermissionFragment.launch(activity, permissions, callback);
@@ -510,11 +510,11 @@ public final class XXPermissions {
             return;
         }
         if (permissions.isEmpty()) {
-            StartActivityManager.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
+            PermissionActivityIntentHandler.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
         Intent intent = PermissionApi.getSmartPermissionIntent(activity, permissions);
-        StartActivityManager.startActivityForResult(fragment, intent, requestCode);
+        PermissionActivityIntentHandler.startActivityForResult(fragment, intent, requestCode);
     }
 
     public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment,
@@ -540,7 +540,7 @@ public final class XXPermissions {
             return;
         }
         if (permissions.isEmpty()) {
-            StartActivityManager.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
+            PermissionActivityIntentHandler.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
         RequestSpecialPermissionFragment.launch(activity, permissions, callback);

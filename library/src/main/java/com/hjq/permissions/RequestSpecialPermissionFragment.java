@@ -62,7 +62,7 @@ public final class RequestSpecialPermissionFragment extends RequestBasePermissio
         if (permissions == null || permissions.isEmpty()) {
             return;
         }
-        StartActivityManager.startActivityForResult(this, PermissionApi.getSmartPermissionIntent(activity, permissions), XXPermissions.REQUEST_CODE);
+        PermissionActivityIntentHandler.startActivityForResult(this, PermissionApi.getSmartPermissionIntent(activity, permissions), XXPermissions.REQUEST_CODE);
     }
 
     @Override
