@@ -21,7 +21,7 @@ final class PermissionActivityIntentHandler {
     /**
      * 从父意图中获取子意图
      */
-    static Intent getSubIntentInSuperIntent(@NonNull Intent superIntent) {
+    private static Intent findSubIntentBySuperIntent(@NonNull Intent superIntent) {
         Intent subIntent;
         if (AndroidVersion.isAndroid13()) {
             subIntent = superIntent.getParcelableExtra(SUB_INTENT_KEY, Intent.class);
@@ -32,12 +32,12 @@ final class PermissionActivityIntentHandler {
     }
 
     /**
-     * 获取意图中最底层的子意图
+     * 获取意图中最深层的子意图
      */
-    static Intent getDeepSubIntent(@NonNull Intent intent) {
-        Intent subIntent = getSubIntentInSuperIntent(intent);
+    private static Intent findDeepIntent(@NonNull Intent intent) {
+        Intent subIntent = findSubIntentBySuperIntent(intent);
         if (subIntent != null) {
-            return getDeepSubIntent(subIntent);
+            return findDeepIntent(subIntent);
         }
         return intent;
     }
@@ -45,14 +45,14 @@ final class PermissionActivityIntentHandler {
     /**
      * 将子意图添加到主意图中
      */
-    static Intent addSubIntentToMainIntent(@Nullable Intent mainIntent, @Nullable Intent subIntent) {
+    static Intent addSubIntentForMainIntent(@Nullable Intent mainIntent, @Nullable Intent subIntent) {
         if (mainIntent == null && subIntent != null) {
             return subIntent;
         }
         if (subIntent == null) {
             return mainIntent;
         }
-        Intent deepSubIntent = getDeepSubIntent(mainIntent);
+        Intent deepSubIntent = findDeepIntent(mainIntent);
         deepSubIntent.putExtra(SUB_INTENT_KEY, subIntent);
         return mainIntent;
     }
@@ -79,7 +79,7 @@ final class PermissionActivityIntentHandler {
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-            Intent subIntent = getSubIntentInSuperIntent(intent);
+            Intent subIntent = findSubIntentBySuperIntent(intent);
             if (subIntent == null) {
                 return false;
             }
@@ -105,7 +105,7 @@ final class PermissionActivityIntentHandler {
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-            Intent subIntent = getSubIntentInSuperIntent(intent);
+            Intent subIntent = findSubIntentBySuperIntent(intent);
             if (subIntent == null) {
                 return false;
             }

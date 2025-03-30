@@ -64,7 +64,7 @@ final class PermissionIntentManager {
             }
 
             if (PermissionUtils.areActivityIntent(context, addViewMonitorActivityIntent)) {
-                intent = PermissionActivityIntentHandler.addSubIntentToMainIntent(intent, addViewMonitorActivityIntent);
+                intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, addViewMonitorActivityIntent);
             }
         } else {
             // 3.1、其他的
@@ -73,12 +73,12 @@ final class PermissionIntentManager {
             }
 
             if (PermissionUtils.areActivityIntent(context, notificationManagementActivityIntent)) {
-                intent = PermissionActivityIntentHandler.addSubIntentToMainIntent(intent, notificationManagementActivityIntent);
+                intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, notificationManagementActivityIntent);
             }
         }
 
         if (PermissionUtils.areActivityIntent(context, huaWeiMobileManagerAppIntent)) {
-            intent = PermissionActivityIntentHandler.addSubIntentToMainIntent(intent, huaWeiMobileManagerAppIntent);
+            intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, huaWeiMobileManagerAppIntent);
         }
 
         return intent;
@@ -131,7 +131,7 @@ final class PermissionIntentManager {
         }
 
         if (PermissionUtils.areActivityIntent(context, oppoSafeCenterAppIntent)) {
-            intent = PermissionActivityIntentHandler.addSubIntentToMainIntent(intent, oppoSafeCenterAppIntent);;
+            intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, oppoSafeCenterAppIntent);;
         }
 
         return intent;
@@ -184,7 +184,7 @@ final class PermissionIntentManager {
         }
 
         if (PermissionUtils.areActivityIntent(context, xiaoMiMobileManagerAppIntent)) {
-            intent = PermissionActivityIntentHandler.addSubIntentToMainIntent(intent, xiaoMiMobileManagerAppIntent);
+            intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, xiaoMiMobileManagerAppIntent);
         }
 
         return intent;
