@@ -193,14 +193,6 @@ XXPermissions.setCheckMode(false);
 XXPermissions.setInterceptor(new OnPermissionInterceptor() {});
 ```
 
-#### Framework proguard rules
-
-* Added in the `proguard-rules.pro` file:
-
-```text
--keep class com.hjq.permissions.** {*;}
-```
-
 #### About the permission monitoring callback parameter description
 
 * We all know that if the user grants all it will only call `onGranted` method, which will only be called if the user rejects all `onDenied` method.

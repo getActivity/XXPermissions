@@ -199,14 +199,6 @@ XXPermissions.setCheckMode(false);
 XXPermissions.setInterceptor(new OnPermissionInterceptor() {});
 ```
 
-#### 框架混淆规则
-
-* 在混淆规则文件 `proguard-rules.pro` 中加入
-
-```text
--keep class com.hjq.permissions.** {*;}
-```
-
 #### 关于权限监听回调参数说明
 
 * 我们都知道，如果用户全部授予只会调用 `onGranted` 方法，如果用户全部拒绝只会调用 `onDenied` 方法。
