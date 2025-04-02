@@ -1,18 +1,11 @@
 apply plugin: 'com.android.library'
+apply from : '../common.gradle'
 
 android {
-    compileSdkVersion 34
 
     defaultConfig {
+        // 最低安装版本
         minSdkVersion 14
-        versionCode 2100
-        versionName "21.0"
-    }
-
-    // 使用 JDK 1.8
-    compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_8
-        sourceCompatibility JavaVersion.VERSION_1_8
     }
 
     lintOptions {
