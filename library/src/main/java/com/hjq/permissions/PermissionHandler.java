@@ -96,7 +96,7 @@ public final class PermissionHandler {
             // 请求所有的危险权限
             requestAllDangerousPermission(mActivity, unauthorizedDangerousPermissions, () -> {
                 // 请求完危险权限后，接下来请求特殊权限
-                requestAllSpecialPermission(mActivity, allSpecialPermissions, this::postDelayedHandlerRequestPermissionsResult);
+                requestAllSpecialPermission(mActivity, unauthorizedSpecialPermissions, this::postDelayedHandlerRequestPermissionsResult);
             });
         }
     }
