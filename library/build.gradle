@@ -12,6 +12,8 @@ android {
         abortOnError false
     }
 
+    namespace 'com.hjq.permissions'
+
     android.libraryVariants.configureEach { variant ->
         // aar 输出文件名配置
         variant.outputs.configureEach { output ->
@@ -23,14 +25,6 @@ android {
         // 剔除这个包下的所有文件（不会移除签名信息）
         exclude 'META-INF/*******'
     }
-}
-
-afterEvaluate {
-    // 排除 BuildConfig.class 和 R.class
-    generateReleaseBuildConfig.enabled = false
-    generateDebugBuildConfig.enabled = false
-    generateReleaseResValues.enabled = false
-    generateDebugResValues.enabled = false
 }
 
 dependencies {
@@ -60,9 +54,4 @@ tasks.register('javadocJar', Jar) {
     dependsOn javadoc
     classifier = 'javadoc'
     from javadoc.destinationDir
-}
-
-artifacts {
-    archives javadocJar
-    archives sourcesJar
 }
