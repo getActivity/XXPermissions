@@ -34,8 +34,6 @@ android {
         }
     }
 
-    namespace 'com.hjq.permissions.demo'
-
     applicationVariants.configureEach { variant ->
         // apk 输出文件名配置
         variant.outputs.configureEach { output ->

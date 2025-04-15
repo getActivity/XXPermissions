@@ -13,8 +13,6 @@ android {
         abortOnError false
     }
 
-    namespace 'com.hjq.permissions'
-
     android.libraryVariants.configureEach { variant ->
         // aar 输出文件名配置
         variant.outputs.configureEach { output ->
