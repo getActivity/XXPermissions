@@ -1,13 +1,15 @@
-apply plugin: 'com.android.application'
+plugins {
+    alias(libs.plugins.agp.app)
+}
 apply from : '../common.gradle'
 
 android {
+    namespace = "com.hjq.permissions.demo"
 
     defaultConfig {
-        applicationId "com.hjq.permissions.demo"
         // 最低安装版本
-        minSdkVersion 16
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        minSdk = 21
+        proguardFiles += "proguard-rules.pro"
     }
 
     // Apk 签名的那些事：https://www.jianshu.com/p/a1f8e5896aa2
@@ -21,16 +23,12 @@ android {
     }
 
     buildTypes {
-        debug {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
+        configureEach {
+            signingConfig = signingConfigs.config
         }
-
         release {
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
+            minifyEnabled = true
+            shrinkResources = true
         }
     }
 
@@ -49,12 +47,20 @@ dependencies {
     implementation project(':library')
 
     // 谷歌兼容库：https://developer.android.google.cn/jetpack/androidx/releases/appcompat?hl=zh-cn
-    // noinspection GradleCompatible
-    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation(libs.androidx.appcompat)
 
     // 吐司框架：https://github.com/getActivity/Toaster
-    implementation 'com.github.getActivity:Toaster:12.8'
+    implementation(libs.getactivity.toaster)
 
     // 内存泄漏检测：https://github.com/square/leakcanary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
+    debugImplementation(libs.leakcanary.android)
+}
+
+configurations.implementation {
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
 }

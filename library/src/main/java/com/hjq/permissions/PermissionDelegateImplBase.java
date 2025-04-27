@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.VpnService;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import java.util.Collections;
 
 /**

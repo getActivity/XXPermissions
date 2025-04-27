@@ -18,9 +18,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.view.Display;
 import android.view.Surface;
@@ -84,6 +84,7 @@ final class PermissionUtils {
         }
     }
 
+    @Deprecated
     @RequiresApi(AndroidVersion.ANDROID_4_4)
     static boolean checkOpNoThrow(Context context, String opName) {
         AppOpsManager appOps = (AppOpsManager)
@@ -192,6 +193,7 @@ final class PermissionUtils {
      * 第一是返回的类型不是 java.util.ArrayList 而是 java.util.Arrays.ArrayList
      * 第二是返回的 ArrayList 对象是只读的，也就是不能添加任何元素，否则会抛异常
      */
+    @Deprecated
     @SuppressWarnings("all")
     @NonNull
     static <T> ArrayList<T> asArrayList(@Nullable T... array) {
@@ -341,6 +343,7 @@ final class PermissionUtils {
     /**
      * 判断 Activity 是否反方向旋转了
      */
+    @Deprecated
     static boolean isActivityReverse(@NonNull Activity activity) {
         Display display = null;
         if (AndroidVersion.isAndroid11()) {

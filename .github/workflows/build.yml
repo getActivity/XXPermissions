@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  push:
+    paths-ignore:
+      - 'docs/**'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-24.04
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set environments
+        run: |
+          {
+            echo "project=$(grep rootProject.name settings.gradle | awk -F\" '{print $2}')"
+            echo "version=$(grep versionName common.gradle | awk -F\" '{print $2}')"
+            echo "commit=$(echo ${{ github.sha }} | cut -c-7)"
+          } >> $GITHUB_ENV
+
+      - name: Build
+        run: ./gradlew --no-daemon --warning-mode=all assembleDebug
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.project }}-${{ env.version }}@${{ env.commit }}
+          path: |
+            build/app/outputs/apk/debug/${{ env.project }}.apk
+            build/library/outputs/aar/${{ env.project }}-${{ env.version }}.aar

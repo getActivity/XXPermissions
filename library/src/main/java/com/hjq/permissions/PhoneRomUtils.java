@@ -2,7 +2,7 @@ package com.hjq.permissions;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

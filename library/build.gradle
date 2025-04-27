@@ -1,15 +1,18 @@
-apply plugin: 'com.android.library'
+plugins {
+    alias(libs.plugins.agp.lib)
+}
 apply from : '../common.gradle'
 
 android {
+    namespace = "com.hjq.permissions"
 
     defaultConfig {
         // 最低安装版本
-        minSdkVersion 14
+        minSdk = 14
     }
 
     lintOptions {
-        abortOnError false
+        abortOnError = false
     }
 
     android.libraryVariants.configureEach { variant ->
@@ -19,13 +22,16 @@ android {
         }
     }
 
-    packagingOptions {
+    packaging {
         // 剔除这个包下的所有文件（不会移除签名信息）
-        exclude 'META-INF/*******'
+        exclude 'META-INF/**'
     }
 }
 
 dependencies {
-    // noinspection GradleCompatible
-    compileOnly 'com.android.support:support-fragment:24.2.0'
+    compileOnly(libs.androidx.fragment)
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
 }

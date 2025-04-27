@@ -1,7 +1,6 @@
 package com.hjq.permissions;
 
-
-import android.support.annotation.StringDef;
+import androidx.annotation.StringDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -11,6 +10,7 @@ import java.lang.annotation.RetentionPolicy;
  *    time   : 2023/08/19
  *    desc   : 权限常量字符串限制
  */
+
 @StringDef({
     Permission.GET_INSTALLED_APPS,
     Permission.SCHEDULE_EXACT_ALARM,
@@ -58,6 +58,7 @@ import java.lang.annotation.RetentionPolicy;
     Permission.WRITE_CALL_LOG,
     Permission.ADD_VOICEMAIL,
     Permission.USE_SIP,
+    //noinspection deprecated
     Permission.PROCESS_OUTGOING_CALLS,
     Permission.BODY_SENSORS,
     Permission.SEND_SMS,

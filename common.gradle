@@ -2,18 +2,18 @@
 android {
 
     // 编译源码版本
-    compileSdk 34
+    compileSdk = 35
     defaultConfig {
         // Android 版本适配指南：https://github.com/getActivity/AndroidVersionAdapter
-        targetSdk 34
-        versionCode 2120
-        versionName "21.2"
+        targetSdk = compileSdk
+        versionCode = 2120
+        versionName = "21.2"
     }
 
-    // 支持 Java JDK 8
+    // 支持 Java JDK 21
     compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_8
-        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_21
+        sourceCompatibility JavaVersion.VERSION_21
     }
 
     // 读取 local.properties 文件配置

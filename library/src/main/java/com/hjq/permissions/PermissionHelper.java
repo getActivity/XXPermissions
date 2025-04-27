@@ -1,7 +1,7 @@
 package com.hjq.permissions;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -98,6 +98,7 @@ final class PermissionHelper {
         PERMISSION_VERSION_MAP.put(Permission.WRITE_CALL_LOG, AndroidVersion.ANDROID_6);
         PERMISSION_VERSION_MAP.put(Permission.ADD_VOICEMAIL, AndroidVersion.ANDROID_6);
         PERMISSION_VERSION_MAP.put(Permission.USE_SIP, AndroidVersion.ANDROID_6);
+        //noinspection deprecated
         PERMISSION_VERSION_MAP.put(Permission.PROCESS_OUTGOING_CALLS, AndroidVersion.ANDROID_6);
         PERMISSION_VERSION_MAP.put(Permission.BODY_SENSORS, AndroidVersion.ANDROID_6);
         PERMISSION_VERSION_MAP.put(Permission.SEND_SMS, AndroidVersion.ANDROID_6);

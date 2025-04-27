@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +40,7 @@ public final class XXPermissions {
         return with(fragment.getActivity());
     }
 
-    public static XXPermissions with(@NonNull android.support.v4.app.Fragment fragment) {
+    public static XXPermissions with(@NonNull androidx.fragment.app.Fragment fragment) {
         return with(fragment.getActivity());
     }
 
@@ -481,28 +481,28 @@ public final class XXPermissions {
         RequestSpecialPermissionFragment.launch(activity, permissions, callback);
     }
 
-    /* android.support.v4.app.Fragment */
+    /* androidx.fragment.app.Fragment */
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment) {
+    public static void startPermissionActivity(@NonNull androidx.fragment.app.Fragment fragment) {
         startPermissionActivity(fragment, new ArrayList<>());
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startPermissionActivity(@NonNull androidx.fragment.app.Fragment fragment,
                                                @NonNull String... permissions) {
         startPermissionActivity(fragment, PermissionUtils.asArrayList(permissions));
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startPermissionActivity(@NonNull androidx.fragment.app.Fragment fragment,
                                                @NonNull String[]... permissions) {
         startPermissionActivity(fragment, PermissionUtils.asArrayLists(permissions));
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startPermissionActivity(@NonNull androidx.fragment.app.Fragment fragment,
                                                @NonNull List<String> permissions) {
         startPermissionActivity(fragment, permissions, REQUEST_CODE);
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startPermissionActivity(@NonNull androidx.fragment.app.Fragment fragment,
                                                @NonNull List<String> permissions,
                                                int requestCode) {
         Activity activity = fragment.getActivity();
@@ -517,19 +517,19 @@ public final class XXPermissions {
         PermissionActivityIntentHandler.startActivityForResult(fragment, intent, requestCode);
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startPermissionActivity(@NonNull androidx.fragment.app.Fragment fragment,
                                                @NonNull String permission,
                                                @Nullable OnPermissionPageCallback callback) {
         startPermissionActivity(fragment, PermissionUtils.asArrayList(permission), callback);
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startPermissionActivity(@NonNull androidx.fragment.app.Fragment fragment,
                                                @NonNull String[] permissions,
                                                @Nullable OnPermissionPageCallback callback) {
         startPermissionActivity(fragment, PermissionUtils.asArrayLists(permissions), callback);
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startPermissionActivity(@NonNull androidx.fragment.app.Fragment fragment,
                                                @NonNull List<String> permissions,
                                                @Nullable OnPermissionPageCallback callback) {
         Activity activity = fragment.getActivity();

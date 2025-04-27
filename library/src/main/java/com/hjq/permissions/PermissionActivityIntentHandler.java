@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  *    author : Android 轮子哥
@@ -21,6 +21,7 @@ final class PermissionActivityIntentHandler {
     /**
      * 从父意图中获取子意图
      */
+    @Deprecated
     private static Intent findSubIntentBySuperIntent(@NonNull Intent superIntent) {
         Intent subIntent;
         if (AndroidVersion.isAndroid13()) {
@@ -65,11 +66,12 @@ final class PermissionActivityIntentHandler {
         return startActivity(new StartActivityDelegateActivityImpl(activity), intent);
     }
 
+    @Deprecated
     static boolean startActivity(@NonNull Fragment fragment, Intent intent) {
         return startActivity(new StartActivityDelegateFragmentImpl(fragment), intent);
     }
 
-    static boolean startActivity(@NonNull android.support.v4.app.Fragment fragment, Intent intent) {
+    static boolean startActivity(@NonNull androidx.fragment.app.Fragment fragment, Intent intent) {
         return startActivity(new StartActivityDelegateSupportFragmentImpl(fragment), intent);
     }
 
@@ -91,11 +93,12 @@ final class PermissionActivityIntentHandler {
         return startActivityForResult(new StartActivityDelegateActivityImpl(activity), intent, requestCode);
     }
 
+    @Deprecated
     static boolean startActivityForResult(@NonNull Fragment fragment, @NonNull Intent intent, int requestCode) {
         return startActivityForResult(new StartActivityDelegateFragmentImpl(fragment), intent, requestCode);
     }
 
-    static boolean startActivityForResult(@NonNull android.support.v4.app.Fragment fragment, @NonNull Intent intent, int requestCode) {
+    static boolean startActivityForResult(@NonNull androidx.fragment.app.Fragment fragment, @NonNull Intent intent, int requestCode) {
         return startActivityForResult(new StartActivityDelegateSupportFragmentImpl(fragment), intent, requestCode);
     }
 
@@ -163,6 +166,7 @@ final class PermissionActivityIntentHandler {
         }
     }
 
+    @Deprecated
     private static class StartActivityDelegateFragmentImpl implements StartActivityDelegate {
 
         private final Fragment mFragment;
@@ -184,9 +188,9 @@ final class PermissionActivityIntentHandler {
 
     private static class StartActivityDelegateSupportFragmentImpl implements StartActivityDelegate {
 
-        private final android.support.v4.app.Fragment mFragment;
+        private final androidx.fragment.app.Fragment mFragment;
 
-        private StartActivityDelegateSupportFragmentImpl(@NonNull android.support.v4.app.Fragment fragment) {
+        private StartActivityDelegateSupportFragmentImpl(@NonNull androidx.fragment.app.Fragment fragment) {
             mFragment = fragment;
         }
 
