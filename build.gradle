@@ -18,6 +18,17 @@ allprojects {
     }
 }
 
+ext {
+    POM_GROUP = "com.github.getActivity"
+    POM_DESCRIPTION = "Android 权限请求框架，已适配 Android 15"
+    POM_URL = "https://github.com/getActivity/XXPermissions"
+    POM_SCM = "scm:git@github.com:getActivity/XXPermissions"
+    POM_LICENSE_NAME = "Apache-2.0"
+    POM_LICENSE_URL = "https://github.com/getActivity/XXPermissions/blob/master/LICENSE"
+    POM_DEVELOPER_NAME = "getActivity"
+    POM_DEVELOPER_URL = "https://github.com/getActivity"
+}
+
 tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }

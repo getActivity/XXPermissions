@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.agp.lib)
+    id 'maven-publish'
+    id 'signing'
 }
 apply from : '../common.gradle'
 
@@ -26,10 +28,56 @@ android {
         // 剔除这个包下的所有文件（不会移除签名信息）
         exclude 'META-INF/**'
     }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
     compileOnly(libs.androidx.fragment)
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            group = rootProject.POM_GROUP
+            artifactId = rootProject.name
+            version = android.defaultConfig.versionName
+            afterEvaluate {
+                from components.release
+            }
+            pom {
+                name = rootProject.name
+                description = rootProject.POM_DESCRIPTION
+                url = rootProject.POM_URL
+                scm {
+                    connection = rootProject.POM_SCM
+                    url = rootProject.POM_URL
+                }
+                licenses {
+                    license {
+                        name = rootProject.POM_LICENSE_NAME
+                        url = rootProject.POM_LICENSE_URL
+                    }
+                }
+                developers {
+                    developer {
+                        name = rootProject.POM_DEVELOPER_NAME
+                        url = rootProject.POM_DEVELOPER_URL
+                    }
+                }
+            }
+        }
+    }
+}
+
+signing {
+    useGpgCmd()
+    sign publishing.publications.mavenJava
 }
 
 tasks.withType(JavaCompile).configureEach {
