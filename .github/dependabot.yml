@@ -8,6 +8,7 @@ updates:
     target-branch: master
     registries:
       - maven-google
+      - maven-central
       - gradle-plugin
     groups:
       maven-dependencies:
@@ -18,6 +19,9 @@ registries:
   maven-google:
     type: maven-repository
     url: "https://dl.google.com/dl/android/maven2/"
+  maven-central:
+    type: maven-repository
+    url: "https://repo1.maven.org/maven2/"
   gradle-plugin:
     type: maven-repository
     url: "https://plugins.gradle.org/m2/"
