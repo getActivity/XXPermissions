@@ -26,9 +26,7 @@ class PermissionDelegateImplBase implements PermissionDelegate {
 
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
-        if (PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE)) {
-            return false;
-        }
+        PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE);
 
         return false;
     }
@@ -77,6 +75,7 @@ class PermissionDelegateImplBase implements PermissionDelegate {
     /**
      * 获取应用详情页 Intent
      */
+    @NonNull
     static Intent getApplicationDetailsIntent(@NonNull Context context) {
         return PermissionIntentManager.getApplicationDetailsIntent(context);
     }

@@ -1,5 +1,6 @@
 package com.hjq.permissions;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -209,7 +210,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
      */
     @RequiresApi(AndroidVersion.ANDROID_6)
     private static Intent getIgnoreBatteryPermissionIntent(@NonNull Context context) {
-        Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+        @SuppressLint("BatteryLife") Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
         intent.setData(PermissionUtils.getPackageNameUri(context));
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {

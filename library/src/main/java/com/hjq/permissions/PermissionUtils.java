@@ -45,6 +45,7 @@ import org.xmlpull.v1.XmlPullParserException;
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2018/06/15
  *    desc   : 权限相关工具类
+ * @noinspection CallToPrintStackTrace
  */
 final class PermissionUtils {
 
@@ -84,9 +85,8 @@ final class PermissionUtils {
         }
     }
 
-    @Deprecated
     @RequiresApi(AndroidVersion.ANDROID_4_4)
-    static boolean checkOpNoThrow(Context context, String opName) {
+    static boolean checkOpNoThrow(@NonNull Context context, String opName) {
         AppOpsManager appOps = (AppOpsManager)
             context.getSystemService(Context.APP_OPS_SERVICE);
         int mode;
@@ -193,7 +193,6 @@ final class PermissionUtils {
      * 第一是返回的类型不是 java.util.ArrayList 而是 java.util.Arrays.ArrayList
      * 第二是返回的 ArrayList 对象是只读的，也就是不能添加任何元素，否则会抛异常
      */
-    @Deprecated
     @SuppressWarnings("all")
     @NonNull
     static <T> ArrayList<T> asArrayList(@Nullable T... array) {
@@ -343,7 +342,6 @@ final class PermissionUtils {
     /**
      * 判断 Activity 是否反方向旋转了
      */
-    @Deprecated
     static boolean isActivityReverse(@NonNull Activity activity) {
         Display display = null;
         if (AndroidVersion.isAndroid11()) {
@@ -375,6 +373,7 @@ final class PermissionUtils {
     /**
      * 判断这个意图的 Activity 是否存在
      */
+    @SuppressLint("QueryPermissionsNeeded")
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     static boolean areActivityIntent(@NonNull Context context, @Nullable Intent intent) {
         if (intent == null) {

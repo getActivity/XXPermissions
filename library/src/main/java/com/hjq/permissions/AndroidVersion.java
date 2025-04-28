@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+
 /**
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
@@ -44,7 +46,7 @@ final class AndroidVersion {
     /**
      * 获取 targetSdk 版本码
      */
-    static int getTargetSdkVersionCode(Context context) {
+    static int getTargetSdkVersionCode(@NonNull Context context) {
         return context.getApplicationInfo().targetSdkVersion;
     }
 

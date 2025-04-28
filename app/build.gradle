@@ -32,6 +32,10 @@ android {
         }
     }
 
+    androidResources {
+        generateLocaleConfig = true
+    }
+
     applicationVariants.configureEach { variant ->
         // apk 输出文件名配置
         variant.outputs.configureEach { output ->
@@ -41,13 +45,11 @@ android {
 }
 
 dependencies {
-    // 依赖 libs 目录下所有的 jar 和 aar 包
-    implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
-
     implementation project(':library')
 
     // 谷歌兼容库：https://developer.android.google.cn/jetpack/androidx/releases/appcompat?hl=zh-cn
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.exifinterface)
 
     // 吐司框架：https://github.com/getActivity/Toaster
     implementation(libs.getactivity.toaster)
@@ -59,8 +61,4 @@ dependencies {
 configurations.implementation {
     exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
     exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
 }

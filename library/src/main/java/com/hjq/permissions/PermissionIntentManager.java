@@ -131,7 +131,7 @@ final class PermissionIntentManager {
         }
 
         if (PermissionUtils.areActivityIntent(context, oppoSafeCenterAppIntent)) {
-            intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, oppoSafeCenterAppIntent);;
+            intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, oppoSafeCenterAppIntent);
         }
 
         return intent;
@@ -171,7 +171,7 @@ final class PermissionIntentManager {
     /* ---------------------------------------------------------------------------------------- */
 
     @Nullable
-    static Intent getMiuiPermissionPageIntent(Context context) {
+    static Intent getMiuiPermissionPageIntent(@NonNull Context context) {
         Intent appPermEditorActionIntent = new Intent()
             .setAction("miui.intent.action.APP_PERM_EDITOR")
             .putExtra("extra_pkgname", context.getPackageName());
@@ -191,7 +191,7 @@ final class PermissionIntentManager {
     }
 
     @Nullable
-    static Intent getOriginOsPermissionPageIntent(Context context) {
+    static Intent getOriginOsPermissionPageIntent(@NonNull Context context) {
         // vivo iQOO 9 Pro（OriginOs 2.0 Android 12）
         Intent intent = new Intent("permission.intent.action.softPermissionDetail");
         intent.putExtra("packagename", context.getPackageName());
@@ -205,7 +205,7 @@ final class PermissionIntentManager {
      * 获取三星权限设置意图
      */
     @Nullable
-    static Intent getOneUiPermissionPageIntent(Context context) {
+    static Intent getOneUiPermissionPageIntent(@NonNull Context context) {
         Intent intent = new Intent();
         intent.setClassName("com.android.settings", "com.android.settings.Settings$AppOpsDetailsActivity");
         Bundle extraShowFragmentArguments = new Bundle();
@@ -224,7 +224,7 @@ final class PermissionIntentManager {
      * 返回华为手机管家 App 意图
      */
     @Nullable
-    static Intent getHuaWeiMobileManagerAppIntent(Context context) {
+    static Intent getHuaWeiMobileManagerAppIntent(@NonNull Context context) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(EMUI_MOBILE_MANAGER_APP_PACKAGE_NAME);
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;
@@ -236,7 +236,7 @@ final class PermissionIntentManager {
      * 返回小米手机管家 App 意图
      */
     @Nullable
-    static Intent getXiaoMiMobileManagerAppIntent(Context context) {
+    static Intent getXiaoMiMobileManagerAppIntent(@NonNull Context context) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(MIUI_MOBILE_MANAGER_APP_PACKAGE_NAME);
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;
@@ -248,7 +248,7 @@ final class PermissionIntentManager {
      * 获取 oppo 安全中心 App 意图
      */
     @Nullable
-    static Intent getOppoSafeCenterAppIntent(Context context) {
+    static Intent getOppoSafeCenterAppIntent(@NonNull Context context) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(COLOR_OS_SAFE_CENTER_APP_PACKAGE_NAME_1);
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;
@@ -268,7 +268,7 @@ final class PermissionIntentManager {
      * 获取 vivo 管家手机意图
      */
     @Nullable
-    static Intent getVivoMobileManagerAppIntent(Context context) {
+    static Intent getVivoMobileManagerAppIntent(@NonNull Context context) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(ORIGIN_OS_MOBILE_MANAGER_APP_PACKAGE_NAME);
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;

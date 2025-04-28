@@ -109,6 +109,7 @@ final class WindowPermissionCompat {
         return PermissionIntentManager.getApplicationDetailsIntent(context);
     }
 
+    @NonNull
     @RequiresApi(AndroidVersion.ANDROID_6)
     private static Intent getManageOverlayPermissionIntent(Context context) {
         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);

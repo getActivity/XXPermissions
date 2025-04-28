@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
  *    time   : 2024/09/29
  *    desc   : 权限申请专用的 Fragment 基类
  */
-@Deprecated
 public abstract class RequestBasePermissionFragment extends Fragment  {
 
     /** 请求的权限 */

@@ -52,6 +52,7 @@ class PermissionDelegateImplV21 extends PermissionDelegateImplV19 {
     /**
      * 是否有使用统计权限
      */
+    @Deprecated
     @RequiresApi(AndroidVersion.ANDROID_5)
     private static boolean isGrantedPackagePermission(@NonNull Context context) {
         return PermissionUtils.checkOpNoThrow(context, AppOpsManager.OPSTR_GET_USAGE_STATS);

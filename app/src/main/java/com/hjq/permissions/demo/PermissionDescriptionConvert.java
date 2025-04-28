@@ -15,6 +15,7 @@ public final class PermissionDescriptionConvert {
     /**
      * 获取权限描述
      */
+   @NonNull
    public static String getPermissionDescription(Context context, List<String> permissions) {
        StringBuilder stringBuilder = new StringBuilder();
        List<String> permissionNames = PermissionNameConvert.permissionsToNames(context, permissions);

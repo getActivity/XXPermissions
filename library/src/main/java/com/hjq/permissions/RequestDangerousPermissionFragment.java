@@ -119,7 +119,7 @@ public final class RequestDangerousPermissionFragment extends RequestBasePermiss
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Bundle arguments = getArguments();
         Activity activity = getActivity();
         if (activity == null || arguments == null ||
@@ -128,7 +128,7 @@ public final class RequestDangerousPermissionFragment extends RequestBasePermiss
         }
 
         // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/236
-        if (permissions == null || permissions.length == 0 || grantResults == null || grantResults.length == 0) {
+        if (permissions.length == 0 || grantResults.length == 0) {
             return;
         }
 

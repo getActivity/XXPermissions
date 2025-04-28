@@ -126,10 +126,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     public void grantedPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
                                          @NonNull List<String> grantedPermissions, boolean allGranted,
                                          @Nullable OnPermissionCallback callback) {
-        if (callback == null) {
-            return;
-        }
-        callback.onGranted(grantedPermissions, allGranted);
+        OnPermissionInterceptor.super.grantedPermissionRequest(activity, allPermissions, grantedPermissions, allGranted, callback);
     }
 
     @Override
@@ -188,7 +185,8 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     /**
      * 生成权限说明文案
      */
-    protected String generatePermissionDescription(Context context, @NonNull List<String> permissions) {
+    @NonNull
+    private String generatePermissionDescription(Context context, @NonNull List<String> permissions) {
         return PermissionDescriptionConvert.getPermissionDescription(context, permissions);
     }
 

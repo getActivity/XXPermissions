@@ -91,6 +91,7 @@ final class PermissionApi {
     /**
      * 获取已经授予的权限
      */
+    @NonNull
     static List<String> getGrantedPermissions(@NonNull Context context, @NonNull List<String> permissions) {
         List<String> grantedPermission = new ArrayList<>(permissions.size());
         for (String permission : permissions) {
@@ -104,6 +105,7 @@ final class PermissionApi {
     /**
      * 获取已经拒绝的权限
      */
+    @NonNull
     static List<String> getDeniedPermissions(@NonNull Context context, @NonNull List<String> permissions) {
         List<String> deniedPermission = new ArrayList<>(permissions.size());
         for (String permission : permissions) {
@@ -135,6 +137,7 @@ final class PermissionApi {
      * @param permissions           需要请求的权限组
      * @param grantResults          允许结果组
      */
+    @NonNull
     static List<String> getDeniedPermissions(@NonNull List<String> permissions, @NonNull int[] grantResults) {
         List<String> deniedPermissions = new ArrayList<>();
         for (int i = 0; i < grantResults.length; i++) {
@@ -152,6 +155,7 @@ final class PermissionApi {
      * @param permissions       需要请求的权限组
      * @param grantResults      允许结果组
      */
+    @NonNull
     static List<String> getGrantedPermissions(@NonNull List<String> permissions, @NonNull int[] grantResults) {
         List<String> grantedPermissions = new ArrayList<>();
         for (int i = 0; i < grantResults.length; i++) {
@@ -213,6 +217,7 @@ final class PermissionApi {
      *
      * @param requestPermissions            请求的权限组
      */
+    @NonNull
     static List<String> compatibleOldPermissionByNewPermission(@NonNull List<String> requestPermissions) {
         List<String> permissions = new ArrayList<>(requestPermissions);
         for (String permission : requestPermissions) {

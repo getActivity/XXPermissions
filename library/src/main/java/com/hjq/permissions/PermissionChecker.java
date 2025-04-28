@@ -15,6 +15,7 @@ import java.util.List;
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2021/02/09
  *    desc   : 权限错误检测类
+ * @noinspection CallToPrintStackTrace
  */
 final class PermissionChecker {
 

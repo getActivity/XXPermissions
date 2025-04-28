@@ -79,7 +79,3 @@ signing {
     useGpgCmd()
     sign publishing.publications.mavenJava
 }
-
-tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs << "-Xlint:deprecation" << "-Xlint:unchecked"
-}

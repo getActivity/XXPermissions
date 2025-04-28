@@ -10,5 +10,6 @@ ext {
 }
 
 tasks.register('clean', Delete) {
+    //noinspection GrDeprecatedAPIUsage
     delete rootProject.buildDir
 }

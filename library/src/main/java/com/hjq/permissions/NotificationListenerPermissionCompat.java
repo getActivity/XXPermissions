@@ -12,6 +12,7 @@ import android.text.TextUtils;
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2023/03/12
  *    desc   : 通知栏监听权限兼容类
+ * @noinspection CallToPrintStackTrace
  */
 final class NotificationListenerPermissionCompat {
 

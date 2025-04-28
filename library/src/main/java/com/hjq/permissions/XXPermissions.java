@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,14 +33,17 @@ public final class XXPermissions {
      *
      * @param context          当前 Activity，可以传入栈顶的 Activity
      */
+    @NonNull
     public static XXPermissions with(@NonNull Context context) {
         return new XXPermissions(context);
     }
 
+    @NonNull
     public static XXPermissions with(@NonNull Fragment fragment) {
         return with(fragment.getActivity());
     }
 
+    @NonNull
     public static XXPermissions with(@NonNull androidx.fragment.app.Fragment fragment) {
         return with(fragment.getActivity());
     }
@@ -285,14 +289,17 @@ public final class XXPermissions {
     /**
      * 获取没有授予的权限
      */
+    @NonNull
     public static List<String> getDenied(@NonNull Context context, @NonNull String... permissions) {
         return getDenied(context, PermissionUtils.asArrayList(permissions));
     }
 
+    @NonNull
     public static List<String> getDenied(@NonNull Context context, @NonNull String[]... permissions) {
         return getDenied(context, PermissionUtils.asArrayLists(permissions));
     }
 
+    @NonNull
     public static List<String> getDenied(@NonNull Context context, @NonNull List<String> permissions) {
         return PermissionApi.getDeniedPermissions(context, permissions);
     }

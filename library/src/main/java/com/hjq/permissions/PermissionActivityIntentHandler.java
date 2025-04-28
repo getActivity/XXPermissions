@@ -21,7 +21,6 @@ final class PermissionActivityIntentHandler {
     /**
      * 从父意图中获取子意图
      */
-    @Deprecated
     private static Intent findSubIntentBySuperIntent(@NonNull Intent superIntent) {
         Intent subIntent;
         if (AndroidVersion.isAndroid13()) {
@@ -66,7 +65,6 @@ final class PermissionActivityIntentHandler {
         return startActivity(new StartActivityDelegateActivityImpl(activity), intent);
     }
 
-    @Deprecated
     static boolean startActivity(@NonNull Fragment fragment, Intent intent) {
         return startActivity(new StartActivityDelegateFragmentImpl(fragment), intent);
     }
@@ -93,7 +91,6 @@ final class PermissionActivityIntentHandler {
         return startActivityForResult(new StartActivityDelegateActivityImpl(activity), intent, requestCode);
     }
 
-    @Deprecated
     static boolean startActivityForResult(@NonNull Fragment fragment, @NonNull Intent intent, int requestCode) {
         return startActivityForResult(new StartActivityDelegateFragmentImpl(fragment), intent, requestCode);
     }
@@ -166,7 +163,6 @@ final class PermissionActivityIntentHandler {
         }
     }
 
-    @Deprecated
     private static class StartActivityDelegateFragmentImpl implements StartActivityDelegate {
 
         private final Fragment mFragment;

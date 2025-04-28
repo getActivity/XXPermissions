@@ -58,7 +58,6 @@ import java.lang.annotation.RetentionPolicy;
     Permission.WRITE_CALL_LOG,
     Permission.ADD_VOICEMAIL,
     Permission.USE_SIP,
-    //noinspection deprecated
     Permission.PROCESS_OUTGOING_CALLS,
     Permission.BODY_SENSORS,
     Permission.SEND_SMS,

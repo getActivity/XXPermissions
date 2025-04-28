@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi;
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2023/03/12
  *    desc   : 读取应用列表权限兼容类
+ * @noinspection CallToPrintStackTrace
  */
 final class GetInstalledAppsPermissionCompat {
 
@@ -86,8 +87,7 @@ final class GetInstalledAppsPermissionCompat {
      * 判断是否支持获取应用列表权限
      */
     @RequiresApi(AndroidVersion.ANDROID_6)
-    @SuppressWarnings("deprecation")
-    private static boolean isSupportGetInstalledAppsPermission(Context context) {
+    private static boolean isSupportGetInstalledAppsPermission(@NonNull Context context) {
         try {
             PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(Permission.GET_INSTALLED_APPS, 0);
             if (permissionInfo != null) {

@@ -1,6 +1,12 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        // MavenCentral 远程仓库：https://mvnrepository.com
+        mavenCentral()
+        // Google 仓库：https://maven.google.com/web/index.html
+        google()
+        // JitPack 远程仓库：https://jitpack.io
+        maven { url = 'https://jitpack.io' }
         // 阿里云云效仓库（Gradle 插件）：https://maven.aliyun.com/mvn/guide
         maven { url = 'https://maven.aliyun.com/repository/gradle-plugin' }
         // 阿里云云效仓库：https://maven.aliyun.com/mvn/guide
@@ -8,28 +14,22 @@ pluginManagement {
         maven { url = 'https://maven.aliyun.com/repository/google' }
         // 华为开源镜像：https://mirrors.huaweicloud.com
         maven { url = 'https://repo.huaweicloud.com/repository/maven' }
-        // JitPack 远程仓库：https://jitpack.io
-        maven { url = 'https://jitpack.io' }
-        // MavenCentral 远程仓库：https://mvnrepository.com
-        mavenCentral()
-        // Google 仓库：https://maven.google.com/web/index.html
-        google()
     }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        // MavenCentral 远程仓库：https://mvnrepository.com
+        mavenCentral()
+        // Google 仓库：https://maven.google.com/web/index.html
+        google()
+        // JitPack 远程仓库：https://jitpack.io
+        maven { url = 'https://jitpack.io' }
         // 阿里云云效仓库：https://maven.aliyun.com/mvn/guide
         maven { url = 'https://maven.aliyun.com/repository/public' }
         maven { url = 'https://maven.aliyun.com/repository/google' }
         // 华为开源镜像：https://mirrors.huaweicloud.com
         maven { url = 'https://repo.huaweicloud.com/repository/maven' }
-        // JitPack 远程仓库：https://jitpack.io
-        maven { url = 'https://jitpack.io' }
-        // MavenCentral 远程仓库：https://mvnrepository.com
-        mavenCentral()
-        // Google 仓库：https://maven.google.com/web/index.html
-        google()
     }
 }
 rootProject.name = "XXPermissions"

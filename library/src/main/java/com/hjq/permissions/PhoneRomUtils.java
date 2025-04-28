@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2023/04/05
  *    desc   : 厂商 Rom 工具类
+ * @noinspection CallToPrintStackTrace
  */
 final class PhoneRomUtils {
 

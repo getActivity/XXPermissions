@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -17,7 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  *    time   : 2018/06/15
  *    desc   : 权限申请处理器
  */
-@SuppressWarnings("deprecation")
 public final class PermissionHandler {
 
     /**
@@ -152,7 +152,7 @@ public final class PermissionHandler {
             }
 
             // 如果这个权限有组别，那么就获取这个组别的全部权限
-            List<String> dangerousPermissionGroup = new ArrayList<>(PermissionHelper.getDangerousPermissionGroup(permissionGroupType));
+            List<String> dangerousPermissionGroup = new ArrayList<>(Objects.requireNonNull(PermissionHelper.getDangerousPermissionGroup(permissionGroupType)));
             // 对这个组别的权限进行逐个遍历
             Iterator<String> iterator = dangerousPermissionGroup.iterator();
             while (iterator.hasNext()) {

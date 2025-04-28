@@ -1,16 +1,18 @@
 [versions]
 agp = "8.9.2"
-androidx-appcompat = "1.7.0"
-androidx-fragment = "1.8.6"
-getactivity-toaster = "12.8"
-leakcanary-android = "2.14"
+appcompat = "1.7.0"
+fragment = "1.8.6"
+exifinterface = "1.4.1"
+toaster = "12.8"
+leakcanary = "2.14"
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
 agp-lib = { id = "com.android.library", version.ref = "agp" }
 
 [libraries]
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx.appcompat" }
-androidx-fragment = { group = "androidx.fragment", name = "fragment", version.ref = "androidx.fragment" }
-getactivity-toaster = { group = "com.github.getActivity", name = "Toaster", version.ref = "getactivity.toaster" }
-leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary.android" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+androidx-fragment = { group = "androidx.fragment", name = "fragment", version.ref = "fragment" }
+androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exifinterface" }
+getactivity-toaster = { group = "com.github.getActivity", name = "Toaster", version.ref = "toaster" }
+leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" }
