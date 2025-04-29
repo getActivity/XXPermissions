@@ -525,10 +525,12 @@ final class PermissionChecker {
             }
 
             // 其他的
-            if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
-                // 申请读取应用列表权限需要在清单文件中注册 QUERY_ALL_PACKAGES 权限
+            if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS) &&
+                AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_11) {
+                // 在 targetSdk >= 30 的时候，申请读取应用列表权限需要在清单文件中注册 QUERY_ALL_PACKAGES 权限
                 // 否则就算申请 GET_INSTALLED_APPS 权限成功也是白搭，也是获取不到第三方安装列表信息的
-                // Manifest.permission.QUERY_ALL_PACKAGES
+                // 如果你想要在权限申请后，通过 <queries> 的方式添加需要读取的应用，而不是获取全部的应用
+                // 可以用 unchecked() 忽略本次权限申请错误检测机制，但是这种情况比较少见
                 checkManifestPermission(permissionInfoList, "android.permission.QUERY_ALL_PACKAGES");
                 continue;
             }
