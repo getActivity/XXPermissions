@@ -140,7 +140,7 @@ final class PermissionChecker {
      * 检查存储权限
      */
     static void checkStoragePermission(@NonNull Context context, @NonNull List<String> requestPermissions,
-        @Nullable AndroidManifestInfo androidManifestInfo) {
+                                        @Nullable AndroidManifestInfo androidManifestInfo) {
         // 如果请求的权限中没有包含外部存储相关的权限，那么就不符合条件，停止检查
         if (!PermissionUtils.containsPermission(requestPermissions, Permission.READ_MEDIA_IMAGES) &&
             !PermissionUtils.containsPermission(requestPermissions, Permission.READ_MEDIA_VIDEO) &&
@@ -298,7 +298,7 @@ final class PermissionChecker {
      * 检查蓝牙和 WIFI 权限申请是否符合规范
      */
     static void checkNearbyDevicesPermission(@NonNull List<String> requestPermissions,
-        @Nullable AndroidManifestInfo androidManifestInfo) {
+                                                @Nullable AndroidManifestInfo androidManifestInfo) {
         // 如果请求的权限中没有蓝牙权限并且 WIFI 权限，那么就不符合条件，停止检查
         if (!PermissionUtils.containsPermission(requestPermissions, Permission.BLUETOOTH_SCAN) &&
             !PermissionUtils.containsPermission(requestPermissions, Permission.NEARBY_WIFI_DEVICES)) {
@@ -354,7 +354,7 @@ final class PermissionChecker {
      * 检查通知栏监听权限
      */
     static void checkNotificationListenerPermission(@NonNull List<String> requestPermissions,
-        @Nullable AndroidManifestInfo androidManifestInfo) {
+                                                    @Nullable AndroidManifestInfo androidManifestInfo) {
         // 如果请求的权限中没有通知栏监听权限，那么就不符合条件，停止检查
         if (!PermissionUtils.containsPermission(requestPermissions, Permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
             return;
@@ -475,7 +475,7 @@ final class PermissionChecker {
      * @param requestPermissions            请求的权限组
      */
     static void checkManifestPermissions(@NonNull Context context, @NonNull List<String> requestPermissions,
-        @Nullable AndroidManifestInfo androidManifestInfo) {
+                                            @Nullable AndroidManifestInfo androidManifestInfo) {
         if (androidManifestInfo == null) {
             return;
         }
@@ -531,7 +531,13 @@ final class PermissionChecker {
                 // 否则就算申请 GET_INSTALLED_APPS 权限成功也是白搭，也是获取不到第三方安装列表信息的
                 // 如果你想要在权限申请后，通过 <queries> 的方式添加需要读取的应用，而不是获取全部的应用
                 // 可以用 unchecked() 忽略本次权限申请错误检测机制，但是这种情况比较少见
-                checkManifestPermission(permissionInfoList, "android.permission.QUERY_ALL_PACKAGES");
+                String checkPermission;
+                if (AndroidVersion.isAndroid11()) {
+                    checkPermission = Manifest.permission.QUERY_ALL_PACKAGES;
+                } else {
+                    checkPermission = "android.permission.QUERY_ALL_PACKAGES";
+                }
+                checkManifestPermission(permissionInfoList, checkPermission);
                 continue;
             }
 
@@ -591,7 +597,7 @@ final class PermissionChecker {
     }
 
     static void checkManifestPermission(@NonNull List<AndroidManifestInfo.PermissionInfo> permissionInfoList,
-        String checkPermission) {
+                                        @NonNull String checkPermission) {
         checkManifestPermission(permissionInfoList, checkPermission, Integer.MAX_VALUE);
     }
 
@@ -600,10 +606,10 @@ final class PermissionChecker {
      *
      * @param permissionInfoList        清单权限组
      * @param checkPermission           被检查的权限
-     * @param maxSdkVersion             最低要求的 maxSdkVersion
+     * @param lowestMaxSdkVersion       最低要求的 maxSdkVersion
      */
     static void checkManifestPermission(@NonNull List<AndroidManifestInfo.PermissionInfo> permissionInfoList,
-        String checkPermission, int maxSdkVersion) {
+                                        @NonNull String checkPermission, int lowestMaxSdkVersion) {
         AndroidManifestInfo.PermissionInfo permissionInfo = null;
         for (AndroidManifestInfo.PermissionInfo info : permissionInfoList) {
             if (TextUtils.equals(info.name, checkPermission)) {
@@ -624,7 +630,7 @@ final class PermissionChecker {
 
         int manifestMaxSdkVersion = permissionInfo.maxSdkVersion;
 
-        if (manifestMaxSdkVersion < maxSdkVersion) {
+        if (manifestMaxSdkVersion < lowestMaxSdkVersion) {
             // 清单文件中所注册的权限 maxSdkVersion 大小不符合最低要求，分为以下两种情况：
             // 1. 如果你的项目中注册了该属性，请根据报错提示修改 maxSdkVersion 属性值或者删除 maxSdkVersion 属性
             // 2. 如果你明明没有注册过 maxSdkVersion 属性，可以检查一下编译完成的 apk 包中是否有该属性，如果里面存在，证明框架的判断是没有问题的
@@ -634,8 +640,8 @@ final class PermissionChecker {
                 "<uses-permission android:name=\"" + checkPermission +
                 "\" android:maxSdkVersion=\"" + manifestMaxSdkVersion +
                 "\" /> does not meet the requirements, " +
-                (maxSdkVersion != Integer.MAX_VALUE ?
-                    "the minimum requirement for maxSdkVersion is " + maxSdkVersion :
+                (lowestMaxSdkVersion != Integer.MAX_VALUE ?
+                    "the minimum requirement for maxSdkVersion is " + lowestMaxSdkVersion :
                     "please delete the android:maxSdkVersion=\"" + manifestMaxSdkVersion + "\" attribute"));
         }
     }
