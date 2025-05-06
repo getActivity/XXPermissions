@@ -107,4 +107,12 @@
 
     </application>
 
+<!--    &lt;!&ndash; Android 11 软件包可见性适配：https://developer.android.google.cn/about/versions/11/privacy/package-visibility &ndash;&gt;-->
+<!--    <queries>-->
+<!--        &lt;!&ndash; 手机 QQ 的包名 &ndash;&gt;-->
+<!--        <package android:name="com.tencent.mobileqq" />-->
+<!--        &lt;!&ndash; 微信的包名 &ndash;&gt;-->
+<!--        <package android:name="com.tencent.mm" />-->
+<!--    </queries>-->
+
 </manifest>

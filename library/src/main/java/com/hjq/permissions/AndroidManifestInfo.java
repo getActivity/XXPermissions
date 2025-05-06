@@ -25,6 +25,10 @@ final class AndroidManifestInfo {
     @NonNull
     final List<PermissionInfo> permissionInfoList = new ArrayList<>();
 
+    /** 查询包名列表 */
+    @NonNull
+    final List<String> queriesPackageList = new ArrayList<>();
+
     /** Application 节点信息 */
     @Nullable
     ApplicationInfo applicationInfo;

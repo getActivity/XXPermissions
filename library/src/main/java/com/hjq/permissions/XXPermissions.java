@@ -194,6 +194,8 @@ public final class XXPermissions {
             PermissionChecker.checkNearbyDevicesPermission(permissions, androidManifestInfo);
             // 检查对照片和视频的部分访问权限申请是否符合规范
             PermissionChecker.checkReadMediaVisualUserSelectedPermission(permissions);
+            // 检查读取应用列表权限是否符合规范
+            PermissionChecker.checkGetInstallAppsPermission(context, permissions, androidManifestInfo);
             // 检查申请的权限和 targetSdk 版本是否能吻合
             PermissionChecker.checkTargetSdkVersion(context, permissions);
             // 检测权限有没有在清单文件中注册

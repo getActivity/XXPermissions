@@ -6,6 +6,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -430,9 +431,49 @@ final class PermissionChecker {
     }
 
     /**
+     * 检查读取应用列表权限是否是否符合规范
+     */
+    static void checkGetInstallAppsPermission(@NonNull Context context, @NonNull List<String> requestPermissions,
+                                                @Nullable AndroidManifestInfo androidManifestInfo) {
+        if (androidManifestInfo == null) {
+            return;
+        }
+
+        // 如果请求的权限中没有读取应用列表权限，那么就不符合条件，否则停止检查
+        if (!PermissionUtils.containsPermission(requestPermissions, Permission.GET_INSTALLED_APPS)) {
+            return;
+        }
+
+        // 当前 targetSdk 必须大于 Android 11，否则停止检查
+        if (AndroidVersion.getTargetSdkVersionCode(context) < AndroidVersion.ANDROID_11) {
+            return;
+        }
+
+        String queryAllPackagesPermissionName;
+        if (AndroidVersion.isAndroid11()) {
+            queryAllPackagesPermissionName = Manifest.permission.QUERY_ALL_PACKAGES;
+        } else {
+            queryAllPackagesPermissionName = "android.permission.QUERY_ALL_PACKAGES";
+        }
+
+        PermissionInfo permissionInfo = findPermissionInfoByList(androidManifestInfo.permissionInfoList, queryAllPackagesPermissionName);
+        if (permissionInfo != null || !androidManifestInfo.queriesPackageList.isEmpty()) {
+            return;
+        }
+
+        // 在 targetSdk >= 30 的时候，申请读取应用列表权限需要做一下处理
+        // 1. 读取所有的应用：在清单文件中注册 QUERY_ALL_PACKAGES 权限
+        // 2. 读取部分特定的应用：添加需要读取应用的包名到 <queries> 标签中
+        // 以上两种解决方案需要二选一，否则就算申请 GET_INSTALLED_APPS 权限成功也是白搭，也是获取不到第三方安装列表信息的
+        // 一般情况选择第一种解决方案，但是如果你要兼顾 GooglePlay 商店，直接注册 QUERY_ALL_PACKAGES 权限可能没办法上架，那么就需要用到第二种办法
+        // Github issue：https://github.com/getActivity/XXPermissions/issues/359
+        throw new IllegalStateException("Please register permissions in the AndroidManifest.xml file " +
+            "<uses-permission android:name=\"" + queryAllPackagesPermissionName + "\" />, "
+            + "or add the app package name to the <queries> tag in the AndroidManifest.xml file");
+    }
+
+    /**
      * 检查 targetSdkVersion 是否符合要求
-     *
-     * @param requestPermissions            请求的权限组
      */
     static void checkTargetSdkVersion(@NonNull Context context, @NonNull List<String> requestPermissions) {
         for (String permission : requestPermissions) {
@@ -471,8 +512,6 @@ final class PermissionChecker {
 
     /**
      * 检查清单文件中所注册的权限是否正常
-     *
-     * @param requestPermissions            请求的权限组
      */
     static void checkManifestPermissions(@NonNull Context context, @NonNull List<String> requestPermissions,
                                             @Nullable AndroidManifestInfo androidManifestInfo) {
@@ -521,23 +560,6 @@ final class PermissionChecker {
                 } else {
                     checkManifestPermission(permissionInfoList, Permission.ACCESS_FINE_LOCATION);
                 }
-                continue;
-            }
-
-            // 其他的
-            if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS) &&
-                AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_11) {
-                // 在 targetSdk >= 30 的时候，申请读取应用列表权限需要在清单文件中注册 QUERY_ALL_PACKAGES 权限
-                // 否则就算申请 GET_INSTALLED_APPS 权限成功也是白搭，也是获取不到第三方安装列表信息的
-                // 如果你想要在权限申请后，通过 <queries> 的方式添加需要读取的应用，而不是获取全部的应用
-                // 可以用 unchecked() 忽略本次权限申请错误检测机制，但是这种情况比较少见
-                String checkPermission;
-                if (AndroidVersion.isAndroid11()) {
-                    checkPermission = Manifest.permission.QUERY_ALL_PACKAGES;
-                } else {
-                    checkPermission = "android.permission.QUERY_ALL_PACKAGES";
-                }
-                checkManifestPermission(permissionInfoList, checkPermission);
                 continue;
             }
 
@@ -610,13 +632,8 @@ final class PermissionChecker {
      */
     static void checkManifestPermission(@NonNull List<AndroidManifestInfo.PermissionInfo> permissionInfoList,
                                         @NonNull String checkPermission, int lowestMaxSdkVersion) {
-        AndroidManifestInfo.PermissionInfo permissionInfo = null;
-        for (AndroidManifestInfo.PermissionInfo info : permissionInfoList) {
-            if (TextUtils.equals(info.name, checkPermission)) {
-                permissionInfo = info;
-                break;
-            }
-        }
+        PermissionInfo permissionInfo = findPermissionInfoByList(permissionInfoList, checkPermission);
+
         if (permissionInfo == null) {
             // 动态申请的权限没有在清单文件中注册，分为以下两种情况：
             // 1. 如果你的项目没有在清单文件中注册这个权限，请直接在清单文件中注册一下即可
@@ -629,7 +646,6 @@ final class PermissionChecker {
         }
 
         int manifestMaxSdkVersion = permissionInfo.maxSdkVersion;
-
         if (manifestMaxSdkVersion < lowestMaxSdkVersion) {
             // 清单文件中所注册的权限 maxSdkVersion 大小不符合最低要求，分为以下两种情况：
             // 1. 如果你的项目中注册了该属性，请根据报错提示修改 maxSdkVersion 属性值或者删除 maxSdkVersion 属性
@@ -644,5 +660,21 @@ final class PermissionChecker {
                     "the minimum requirement for maxSdkVersion is " + lowestMaxSdkVersion :
                     "please delete the android:maxSdkVersion=\"" + manifestMaxSdkVersion + "\" attribute"));
         }
+    }
+
+    /**
+     * 从权限列表中获取指定的权限信息
+     */
+    @Nullable
+    static AndroidManifestInfo.PermissionInfo findPermissionInfoByList(@NonNull List<AndroidManifestInfo.PermissionInfo> permissionInfoList,
+                                                                        @NonNull String permissionName) {
+        AndroidManifestInfo.PermissionInfo permissionInfo = null;
+        for (AndroidManifestInfo.PermissionInfo info : permissionInfoList) {
+            if (TextUtils.equals(info.name, permissionName)) {
+                permissionInfo = info;
+                break;
+            }
+        }
+        return permissionInfo;
     }
 }

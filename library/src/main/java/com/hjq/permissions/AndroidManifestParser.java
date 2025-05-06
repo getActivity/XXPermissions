@@ -4,10 +4,8 @@ import android.content.Context;
 import android.content.res.XmlResourceParser;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
+import org.xmlpull.v1.XmlPullParserException;
 
 /**
  *    author : Android 轮子哥
@@ -29,6 +27,8 @@ final class AndroidManifestParser {
     private static final String TAG_USES_PERMISSION = "uses-permission";
     private static final String TAG_USES_PERMISSION_SDK_23 = "uses-permission-sdk-23";
     private static final String TAG_USES_PERMISSION_SDK_M = "uses-permission-sdk-m";
+
+    private static final String TAG_QUERIES = "queries";
 
     private static final String TAG_APPLICATION = "application";
     private static final String TAG_ACTIVITY = "activity";
@@ -68,7 +68,7 @@ final class AndroidManifestParser {
                 String tagName = parser.getName();
 
                 if (TextUtils.equals(TAG_MANIFEST, tagName)) {
-                    manifestInfo.packageName = parser.getAttributeValue(null, ATTR_PACKAGE);
+                    manifestInfo.packageName = parsePackageFromXml(parser);
                 }
 
                 if (TextUtils.equals(TAG_USES_SDK, tagName)) {
@@ -79,6 +79,10 @@ final class AndroidManifestParser {
                     TextUtils.equals(TAG_USES_PERMISSION_SDK_23, tagName) ||
                     TextUtils.equals(TAG_USES_PERMISSION_SDK_M, tagName)) {
                     manifestInfo.permissionInfoList.add(parsePermissionFromXml(parser));
+                }
+
+                if (TextUtils.equals(TAG_QUERIES, tagName)) {
+                    manifestInfo.queriesPackageList.add(parsePackageFromXml(parser));
                 }
 
                 if (TextUtils.equals(TAG_APPLICATION, tagName)) {
@@ -98,6 +102,11 @@ final class AndroidManifestParser {
         }
 
         return manifestInfo;
+    }
+
+    @NonNull
+    private static String parsePackageFromXml(@NonNull XmlResourceParser parser) {
+        return parser.getAttributeValue(null, ATTR_PACKAGE);
     }
 
     @NonNull
