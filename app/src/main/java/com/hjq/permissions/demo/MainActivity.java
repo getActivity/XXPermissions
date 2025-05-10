@@ -285,6 +285,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .permission(Permission.READ_MEDIA_VIDEO)
                             .permission(Permission.READ_MEDIA_AUDIO)
                             .permission(Permission.READ_MEDIA_VISUAL_USER_SELECTED)
+                            .permission(Permission.WRITE_EXTERNAL_STORAGE)
                             .interceptor(new PermissionInterceptor())
                             .request(new OnPermissionCallback() {
 

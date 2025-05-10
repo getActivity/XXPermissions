@@ -59,12 +59,6 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
         }
 
         if (AndroidVersion.isAndroid13() && AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_13) {
-            // 亲测当这两个条件满足的时候，在 Android 13 不能申请 WRITE_EXTERNAL_STORAGE，会被系统直接拒绝
-            // 不会弹出系统授权对话框，框架为了保证不同 Android 版本的回调结果一致性，这里直接返回 true 给到外层
-            if (PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
-                return true;
-            }
-
             if (PermissionUtils.equalsPermission(permission, Permission.READ_EXTERNAL_STORAGE)) {
                 return PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_IMAGES) &&
                     PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_VIDEO) &&
@@ -132,10 +126,6 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
         }
 
         if (AndroidVersion.isAndroid13() && AndroidVersion.getTargetSdkVersionCode(activity) >= AndroidVersion.ANDROID_13) {
-            if (PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
-                return false;
-            }
-
             if (PermissionUtils.equalsPermission(permission, Permission.READ_EXTERNAL_STORAGE)) {
                 return !PermissionUtils.checkSelfPermission(activity, Permission.READ_MEDIA_IMAGES) &&
                     !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_MEDIA_IMAGES) &&
@@ -147,17 +137,6 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
         }
 
         return super.isDoNotAskAgainPermission(activity, permission);
-    }
-
-    @Override
-    public boolean recheckPermissionResult(@NonNull Context context, @NonNull String permission, boolean grantResult) {
-        if (AndroidVersion.isAndroid13() && AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_13 &&
-            PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
-            // 在 Android 13 不能申请 WRITE_EXTERNAL_STORAGE，会被系统直接拒绝，在这里需要重新检查权限的状态
-            return isGrantedPermission(context, permission);
-        }
-
-        return super.recheckPermissionResult(context, permission, grantResult);
     }
 
     @Override

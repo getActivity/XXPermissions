@@ -34,6 +34,19 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
             return isGrantedManageStoragePermission();
         }
 
+        if (AndroidVersion.isAndroid11() &&
+            AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_11 &&
+            PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
+            // 这里补充一下这样写的具体原因：
+            // 1. 当 targetSdk >= Android 11 并且在此版本及之上申请 WRITE_EXTERNAL_STORAGE，虽然可以弹出授权框，但是没有什么实际作用
+            //    相关文档地址：https://developer.android.google.cn/reference/android/Manifest.permission#WRITE_EXTERNAL_STORAGE
+            //    开发者可能会在清单文件注册 android:maxSdkVersion="29" 属性，这样会导致 WRITE_EXTERNAL_STORAGE 权限申请失败，这里需要返回 true 给外层
+            // 2. 当 targetSdk >= Android 13 并且在此版本及之上申请 WRITE_EXTERNAL_STORAGE，会被系统直接拒绝
+            //    不会弹出系统授权对话框，框架为了保证不同 Android 版本的回调结果一致性，这里需要返回 true 给到外层
+            // 基于上面这两个原因，所以判断 WRITE_EXTERNAL_STORAGE 权限，结果无论是否授予，最终都会直接返回 true 给外层
+            return true;
+        }
+
         return super.isGrantedPermission(context, permission);
     }
 
@@ -43,7 +56,25 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
             return false;
         }
 
+        if (AndroidVersion.isAndroid11() &&
+            AndroidVersion.getTargetSdkVersionCode(activity) >= AndroidVersion.ANDROID_11 &&
+            PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
+            return false;
+        }
+
         return super.isDoNotAskAgainPermission(activity, permission);
+    }
+
+    @Override
+    public boolean recheckPermissionResult(@NonNull Context context, @NonNull String permission, boolean grantResult) {
+        if (AndroidVersion.isAndroid11() &&
+            AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_11 &&
+            PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
+            // 具体原因自己点进去 isGrantedPermission 方法看代码注释，这次就不重复写注释了
+            return isGrantedPermission(context, permission);
+        }
+
+        return super.recheckPermissionResult(context, permission, grantResult);
     }
 
     @Override

@@ -229,7 +229,7 @@ public final class Permission {
     /** 读取外部存储 */
     public static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
 
-    /** 写入外部存储 */
+    /** 写入外部存储（注意：这个权限在 targetSdk >= Android 11 并且 Android 11 及以上的设备上面不起作用，请适配分区存储特性代替权限申请） */
     public static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
 
     /** 相机权限 */

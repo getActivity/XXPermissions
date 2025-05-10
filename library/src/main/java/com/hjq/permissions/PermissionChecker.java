@@ -542,8 +542,14 @@ final class PermissionChecker {
                 continue;
             }
 
-            // 检查这个权限有没有在清单文件中注册
-            checkManifestPermission(permissionInfoList, permission);
+            // 检查这个权限有没有在清单文件中注册，WRITE_EXTERNAL_STORAGE 权限比较特殊，要单独拎出来判断
+            // 如果你适配了 Android 11 且在 Android 11 及以上的版本运行，WRITE_EXTERNAL_STORAGE 你就算申请了没有什么作用
+            if (AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_13 &&
+                    PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
+                checkManifestPermission(permissionInfoList, Permission.WRITE_EXTERNAL_STORAGE, AndroidVersion.ANDROID_10);
+            } else {
+                checkManifestPermission(permissionInfoList, permission);
+            }
 
             if (PermissionUtils.equalsPermission(permission, Permission.BODY_SENSORS_BACKGROUND)) {
                 // 申请后台的传感器权限必须要先注册前台的传感器权限
