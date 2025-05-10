@@ -106,7 +106,8 @@ final class AndroidManifestParser {
 
     @NonNull
     private static String parsePackageFromXml(@NonNull XmlResourceParser parser) {
-        return parser.getAttributeValue(null, ATTR_PACKAGE);
+        String packageName = parser.getAttributeValue(null, ATTR_PACKAGE);
+        return packageName != null ? packageName : "";
     }
 
     @NonNull
@@ -131,7 +132,8 @@ final class AndroidManifestParser {
     @NonNull
     private static AndroidManifestInfo.ApplicationInfo parseApplicationFromXml(@NonNull XmlResourceParser parser) {
         AndroidManifestInfo.ApplicationInfo applicationInfo = new AndroidManifestInfo.ApplicationInfo();
-        applicationInfo.name = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
+        String applicationClassName = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
+        applicationInfo.name = applicationClassName != null ? applicationClassName : "";
         applicationInfo.requestLegacyExternalStorage = parser.getAttributeBooleanValue(
             ANDROID_NAMESPACE_URI, ATTR_REQUEST_LEGACY_EXTERNAL_STORAGE, false);
         return applicationInfo;
@@ -140,7 +142,8 @@ final class AndroidManifestParser {
     @NonNull
     private static AndroidManifestInfo.ActivityInfo parseActivityFromXml(@NonNull XmlResourceParser parser) {
         AndroidManifestInfo.ActivityInfo activityInfo = new AndroidManifestInfo.ActivityInfo();
-        activityInfo.name = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
+        String activityClassName = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
+        activityInfo.name = activityClassName != null ? activityClassName : "";
         activityInfo.supportsPictureInPicture = parser.getAttributeBooleanValue(
             ANDROID_NAMESPACE_URI, ATTR_SUPPORTS_PICTURE_IN_PICTURE, false);
         return activityInfo;
@@ -149,7 +152,8 @@ final class AndroidManifestParser {
     @NonNull
     private static AndroidManifestInfo.ServiceInfo parseServerFromXml(@NonNull XmlResourceParser parser) {
         AndroidManifestInfo.ServiceInfo serviceInfo = new AndroidManifestInfo.ServiceInfo();
-        serviceInfo.name = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
+        String serviceClassName = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
+        serviceInfo.name = serviceClassName != null ? serviceClassName : "";
         serviceInfo.permission = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_PERMISSION);
         return serviceInfo;
     }

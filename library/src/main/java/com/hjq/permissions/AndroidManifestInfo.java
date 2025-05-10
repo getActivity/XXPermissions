@@ -15,7 +15,8 @@ import java.util.List;
 final class AndroidManifestInfo {
 
     /** 应用包名 */
-    String packageName;
+    @NonNull
+    String packageName = "";
 
     /** 使用 sdk 信息 */
     @Nullable
@@ -78,7 +79,9 @@ final class AndroidManifestInfo {
     static final class ApplicationInfo {
 
         /** 应用的类名 */
-        String name;
+        @NonNull
+        String name = "";
+
         /** 是否忽略分区存储特性 */
         boolean requestLegacyExternalStorage;
     }
@@ -86,7 +89,9 @@ final class AndroidManifestInfo {
     static final class ActivityInfo {
 
         /** 活动的类名 */
-        String name;
+        @NonNull
+        String name = "";
+
         /** 窗口是否支持画中画 */
         boolean supportsPictureInPicture;
     }
@@ -94,9 +99,12 @@ final class AndroidManifestInfo {
     static final class ServiceInfo {
 
         /** 服务的类名 */
-        String name;
+        @NonNull
+        String name = "";
 
         /** 服务所使用到的权限 */
-        String permission;
+        @Nullable
+        String
+        permission;
     }
 }
