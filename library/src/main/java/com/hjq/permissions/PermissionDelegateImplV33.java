@@ -58,12 +58,11 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
             return PermissionUtils.checkSelfPermission(context, permission);
         }
 
-        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_13)) {
-            if (PermissionUtils.equalsPermission(permission, Permission.READ_EXTERNAL_STORAGE)) {
-                return PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_IMAGES) &&
-                    PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_VIDEO) &&
-                    PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_AUDIO);
-            }
+        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_13) &&
+                                PermissionUtils.equalsPermission(permission, Permission.READ_EXTERNAL_STORAGE)) {
+            return PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_IMAGES) &&
+                PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_VIDEO) &&
+                PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_AUDIO);
         }
 
         return super.isGrantedPermission(context, permission);
@@ -125,15 +124,14 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
                 !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
         }
 
-        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_13)) {
-            if (PermissionUtils.equalsPermission(permission, Permission.READ_EXTERNAL_STORAGE)) {
-                return !PermissionUtils.checkSelfPermission(activity, Permission.READ_MEDIA_IMAGES) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_MEDIA_IMAGES) &&
-                    !PermissionUtils.checkSelfPermission(activity, Permission.READ_MEDIA_VIDEO) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_MEDIA_VIDEO) &&
-                    !PermissionUtils.checkSelfPermission(activity, Permission.READ_MEDIA_AUDIO) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_MEDIA_AUDIO);
-            }
+        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_13) &&
+                            PermissionUtils.equalsPermission(permission, Permission.READ_EXTERNAL_STORAGE)) {
+            return !PermissionUtils.checkSelfPermission(activity, Permission.READ_MEDIA_IMAGES) &&
+                !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_MEDIA_IMAGES) &&
+                !PermissionUtils.checkSelfPermission(activity, Permission.READ_MEDIA_VIDEO) &&
+                !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_MEDIA_VIDEO) &&
+                !PermissionUtils.checkSelfPermission(activity, Permission.READ_MEDIA_AUDIO) &&
+                !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_MEDIA_AUDIO);
         }
 
         return super.isDoNotAskAgainPermission(activity, permission);
