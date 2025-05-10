@@ -19,13 +19,13 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return true;
             }
-            if (!AndroidVersion.isAndroid11()) {
+            if (!AndroidVersionTools.isAndroid11()) {
                 // 这个是 Android 10 上面的历史遗留问题，假设申请的是 MANAGE_EXTERNAL_STORAGE 权限
                 // 必须要在 AndroidManifest.xml 中注册 android:requestLegacyExternalStorage="true"
-                if (AndroidVersion.isAndroid10() && !isUseDeprecationExternalStorage()) {
+                if (AndroidVersionTools.isAndroid10() && !isUseDeprecationExternalStorage()) {
                     return false;
                 }
                 return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE) &&
@@ -34,7 +34,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
             return isGrantedManageStoragePermission();
         }
 
-        if (AndroidVersion.isAdaptationAndroidVersionNewFeatures(context, AndroidVersion.ANDROID_11) &&
+        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_11) &&
             PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
             // 这里补充一下这样写的具体原因：
             // 1. 当 targetSdk >= Android 11 并且在此版本及之上申请 WRITE_EXTERNAL_STORAGE，虽然可以弹出授权框，但是没有什么实际作用
@@ -55,7 +55,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
             return false;
         }
 
-        if (AndroidVersion.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersion.ANDROID_11) &&
+        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_11) &&
             PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
             return false;
         }
@@ -65,7 +65,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
 
     @Override
     public boolean recheckPermissionResult(@NonNull Context context, @NonNull String permission, boolean grantResult) {
-        if (AndroidVersion.isAdaptationAndroidVersionNewFeatures(context, AndroidVersion.ANDROID_11) &&
+        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_11) &&
             PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
             // 具体原因自己点进去 isGrantedPermission 方法看代码注释，这次就不重复写注释了
             return isGrantedPermission(context, permission);
@@ -77,7 +77,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
     @Override
     public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
-            if (!AndroidVersion.isAndroid11()) {
+            if (!AndroidVersionTools.isAndroid11()) {
                 return getApplicationDetailsIntent(context);
             }
             return getManageStoragePermissionIntent(context);
@@ -89,7 +89,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
     /**
      * 是否有所有文件的管理权限
      */
-    @RequiresApi(AndroidVersion.ANDROID_11)
+    @RequiresApi(AndroidVersionTools.ANDROID_11)
     private static boolean isGrantedManageStoragePermission() {
         return Environment.isExternalStorageManager();
     }
@@ -97,7 +97,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
     /**
      * 获取所有文件的管理权限设置界面意图
      */
-    @RequiresApi(AndroidVersion.ANDROID_11)
+    @RequiresApi(AndroidVersionTools.ANDROID_11)
     private static Intent getManageStoragePermissionIntent(@NonNull Context context) {
         Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
         intent.setData(PermissionUtils.getPackageNameUri(context));
@@ -115,7 +115,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
     /**
      * 是否采用的是非分区存储的模式
      */
-    @RequiresApi(AndroidVersion.ANDROID_10)
+    @RequiresApi(AndroidVersionTools.ANDROID_10)
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean isUseDeprecationExternalStorage() {
         return Environment.isExternalStorageLegacy();

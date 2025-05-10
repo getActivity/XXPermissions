@@ -15,7 +15,7 @@ class PermissionDelegateImplV28 extends PermissionDelegateImplV26 {
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.ACCEPT_HANDOVER)) {
-            if (!AndroidVersion.isAndroid9()) {
+            if (!AndroidVersionTools.isAndroid9()) {
                 return true;
             }
             return PermissionUtils.checkSelfPermission(context, permission);
@@ -27,7 +27,7 @@ class PermissionDelegateImplV28 extends PermissionDelegateImplV26 {
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.ACCEPT_HANDOVER)) {
-            if (!AndroidVersion.isAndroid9()) {
+            if (!AndroidVersionTools.isAndroid9()) {
                 return false;
             }
             return !PermissionUtils.checkSelfPermission(activity, permission) &&

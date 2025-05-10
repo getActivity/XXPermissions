@@ -18,11 +18,11 @@ final class NotificationPermissionCompat {
     private static final int OP_POST_NOTIFICATION_DEFAULT_VALUE = 11;
 
     static boolean isGrantedPermission(@NonNull Context context) {
-        if (AndroidVersion.isAndroid7()) {
+        if (AndroidVersionTools.isAndroid7()) {
             return context.getSystemService(NotificationManager.class).areNotificationsEnabled();
         }
 
-        if (AndroidVersion.isAndroid4_4()) {
+        if (AndroidVersionTools.isAndroid4_4()) {
             return PermissionUtils.checkOpNoThrow(context, OP_POST_NOTIFICATION_FIELD_NAME, OP_POST_NOTIFICATION_DEFAULT_VALUE);
         }
         return true;
@@ -30,11 +30,11 @@ final class NotificationPermissionCompat {
 
     static Intent getPermissionIntent(@NonNull Context context) {
         Intent intent = null;
-        if (AndroidVersion.isAndroid8()) {
+        if (AndroidVersionTools.isAndroid8()) {
             intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
             //intent.putExtra(Settings.EXTRA_CHANNEL_ID, context.getApplicationInfo().uid);
-        } else if (AndroidVersion.isAndroid5()) {
+        } else if (AndroidVersionTools.isAndroid5()) {
             intent = new Intent();
             intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
             intent.putExtra("app_package", context.getPackageName());

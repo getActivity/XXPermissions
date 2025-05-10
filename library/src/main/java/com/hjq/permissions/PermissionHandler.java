@@ -115,7 +115,7 @@ final class PermissionHandler {
 
             // 如果当前设备的版本还没有出现过这个特殊权限，并且权限还没有授权的情况，证明这个特殊权限有向下兼容的权限
             // 这种情况就不要跳转到权限设置页，例如 MANAGE_EXTERNAL_STORAGE 权限
-            if (AndroidVersion.getAndroidVersionCode() < PermissionHelper.findAndroidVersionByPermission(permission)) {
+            if (AndroidVersionTools.getCurrentAndroidVersionCode() < PermissionHelper.findAndroidVersionByPermission(permission)) {
                 continue;
             }
 
@@ -159,7 +159,7 @@ final class PermissionHandler {
 
                 String permission = iterator.next();
 
-                if (PermissionHelper.findAndroidVersionByPermission(permission) > AndroidVersion.getAndroidVersionCode()) {
+                if (PermissionHelper.findAndroidVersionByPermission(permission) > AndroidVersionTools.getCurrentAndroidVersionCode()) {
                     // 如果申请的权限是新系统才出现的，但是当前是旧系统运行，就从权限组中移除
                     iterator.remove();
                     continue;
@@ -258,7 +258,7 @@ final class PermissionHandler {
     private static void requestAllDangerousPermission(@NonNull Activity activity,
                                                         @NonNull List<List<String>> dangerousPermissions,
                                                         @NonNull Runnable finishRunnable) {
-        if (!AndroidVersion.isAndroid6()) {
+        if (!AndroidVersionTools.isAndroid6()) {
             // 如果是 Android 6.0 以下，没有危险权限的概念
             finishRunnable.run();
             return;
@@ -282,7 +282,7 @@ final class PermissionHandler {
                         // 经过测试，在 Android 13 设备上面，先申请前台权限，然后立马申请后台权限大概率会出现失败
                         // 这里为了避免这种情况出现，所以加了一点延迟，这样就没有什么问题了
                         // 为什么延迟时间是 150 毫秒？ 经过实践得出 100 还是有概率会出现失败，但是换成 150 试了很多次就都没有问题了
-                        delayMillis = AndroidVersion.isAndroid13() ? 150 : 0;
+                        delayMillis = AndroidVersionTools.isAndroid13() ? 150 : 0;
                     }
                     if (delayMillis == 0) {
                         requestSingleDangerousPermission(activity, permissions, this);

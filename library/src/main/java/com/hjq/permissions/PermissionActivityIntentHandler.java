@@ -23,7 +23,7 @@ final class PermissionActivityIntentHandler {
      */
     private static Intent findSubIntentBySuperIntent(@NonNull Intent superIntent) {
         Intent subIntent;
-        if (AndroidVersion.isAndroid13()) {
+        if (AndroidVersionTools.isAndroid13()) {
             subIntent = superIntent.getParcelableExtra(SUB_INTENT_KEY, Intent.class);
         } else {
             subIntent = superIntent.getParcelableExtra(SUB_INTENT_KEY);

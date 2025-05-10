@@ -20,7 +20,7 @@ final class NotificationListenerPermissionCompat {
 
     static boolean isGrantedPermission(@NonNull Context context) {
         // 经过实践得出，通知监听权限是在 Android 4.3 才出现的，所以前面的版本统一返回 true
-        if (!AndroidVersion.isAndroid4_3()) {
+        if (!AndroidVersionTools.isAndroid4_3()) {
             return true;
         }
         final String enabledNotificationListeners = Settings.Secure.getString(
@@ -54,7 +54,7 @@ final class NotificationListenerPermissionCompat {
 
     static Intent getPermissionIntent(@NonNull Context context) {
         Intent intent = null;
-        if (AndroidVersion.isAndroid11()) {
+        if (AndroidVersionTools.isAndroid11()) {
             AndroidManifestInfo androidManifestInfo = PermissionUtils.getAndroidManifestInfo(context);
             AndroidManifestInfo.ServiceInfo serviceInfo = null;
             if (androidManifestInfo != null) {
@@ -83,7 +83,7 @@ final class NotificationListenerPermissionCompat {
         }
 
         if (intent == null) {
-            if (AndroidVersion.isAndroid5_1()) {
+            if (AndroidVersionTools.isAndroid5_1()) {
                 intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
             } else {
                 // android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS

@@ -103,7 +103,7 @@ public final class RequestDangerousPermissionFragment extends RequestBasePermiss
      */
     private void requestAllDangerousPermission(@NonNull Activity activity, int requestCode,
                                                 @NonNull List<String> allPermissions) {
-        if (!AndroidVersion.isAndroid6()) {
+        if (!AndroidVersionTools.isAndroid6()) {
             // 如果是 Android 6.0 以下，没有危险权限的概念，则直接回调监听
             int[] grantResults = new int[allPermissions.size()];
             for (int i = 0; i < grantResults.length; i++) {

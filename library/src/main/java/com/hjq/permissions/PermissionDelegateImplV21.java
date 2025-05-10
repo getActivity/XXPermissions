@@ -19,7 +19,7 @@ class PermissionDelegateImplV21 extends PermissionDelegateImplV19 {
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.PACKAGE_USAGE_STATS)) {
-            if (!AndroidVersion.isAndroid5()) {
+            if (!AndroidVersionTools.isAndroid5()) {
                 return true;
             }
             return isGrantedPackagePermission(context);
@@ -40,7 +40,7 @@ class PermissionDelegateImplV21 extends PermissionDelegateImplV19 {
     @Override
     public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.PACKAGE_USAGE_STATS)) {
-            if (!AndroidVersion.isAndroid5()) {
+            if (!AndroidVersionTools.isAndroid5()) {
                 return getApplicationDetailsIntent(context);
             }
             return getPackagePermissionIntent(context);
@@ -52,7 +52,7 @@ class PermissionDelegateImplV21 extends PermissionDelegateImplV19 {
     /**
      * 是否有使用统计权限
      */
-    @RequiresApi(AndroidVersion.ANDROID_5)
+    @RequiresApi(AndroidVersionTools.ANDROID_5)
     private static boolean isGrantedPackagePermission(@NonNull Context context) {
         return PermissionUtils.checkOpNoThrow(context, AppOpsManager.OPSTR_GET_USAGE_STATS);
     }
@@ -60,10 +60,10 @@ class PermissionDelegateImplV21 extends PermissionDelegateImplV19 {
     /**
      * 获取使用统计权限设置界面意图
      */
-    @RequiresApi(AndroidVersion.ANDROID_5)
+    @RequiresApi(AndroidVersionTools.ANDROID_5)
     private static Intent getPackagePermissionIntent(@NonNull Context context) {
         Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-        if (AndroidVersion.isAndroid10()) {
+        if (AndroidVersionTools.isAndroid10()) {
             // 经过测试，只有在 Android 10 及以上加包名才有效果
             // 如果在 Android 10 以下加包名会导致无法跳转
             intent.setData(PermissionUtils.getPackageNameUri(context));

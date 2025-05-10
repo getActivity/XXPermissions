@@ -8,11 +8,11 @@ import android.os.Build;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2022/01/22
- *    desc   : Android 版本判断
+ *    desc   : Android 版本工具
  */
 @SuppressLint("AnnotateVersionCheck")
 @SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
-final class AndroidVersion {
+final class AndroidVersionTools {
 
     static final int ANDROID_14 = Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     static final int ANDROID_13 = Build.VERSION_CODES.TIRAMISU;
@@ -35,9 +35,9 @@ final class AndroidVersion {
     static final int ANDROID_4_0 = Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 
     /**
-     * 获取 Android 版本码
+     * 获取当前 android sdk 版本码
      */
-    static int getAndroidVersionCode() {
+    static int getCurrentAndroidVersionCode() {
         return Build.VERSION.SDK_INT;
     }
 
@@ -54,7 +54,7 @@ final class AndroidVersion {
      * @param androidSdkVersionCode                        需要判断的 android sdk 版本码
      */
     static boolean isAdaptationAndroidVersionNewFeatures(Context context, int androidSdkVersionCode) {
-        return getAndroidVersionCode() >= androidSdkVersionCode && getTargetSdkVersionCode(context) >= androidSdkVersionCode;
+        return getCurrentAndroidVersionCode() >= androidSdkVersionCode && getTargetSdkVersionCode(context) >= androidSdkVersionCode;
     }
 
     /**

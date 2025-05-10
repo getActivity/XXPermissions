@@ -16,10 +16,10 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.BODY_SENSORS_BACKGROUND)) {
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return true;
             }
-            if (!AndroidVersion.isAndroid13()) {
+            if (!AndroidVersionTools.isAndroid13()) {
                 return PermissionUtils.checkSelfPermission(context, Permission.BODY_SENSORS);
             }
             // 有后台传感器权限的前提条件是授予了前台的传感器权限
@@ -28,17 +28,17 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS)) {
-            if (!AndroidVersion.isAndroid13()) {
+            if (!AndroidVersionTools.isAndroid13()) {
                 return NotificationPermissionCompat.isGrantedPermission(context);
             }
             return PermissionUtils.checkSelfPermission(context, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.NEARBY_WIFI_DEVICES)) {
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return true;
             }
-            if (!AndroidVersion.isAndroid13()) {
+            if (!AndroidVersionTools.isAndroid13()) {
                 return PermissionUtils.checkSelfPermission(context, Permission.ACCESS_FINE_LOCATION);
             }
             return PermissionUtils.checkSelfPermission(context, permission);
@@ -49,16 +49,16 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
             Permission.READ_MEDIA_VIDEO,
             Permission.READ_MEDIA_AUDIO
         }, permission)) {
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return true;
             }
-            if (!AndroidVersion.isAndroid13()) {
+            if (!AndroidVersionTools.isAndroid13()) {
                 return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE);
             }
             return PermissionUtils.checkSelfPermission(context, permission);
         }
 
-        if (AndroidVersion.isAdaptationAndroidVersionNewFeatures(context, AndroidVersion.ANDROID_13)) {
+        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_13)) {
             if (PermissionUtils.equalsPermission(permission, Permission.READ_EXTERNAL_STORAGE)) {
                 return PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_IMAGES) &&
                     PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_VIDEO) &&
@@ -72,10 +72,10 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.BODY_SENSORS_BACKGROUND)) {
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return false;
             }
-            if (!AndroidVersion.isAndroid13()) {
+            if (!AndroidVersionTools.isAndroid13()) {
                 return !PermissionUtils.checkSelfPermission(activity, Permission.BODY_SENSORS) &&
                     !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.BODY_SENSORS);
             }
@@ -90,7 +90,7 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS)) {
-            if (!AndroidVersion.isAndroid13()) {
+            if (!AndroidVersionTools.isAndroid13()) {
                 return false;
             }
             return !PermissionUtils.checkSelfPermission(activity, permission) &&
@@ -98,10 +98,10 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.NEARBY_WIFI_DEVICES)) {
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return false;
             }
-            if (!AndroidVersion.isAndroid13()) {
+            if (!AndroidVersionTools.isAndroid13()) {
                 return !PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
                     !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION);
             }
@@ -114,10 +114,10 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
             Permission.READ_MEDIA_VIDEO,
             Permission.READ_MEDIA_AUDIO
         }, permission)) {
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return false;
             }
-            if (!AndroidVersion.isAndroid13()) {
+            if (!AndroidVersionTools.isAndroid13()) {
                 return !PermissionUtils.checkSelfPermission(activity, Permission.READ_EXTERNAL_STORAGE) &&
                     !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_EXTERNAL_STORAGE);
             }
@@ -125,7 +125,7 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
                 !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
         }
 
-        if (AndroidVersion.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersion.ANDROID_13)) {
+        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_13)) {
             if (PermissionUtils.equalsPermission(permission, Permission.READ_EXTERNAL_STORAGE)) {
                 return !PermissionUtils.checkSelfPermission(activity, Permission.READ_MEDIA_IMAGES) &&
                     !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_MEDIA_IMAGES) &&

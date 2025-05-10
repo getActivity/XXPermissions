@@ -19,31 +19,31 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES)) {
-            if (!AndroidVersion.isAndroid8()) {
+            if (!AndroidVersionTools.isAndroid8()) {
                 return true;
             }
             return isGrantedInstallPermission(context);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.PICTURE_IN_PICTURE)) {
-            if (!AndroidVersion.isAndroid8()) {
+            if (!AndroidVersionTools.isAndroid8()) {
                 return true;
             }
             return isGrantedPictureInPicturePermission(context);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.READ_PHONE_NUMBERS)) {
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return true;
             }
-            if (!AndroidVersion.isAndroid8()) {
+            if (!AndroidVersionTools.isAndroid8()) {
                 return PermissionUtils.checkSelfPermission(context, Permission.READ_PHONE_STATE);
             }
             return PermissionUtils.checkSelfPermission(context, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ANSWER_PHONE_CALLS)) {
-            if (!AndroidVersion.isAndroid8()) {
+            if (!AndroidVersionTools.isAndroid8()) {
                 return true;
             }
             return PermissionUtils.checkSelfPermission(context, permission);
@@ -63,10 +63,10 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.READ_PHONE_NUMBERS)) {
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return false;
             }
-            if (!AndroidVersion.isAndroid8()) {
+            if (!AndroidVersionTools.isAndroid8()) {
                 return !PermissionUtils.checkSelfPermission(activity, Permission.READ_PHONE_STATE) &&
                     !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_PHONE_STATE);
             }
@@ -75,7 +75,7 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ANSWER_PHONE_CALLS)) {
-            if (!AndroidVersion.isAndroid8()) {
+            if (!AndroidVersionTools.isAndroid8()) {
                 return false;
             }
             return !PermissionUtils.checkSelfPermission(activity, permission) &&
@@ -88,14 +88,14 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
     @Override
     public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES)) {
-            if (!AndroidVersion.isAndroid8()) {
+            if (!AndroidVersionTools.isAndroid8()) {
                 return getApplicationDetailsIntent(context);
             }
             return getInstallPermissionIntent(context);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.PICTURE_IN_PICTURE)) {
-            if (!AndroidVersion.isAndroid8()) {
+            if (!AndroidVersionTools.isAndroid8()) {
                 return getApplicationDetailsIntent(context);
             }
             return getPictureInPicturePermissionIntent(context);
@@ -107,7 +107,7 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
     /**
      * 是否有安装权限
      */
-    @RequiresApi(AndroidVersion.ANDROID_8)
+    @RequiresApi(AndroidVersionTools.ANDROID_8)
     private static boolean isGrantedInstallPermission(@NonNull Context context) {
         return context.getPackageManager().canRequestPackageInstalls();
     }
@@ -115,7 +115,7 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
     /**
      * 获取安装权限设置界面意图
      */
-    @RequiresApi(AndroidVersion.ANDROID_8)
+    @RequiresApi(AndroidVersionTools.ANDROID_8)
     private static Intent getInstallPermissionIntent(@NonNull Context context) {
         Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
         intent.setData(PermissionUtils.getPackageNameUri(context));
@@ -128,7 +128,7 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
     /**
      * 是否有画中画权限
      */
-    @RequiresApi(AndroidVersion.ANDROID_8)
+    @RequiresApi(AndroidVersionTools.ANDROID_8)
     private static boolean isGrantedPictureInPicturePermission(@NonNull Context context) {
         return PermissionUtils.checkOpNoThrow(context, AppOpsManager.OPSTR_PICTURE_IN_PICTURE);
     }
@@ -136,7 +136,7 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
     /**
      * 获取画中画权限设置界面意图
      */
-    @RequiresApi(AndroidVersion.ANDROID_8)
+    @RequiresApi(AndroidVersionTools.ANDROID_8)
     private static Intent getPictureInPicturePermissionIntent(@NonNull Context context) {
         // android.provider.Settings.ACTION_PICTURE_IN_PICTURE_SETTINGS
         Intent intent = new Intent("android.settings.PICTURE_IN_PICTURE_SETTINGS");

@@ -117,7 +117,7 @@ final class PhoneRomUtils {
      */
     static boolean isHarmonyOs() {
         // 鸿蒙系统没有 Android 10 以下的
-        if (!AndroidVersion.isAndroid10()) {
+        if (!AndroidVersionTools.isAndroid10()) {
             return false;
         }
         try {

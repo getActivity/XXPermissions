@@ -54,13 +54,13 @@ final class PermissionUtils {
     /**
      * 判断某个危险权限是否授予了
      */
-    @RequiresApi(AndroidVersion.ANDROID_6)
+    @RequiresApi(AndroidVersionTools.ANDROID_6)
     static boolean checkSelfPermission(@NonNull Context context, @NonNull String permission) {
         return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     @SuppressWarnings("ConstantConditions")
-    @RequiresApi(AndroidVersion.ANDROID_4_4)
+    @RequiresApi(AndroidVersionTools.ANDROID_4_4)
     static boolean checkOpNoThrow(Context context, String opFieldName, int opDefaultValue) {
         AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
         ApplicationInfo appInfo = context.getApplicationInfo();
@@ -84,12 +84,12 @@ final class PermissionUtils {
         }
     }
 
-    @RequiresApi(AndroidVersion.ANDROID_4_4)
+    @RequiresApi(AndroidVersionTools.ANDROID_4_4)
     static boolean checkOpNoThrow(Context context, String opName) {
         AppOpsManager appOps = (AppOpsManager)
             context.getSystemService(Context.APP_OPS_SERVICE);
         int mode;
-        if (AndroidVersion.isAndroid10()) {
+        if (AndroidVersionTools.isAndroid10()) {
             mode = appOps.unsafeCheckOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
         } else {
             mode = appOps.checkOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
@@ -104,10 +104,10 @@ final class PermissionUtils {
      *
      * issues 地址：https://github.com/getActivity/XXPermissions/issues/133
      */
-    @RequiresApi(api = AndroidVersion.ANDROID_6)
+    @RequiresApi(api = AndroidVersionTools.ANDROID_6)
     @SuppressWarnings({"JavaReflectionMemberAccess", "ConstantConditions", "BooleanMethodIsAlwaysInverted"})
     static boolean shouldShowRequestPermissionRationale(@NonNull Activity activity, @NonNull String permission) {
-        if (AndroidVersion.getAndroidVersionCode() == AndroidVersion.ANDROID_12) {
+        if (AndroidVersionTools.getCurrentAndroidVersionCode() == AndroidVersionTools.ANDROID_12) {
             try {
                 PackageManager packageManager = activity.getApplication().getPackageManager();
                 Method method = PackageManager.class.getMethod("shouldShowRequestPermissionRationale", String.class);
@@ -124,7 +124,7 @@ final class PermissionUtils {
      */
     static void postActivityResult(@NonNull List<String> permissions, @NonNull Runnable runnable) {
         long delayMillis;
-        if (AndroidVersion.isAndroid11()) {
+        if (AndroidVersionTools.isAndroid11()) {
             delayMillis = 200;
         } else {
             delayMillis = 300;
@@ -132,12 +132,12 @@ final class PermissionUtils {
 
         if (PhoneRomUtils.isEmui() || PhoneRomUtils.isHarmonyOs()) {
             // 需要加长时间等待，不然某些华为机型授权了但是获取不到权限
-            if (AndroidVersion.isAndroid8()) {
+            if (AndroidVersionTools.isAndroid8()) {
                 delayMillis = 300;
             } else {
                 delayMillis = 500;
             }
-        } else if (PhoneRomUtils.isMiui() && AndroidVersion.isAndroid11() &&
+        } else if (PhoneRomUtils.isMiui() && AndroidVersionTools.isAndroid11() &&
             PermissionUtils.containsPermission(permissions, Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
             // 经过测试，发现小米 Android 11 及以上的版本，申请这个权限需要 1000 毫秒才能判断到（测试了 800 毫秒还不行）
             // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
@@ -253,8 +253,8 @@ final class PermissionUtils {
 
         try {
 
-            if (AndroidVersion.isAdaptationAndroidVersionNewFeatures(context, AndroidVersion.ANDROID_9) &&
-                AndroidVersion.getAndroidVersionCode() < AndroidVersion.ANDROID_11) {
+            if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_9) &&
+                AndroidVersionTools.getCurrentAndroidVersionCode() < AndroidVersionTools.ANDROID_11) {
 
                 // 反射套娃操作：实测这种方式只在 Android 9.0 和 Android 10.0 有效果，在 Android 11 上面就失效了
                 Method metaGetDeclaredMethod = Class.class.getDeclaredMethod(
@@ -342,7 +342,7 @@ final class PermissionUtils {
      */
     static boolean isActivityReverse(@NonNull Activity activity) {
         Display display = null;
-        if (AndroidVersion.isAndroid11()) {
+        if (AndroidVersionTools.isAndroid11()) {
             display = activity.getDisplay();
         } else {
             WindowManager windowManager = activity.getWindowManager();
@@ -379,7 +379,7 @@ final class PermissionUtils {
         // 这里为什么不用 Intent.resolveActivity(intent) != null 来判断呢？
         // 这是因为在 OPPO R7 Plus （Android 5.0）会出现误判，明明没有这个 Activity，却返回了 ComponentName 对象
         PackageManager packageManager = context.getPackageManager();
-        if (AndroidVersion.isAndroid13()) {
+        if (AndroidVersionTools.isAndroid13()) {
             return !packageManager.queryIntentActivities(intent,
                     ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY)).isEmpty();
         }

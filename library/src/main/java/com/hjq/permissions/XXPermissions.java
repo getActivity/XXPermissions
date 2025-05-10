@@ -234,7 +234,7 @@ public final class XXPermissions {
             return false;
         }
 
-        if (!AndroidVersion.isAndroid13()) {
+        if (!AndroidVersionTools.isAndroid13()) {
             return false;
         }
 
@@ -473,7 +473,7 @@ public final class XXPermissions {
         if (activity == null || activity.isFinishing()) {
             return;
         }
-        if (AndroidVersion.isAndroid4_2() && activity.isDestroyed()) {
+        if (AndroidVersionTools.isAndroid4_2() && activity.isDestroyed()) {
             return;
         }
         if (permissions.isEmpty()) {
@@ -538,7 +538,7 @@ public final class XXPermissions {
         if (activity == null || activity.isFinishing()) {
             return;
         }
-        if (AndroidVersion.isAndroid4_2() && activity.isDestroyed()) {
+        if (AndroidVersionTools.isAndroid4_2() && activity.isDestroyed()) {
             return;
         }
         if (permissions.isEmpty()) {

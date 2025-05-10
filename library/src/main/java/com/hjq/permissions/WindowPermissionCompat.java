@@ -18,11 +18,11 @@ final class WindowPermissionCompat {
     private static final int OP_SYSTEM_ALERT_WINDOW_DEFAULT_VALUE = 24;
 
     static boolean isGrantedPermission(@NonNull Context context) {
-        if (AndroidVersion.isAndroid6()) {
+        if (AndroidVersionTools.isAndroid6()) {
             return Settings.canDrawOverlays(context);
         }
 
-        if (AndroidVersion.isAndroid4_4()) {
+        if (AndroidVersionTools.isAndroid4_4()) {
             // 经过测试在 vivo x7 Plus（Android 5.1）和 OPPO A53 （Android 5.1 ColorOs 2.1）的机子上面判断不准确
             // 经过 debug 发现并不是 vivo 和 oppo 修改了 OP_SYSTEM_ALERT_WINDOW 的赋值导致的
             // 估计是 vivo 和 oppo 的机子修改了整个悬浮窗机制，这种就没有办法了
@@ -33,7 +33,7 @@ final class WindowPermissionCompat {
     }
 
     static Intent getPermissionIntent(@NonNull Context context) {
-        if (AndroidVersion.isAndroid6()) {
+        if (AndroidVersionTools.isAndroid6()) {
             // 如果当前系统是 HyperOs，那么就不要跳转到 miui 权限设置页了，因为还要点一下《其他权限》入口才能找到悬浮窗权限设置选项
             // 这样的效果还不如直接跳转到所有应用的悬浮窗权限设置列表，然后再点进去来得更直观
             // 需要注意的是：该逻辑需要在判断 miui 系统之前判断，因为在 HyperOs 系统上面判断当前系统是否为 miui 系统也会返回 true
@@ -46,7 +46,7 @@ final class WindowPermissionCompat {
                 }
             }
 
-            if (AndroidVersion.isAndroid11() && PhoneRomUtils.isMiui() && PhoneRomUtils.isMiuiOptimization()) {
+            if (AndroidVersionTools.isAndroid11() && PhoneRomUtils.isMiui() && PhoneRomUtils.isMiuiOptimization()) {
                 // 因为 Android 11 及后面的版本无法直接跳转到具体权限设置页面，只能跳转到悬浮窗权限应用列表，十分地麻烦的，这里做了一下简化
                 // miui 做得比较人性化的，不会出现跳转不过去的问题，其他厂商就不一定了，就是不想让你跳转过去
                 Intent intent = PermissionIntentManager.getMiuiPermissionPageIntent(context);
@@ -109,12 +109,12 @@ final class WindowPermissionCompat {
         return PermissionIntentManager.getApplicationDetailsIntent(context);
     }
 
-    @RequiresApi(AndroidVersion.ANDROID_6)
+    @RequiresApi(AndroidVersionTools.ANDROID_6)
     private static Intent getManageOverlayPermissionIntent(Context context) {
         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
         // 在 Android 11 加包名跳转也是没有效果的，官方文档链接：
         // https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION
-        if (!AndroidVersion.isAndroid11()) {
+        if (!AndroidVersionTools.isAndroid11()) {
             intent.setData(PermissionUtils.getPackageNameUri(context));
         }
         return intent;

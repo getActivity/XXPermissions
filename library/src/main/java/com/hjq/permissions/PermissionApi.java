@@ -188,14 +188,14 @@ final class PermissionApi {
                 // 如果当前只有一个权限被拒绝了
                 return PermissionApi.getPermissionSettingIntent(context, permissions.get(0));
             case 2:
-                if (!AndroidVersion.isAndroid13() &&
+                if (!AndroidVersionTools.isAndroid13() &&
                     PermissionUtils.containsPermission(permissions, Permission.NOTIFICATION_SERVICE) &&
                     PermissionUtils.containsPermission(permissions, Permission.POST_NOTIFICATIONS)) {
                     return PermissionApi.getPermissionSettingIntent(context, Permission.NOTIFICATION_SERVICE);
                 }
                 break;
             case 3:
-                if (AndroidVersion.isAndroid11() &&
+                if (AndroidVersionTools.isAndroid11() &&
                     PermissionUtils.containsPermission(permissions, Permission.MANAGE_EXTERNAL_STORAGE) &&
                     PermissionUtils.containsPermission(permissions, Permission.READ_EXTERNAL_STORAGE) &&
                     PermissionUtils.containsPermission(permissions, Permission.WRITE_EXTERNAL_STORAGE)) {
@@ -217,7 +217,7 @@ final class PermissionApi {
         List<String> permissions = new ArrayList<>(requestPermissions);
         for (String permission : requestPermissions) {
             // 如果当前运行的 Android 版本大于权限出现的 Android 版本，则证明这个权限在当前设备上不用向下兼容
-            if (AndroidVersion.getAndroidVersionCode() >= PermissionHelper.findAndroidVersionByPermission(permission)) {
+            if (AndroidVersionTools.getCurrentAndroidVersionCode() >= PermissionHelper.findAndroidVersionByPermission(permission)) {
                 continue;
             }
             // 通过新权限查询到对应的旧权限

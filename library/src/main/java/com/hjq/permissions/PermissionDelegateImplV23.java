@@ -25,7 +25,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
                 return GetInstalledAppsPermissionCompat.isGrantedPermission(context);
             }
 
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return true;
             }
             return PermissionUtils.checkSelfPermission(context, permission);
@@ -36,21 +36,21 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.WRITE_SETTINGS)) {
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return true;
             }
             return isGrantedSettingPermission(context);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_NOTIFICATION_POLICY)) {
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return true;
             }
             return isGrantedNotDisturbPermission(context);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return true;
             }
             return isGrantedIgnoreBatteryPermission(context);
@@ -68,7 +68,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
                 return GetInstalledAppsPermissionCompat.isDoNotAskAgainPermission(activity);
             }
 
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return false;
             }
             return !PermissionUtils.checkSelfPermission(activity, permission) &&
@@ -108,21 +108,21 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.WRITE_SETTINGS)) {
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return getApplicationDetailsIntent(context);
             }
             return getSettingPermissionIntent(context);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_NOTIFICATION_POLICY)) {
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return getApplicationDetailsIntent(context);
             }
             return getNotDisturbPermissionIntent(context);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
-            if (!AndroidVersion.isAndroid6()) {
+            if (!AndroidVersionTools.isAndroid6()) {
                 return getApplicationDetailsIntent(context);
             }
             return getIgnoreBatteryPermissionIntent(context);
@@ -134,7 +134,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
     /**
      * 是否有系统设置权限
      */
-    @RequiresApi(AndroidVersion.ANDROID_6)
+    @RequiresApi(AndroidVersionTools.ANDROID_6)
     private static boolean isGrantedSettingPermission(@NonNull Context context) {
         return Settings.System.canWrite(context);
     }
@@ -142,7 +142,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
     /**
      * 获取系统设置权限界面意图
      */
-    @RequiresApi(AndroidVersion.ANDROID_6)
+    @RequiresApi(AndroidVersionTools.ANDROID_6)
     private static Intent getSettingPermissionIntent(@NonNull Context context) {
         Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
         intent.setData(PermissionUtils.getPackageNameUri(context));
@@ -155,7 +155,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
     /**
      * 是否有勿扰模式权限
      */
-    @RequiresApi(AndroidVersion.ANDROID_6)
+    @RequiresApi(AndroidVersionTools.ANDROID_6)
     private static boolean isGrantedNotDisturbPermission(@NonNull Context context) {
         return context.getSystemService(NotificationManager.class).isNotificationPolicyAccessGranted();
     }
@@ -163,10 +163,10 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
     /**
      * 获取勿扰模式设置界面意图
      */
-    @RequiresApi(AndroidVersion.ANDROID_6)
+    @RequiresApi(AndroidVersionTools.ANDROID_6)
     private static Intent getNotDisturbPermissionIntent(@NonNull Context context) {
         Intent intent;
-        if (AndroidVersion.isAndroid10()) {
+        if (AndroidVersionTools.isAndroid10()) {
             // android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS
             intent = new Intent("android.settings.NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS");
             intent.setData(PermissionUtils.getPackageNameUri(context));
@@ -199,7 +199,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
     /**
      * 是否忽略电池优化选项
      */
-    @RequiresApi(AndroidVersion.ANDROID_6)
+    @RequiresApi(AndroidVersionTools.ANDROID_6)
     private static boolean isGrantedIgnoreBatteryPermission(@NonNull Context context) {
         return context.getSystemService(PowerManager.class).isIgnoringBatteryOptimizations(context.getPackageName());
     }
@@ -207,7 +207,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
     /**
      * 获取电池优化选项设置界面意图
      */
-    @RequiresApi(AndroidVersion.ANDROID_6)
+    @RequiresApi(AndroidVersionTools.ANDROID_6)
     private static Intent getIgnoreBatteryPermissionIntent(@NonNull Context context) {
         Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
         intent.setData(PermissionUtils.getPackageNameUri(context));

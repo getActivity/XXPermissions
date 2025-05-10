@@ -22,11 +22,11 @@ final class GetInstalledAppsPermissionCompat {
     private static final int MIUI_OP_GET_INSTALLED_APPS_DEFAULT_VALUE = 10022;
 
     static boolean isGrantedPermission(@NonNull Context context) {
-        if (!AndroidVersion.isAndroid4_4()) {
+        if (!AndroidVersionTools.isAndroid4_4()) {
             return true;
         }
 
-        if (AndroidVersion.isAndroid6() && isSupportGetInstalledAppsPermission(context)) {
+        if (AndroidVersionTools.isAndroid6() && isSupportGetInstalledAppsPermission(context)) {
             return PermissionUtils.checkSelfPermission(context, Permission.GET_INSTALLED_APPS);
         }
 
@@ -46,11 +46,11 @@ final class GetInstalledAppsPermissionCompat {
     }
 
     static boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
-        if (!AndroidVersion.isAndroid4_4()) {
+        if (!AndroidVersionTools.isAndroid4_4()) {
             return false;
         }
 
-        if (AndroidVersion.isAndroid6() && isSupportGetInstalledAppsPermission(activity)) {
+        if (AndroidVersionTools.isAndroid6() && isSupportGetInstalledAppsPermission(activity)) {
             // 如果支持申请，那么再去判断权限是否永久拒绝
             return !PermissionUtils.checkSelfPermission(activity, Permission.GET_INSTALLED_APPS) &&
                 !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.GET_INSTALLED_APPS);
@@ -85,13 +85,13 @@ final class GetInstalledAppsPermissionCompat {
     /**
      * 判断是否支持获取应用列表权限
      */
-    @RequiresApi(AndroidVersion.ANDROID_6)
+    @RequiresApi(AndroidVersionTools.ANDROID_6)
     @SuppressWarnings("deprecation")
     private static boolean isSupportGetInstalledAppsPermission(Context context) {
         try {
             PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(Permission.GET_INSTALLED_APPS, 0);
             if (permissionInfo != null) {
-                if (AndroidVersion.isAndroid9()) {
+                if (AndroidVersionTools.isAndroid9()) {
                     return permissionInfo.getProtection() == PermissionInfo.PROTECTION_DANGEROUS;
                 } else {
                     return (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_MASK_BASE) == PermissionInfo.PROTECTION_DANGEROUS;
@@ -119,7 +119,7 @@ final class GetInstalledAppsPermissionCompat {
      * 判断当前 miui 版本是否支持申请读取应用列表权限
      */
     private static boolean isMiuiSupportGetInstalledAppsPermission() {
-        if (!AndroidVersion.isAndroid4_4()) {
+        if (!AndroidVersionTools.isAndroid4_4()) {
             return true;
         }
         try {

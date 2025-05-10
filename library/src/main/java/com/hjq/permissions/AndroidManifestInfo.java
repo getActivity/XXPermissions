@@ -53,7 +53,7 @@ final class AndroidManifestInfo {
         private static final int REQUESTED_PERMISSION_NEVER_FOR_LOCATION;
 
         static  {
-            if (AndroidVersion.isAndroid12()) {
+            if (AndroidVersionTools.isAndroid12()) {
                 REQUESTED_PERMISSION_NEVER_FOR_LOCATION = PackageInfo.REQUESTED_PERMISSION_NEVER_FOR_LOCATION;
             } else {
                 REQUESTED_PERMISSION_NEVER_FOR_LOCATION = 0x00010000;
