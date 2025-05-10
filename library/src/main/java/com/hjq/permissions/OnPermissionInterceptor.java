@@ -3,7 +3,6 @@ package com.hjq.permissions;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 import java.util.List;
 
 /**
@@ -22,7 +21,7 @@ public interface OnPermissionInterceptor {
      */
     default void launchPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
                                             @Nullable OnPermissionCallback callback) {
-        PermissionHandler.request(activity, allPermissions, callback, this);
+        dispatchPermissionRequest(activity, allPermissions, callback);
     }
 
     /**
@@ -59,7 +58,6 @@ public interface OnPermissionInterceptor {
         callback.onDenied(deniedPermissions, doNotAskAgain);
     }
 
-
     /**
      * 权限请求完成
      *
@@ -69,4 +67,16 @@ public interface OnPermissionInterceptor {
      */
     default void finishPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
                                             boolean skipRequest, @Nullable OnPermissionCallback callback) {}
+
+    /**
+     * 派发权限请求
+     *
+     * @param allPermissions            申请的权限
+     * @param callback                  权限申请回调
+     */
+    default void dispatchPermissionRequest(@NonNull Activity activity,
+                                            @NonNull List<String> allPermissions,
+                                            @Nullable OnPermissionCallback callback) {
+        PermissionHandler.request(activity, allPermissions, callback, this);
+    }
 }

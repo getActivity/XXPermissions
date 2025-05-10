@@ -18,12 +18,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  *    desc   : 权限申请处理器
  */
 @SuppressWarnings("deprecation")
-public final class PermissionHandler {
+final class PermissionHandler {
 
     /**
      * 发起权限请求
      */
-    public static void request(@NonNull Activity activity, @NonNull List<String> allPermissions,
+    static void request(@NonNull Activity activity, @NonNull List<String> allPermissions,
                                 @Nullable OnPermissionCallback callback, @Nullable OnPermissionInterceptor interceptor) {
         PermissionHandler permissionHandler = new PermissionHandler(activity, allPermissions);
         permissionHandler.setOnPermissionInterceptor(interceptor);
@@ -43,7 +43,7 @@ public final class PermissionHandler {
 
     private final List<String> mAllPermissions;
 
-    public PermissionHandler(@NonNull Activity activity, @NonNull List<String> allPermissions) {
+    private PermissionHandler(@NonNull Activity activity, @NonNull List<String> allPermissions) {
         mActivity = activity;
         mAllPermissions = allPermissions;
     }
@@ -51,21 +51,21 @@ public final class PermissionHandler {
     /**
      * 设置权限监听回调监听
      */
-    public void setOnPermissionCallback(@Nullable OnPermissionCallback callback) {
+    private void setOnPermissionCallback(@Nullable OnPermissionCallback callback) {
         mCallBack = callback;
     }
 
     /**
      * 设置权限请求拦截器
      */
-    public void setOnPermissionInterceptor(@Nullable OnPermissionInterceptor interceptor) {
+    private void setOnPermissionInterceptor(@Nullable OnPermissionInterceptor interceptor) {
         mInterceptor = interceptor;
     }
 
     /**
      * 开始权限请求
      */
-    public void startPermissionRequest() {
+    private void startPermissionRequest() {
         if (mAllPermissions.isEmpty()) {
             return;
         }
