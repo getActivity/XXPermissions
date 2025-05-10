@@ -49,6 +49,15 @@ final class AndroidVersion {
     }
 
     /**
+     * 判断当前环境是否需要适配特定 Android 版本新特性
+     *
+     * @param androidSdkVersionCode                        需要判断的 android sdk 版本码
+     */
+    static boolean isAdaptationAndroidVersionNewFeatures(Context context, int androidSdkVersionCode) {
+        return getAndroidVersionCode() >= androidSdkVersionCode && getTargetSdkVersionCode(context) >= androidSdkVersionCode;
+    }
+
+    /**
      * 是否是 Android 14 及以上版本
      */
     static boolean isAndroid14() {

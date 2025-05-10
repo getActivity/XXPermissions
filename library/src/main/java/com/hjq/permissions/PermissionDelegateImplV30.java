@@ -34,8 +34,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
             return isGrantedManageStoragePermission();
         }
 
-        if (AndroidVersion.isAndroid11() &&
-            AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_11 &&
+        if (AndroidVersion.isAdaptationAndroidVersionNewFeatures(context, AndroidVersion.ANDROID_11) &&
             PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
             // 这里补充一下这样写的具体原因：
             // 1. 当 targetSdk >= Android 11 并且在此版本及之上申请 WRITE_EXTERNAL_STORAGE，虽然可以弹出授权框，但是没有什么实际作用
@@ -56,8 +55,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
             return false;
         }
 
-        if (AndroidVersion.isAndroid11() &&
-            AndroidVersion.getTargetSdkVersionCode(activity) >= AndroidVersion.ANDROID_11 &&
+        if (AndroidVersion.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersion.ANDROID_11) &&
             PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
             return false;
         }
@@ -67,8 +65,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
 
     @Override
     public boolean recheckPermissionResult(@NonNull Context context, @NonNull String permission, boolean grantResult) {
-        if (AndroidVersion.isAndroid11() &&
-            AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_11 &&
+        if (AndroidVersion.isAdaptationAndroidVersionNewFeatures(context, AndroidVersion.ANDROID_11) &&
             PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
             // 具体原因自己点进去 isGrantedPermission 方法看代码注释，这次就不重复写注释了
             return isGrantedPermission(context, permission);

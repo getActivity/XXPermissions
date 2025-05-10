@@ -253,8 +253,7 @@ final class PermissionUtils {
 
         try {
 
-            if (AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_9 &&
-                AndroidVersion.getAndroidVersionCode() >= AndroidVersion.ANDROID_9 &&
+            if (AndroidVersion.isAdaptationAndroidVersionNewFeatures(context, AndroidVersion.ANDROID_9) &&
                 AndroidVersion.getAndroidVersionCode() < AndroidVersion.ANDROID_11) {
 
                 // 反射套娃操作：实测这种方式只在 Android 9.0 和 Android 10.0 有效果，在 Android 11 上面就失效了

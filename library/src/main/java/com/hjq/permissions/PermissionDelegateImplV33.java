@@ -58,7 +58,7 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
             return PermissionUtils.checkSelfPermission(context, permission);
         }
 
-        if (AndroidVersion.isAndroid13() && AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_13) {
+        if (AndroidVersion.isAdaptationAndroidVersionNewFeatures(context, AndroidVersion.ANDROID_13)) {
             if (PermissionUtils.equalsPermission(permission, Permission.READ_EXTERNAL_STORAGE)) {
                 return PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_IMAGES) &&
                     PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_VIDEO) &&
@@ -125,7 +125,7 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
                 !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
         }
 
-        if (AndroidVersion.isAndroid13() && AndroidVersion.getTargetSdkVersionCode(activity) >= AndroidVersion.ANDROID_13) {
+        if (AndroidVersion.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersion.ANDROID_13)) {
             if (PermissionUtils.equalsPermission(permission, Permission.READ_EXTERNAL_STORAGE)) {
                 return !PermissionUtils.checkSelfPermission(activity, Permission.READ_MEDIA_IMAGES) &&
                     !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_MEDIA_IMAGES) &&

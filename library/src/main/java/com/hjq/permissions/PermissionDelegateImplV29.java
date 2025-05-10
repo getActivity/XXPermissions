@@ -95,11 +95,11 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
      */
     @RequiresApi(AndroidVersion.ANDROID_6)
     private boolean isGrantedReadStoragePermission(@NonNull Context context) {
-        if (AndroidVersion.isAndroid13() && AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_13) {
+        if (AndroidVersion.isAdaptationAndroidVersionNewFeatures(context, AndroidVersion.ANDROID_13)) {
             return PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_IMAGES) ||
                 isGrantedPermission(context, Permission.MANAGE_EXTERNAL_STORAGE);
         }
-        if (AndroidVersion.isAndroid11() && AndroidVersion.getTargetSdkVersionCode(context) >= AndroidVersion.ANDROID_11) {
+        if (AndroidVersion.isAdaptationAndroidVersionNewFeatures(context, AndroidVersion.ANDROID_11)) {
             return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE) ||
                 isGrantedPermission(context, Permission.MANAGE_EXTERNAL_STORAGE);
         }
