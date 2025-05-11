@@ -113,7 +113,7 @@ public final class RequestSpecialPermissionFragment extends RequestBasePermissio
             return;
         }
 
-        List<String> grantedPermissions = PermissionApi.getGrantedPermissions(activity, allPermissions);
+        List<String> grantedPermissions = PermissionApi.getGrantedPermission(activity, allPermissions);
         if (grantedPermissions.size() == allPermissions.size()) {
             callback.onGranted();
         } else {

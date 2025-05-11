@@ -175,16 +175,16 @@ XXPermissions.with(this)
 
 ```java
 // 判断一个或多个权限是否全部授予了
-XXPermissions.isGranted(Context context, String... permissions);
+XXPermissions.isGrantedPermission(Context context, String... permissions);
 
 // 获取没有授予的权限
-XXPermissions.getDenied(Context context, String... permissions);
+XXPermissions.getDeniedPermission(Context context, String... permissions);
 
 // 判断某个权限是否为特殊权限
-XXPermissions.isSpecial(String permission);
+XXPermissions.isSpecialPermission(String permission);
 
 // 判断一个或多个权限是否被勾选了《不再询问》的选项（一定要在权限申请的回调方法中调用才有效果）
-XXPermissions.isDoNotAskAgainPermissions(Activity activity, String... permissions);
+XXPermissions.isDoNotAskAgainPermission(Activity activity, String... permissions);
 
 // 跳转到应用权限设置页
 XXPermissions.startPermissionActivity(Context context, String... permissions);
@@ -196,7 +196,7 @@ XXPermissions.startPermissionActivity(Fragment fragment, String... permissions, 
 // 设置不触发错误检测机制（全局设置）
 XXPermissions.setCheckMode(false);
 // 设置权限申请拦截器（全局设置）
-XXPermissions.setInterceptor(new OnPermissionInterceptor() {});
+XXPermissions.setPermissionInterceptor(new OnPermissionInterceptor() {});
 ```
 
 #### 关于权限监听回调参数说明

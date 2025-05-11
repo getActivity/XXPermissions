@@ -58,7 +58,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     @Override
     public void launchPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions, @Nullable OnPermissionCallback callback) {
         mRequestFlag = true;
-        List<String> deniedPermissions = XXPermissions.getDenied(activity, allPermissions);
+        List<String> deniedPermissions = XXPermissions.getDeniedPermission(activity, allPermissions);
 
         if (TextUtils.isEmpty(mPermissionDescription)) {
             mPermissionDescription = generatePermissionDescription(activity, deniedPermissions);
@@ -69,10 +69,10 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
 
         boolean showPopupWindow = activityOrientation == Configuration.ORIENTATION_PORTRAIT;
         for (String permission : allPermissions) {
-            if (!XXPermissions.isSpecial(permission)) {
+            if (!XXPermissions.isSpecialPermission(permission)) {
                 continue;
             }
-            if (XXPermissions.isGranted(activity, permission)) {
+            if (XXPermissions.isGrantedPermission(activity, permission)) {
                 continue;
             }
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R &&
@@ -268,7 +268,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
                         @Override
                         public void onDenied() {
                             showPermissionSettingDialog(activity, allPermissions,
-                                    XXPermissions.getDenied(activity, allPermissions), callback);
+                                    XXPermissions.getDeniedPermission(activity, allPermissions), callback);
                         }
                     });
                 })

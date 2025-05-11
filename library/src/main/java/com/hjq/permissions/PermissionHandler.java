@@ -181,7 +181,7 @@ final class PermissionHandler {
             }
 
             // 如果这个权限组已经全部授权，就不纳入申请的范围内
-            if (PermissionApi.isGrantedPermissions(activity, dangerousPermissionGroup)) {
+            if (PermissionApi.isGrantedPermission(activity, dangerousPermissionGroup)) {
                 continue;
             }
 
@@ -193,7 +193,7 @@ final class PermissionHandler {
 
                 // 添加前台权限（前提得是没有授权）
                 if (!foregroundPermissions.isEmpty() &&
-                    !PermissionApi.isGrantedPermissions(activity, foregroundPermissions)) {
+                    !PermissionApi.isGrantedPermission(activity, foregroundPermissions)) {
                     unauthorizedDangerousPermissions.add(foregroundPermissions);
                 }
                 // 添加后台权限
@@ -339,7 +339,7 @@ final class PermissionHandler {
         }
 
         // 获取已授予的权限
-        List<String> grantedPermissions = PermissionApi.getGrantedPermissions(allPermissions, grantResults);
+        List<String> grantedPermissions = PermissionApi.getGrantedPermission(allPermissions, grantResults);
 
         // 如果请求成功的权限集合大小和请求的数组一样大时证明权限已经全部授予
         if (grantedPermissions.size() == allPermissions.size()) {
@@ -351,11 +351,11 @@ final class PermissionHandler {
         }
 
         // 获取被拒绝的权限
-        List<String> deniedPermissions = PermissionApi.getDeniedPermissions(allPermissions, grantResults);
+        List<String> deniedPermissions = PermissionApi.getDeniedPermission(allPermissions, grantResults);
 
         // 代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回 true 给开发人员，让开发者引导用户去设置界面开启权限
         interceptor.deniedPermissionRequest(mActivity, allPermissions, deniedPermissions,
-            PermissionApi.isDoNotAskAgainPermissions(mActivity, deniedPermissions), callback);
+            PermissionApi.isDoNotAskAgainPermission(mActivity, deniedPermissions), callback);
 
         // 证明还有一部分权限被成功授予，回调成功接口
         if (!grantedPermissions.isEmpty()) {

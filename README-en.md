@@ -169,16 +169,16 @@ XXPermissions.with(this)
 
 ```java
 // Determine if one or more permissions are all granted
-XXPermissions.isGranted(Context context, String... permissions);
+XXPermissions.isGrantedPermission(Context context, String... permissions);
 
 // Get permission not granted
-XXPermissions.getDenied(Context context, String... permissions);
+XXPermissions.getDeniedPermission(Context context, String... permissions);
 
 // Determine whether a permission is a special permission
-XXPermissions.isSpecial(String permission);
+XXPermissions.isSpecialPermission(String permission);
 
 // Determine whether one or more permissions have the "Do Not Ask Again" option checked (must be called in the callback method of the permission request to have an effect)
-XXPermissions.isDoNotAskAgainPermissions(Activity activity, String... permissions);
+XXPermissions.isDoNotAskAgainPermission(Activity activity, String... permissions);
 
 // Start app details activity
 XXPermissions.startPermissionActivity(Context context, String... permissions);
@@ -190,7 +190,7 @@ XXPermissions.startPermissionActivity(Fragment fragment, String... permissions, 
 // Setting not to trigger error detection mechanism (global setting)
 XXPermissions.setCheckMode(false);
 // Set permission request interceptor (global setting)
-XXPermissions.setInterceptor(new OnPermissionInterceptor() {});
+XXPermissions.setPermissionInterceptor(new OnPermissionInterceptor() {});
 ```
 
 #### About the permission monitoring callback parameter description
