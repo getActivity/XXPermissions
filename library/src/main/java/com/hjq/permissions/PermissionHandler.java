@@ -303,7 +303,7 @@ final class PermissionHandler {
     private static void requestSingleDangerousPermission(@NonNull Activity activity,
                                                         @NonNull List<String> dangerousPermissions,
                                                         @NonNull Runnable finishRunnable) {
-        RequestDangerousPermissionFragment.launch(activity, dangerousPermissions, (permissions, grantResults) -> finishRunnable.run());
+        RequestDangerousPermissionFragment.launch(activity, dangerousPermissions, finishRunnable);
     }
 
     /**

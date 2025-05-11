@@ -28,7 +28,7 @@ public final class RequestDangerousPermissionFragment extends RequestBasePermiss
      * 开启权限申请
      */
     public static void launch(@NonNull Activity activity, @NonNull List<String> permissions,
-                                @Nullable OnRequestPermissionsResultCallback callback) {
+                                @Nullable Runnable callback) {
         RequestDangerousPermissionFragment fragment = new RequestDangerousPermissionFragment();
         int requestCode;
         Random random = new Random();
@@ -54,19 +54,19 @@ public final class RequestDangerousPermissionFragment extends RequestBasePermiss
         // 设置权限申请标记
         fragment.setRequestFlag(true);
         // 设置权限回调监听
-        fragment.setOnRequestPermissionsResultCallback(callback);
+        fragment.setCallback(callback);
         // 绑定到 Activity 上面
         fragment.attachByActivity(activity);
     }
 
     /** 权限回调对象 */
     @Nullable
-    private OnRequestPermissionsResultCallback mCallBack;
+    private Runnable mCallBack;
 
     /**
      * 设置权限监听回调监听
      */
-    public void setOnRequestPermissionsResultCallback(@Nullable OnRequestPermissionsResultCallback callback) {
+    public void setCallback(@Nullable Runnable callback) {
         mCallBack = callback;
     }
 
@@ -132,7 +132,7 @@ public final class RequestDangerousPermissionFragment extends RequestBasePermiss
             return;
         }
 
-        OnRequestPermissionsResultCallback callback = mCallBack;
+        Runnable callback = mCallBack;
         // 释放监听对象的引用
         mCallBack = null;
 
@@ -140,7 +140,7 @@ public final class RequestDangerousPermissionFragment extends RequestBasePermiss
         REQUEST_CODE_ARRAY.remove((Integer) requestCode);
 
         if (callback != null) {
-            callback.onRequestPermissionsResult(permissions, grantResults);
+            callback.run();
         }
 
         // 将 Fragment 从 Activity 移除
