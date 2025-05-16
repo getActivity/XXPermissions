@@ -28,7 +28,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
             if (!AndroidVersionTools.isAndroid6()) {
                 return true;
             }
-            return PermissionUtils.checkSelfPermission(context, permission);
+            return PermissionUtils.isGrantedPermission(context, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.SYSTEM_ALERT_WINDOW)) {

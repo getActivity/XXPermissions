@@ -28,8 +28,8 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
                 if (AndroidVersionTools.isAndroid10() && !isUseDeprecationExternalStorage()) {
                     return false;
                 }
-                return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE) &&
-                    PermissionUtils.checkSelfPermission(context, Permission.WRITE_EXTERNAL_STORAGE);
+                return PermissionUtils.isGrantedPermission(context, Permission.READ_EXTERNAL_STORAGE) &&
+                    PermissionUtils.isGrantedPermission(context, Permission.WRITE_EXTERNAL_STORAGE);
             }
             return isGrantedManageStoragePermission();
         }

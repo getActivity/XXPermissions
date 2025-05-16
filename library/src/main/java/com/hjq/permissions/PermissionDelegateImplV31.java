@@ -30,9 +30,9 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
                 return true;
             }
             if (!AndroidVersionTools.isAndroid12()) {
-                return PermissionUtils.checkSelfPermission(context, Permission.ACCESS_FINE_LOCATION);
+                return PermissionUtils.isGrantedPermission(context, Permission.ACCESS_FINE_LOCATION);
             }
-            return PermissionUtils.checkSelfPermission(context, permission);
+            return PermissionUtils.isGrantedPermission(context, permission);
         }
 
         if (PermissionUtils.containsPermission(new String[] {
@@ -42,7 +42,7 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
             if (!AndroidVersionTools.isAndroid12()) {
                 return true;
             }
-            return PermissionUtils.checkSelfPermission(context, permission);
+            return PermissionUtils.isGrantedPermission(context, permission);
         }
 
         return super.isGrantedPermission(context, permission);
@@ -77,8 +77,8 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION) &&
             AndroidVersionTools.isAndroid6() && AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_12) {
 
-            if (!PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
-                !PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_COARSE_LOCATION)) {
+            if (!PermissionUtils.isGrantedPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
+                !PermissionUtils.isGrantedPermission(activity, Permission.ACCESS_COARSE_LOCATION)) {
                 return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
                         PermissionUtils.isDoNotAskAgainPermission(activity, Permission.ACCESS_COARSE_LOCATION);
             }

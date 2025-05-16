@@ -55,7 +55,7 @@ final class PermissionUtils {
      * 判断某个危险权限是否授予了
      */
     @RequiresApi(AndroidVersionTools.ANDROID_6)
-    static boolean checkSelfPermission(@NonNull Context context, @NonNull String permission) {
+    static boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
         return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
     }
 
@@ -124,7 +124,7 @@ final class PermissionUtils {
      */
     @RequiresApi(api = AndroidVersionTools.ANDROID_6)
     static boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
-        return !checkSelfPermission(activity, permission) &&
+        return !isGrantedPermission(activity, permission) &&
             !shouldShowRequestPermissionRationale(activity, permission);
     }
 

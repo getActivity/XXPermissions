@@ -20,18 +20,18 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
                 return true;
             }
             if (!AndroidVersionTools.isAndroid13()) {
-                return PermissionUtils.checkSelfPermission(context, Permission.BODY_SENSORS);
+                return PermissionUtils.isGrantedPermission(context, Permission.BODY_SENSORS);
             }
             // 有后台传感器权限的前提条件是授予了前台的传感器权限
-            return PermissionUtils.checkSelfPermission(context, Permission.BODY_SENSORS) &&
-                PermissionUtils.checkSelfPermission(context, permission);
+            return PermissionUtils.isGrantedPermission(context, Permission.BODY_SENSORS) &&
+                PermissionUtils.isGrantedPermission(context, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS)) {
             if (!AndroidVersionTools.isAndroid13()) {
                 return NotificationPermissionCompat.isGrantedPermission(context);
             }
-            return PermissionUtils.checkSelfPermission(context, permission);
+            return PermissionUtils.isGrantedPermission(context, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.NEARBY_WIFI_DEVICES)) {
@@ -39,9 +39,9 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
                 return true;
             }
             if (!AndroidVersionTools.isAndroid13()) {
-                return PermissionUtils.checkSelfPermission(context, Permission.ACCESS_FINE_LOCATION);
+                return PermissionUtils.isGrantedPermission(context, Permission.ACCESS_FINE_LOCATION);
             }
-            return PermissionUtils.checkSelfPermission(context, permission);
+            return PermissionUtils.isGrantedPermission(context, permission);
         }
 
         if (PermissionUtils.containsPermission(new String[] {
@@ -53,16 +53,16 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
                 return true;
             }
             if (!AndroidVersionTools.isAndroid13()) {
-                return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE);
+                return PermissionUtils.isGrantedPermission(context, Permission.READ_EXTERNAL_STORAGE);
             }
-            return PermissionUtils.checkSelfPermission(context, permission);
+            return PermissionUtils.isGrantedPermission(context, permission);
         }
 
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_13) &&
                                 PermissionUtils.equalsPermission(permission, Permission.READ_EXTERNAL_STORAGE)) {
-            return PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_IMAGES) &&
-                PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_VIDEO) &&
-                PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_AUDIO);
+            return PermissionUtils.isGrantedPermission(context, Permission.READ_MEDIA_IMAGES) &&
+                PermissionUtils.isGrantedPermission(context, Permission.READ_MEDIA_VIDEO) &&
+                PermissionUtils.isGrantedPermission(context, Permission.READ_MEDIA_AUDIO);
         }
 
         return super.isGrantedPermission(context, permission);
@@ -78,7 +78,7 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
                 return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.BODY_SENSORS);
             }
             // 先检查前台的传感器权限是否拒绝了
-            if (!PermissionUtils.checkSelfPermission(activity, Permission.BODY_SENSORS)) {
+            if (!PermissionUtils.isGrantedPermission(activity, Permission.BODY_SENSORS)) {
                 // 如果是的话就判断前台的传感器权限是否被永久拒绝了
                 return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.BODY_SENSORS);
             }

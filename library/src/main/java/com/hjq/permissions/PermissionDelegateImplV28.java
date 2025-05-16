@@ -18,7 +18,7 @@ class PermissionDelegateImplV28 extends PermissionDelegateImplV26 {
             if (!AndroidVersionTools.isAndroid9()) {
                 return true;
             }
-            return PermissionUtils.checkSelfPermission(context, permission);
+            return PermissionUtils.isGrantedPermission(context, permission);
         }
 
         return super.isGrantedPermission(context, permission);

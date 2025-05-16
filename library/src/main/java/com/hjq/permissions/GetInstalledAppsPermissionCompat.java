@@ -27,7 +27,7 @@ final class GetInstalledAppsPermissionCompat {
         }
 
         if (AndroidVersionTools.isAndroid6() && isSupportGetInstalledAppsPermission(context)) {
-            return PermissionUtils.checkSelfPermission(context, Permission.GET_INSTALLED_APPS);
+            return PermissionUtils.isGrantedPermission(context, Permission.GET_INSTALLED_APPS);
         }
 
         if (PhoneRomUtils.isMiui() && isMiuiSupportGetInstalledAppsPermission()) {

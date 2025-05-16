@@ -21,10 +21,10 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
                 return true;
             }
             if (!AndroidVersionTools.isAndroid10()) {
-                return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE);
+                return PermissionUtils.isGrantedPermission(context, Permission.READ_EXTERNAL_STORAGE);
             }
             return isGrantedReadStoragePermission(context) &&
-                PermissionUtils.checkSelfPermission(context, Permission.ACCESS_MEDIA_LOCATION);
+                PermissionUtils.isGrantedPermission(context, Permission.ACCESS_MEDIA_LOCATION);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION)) {
@@ -32,16 +32,16 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
                 return true;
             }
             if (!AndroidVersionTools.isAndroid10()) {
-                return PermissionUtils.checkSelfPermission(context, Permission.ACCESS_FINE_LOCATION);
+                return PermissionUtils.isGrantedPermission(context, Permission.ACCESS_FINE_LOCATION);
             }
-            return PermissionUtils.checkSelfPermission(context, permission);
+            return PermissionUtils.isGrantedPermission(context, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ACTIVITY_RECOGNITION)) {
             if (!AndroidVersionTools.isAndroid10()) {
                 return true;
             }
-            return PermissionUtils.checkSelfPermission(context, permission);
+            return PermissionUtils.isGrantedPermission(context, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
@@ -60,7 +60,7 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
             if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_10)) {
                 return isUseDeprecationExternalStorage();
             }
-            return PermissionUtils.checkSelfPermission(context, permission);
+            return PermissionUtils.isGrantedPermission(context, permission);
         }
 
         return super.isGrantedPermission(context, permission);
@@ -76,7 +76,7 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
                 return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.ACCESS_FINE_LOCATION);
             }
             // 先检查前台的定位权限是否拒绝了
-            if (!PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION)) {
+            if (!PermissionUtils.isGrantedPermission(activity, Permission.ACCESS_FINE_LOCATION)) {
                 // 如果是的话就判断前台的定位权限是否被永久拒绝了
                 return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.ACCESS_FINE_LOCATION);
             }
@@ -121,14 +121,14 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
     @RequiresApi(AndroidVersionTools.ANDROID_6)
     private boolean isGrantedReadStoragePermission(@NonNull Context context) {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_13)) {
-            return PermissionUtils.checkSelfPermission(context, Permission.READ_MEDIA_IMAGES) ||
+            return PermissionUtils.isGrantedPermission(context, Permission.READ_MEDIA_IMAGES) ||
                 isGrantedPermission(context, Permission.MANAGE_EXTERNAL_STORAGE);
         }
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_11)) {
-            return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE) ||
+            return PermissionUtils.isGrantedPermission(context, Permission.READ_EXTERNAL_STORAGE) ||
                 isGrantedPermission(context, Permission.MANAGE_EXTERNAL_STORAGE);
         }
-        return PermissionUtils.checkSelfPermission(context, Permission.READ_EXTERNAL_STORAGE);
+        return PermissionUtils.isGrantedPermission(context, Permission.READ_EXTERNAL_STORAGE);
     }
 
     /**

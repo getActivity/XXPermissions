@@ -37,16 +37,16 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
                 return true;
             }
             if (!AndroidVersionTools.isAndroid8()) {
-                return PermissionUtils.checkSelfPermission(context, Permission.READ_PHONE_STATE);
+                return PermissionUtils.isGrantedPermission(context, Permission.READ_PHONE_STATE);
             }
-            return PermissionUtils.checkSelfPermission(context, permission);
+            return PermissionUtils.isGrantedPermission(context, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ANSWER_PHONE_CALLS)) {
             if (!AndroidVersionTools.isAndroid8()) {
                 return true;
             }
-            return PermissionUtils.checkSelfPermission(context, permission);
+            return PermissionUtils.isGrantedPermission(context, permission);
         }
 
         return super.isGrantedPermission(context, permission);

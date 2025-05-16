@@ -18,7 +18,7 @@ class PermissionDelegateImplV34 extends PermissionDelegateImplV33 {
             if (!AndroidVersionTools.isAndroid14()) {
                 return true;
             }
-            return PermissionUtils.checkSelfPermission(context, permission);
+            return PermissionUtils.isGrantedPermission(context, permission);
         }
 
         return super.isGrantedPermission(context, permission);
