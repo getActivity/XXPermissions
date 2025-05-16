@@ -122,17 +122,6 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
         return super.isDoNotAskAgainPermission(activity, permission);
     }
 
-    @Override
-    public boolean recheckPermissionResult(@NonNull Context context, @NonNull String permission, boolean grantResult) {
-        if (PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE) &&
-            AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_10)) {
-            // 具体原因自己点进去 isGrantedPermission 方法看代码注释，这次就不重复写注释了
-            return isGrantedPermission(context, permission);
-        }
-
-        return super.recheckPermissionResult(context, permission, grantResult);
-    }
-
     /**
      * 判断是否授予了读取文件的权限
      */

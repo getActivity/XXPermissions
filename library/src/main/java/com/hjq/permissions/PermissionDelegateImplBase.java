@@ -35,15 +35,6 @@ class PermissionDelegateImplBase implements PermissionDelegate {
 
     @Override
     public boolean recheckPermissionResult(@NonNull Context context, @NonNull String permission, boolean grantResult) {
-        // 如果这个权限是特殊权限，则需要重新检查权限的状态
-        if (PermissionApi.isSpecialPermission(permission)) {
-            return isGrantedPermission(context, permission);
-        }
-
-        if (PermissionHelper.findAndroidVersionByPermission(permission) > AndroidVersionTools.getCurrentAndroidVersionCode()) {
-            // 如果是申请了新权限，但却是旧设备上面运行的，会被系统直接拒绝，在这里需要重新检查权限的状态
-            return isGrantedPermission(context, permission);
-        }
         return grantResult;
     }
 
