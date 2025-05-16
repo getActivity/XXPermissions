@@ -47,6 +47,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
         findViewById(R.id.btn_main_request_single_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_group_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_multiple_type_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_location_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_sensors_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_activity_recognition_permission).setOnClickListener(this);
@@ -570,6 +571,24 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             getAppList();
                         }
                     });
+
+        } else if (viewId == R.id.btn_main_request_multiple_type_permission) {
+
+            XXPermissions.with(this)
+                .permission(Permission.CAMERA)
+                .permission(Permission.SYSTEM_ALERT_WINDOW)
+                .interceptor(new PermissionInterceptor())
+                .request(new OnPermissionCallback() {
+
+                    @Override
+                    public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                        if (!allGranted) {
+                            return;
+                        }
+                        toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                            PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                    }
+                });
 
         } else if (viewId == R.id.btn_main_start_permission_activity) {
 

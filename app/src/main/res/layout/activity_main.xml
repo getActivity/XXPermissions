@@ -201,6 +201,14 @@
                 android:text="@string/demo_request_get_installed_apps_permission" />
 
             <Button
+                android:id="@+id/btn_main_request_multiple_type_permission"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="@string/demo_request_multiple_type_permission" />
+
+            <Button
                 android:id="@+id/btn_main_start_permission_activity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
