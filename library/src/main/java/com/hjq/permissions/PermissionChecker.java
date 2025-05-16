@@ -6,6 +6,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import com.hjq.permissions.AndroidManifestInfo.ApplicationInfo;
 import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -542,11 +543,8 @@ final class PermissionChecker {
                 continue;
             }
 
-            // 检查这个权限有没有在清单文件中注册，WRITE_EXTERNAL_STORAGE 权限比较特殊，要单独拎出来判断
-            // 如果你适配了 Android 11 且在 Android 11 及以上的版本运行，WRITE_EXTERNAL_STORAGE 你就算申请了没有什么作用
-            if (AndroidVersionTools.getTargetSdkVersionCode(context) >= AndroidVersionTools.ANDROID_13 &&
-                    PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
-                checkManifestPermission(permissionInfoList, Permission.WRITE_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_10);
+            if (PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
+                checkWriteExternalStoragePermission(context, androidManifestInfo.applicationInfo, permissionInfoList);
             } else {
                 checkManifestPermission(permissionInfoList, permission);
             }
@@ -624,6 +622,39 @@ final class PermissionChecker {
         }
     }
 
+    /**
+     * 检查 {@link Permission#WRITE_EXTERNAL_STORAGE } 权限
+     */
+    static void checkWriteExternalStoragePermission(@NonNull Context context, @Nullable ApplicationInfo applicationInfo,
+                                                    @NonNull List<AndroidManifestInfo.PermissionInfo> permissionInfoList) {
+        if (applicationInfo == null) {
+            return;
+        }
+
+        String checkPermission = Permission.WRITE_EXTERNAL_STORAGE;
+
+        if (AndroidVersionTools.getTargetSdkVersionCode(context) < AndroidVersionTools.ANDROID_10) {
+            checkManifestPermission(permissionInfoList, checkPermission);
+            return;
+        }
+
+        // 判断清单文件中是否注册了 MANAGE_EXTERNAL_STORAGE 权限，如果有的话，那么 maxSdkVersion 就必须是 Android 10 及以上的版本
+        if (AndroidVersionTools.getTargetSdkVersionCode(context) >= AndroidVersionTools.ANDROID_11 &&
+                findPermissionInfoByList(permissionInfoList, Permission.MANAGE_EXTERNAL_STORAGE) != null) {
+            checkManifestPermission(permissionInfoList, checkPermission, AndroidVersionTools.ANDROID_10);
+            return;
+        }
+
+        // 检查这个权限有没有在清单文件中注册，WRITE_EXTERNAL_STORAGE 权限比较特殊，要单独拎出来判断
+        // 如果在清单文件中注册了 android:requestLegacyExternalStorage="true" 属性，即可延长一个 Android 版本适配
+        // 所以 requestLegacyExternalStorage 属性在开启的状态下，对 maxSdkVersion 属性的要求延长一个版本
+        if (applicationInfo.requestLegacyExternalStorage) {
+            checkManifestPermission(permissionInfoList, checkPermission, AndroidVersionTools.ANDROID_10);
+        } else {
+            checkManifestPermission(permissionInfoList, checkPermission, AndroidVersionTools.ANDROID_9);
+        }
+    }
+
     static void checkManifestPermission(@NonNull List<AndroidManifestInfo.PermissionInfo> permissionInfoList,
                                         @NonNull String checkPermission) {
         checkManifestPermission(permissionInfoList, checkPermission, Integer.MAX_VALUE);
@@ -667,7 +698,6 @@ final class PermissionChecker {
                     "please delete the android:maxSdkVersion=\"" + manifestMaxSdkVersion + "\" attribute"));
         }
     }
-
     /**
      * 从权限列表中获取指定的权限信息
      */
