@@ -59,11 +59,9 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
                 return false;
             }
             if (!AndroidVersionTools.isAndroid12()) {
-                return !PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION);
+                return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.ACCESS_FINE_LOCATION);
             }
-            return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+            return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
         if (PermissionUtils.containsPermission(new String[] {
@@ -73,8 +71,7 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
             if (!AndroidVersionTools.isAndroid12()) {
                 return false;
             }
-            return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+            return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION) &&
@@ -82,12 +79,10 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
 
             if (!PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
                 !PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_COARSE_LOCATION)) {
-                return !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_COARSE_LOCATION);
+                return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
+                        PermissionUtils.isDoNotAskAgainPermission(activity, Permission.ACCESS_COARSE_LOCATION);
             }
-
-            return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+            return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
         return super.isDoNotAskAgainPermission(activity, permission);

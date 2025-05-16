@@ -75,25 +75,22 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
                 return false;
             }
             if (!AndroidVersionTools.isAndroid13()) {
-                return !PermissionUtils.checkSelfPermission(activity, Permission.BODY_SENSORS) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.BODY_SENSORS);
+                return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.BODY_SENSORS);
             }
             // 先检查前台的传感器权限是否拒绝了
             if (!PermissionUtils.checkSelfPermission(activity, Permission.BODY_SENSORS)) {
                 // 如果是的话就判断前台的传感器权限是否被永久拒绝了
-                return !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.BODY_SENSORS);
+                return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.BODY_SENSORS);
             }
             // 如果不是的话再去判断后台的传感器权限是否被拒永久拒绝了
-            return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+            return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.POST_NOTIFICATIONS)) {
             if (!AndroidVersionTools.isAndroid13()) {
                 return false;
             }
-            return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+            return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.NEARBY_WIFI_DEVICES)) {
@@ -101,11 +98,9 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
                 return false;
             }
             if (!AndroidVersionTools.isAndroid13()) {
-                return !PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION);
+                return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.ACCESS_FINE_LOCATION);
             }
-            return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+            return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
         if (PermissionUtils.containsPermission(new String[] {
@@ -117,21 +112,16 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
                 return false;
             }
             if (!AndroidVersionTools.isAndroid13()) {
-                return !PermissionUtils.checkSelfPermission(activity, Permission.READ_EXTERNAL_STORAGE) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_EXTERNAL_STORAGE);
+                return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.READ_EXTERNAL_STORAGE);
             }
-            return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+            return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_13) &&
                             PermissionUtils.equalsPermission(permission, Permission.READ_EXTERNAL_STORAGE)) {
-            return !PermissionUtils.checkSelfPermission(activity, Permission.READ_MEDIA_IMAGES) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_MEDIA_IMAGES) &&
-                !PermissionUtils.checkSelfPermission(activity, Permission.READ_MEDIA_VIDEO) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_MEDIA_VIDEO) &&
-                !PermissionUtils.checkSelfPermission(activity, Permission.READ_MEDIA_AUDIO) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_MEDIA_AUDIO);
+            return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.READ_MEDIA_IMAGES) &&
+                PermissionUtils.isDoNotAskAgainPermission(activity, Permission.READ_MEDIA_VIDEO) &&
+                PermissionUtils.isDoNotAskAgainPermission(activity, Permission.READ_MEDIA_AUDIO);
         }
 
         return super.isDoNotAskAgainPermission(activity, permission);

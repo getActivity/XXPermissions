@@ -30,8 +30,7 @@ class PermissionDelegateImplV34 extends PermissionDelegateImplV33 {
             if (!AndroidVersionTools.isAndroid14()) {
                 return false;
             }
-            return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+            return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
         return super.isDoNotAskAgainPermission(activity, permission);

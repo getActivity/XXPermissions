@@ -73,17 +73,15 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
                 return false;
             }
             if (!AndroidVersionTools.isAndroid10()) {
-                return !PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION);
+                return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.ACCESS_FINE_LOCATION);
             }
             // 先检查前台的定位权限是否拒绝了
             if (!PermissionUtils.checkSelfPermission(activity, Permission.ACCESS_FINE_LOCATION)) {
                 // 如果是的话就判断前台的定位权限是否被永久拒绝了
-                return !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.ACCESS_FINE_LOCATION);
+                return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.ACCESS_FINE_LOCATION);
             }
             // 如果不是的话再去判断后台的定位权限是否被拒永久拒绝了
-            return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+            return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_MEDIA_LOCATION)) {
@@ -91,20 +89,16 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
                 return false;
             }
             if (!AndroidVersionTools.isAndroid10()) {
-                return !PermissionUtils.checkSelfPermission(activity, Permission.READ_EXTERNAL_STORAGE) &&
-                    !PermissionUtils.shouldShowRequestPermissionRationale(activity, Permission.READ_EXTERNAL_STORAGE);
+                return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.READ_EXTERNAL_STORAGE);
             }
-            return isGrantedReadStoragePermission(activity) &&
-                !PermissionUtils.checkSelfPermission(activity, permission) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+            return isGrantedReadStoragePermission(activity) && PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ACTIVITY_RECOGNITION)) {
             if (!AndroidVersionTools.isAndroid10()) {
                 return false;
             }
-            return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+            return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
@@ -115,8 +109,7 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
                     isUseDeprecationExternalStorage()) {
                 return false;
             }
-            return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+            return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
         return super.isDoNotAskAgainPermission(activity, permission);

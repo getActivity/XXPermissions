@@ -120,6 +120,15 @@ final class PermissionUtils {
     }
 
     /**
+     * 判断某个权限是否勾选了不再询问的选项
+     */
+    @RequiresApi(api = AndroidVersionTools.ANDROID_6)
+    static boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
+        return !checkSelfPermission(activity, permission) &&
+            !shouldShowRequestPermissionRationale(activity, permission);
+    }
+
+    /**
      * 延迟一段时间执行 OnActivityResult，避免有些机型明明授权了，但还是回调失败的问题
      */
     static void postActivityResult(@NonNull List<String> permissions, @NonNull Runnable runnable) {

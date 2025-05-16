@@ -71,8 +71,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
             if (!AndroidVersionTools.isAndroid6()) {
                 return false;
             }
-            return !PermissionUtils.checkSelfPermission(activity, permission) &&
-                !PermissionUtils.shouldShowRequestPermissionRationale(activity, permission);
+            return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
         if (PermissionUtils.containsPermission(new String[] {
