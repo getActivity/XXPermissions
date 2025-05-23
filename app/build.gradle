@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "com.hjq.permissions.demo"
         // 最低安装版本
-        minSdkVersion 16
+        minSdkVersion 17
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

@@ -5,7 +5,7 @@ android {
 
     defaultConfig {
         // 最低安装版本
-        minSdkVersion 14
+        minSdkVersion 17
     }
 
     lintOptions {
