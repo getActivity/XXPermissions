@@ -11,7 +11,7 @@ import android.support.annotation.NonNull;
  *    time   : 2022/06/11
  *    desc   : 权限委托接口
  */
-public interface PermissionDelegate {
+public interface IPermissionDelegate {
 
     /**
      * 判断某个权限是否授予了

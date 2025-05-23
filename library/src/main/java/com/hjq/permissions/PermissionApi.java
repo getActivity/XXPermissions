@@ -18,7 +18,7 @@ import java.util.List;
 final class PermissionApi {
 
     @NonNull
-    private static final PermissionDelegate DELEGATE = new PermissionDelegateImplV34();
+    private static final IPermissionDelegate DELEGATE = new PermissionDelegateImplV34();
 
     /**
      * 判断某个权限是否授予
