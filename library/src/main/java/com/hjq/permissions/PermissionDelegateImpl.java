@@ -13,7 +13,7 @@ import java.util.Collections;
  *    time   : 2022/06/11
  *    desc   : 权限委托基础实现
  */
-class PermissionDelegateImplBase implements PermissionDelegate {
+class PermissionDelegateImpl implements PermissionDelegate {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {

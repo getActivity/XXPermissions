@@ -11,7 +11,7 @@ import android.support.annotation.NonNull;
  *    time   : 2023/03/11
  *    desc   : Android 4.3 权限委托实现
  */
-class PermissionDelegateImplV18 extends PermissionDelegateImplBase {
+class PermissionDelegateImplV18 extends PermissionDelegateImpl {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
