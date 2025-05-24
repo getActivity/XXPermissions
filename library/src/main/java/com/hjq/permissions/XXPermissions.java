@@ -329,6 +329,21 @@ public final class XXPermissions {
     }
 
     /**
+     * 获取已授予的权限
+     */
+    public static List<String> getGrantedPermissions(@NonNull Context context, @NonNull String... permissions) {
+        return getGrantedPermissions(context, PermissionUtils.asArrayList(permissions));
+    }
+
+    public static List<String> getGrantedPermissions(@NonNull Context context, @NonNull String[]... permissions) {
+        return getGrantedPermissions(context, PermissionUtils.asArrayLists(permissions));
+    }
+
+    public static List<String> getGrantedPermissions(@NonNull Context context, @NonNull List<String> permissions) {
+        return PermissionApi.getGrantedPermissions(context, permissions);
+    }
+
+    /**
      * 获取没有授予的权限
      */
     public static List<String> getDeniedPermissions(@NonNull Context context, @NonNull String... permissions) {
