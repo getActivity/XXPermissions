@@ -332,7 +332,7 @@ final class PermissionHandler {
         }
 
         // 获取已授予的权限
-        List<String> grantedPermissions = PermissionApi.getGrantedPermission(allPermissions, grantResults);
+        List<String> grantedPermissions = PermissionApi.getGrantedPermissions(allPermissions, grantResults);
 
         // 如果请求成功的权限集合大小和请求的数组一样大时证明权限已经全部授予
         if (grantedPermissions.size() == allPermissions.size()) {

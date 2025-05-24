@@ -92,13 +92,13 @@ final class PermissionApi {
      * 获取已经授予的权限
      */
     static List<String> getGrantedPermissions(@NonNull Context context, @NonNull List<String> permissions) {
-        List<String> grantedPermission = new ArrayList<>(permissions.size());
+        List<String> grantedPermissions = new ArrayList<>(permissions.size());
         for (String permission : permissions) {
             if (isGrantedPermission(context, permission)) {
-                grantedPermission.add(permission);
+                grantedPermissions.add(permission);
             }
         }
-        return grantedPermission;
+        return grantedPermissions;
     }
 
     /**
@@ -152,7 +152,7 @@ final class PermissionApi {
      * @param permissions       需要请求的权限组
      * @param grantResults      允许结果组
      */
-    static List<String> getGrantedPermission(@NonNull List<String> permissions, @NonNull int[] grantResults) {
+    static List<String> getGrantedPermissions(@NonNull List<String> permissions, @NonNull int[] grantResults) {
         List<String> grantedPermissions = new ArrayList<>();
         for (int i = 0; i < grantResults.length; i++) {
             // 把授予过的权限加入到集合中
