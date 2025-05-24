@@ -169,7 +169,7 @@ XXPermissions.with(this)
 
 ```java
 // Determine if one or more permissions are all granted
-XXPermissions.isGrantedPermission(Context context, String... permissions);
+XXPermissions.isGrantedPermissions(Context context, String... permissions);
 
 // Get permission not granted
 XXPermissions.getDeniedPermissions(Context context, String... permissions);
@@ -181,7 +181,7 @@ XXPermissions.getGrantedPermissions(Context context, String... permissions);
 XXPermissions.isSpecialPermission(String permission);
 
 // Determine whether one or more permissions have the "Do Not Ask Again" option checked (must be called in the callback method of the permission request to have an effect)
-XXPermissions.isDoNotAskAgainPermission(Activity activity, String... permissions);
+XXPermissions.isDoNotAskAgainPermissions(Activity activity, String... permissions);
 
 // Start app details activity
 XXPermissions.startPermissionActivity(Context context, String... permissions);

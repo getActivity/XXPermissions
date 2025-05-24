@@ -236,7 +236,7 @@ public final class XXPermissions {
         }
 
         // 判断要申请的权限是否都授予了
-        if (PermissionApi.isGrantedPermission(context, permissions)) {
+        if (PermissionApi.isGrantedPermissions(context, permissions)) {
             // 如果是的话，就不申请权限，而是通知权限申请成功
             interceptor.grantedPermissionRequest(activity, permissions, permissions, true, callback);
             interceptor.finishPermissionRequest(activity, permissions, true, callback);
@@ -316,16 +316,16 @@ public final class XXPermissions {
     /**
      * 判断一个或多个权限是否全部授予了
      */
-    public static boolean isGrantedPermission(@NonNull Context context, @NonNull String... permissions) {
-        return isGrantedPermission(context, PermissionUtils.asArrayList(permissions));
+    public static boolean isGrantedPermissions(@NonNull Context context, @NonNull String... permissions) {
+        return isGrantedPermissions(context, PermissionUtils.asArrayList(permissions));
     }
 
-    public static boolean isGrantedPermission(@NonNull Context context, @NonNull String[]... permissions) {
-        return isGrantedPermission(context, PermissionUtils.asArrayLists(permissions));
+    public static boolean isGrantedPermissions(@NonNull Context context, @NonNull String[]... permissions) {
+        return isGrantedPermissions(context, PermissionUtils.asArrayLists(permissions));
     }
 
-    public static boolean isGrantedPermission(@NonNull Context context, @NonNull List<String> permissions) {
-        return PermissionApi.isGrantedPermission(context, permissions);
+    public static boolean isGrantedPermissions(@NonNull Context context, @NonNull List<String> permissions) {
+        return PermissionApi.isGrantedPermissions(context, permissions);
     }
 
     /**
@@ -383,16 +383,16 @@ public final class XXPermissions {
      * 如果你在应用启动后，没有申请过这个权限，然后去判断它有没有勾选不再询问的选项，这样系统会一直返回 true，也就是不再询问
      * 但是实际上还能继续申请，系统只是不想让你知道权限是否勾选了不再询问的选项，你必须要申请过这个权限，才能去判断这个权限是否勾选了不再询问的选项
      */
-    public static boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String... permissions) {
-        return isDoNotAskAgainPermission(activity, PermissionUtils.asArrayList(permissions));
+    public static boolean isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull String... permissions) {
+        return isDoNotAskAgainPermissions(activity, PermissionUtils.asArrayList(permissions));
     }
 
-    public static boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String[]... permissions) {
-        return isDoNotAskAgainPermission(activity, PermissionUtils.asArrayLists(permissions));
+    public static boolean isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull String[]... permissions) {
+        return isDoNotAskAgainPermissions(activity, PermissionUtils.asArrayLists(permissions));
     }
 
-    public static boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull List<String> permissions) {
-        return PermissionApi.isDoNotAskAgainPermission(activity, permissions);
+    public static boolean isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull List<String> permissions) {
+        return PermissionApi.isDoNotAskAgainPermissions(activity, permissions);
     }
 
     /* android.content.Context */
@@ -668,7 +668,7 @@ public final class XXPermissions {
         if (callback == null) {
             return;
         }
-        if (isGrantedPermission(context, permissions)) {
+        if (isGrantedPermissions(context, permissions)) {
             callback.onGranted();
         } else {
             callback.onDenied();

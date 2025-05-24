@@ -75,7 +75,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
             if (!XXPermissions.isSpecialPermission(permission)) {
                 continue;
             }
-            if (XXPermissions.isGrantedPermission(activity, permission)) {
+            if (XXPermissions.isGrantedPermissions(activity, permission)) {
                 continue;
             }
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R &&

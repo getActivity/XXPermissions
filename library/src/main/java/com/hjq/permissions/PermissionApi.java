@@ -74,7 +74,7 @@ final class PermissionApi {
     /**
      * 判断某些权限是否全部被授予
      */
-    static boolean isGrantedPermission(@NonNull Context context, @NonNull List<String> permissions) {
+    static boolean isGrantedPermissions(@NonNull Context context, @NonNull List<String> permissions) {
         if (permissions.isEmpty()) {
             return false;
         }
@@ -120,7 +120,7 @@ final class PermissionApi {
      * @param activity              Activity对象
      * @param permissions            请求的权限
      */
-    static boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull List<String> permissions) {
+    static boolean isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull List<String> permissions) {
         for (String permission : permissions) {
             if (isDoNotAskAgainPermission(activity, permission)) {
                 return true;

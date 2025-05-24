@@ -179,7 +179,7 @@ XXPermissions.with(this)
             @Override
             public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
                 if (doNotAskAgain && permissions.contains(Permission.RECORD_AUDIO) &&
-                        XXPermissions.isDoNotAskAgainPermission(MainActivity.this, Permission.RECORD_AUDIO)) {
+                        XXPermissions.isDoNotAskAgainPermissions(MainActivity.this, Permission.RECORD_AUDIO)) {
                     toast("The recording permission request was denied, and the user checked Do not ask");
                 }
             }

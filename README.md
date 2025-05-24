@@ -175,7 +175,7 @@ XXPermissions.with(this)
 
 ```java
 // 判断一个或多个权限是否全部授予了
-XXPermissions.isGrantedPermission(Context context, String... permissions);
+XXPermissions.isGrantedPermissions(Context context, String... permissions);
 
 // 获取没有授予的权限
 XXPermissions.getDeniedPermissions(Context context, String... permissions);
@@ -187,7 +187,7 @@ XXPermissions.getGrantedPermissions(Context context, String... permissions);
 XXPermissions.isSpecialPermission(String permission);
 
 // 判断一个或多个权限是否被勾选了《不再询问》的选项（一定要在权限申请的回调方法中调用才有效果）
-XXPermissions.isDoNotAskAgainPermission(Activity activity, String... permissions);
+XXPermissions.isDoNotAskAgainPermissions(Activity activity, String... permissions);
 
 // 跳转到应用权限设置页
 XXPermissions.startPermissionActivity(Context context, String... permissions);
