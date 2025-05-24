@@ -61,7 +61,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     @Override
     public void launchPermissionRequest(@NonNull Activity activity, @NonNull PermissionFragmentFactory<?, ?> fragmentFactory, @NonNull List<String> allPermissions, @Nullable OnPermissionCallback callback) {
         mRequestFlag = true;
-        List<String> deniedPermissions = XXPermissions.getDeniedPermission(activity, allPermissions);
+        List<String> deniedPermissions = XXPermissions.getDeniedPermissions(activity, allPermissions);
 
         if (TextUtils.isEmpty(mPermissionDescription)) {
             mPermissionDescription = generatePermissionDescription(activity, deniedPermissions);
@@ -258,7 +258,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
                 @Override
                 public void onDenied() {
                     showPermissionSettingDialog(activity, allPermissions,
-                        XXPermissions.getDeniedPermission(activity, allPermissions), callback);
+                        XXPermissions.getDeniedPermissions(activity, allPermissions), callback);
                 }
             });
         });

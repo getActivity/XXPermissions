@@ -331,16 +331,16 @@ public final class XXPermissions {
     /**
      * 获取没有授予的权限
      */
-    public static List<String> getDeniedPermission(@NonNull Context context, @NonNull String... permissions) {
-        return getDeniedPermission(context, PermissionUtils.asArrayList(permissions));
+    public static List<String> getDeniedPermissions(@NonNull Context context, @NonNull String... permissions) {
+        return getDeniedPermissions(context, PermissionUtils.asArrayList(permissions));
     }
 
-    public static List<String> getDeniedPermission(@NonNull Context context, @NonNull String[]... permissions) {
-        return getDeniedPermission(context, PermissionUtils.asArrayLists(permissions));
+    public static List<String> getDeniedPermissions(@NonNull Context context, @NonNull String[]... permissions) {
+        return getDeniedPermissions(context, PermissionUtils.asArrayLists(permissions));
     }
 
-    public static List<String> getDeniedPermission(@NonNull Context context, @NonNull List<String> permissions) {
-        return PermissionApi.getDeniedPermission(context, permissions);
+    public static List<String> getDeniedPermissions(@NonNull Context context, @NonNull List<String> permissions) {
+        return PermissionApi.getDeniedPermissions(context, permissions);
     }
 
     /**

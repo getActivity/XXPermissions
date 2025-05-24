@@ -346,7 +346,7 @@ final class PermissionHandler {
         }
 
         // 获取被拒绝的权限
-        List<String> deniedPermissions = PermissionApi.getDeniedPermission(allPermissions, grantResults);
+        List<String> deniedPermissions = PermissionApi.getDeniedPermissions(allPermissions, grantResults);
 
         // 代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回 true 给开发人员，让开发者引导用户去设置界面开启权限
         interceptor.deniedPermissionRequest(activity, allPermissions, deniedPermissions,
