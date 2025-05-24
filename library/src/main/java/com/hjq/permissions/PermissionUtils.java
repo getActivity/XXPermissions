@@ -251,7 +251,14 @@ final class PermissionUtils {
      * 判断 Activity 是不是不可用
      */
     static boolean isActivityUnavailable(@Nullable Activity activity) {
-        return activity == null || activity.isFinishing() || activity.isDestroyed();
+        if (activity == null || activity.isFinishing()) {
+            return true;
+        }
+
+        if (AndroidVersionTools.isAndroid4_2()) {
+            return activity.isDestroyed();
+        }
+        return false;
     }
 
     /**
