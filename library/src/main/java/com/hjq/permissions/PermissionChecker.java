@@ -2,6 +2,7 @@ package com.hjq.permissions;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,93 +23,104 @@ final class PermissionChecker {
 
     /**
      * 检查 Activity 的状态是否正常
-     *
-     * @param checkMode         是否是检查模式
-     * @return                  是否检查通过
      */
-    static boolean checkActivityStatus(@Nullable Activity activity, boolean checkMode) {
+    static void checkActivityStatus(@Nullable Activity activity) {
         // 检查当前 Activity 状态是否是正常的，如果不是则不请求权限
         if (activity == null) {
-            if (checkMode) {
-                // Context 的实例必须是 Activity 对象
-                throw new IllegalArgumentException("The instance of the context must be an activity object");
-            }
-            return false;
+            // Context 的实例必须是 Activity 对象
+            throw new IllegalArgumentException("The instance of the context must be an activity object");
         }
 
         if (activity.isFinishing()) {
-            if (checkMode) {
-                // 这个 Activity 对象当前不能是关闭状态，这种情况常出现在执行异步请求后申请权限
-                // 请自行在外层判断 Activity 状态是否正常之后再进入权限申请
-                throw new IllegalStateException("The activity has been finishing, " +
-                        "please manually determine the status of the activity");
-            }
-            return false;
+            // 这个 Activity 对象当前不能是关闭状态，这种情况常出现在执行异步请求后申请权限
+            // 请自行在外层判断 Activity 状态是否正常之后再进入权限申请
+            throw new IllegalStateException("The activity has been finishing, " +
+                "please manually determine the status of the activity");
         }
 
         if (AndroidVersionTools.isAndroid4_2() && activity.isDestroyed()) {
-            if (checkMode) {
-                // 这个 Activity 对象当前不能是销毁状态，这种情况常出现在执行异步请求后申请权限
-                // 请自行在外层判断 Activity 状态是否正常之后再进入权限申请
-                throw new IllegalStateException("The activity has been destroyed, " +
-                        "please manually determine the status of the activity");
-            }
-            return false;
+            // 这个 Activity 对象当前不能是销毁状态，这种情况常出现在执行异步请求后申请权限
+            // 请自行在外层判断 Activity 状态是否正常之后再进入权限申请
+            throw new IllegalStateException("The activity has been destroyed, " +
+                "please manually determine the status of the activity");
+        }
+    }
+
+    /**
+     * 检查 Fragment 的状态是否正常（Support 包版本）
+     */
+    static void checkSupportFragmentStatus(@NonNull android.support.v4.app.Fragment supportFragment) {
+        if (!supportFragment.isAdded()) {
+            // 这个 Fragment 没有添加绑定
+            throw new IllegalStateException("This support fragment has no binding added, " +
+                "please manually determine the status of the support fragment");
         }
 
-        return true;
+        if (supportFragment.isRemoving()) {
+            // 这个 Fragment 已经被移除
+            throw new IllegalStateException("This support fragment has been removed, " +
+                "please manually determine the status of the support fragment");
+        }
+    }
+
+    /**
+     * 检查 Fragment 的状态是否正常（App 包版本）
+     */
+    @SuppressWarnings("deprecation")
+    static void checkAppFragmentStatus(@NonNull Fragment appFragment) {
+        if (!appFragment.isAdded()) {
+            // 这个 Fragment 没有添加绑定
+            throw new IllegalStateException("This app fragment has no binding added, " +
+                "please manually determine the status of the app fragment");
+        }
+
+        if (appFragment.isRemoving()) {
+            // 这个 Fragment 已经被移除
+            throw new IllegalStateException("This app fragment has been removed, " +
+                "please manually determine the status of the app fragment");
+        }
     }
 
     /**
      * 检查传入的权限是否符合要求
-     *
-     * @param requestPermissions        请求的权限组
-     * @param checkMode                 是否是检查模式
-     * @return                          是否检查通过
      */
-    static boolean checkPermissionArgument(@Nullable List<String> requestPermissions, boolean checkMode) {
+    static void checkPermissionList(@Nullable List<String> requestPermissions) {
         if (requestPermissions == null || requestPermissions.isEmpty()) {
-            if (checkMode) {
-                // 不传任何权限，就想动态申请权限？
-                throw new IllegalArgumentException("The requested permission cannot be empty");
-            }
-            return false;
+            // 不传任何权限，就想动态申请权限？
+            throw new IllegalArgumentException("The requested permission cannot be empty");
         }
 
         if (AndroidVersionTools.getCurrentAndroidVersionCode() > AndroidVersionTools.ANDROID_13) {
             // 如果是 Android 13 后面的版本，则不进行检查
-            return true;
+            return;
         }
 
-        if (checkMode) {
-            List<String> allPermissions = new ArrayList<>();
-            Field[] fields = Permission.class.getDeclaredFields();
-            // 在开启代码混淆之后，反射 Permission 类中的字段会得到空的字段数组
-            // 这个是因为编译后常量会在代码中直接引用，所以 Permission 常量字段在混淆的时候会被移除掉
-            if (fields.length == 0) {
-                return true;
+        List<String> allPermissions = new ArrayList<>();
+        Field[] fields = Permission.class.getDeclaredFields();
+        // 在开启代码混淆之后，反射 Permission 类中的字段会得到空的字段数组
+        // 这个是因为编译后常量会在代码中直接引用，所以 Permission 常量字段在混淆的时候会被移除掉
+        if (fields.length == 0) {
+            return;
+        }
+        for (Field field : fields) {
+            if (!String.class.equals(field.getType())) {
+                continue;
             }
-            for (Field field : fields) {
-                if (!String.class.equals(field.getType())) {
-                    continue;
-                }
-                try {
-                    allPermissions.add((String) field.get(null));
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-            for (String permission : requestPermissions) {
-                if (PermissionUtils.containsPermission(allPermissions, permission)) {
-                    continue;
-                }
-                // 请不要申请危险权限和特殊权限之外的权限
-                throw new IllegalArgumentException("The " + permission +
-                    " is not a dangerous permission or special permission, " +
-                    "please do not request dynamically");
+            try {
+                allPermissions.add((String) field.get(null));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
         }
-        return true;
+        for (String permission : requestPermissions) {
+            if (PermissionUtils.containsPermission(allPermissions, permission)) {
+                continue;
+            }
+            // 请不要申请危险权限和特殊权限之外的权限
+            throw new IllegalArgumentException("The " + permission +
+                " is not a dangerous permission or special permission, " +
+                "please do not request dynamically");
+        }
     }
 
     /**

@@ -1,7 +1,9 @@
 package com.hjq.permissions.demo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -10,7 +12,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,6 +25,7 @@ import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.OnPermissionInterceptor;
 import com.hjq.permissions.OnPermissionPageCallback;
 import com.hjq.permissions.Permission;
+import com.hjq.permissions.PermissionFragmentFactory;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.toast.Toaster;
 import java.util.List;
@@ -56,7 +59,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     }
 
     @Override
-    public void launchPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions, @Nullable OnPermissionCallback callback) {
+    public void launchPermissionRequest(@NonNull Activity activity, @NonNull PermissionFragmentFactory<?, ?> fragmentFactory, @NonNull List<String> allPermissions, @Nullable OnPermissionCallback callback) {
         mRequestFlag = true;
         List<String> deniedPermissions = XXPermissions.getDeniedPermission(activity, allPermissions);
 
@@ -86,7 +89,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
         }
 
         if (showPopupWindow) {
-            dispatchPermissionRequest(activity, allPermissions, callback);
+            dispatchPermissionRequest(activity, allPermissions, fragmentFactory, callback);
             // 延迟 300 毫秒是为了避免出现 PopupWindow 显示然后立马消失的情况
             // 因为框架没有办法在还没有申请权限的情况下，去判断权限是否永久拒绝了，必须要在发起权限申请之后
             // 所以只能通过延迟显示 PopupWindow 来做这件事，如果 300 毫秒内权限申请没有结束，证明本次申请的权限没有永久拒绝
@@ -94,30 +97,23 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
                 if (!mRequestFlag) {
                     return;
                 }
-                if (activity.isFinishing() ||
-                        (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed())) {
+                if (activity.isFinishing() || activity.isDestroyed()) {
                     return;
                 }
                 showPopupWindow(activity, decorView, mPermissionDescription);
             }, 300);
         } else {
-            // 注意：这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
-            new AlertDialog.Builder(activity)
-                    .setTitle(R.string.common_permission_description_title)
-                    .setMessage(mPermissionDescription)
-                    .setCancelable(false)
-                    .setPositiveButton(R.string.common_permission_granted, (dialog, which) -> {
-                        dialog.dismiss();
-                        dispatchPermissionRequest(activity, allPermissions, callback);
-                    })
-                    .setNegativeButton(R.string.common_permission_denied, (dialog, which) -> {
-                        dialog.dismiss();
-                        if (callback == null) {
-                            return;
-                        }
-                        callback.onDenied(deniedPermissions, false);
-                    })
-                    .show();
+            showDialog(activity, activity.getString(R.string.common_permission_description_title),
+                mPermissionDescription, false, activity.getString(R.string.common_permission_granted), (dialog, which) -> {
+                    dialog.dismiss();
+                    dispatchPermissionRequest(activity, allPermissions, fragmentFactory, callback);
+                }, activity.getString(R.string.common_permission_denied), (dialog, which) -> {
+                    dialog.dismiss();
+                    if (callback == null) {
+                        return;
+                    }
+                    callback.onDenied(deniedPermissions, false);
+                });
         }
     }
 
@@ -222,8 +218,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
 
     private void showPermissionSettingDialog(Activity activity, List<String> allPermissions,
                                              List<String> deniedPermissions, OnPermissionCallback callback) {
-        if (activity == null || activity.isFinishing() ||
-                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed())) {
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
             return;
         }
 
@@ -248,31 +243,25 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
             message = activity.getString(R.string.common_permission_manual_fail_hint);
         }
 
-        // 这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
-        new AlertDialog.Builder(activity)
-                .setTitle(R.string.common_permission_alert)
-                .setMessage(message)
-                .setPositiveButton(R.string.common_permission_goto_setting_page, (dialog, which) -> {
-                    dialog.dismiss();
-                    XXPermissions.startPermissionActivity(activity,
-                            deniedPermissions, new OnPermissionPageCallback() {
+        showDialog(activity, activity.getString(R.string.common_permission_alert), message, true, activity.getString(R.string.common_permission_goto_setting_page), (dialog, which) -> {
+            dialog.dismiss();
+            XXPermissions.startPermissionActivity(activity, deniedPermissions, new OnPermissionPageCallback() {
 
-                        @Override
-                        public void onGranted() {
-                            if (callback == null) {
-                                return;
-                            }
-                            callback.onGranted(allPermissions, true);
-                        }
+                @Override
+                public void onGranted() {
+                    if (callback == null) {
+                        return;
+                    }
+                    callback.onGranted(allPermissions, true);
+                }
 
-                        @Override
-                        public void onDenied() {
-                            showPermissionSettingDialog(activity, allPermissions,
-                                    XXPermissions.getDeniedPermission(activity, allPermissions), callback);
-                        }
-                    });
-                })
-                .show();
+                @Override
+                public void onDenied() {
+                    showPermissionSettingDialog(activity, allPermissions,
+                        XXPermissions.getDeniedPermission(activity, allPermissions), callback);
+                }
+            });
+        });
     }
 
     /**
@@ -288,5 +277,49 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
             backgroundPermissionOptionLabel = context.getString(R.string.common_permission_background_default_option_label);
         }
         return backgroundPermissionOptionLabel;
+    }
+
+    private void showDialog(@NonNull Activity activity, @Nullable String dialogTitle, @Nullable String dialogMessage, boolean dialogCancelable,
+                            @Nullable String confirmButtonText, @Nullable DialogInterface.OnClickListener confirmListener) {
+        showDialog(activity, dialogTitle, dialogMessage, dialogCancelable, confirmButtonText, confirmListener, null, null);
+    }
+
+    /**
+     * 显示对话框
+     *
+     * @param activity                  Activity 对象
+     * @param dialogTitle               对话框标题
+     * @param dialogMessage             对话框消息
+     * @param dialogCancelable          对话框是否可取消
+     * @param confirmButtonText         对话框确认按钮文本
+     * @param confirmListener           对话框确认按钮点击事件
+     * @param cancelButtonText          对话框取消按钮文本
+     * @param cancelListener            对话框取消按钮点击事件
+     */
+    private void showDialog(@NonNull Activity activity, @Nullable String dialogTitle, @Nullable String dialogMessage, boolean dialogCancelable,
+                            @Nullable String confirmButtonText, @Nullable DialogInterface.OnClickListener confirmListener,
+                            @Nullable String cancelButtonText, @Nullable DialogInterface.OnClickListener cancelListener) {
+        // 注意：这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
+        // 另外这里需要判断 Activity 的类型来申请权限，这是因为只有 AppCompatActivity 才能调用 Support 包的 AlertDialog 来显示，否则会出现报错
+        // java.lang.IllegalStateException: You need to use a Theme.AppCompat theme (or descendant) with this activity
+        // 为什么不直接用 App 包 AlertDialog 来显示，而是两套规则？因为 App 包 AlertDialog 是系统自带的类，不同 Android 版本展现的样式可能不太一样
+        // 如果这个 Android 版本比较低，那么这个对话框的样式就会变得很丑，准确来讲也不能说丑，而是当时系统的 UI 设计就是那样，它只是跟随系统的样式而已
+        if (activity instanceof AppCompatActivity) {
+            new android.support.v7.app.AlertDialog.Builder(activity)
+                .setTitle(dialogTitle)
+                .setMessage(dialogMessage)
+                .setCancelable(dialogCancelable)
+                .setPositiveButton(confirmButtonText, confirmListener)
+                .setNegativeButton(cancelButtonText, cancelListener)
+                .show();
+        } else {
+            new AlertDialog.Builder(activity)
+                .setTitle(dialogTitle)
+                .setMessage(dialogMessage)
+                .setCancelable(dialogCancelable)
+                .setPositiveButton(confirmButtonText, confirmListener)
+                .setNegativeButton(cancelButtonText, cancelListener)
+                .show();
+        }
     }
 }

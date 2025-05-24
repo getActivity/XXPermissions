@@ -19,9 +19,9 @@ public interface OnPermissionInterceptor {
      * @param allPermissions            申请的权限
      * @param callback                  权限申请回调
      */
-    default void launchPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
-                                            @Nullable OnPermissionCallback callback) {
-        dispatchPermissionRequest(activity, allPermissions, callback);
+    default void launchPermissionRequest(@NonNull Activity activity, @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
+                                        @NonNull List<String> allPermissions, @Nullable OnPermissionCallback callback) {
+        dispatchPermissionRequest(activity, allPermissions, fragmentFactory, callback);
     }
 
     /**
@@ -74,9 +74,9 @@ public interface OnPermissionInterceptor {
      * @param allPermissions            申请的权限
      * @param callback                  权限申请回调
      */
-    default void dispatchPermissionRequest(@NonNull Activity activity,
-                                            @NonNull List<String> allPermissions,
+    default void dispatchPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
+                                            @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                                             @Nullable OnPermissionCallback callback) {
-        PermissionHandler.request(activity, allPermissions, callback, this);
+        PermissionHandler.request(activity, allPermissions, fragmentFactory, this, callback);
     }
 }

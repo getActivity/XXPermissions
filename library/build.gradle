@@ -27,5 +27,5 @@ android {
 
 dependencies {
     // noinspection GradleCompatible
-    compileOnly 'com.android.support:support-fragment:24.2.0'
+    implementation 'com.android.support:support-fragment:24.2.0'
 }

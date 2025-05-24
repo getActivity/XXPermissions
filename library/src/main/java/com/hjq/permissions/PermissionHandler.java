@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,42 +23,35 @@ final class PermissionHandler {
      * 发起权限请求
      */
     static void request(@NonNull Activity activity, @NonNull List<String> allPermissions,
-                                @Nullable OnPermissionCallback callback, @Nullable OnPermissionInterceptor interceptor) {
-        PermissionHandler permissionHandler = new PermissionHandler(activity, allPermissions);
-        permissionHandler.setOnPermissionInterceptor(interceptor);
-        permissionHandler.setOnPermissionCallback(callback);
+                        @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
+                        @NonNull OnPermissionInterceptor interceptor, @Nullable OnPermissionCallback callback) {
+        PermissionHandler permissionHandler = new PermissionHandler(activity, allPermissions, fragmentFactory, interceptor, callback);
         permissionHandler.startPermissionRequest();
     }
 
-    /** 权限回调对象 */
-    @Nullable
-    private OnPermissionCallback mCallBack;
-
-    /** 权限请求拦截器 */
-    @Nullable
-    private OnPermissionInterceptor mInterceptor;
-
+    @NonNull
     private final Activity mActivity;
 
+    @NonNull
     private final List<String> mAllPermissions;
 
-    private PermissionHandler(@NonNull Activity activity, @NonNull List<String> allPermissions) {
+    @NonNull
+    private final PermissionFragmentFactory<?, ?> mFragmentFactory;
+
+    @NonNull
+    private final OnPermissionInterceptor mInterceptor;
+
+    @Nullable
+    private final OnPermissionCallback mCallBack;
+
+    private PermissionHandler(@NonNull Activity activity, @NonNull List<String> allPermissions,
+                                @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
+                                @NonNull OnPermissionInterceptor interceptor, @Nullable OnPermissionCallback callback) {
         mActivity = activity;
         mAllPermissions = allPermissions;
-    }
-
-    /**
-     * 设置权限监听回调监听
-     */
-    private void setOnPermissionCallback(@Nullable OnPermissionCallback callback) {
-        mCallBack = callback;
-    }
-
-    /**
-     * 设置权限请求拦截器
-     */
-    private void setOnPermissionInterceptor(@Nullable OnPermissionInterceptor interceptor) {
+        mFragmentFactory = fragmentFactory;
         mInterceptor = interceptor;
+        mCallBack = callback;
     }
 
     /**
@@ -88,15 +80,15 @@ final class PermissionHandler {
         // 判断权限集合中第一个权限是特殊权限还是危险权限，如果是特殊权限就先申请所有的特殊权限，如果是危险权限就先申请所有的危险权限
         if (PermissionHelper.isSpecialPermission(mAllPermissions.get(0))) {
             // 请求所有的特殊权限
-            requestAllSpecialPermission(mActivity, unauthorizedSpecialPermissions, () -> {
+            requestAllSpecialPermission(unauthorizedSpecialPermissions, mFragmentFactory, () -> {
                 // 请求完特殊权限后，接下来请求危险权限
-                requestAllDangerousPermission(mActivity, unauthorizedDangerousPermissions, this::postDelayedHandlerRequestPermissionsResult);
+                requestAllDangerousPermission(unauthorizedDangerousPermissions, mFragmentFactory, this::postDelayedHandlerRequestPermissionsResult);
             });
         } else {
             // 请求所有的危险权限
-            requestAllDangerousPermission(mActivity, unauthorizedDangerousPermissions, () -> {
+            requestAllDangerousPermission(unauthorizedDangerousPermissions, mFragmentFactory, () -> {
                 // 请求完危险权限后，接下来请求特殊权限
-                requestAllSpecialPermission(mActivity, unauthorizedSpecialPermissions, this::postDelayedHandlerRequestPermissionsResult);
+                requestAllSpecialPermission(unauthorizedSpecialPermissions, mFragmentFactory, this::postDelayedHandlerRequestPermissionsResult);
             });
         }
     }
@@ -211,8 +203,8 @@ final class PermissionHandler {
     /**
      * 请求所有的特殊权限
      */
-    private static void requestAllSpecialPermission(@NonNull Activity activity,
-                                                    @NonNull List<String> specialPermissions,
+    private static void requestAllSpecialPermission(@NonNull List<String> specialPermissions,
+                                                    @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                                                     @NonNull Runnable finishRunnable) {
         if (specialPermissions.isEmpty()) {
             finishRunnable.run();
@@ -220,12 +212,12 @@ final class PermissionHandler {
         }
 
         AtomicInteger index = new AtomicInteger();
-        requestSingleSpecialPermission(activity, specialPermissions.get(index.get()), new Runnable() {
+        requestSingleSpecialPermission(specialPermissions.get(index.get()), fragmentFactory, new Runnable() {
             @Override
             public void run() {
                 index.incrementAndGet();
                 if (index.get() < specialPermissions.size()) {
-                    requestSingleSpecialPermission(activity, specialPermissions.get(index.get()), this);
+                    requestSingleSpecialPermission(specialPermissions.get(index.get()), fragmentFactory, this);
                     return;
                 }
                 finishRunnable.run();
@@ -236,27 +228,17 @@ final class PermissionHandler {
     /**
      * 请求单个特殊权限
      */
-    private static void requestSingleSpecialPermission(@NonNull Activity activity,
-                                                        @NonNull String specialPermission,
+    private static void requestSingleSpecialPermission(@NonNull String specialPermission,
+                                                        @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                                                         @NonNull Runnable finishRunnable) {
-        RequestSpecialPermissionFragment.launch(activity, Collections.singletonList(specialPermission), new OnPermissionPageCallback() {
-            @Override
-            public void onGranted() {
-                finishRunnable.run();
-            }
-
-            @Override
-            public void onDenied() {
-                finishRunnable.run();
-            }
-        });
+        fragmentFactory.createAndCommitFragment(PermissionUtils.asArrayList(specialPermission), PermissionType.SPECIAL, finishRunnable);
     }
 
     /**
      * 申请所有危险权限
      */
-    private static void requestAllDangerousPermission(@NonNull Activity activity,
-                                                        @NonNull List<List<String>> dangerousPermissions,
+    private static void requestAllDangerousPermission(@NonNull List<List<String>> dangerousPermissions,
+                                                        @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                                                         @NonNull Runnable finishRunnable) {
         if (!AndroidVersionTools.isAndroid6()) {
             // 如果是 Android 6.0 以下，没有危险权限的概念
@@ -271,7 +253,7 @@ final class PermissionHandler {
         }
 
         AtomicInteger index = new AtomicInteger();
-        requestSingleDangerousPermission(activity, dangerousPermissions.get(index.get()), new Runnable() {
+        requestSingleDangerousPermission(dangerousPermissions.get(index.get()), fragmentFactory, new Runnable() {
             @Override
             public void run() {
                 index.incrementAndGet();
@@ -285,10 +267,10 @@ final class PermissionHandler {
                         delayMillis = AndroidVersionTools.isAndroid13() ? 150 : 0;
                     }
                     if (delayMillis == 0) {
-                        requestSingleDangerousPermission(activity, permissions, this);
+                        requestSingleDangerousPermission(permissions, fragmentFactory,this);
                     } else {
                         PermissionUtils.postDelayed(() ->
-                            requestSingleDangerousPermission(activity, permissions, this), delayMillis);
+                            requestSingleDangerousPermission(permissions, fragmentFactory, this), delayMillis);
                     }
                     return;
                 }
@@ -300,10 +282,10 @@ final class PermissionHandler {
     /**
      * 申请单个危险权限
      */
-    private static void requestSingleDangerousPermission(@NonNull Activity activity,
-                                                        @NonNull List<String> dangerousPermissions,
+    private static void requestSingleDangerousPermission(@NonNull List<String> dangerousPermissions,
+                                                        @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                                                         @NonNull Runnable finishRunnable) {
-        RequestDangerousPermissionFragment.launch(activity, dangerousPermissions, finishRunnable);
+        fragmentFactory.createAndCommitFragment(dangerousPermissions, PermissionType.DANGEROUS, finishRunnable);
     }
 
     /**
@@ -314,27 +296,38 @@ final class PermissionHandler {
     }
 
     /**
+     * 延迟解锁 Activity 方向
+     */
+    private void postDelayedUnlockActivityOrientation(@NonNull Activity activity) {
+        // 延迟执行是为了让外层回调中的代码能够顺序执行完成
+        PermissionUtils.postDelayed(() -> ActivityOrientationControl.unlockActivityOrientation(activity), 100);
+    }
+
+    /**
      * 处理权限请求结果
      */
     private void handlePermissionRequestResult() {
-        if (mInterceptor == null) {
-            return;
-        }
-
         OnPermissionCallback callback = mCallBack;
 
         OnPermissionInterceptor interceptor = mInterceptor;
 
         List<String> allPermissions = mAllPermissions;
 
+        Activity activity = mActivity;
+
+        // 如果当前 Activity 不可用，就不继续往下执行代码
+        if (PermissionUtils.isActivityUnavailable(activity)) {
+            return;
+        }
+
         int[] grantResults = new int[allPermissions.size()];
         for (int i = 0; i < grantResults.length; i++) {
             String permission = allPermissions.get(i);
-            grantResults[i] = PermissionApi.isGrantedPermission(mActivity, permission) ?
+            grantResults[i] = PermissionApi.isGrantedPermission(activity, permission) ?
                 PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
 
             grantResults[i] = PermissionApi.recheckPermissionResult(
-                mActivity, permission, grantResults[i] == PackageManager.PERMISSION_GRANTED)
+                activity, permission, grantResults[i] == PackageManager.PERMISSION_GRANTED)
                 ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
         }
 
@@ -344,9 +337,11 @@ final class PermissionHandler {
         // 如果请求成功的权限集合大小和请求的数组一样大时证明权限已经全部授予
         if (grantedPermissions.size() == allPermissions.size()) {
             // 代表申请的所有的权限都授予了
-            interceptor.grantedPermissionRequest(mActivity, allPermissions, grantedPermissions, true, callback);
+            interceptor.grantedPermissionRequest(activity, allPermissions, grantedPermissions, true, callback);
             // 权限申请结束
-            interceptor.finishPermissionRequest(mActivity, allPermissions, false, callback);
+            interceptor.finishPermissionRequest(activity, allPermissions, false, callback);
+            // 延迟解锁 Activity 屏幕方向
+            postDelayedUnlockActivityOrientation(activity);
             return;
         }
 
@@ -354,15 +349,18 @@ final class PermissionHandler {
         List<String> deniedPermissions = PermissionApi.getDeniedPermission(allPermissions, grantResults);
 
         // 代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回 true 给开发人员，让开发者引导用户去设置界面开启权限
-        interceptor.deniedPermissionRequest(mActivity, allPermissions, deniedPermissions,
-            PermissionApi.isDoNotAskAgainPermission(mActivity, deniedPermissions), callback);
+        interceptor.deniedPermissionRequest(activity, allPermissions, deniedPermissions,
+            PermissionApi.isDoNotAskAgainPermission(activity, deniedPermissions), callback);
 
         // 证明还有一部分权限被成功授予，回调成功接口
         if (!grantedPermissions.isEmpty()) {
-            interceptor.grantedPermissionRequest(mActivity, allPermissions, grantedPermissions, false, callback);
+            interceptor.grantedPermissionRequest(activity, allPermissions, grantedPermissions, false, callback);
         }
 
         // 权限申请结束
-        interceptor.finishPermissionRequest(mActivity, allPermissions, false, callback);
+        interceptor.finishPermissionRequest(activity, allPermissions, false, callback);
+
+        // 延迟解锁 Activity 屏幕方向
+        postDelayedUnlockActivityOrientation(activity);
     }
 }

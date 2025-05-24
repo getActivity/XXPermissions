@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,12 +37,12 @@ public final class XXPermissions {
         return new XXPermissions(context);
     }
 
-    public static XXPermissions with(@NonNull Fragment fragment) {
-        return with(fragment.getActivity());
+    public static XXPermissions with(@NonNull Fragment appFragment) {
+        return new XXPermissions(appFragment);
     }
 
-    public static XXPermissions with(@NonNull android.support.v4.app.Fragment fragment) {
-        return with(fragment.getActivity());
+    public static XXPermissions with(@NonNull android.support.v4.app.Fragment supportFragment) {
+        return new XXPermissions(supportFragment);
     }
 
     /**
@@ -74,7 +75,15 @@ public final class XXPermissions {
 
     /** Context 对象 */
     @Nullable
-    private final Context mContext;
+    private Context mContext;
+
+    /** App 包下的 Fragment 对象 */
+    @Nullable
+    private Fragment mAppFragment;
+
+    /** Support 包下的 Fragment 对象 */
+    @Nullable
+    private android.support.v4.app.Fragment mSupportFragment;
 
     /** 权限请求拦截器 */
     @Nullable
@@ -84,11 +93,24 @@ public final class XXPermissions {
     @Nullable
     private Boolean mCheckMode;
 
-    /**
-     * 私有化构造函数
-     */
     private XXPermissions(@Nullable Context context) {
         mContext = context;
+    }
+
+    private XXPermissions(@Nullable Fragment appFragment) {
+        mAppFragment = appFragment;
+        if (appFragment == null) {
+            return;
+        }
+        mContext = appFragment.getActivity();
+    }
+
+    private XXPermissions(@Nullable android.support.v4.app.Fragment supportFragment) {
+        mSupportFragment = supportFragment;
+        if (supportFragment == null) {
+            return;
+        }
+        mContext = supportFragment.getActivity();
     }
 
     /**
@@ -157,25 +179,28 @@ public final class XXPermissions {
 
         final Context context = mContext;
 
+        final Fragment appFragment = mAppFragment;
+
+        final android.support.v4.app.Fragment supportFragment = mSupportFragment;
+
         final OnPermissionInterceptor interceptor = mInterceptor;
 
         // 权限请求列表（为什么直接不用字段？因为框架要兼容新旧权限，在低版本下会自动添加旧权限申请，为了避免重复添加）
         List<String> permissions = new ArrayList<>(mPermissions);
 
-        boolean checkMode = isCheckMode(context);
-
-        // 检查当前 Activity 状态是否是正常的，如果不是则不请求权限
+        // 从 Context 对象中获得 Activity 对象
         Activity activity = PermissionUtils.findActivity(context);
-        if (!PermissionChecker.checkActivityStatus(activity, checkMode)) {
-            return;
-        }
 
-        // 必须要传入正常的权限或者权限组才能申请权限
-        if (!PermissionChecker.checkPermissionArgument(permissions, checkMode)) {
-            return;
-        }
-
-        if (checkMode) {
+        if (isCheckMode(context)) {
+            // 检查传入的 Activity 或者 Fragment 状态是否正常
+            PermissionChecker.checkActivityStatus(activity);
+            if (appFragment != null) {
+                PermissionChecker.checkAppFragmentStatus(appFragment);
+            } else if (supportFragment != null) {
+                PermissionChecker.checkSupportFragmentStatus(supportFragment);
+            }
+            // 检查传入的权限是否正常
+            PermissionChecker.checkPermissionList(permissions);
             // 获取清单文件信息
             AndroidManifestInfo androidManifestInfo = PermissionUtils.getAndroidManifestInfo(context);
             // 检查申请的读取媒体位置权限是否符合规范
@@ -205,15 +230,34 @@ public final class XXPermissions {
         // 优化所申请的权限列表
         permissions = PermissionApi.compatibleOldPermissionByNewPermission(permissions);
 
+        // 检查 Activity 是不是不可用
+        if (PermissionUtils.isActivityUnavailable(activity)) {
+            return;
+        }
+
+        // 判断要申请的权限是否都授予了
         if (PermissionApi.isGrantedPermission(context, permissions)) {
-            // 证明这些权限已经全部授予过，直接回调成功
+            // 如果是的话，就不申请权限，而是通知权限申请成功
             interceptor.grantedPermissionRequest(activity, permissions, permissions, true, callback);
             interceptor.finishPermissionRequest(activity, permissions, true, callback);
             return;
         }
 
+        // 检查 App 包下的 Fragment 是不是不可用
+        if (appFragment != null && PermissionUtils.isFragmentUnavailable(appFragment)) {
+            return;
+        }
+
+        // 检查 Support 包下的 Fragment 是不是不可用
+        if (supportFragment != null && PermissionUtils.isFragmentUnavailable(supportFragment)) {
+            return;
+        }
+
+        // 创建 Fragment 工厂
+        final PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, supportFragment, appFragment);
+
         // 申请没有授予过的权限
-        interceptor.launchPermissionRequest(activity, permissions, callback);
+        interceptor.launchPermissionRequest(activity, fragmentFactory, permissions, callback);
     }
 
     /**
@@ -222,11 +266,11 @@ public final class XXPermissions {
      * @return          返回 true 代表成功，返回 false 代表失败
      */
     public boolean revokeOnKill() {
-        if (mContext == null) {
+        final Context context = mContext;
+
+        if (context == null) {
             return false;
         }
-
-        final Context context = mContext;
 
         final List<String> permissions = mPermissions;
 
@@ -411,140 +455,208 @@ public final class XXPermissions {
     public static void startPermissionActivity(@NonNull Activity activity,
                                                @NonNull List<String> permissions,
                                                @Nullable OnPermissionPageCallback callback) {
+        if (PermissionUtils.isActivityUnavailable(activity)) {
+            return;
+        }
         if (permissions.isEmpty()) {
             PermissionActivityIntentHandler.startActivity(activity, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
-        RequestSpecialPermissionFragment.launch(activity, permissions, callback);
+        PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity);
+        fragmentFactory.createAndCommitFragment(permissions, PermissionType.SPECIAL, () -> dispatchPermissionPageCallback(activity, permissions, callback));
     }
 
     /* android.app.Fragment */
 
-    public static void startPermissionActivity(@NonNull Fragment fragment) {
-        startPermissionActivity(fragment, new ArrayList<>(0));
+    public static void startPermissionActivity(@NonNull Fragment appFragment) {
+        startPermissionActivity(appFragment, new ArrayList<>(0));
     }
 
-    public static void startPermissionActivity(@NonNull Fragment fragment,
+    public static void startPermissionActivity(@NonNull Fragment appFragment,
                                                @NonNull String... permissions) {
-        startPermissionActivity(fragment, PermissionUtils.asArrayList(permissions));
+        startPermissionActivity(appFragment, PermissionUtils.asArrayList(permissions));
     }
 
-    public static void startPermissionActivity(@NonNull Fragment fragment,
+    public static void startPermissionActivity(@NonNull Fragment appFragment,
                                                @NonNull String[]... permissions) {
-        startPermissionActivity(fragment, PermissionUtils.asArrayLists(permissions));
+        startPermissionActivity(appFragment, PermissionUtils.asArrayLists(permissions));
     }
 
-    public static void startPermissionActivity(@NonNull Fragment fragment,
+    public static void startPermissionActivity(@NonNull Fragment appFragment,
                                                @NonNull List<String> permissions) {
-        startPermissionActivity(fragment, permissions, REQUEST_CODE);
+        startPermissionActivity(appFragment, permissions, REQUEST_CODE);
     }
 
-    public static void startPermissionActivity(@NonNull Fragment fragment,
+    public static void startPermissionActivity(@NonNull Fragment appFragment,
                                                @NonNull List<String> permissions,
                                                int requestCode) {
-        Activity activity = fragment.getActivity();
-        if (activity == null) {
+        if (PermissionUtils.isFragmentUnavailable(appFragment)) {
+            return;
+        }
+        Activity activity = appFragment.getActivity();
+        if (PermissionUtils.isActivityUnavailable(activity)) {
             return;
         }
         if (permissions.isEmpty()) {
-            PermissionActivityIntentHandler.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
+            PermissionActivityIntentHandler.startActivity(appFragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
         Intent intent = PermissionApi.getSmartPermissionIntent(activity, permissions);
-        PermissionActivityIntentHandler.startActivityForResult(fragment, intent, requestCode);
+        PermissionActivityIntentHandler.startActivityForResult(appFragment, intent, requestCode);
     }
 
-    public static void startPermissionActivity(@NonNull Fragment fragment,
+    public static void startPermissionActivity(@NonNull Fragment appFragment,
                                                @NonNull String permission,
                                                @Nullable OnPermissionPageCallback callback) {
-        startPermissionActivity(fragment, PermissionUtils.asArrayList(permission), callback);
+        startPermissionActivity(appFragment, PermissionUtils.asArrayList(permission), callback);
     }
 
-    public static void startPermissionActivity(@NonNull Fragment fragment,
+    public static void startPermissionActivity(@NonNull Fragment appFragment,
                                                @NonNull String[] permissions,
                                                @Nullable OnPermissionPageCallback callback) {
-        startPermissionActivity(fragment, PermissionUtils.asArrayLists(permissions), callback);
+        startPermissionActivity(appFragment, PermissionUtils.asArrayLists(permissions), callback);
     }
 
-    public static void startPermissionActivity(@NonNull Fragment fragment,
+    public static void startPermissionActivity(@NonNull Fragment appFragment,
                                                @NonNull List<String> permissions,
                                                @Nullable OnPermissionPageCallback callback) {
-        Activity activity = fragment.getActivity();
-        if (activity == null || activity.isFinishing()) {
+        if (PermissionUtils.isFragmentUnavailable(appFragment)) {
+            return;
+        }
+        Activity activity = appFragment.getActivity();
+        if (PermissionUtils.isActivityUnavailable(activity)) {
             return;
         }
         if (AndroidVersionTools.isAndroid4_2() && activity.isDestroyed()) {
             return;
         }
         if (permissions.isEmpty()) {
-            PermissionActivityIntentHandler.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
+            PermissionActivityIntentHandler.startActivity(appFragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
-        RequestSpecialPermissionFragment.launch(activity, permissions, callback);
+        PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, appFragment);
+        fragmentFactory.createAndCommitFragment(permissions, PermissionType.SPECIAL, () -> dispatchPermissionPageCallback(activity, permissions, callback));
     }
 
     /* android.support.v4.app.Fragment */
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment) {
-        startPermissionActivity(fragment, new ArrayList<>());
+    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment) {
+        startPermissionActivity(supportFragment, new ArrayList<>());
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
                                                @NonNull String... permissions) {
-        startPermissionActivity(fragment, PermissionUtils.asArrayList(permissions));
+        startPermissionActivity(supportFragment, PermissionUtils.asArrayList(permissions));
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
                                                @NonNull String[]... permissions) {
-        startPermissionActivity(fragment, PermissionUtils.asArrayLists(permissions));
+        startPermissionActivity(supportFragment, PermissionUtils.asArrayLists(permissions));
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
                                                @NonNull List<String> permissions) {
-        startPermissionActivity(fragment, permissions, REQUEST_CODE);
+        startPermissionActivity(supportFragment, permissions, REQUEST_CODE);
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
                                                @NonNull List<String> permissions,
                                                int requestCode) {
-        Activity activity = fragment.getActivity();
-        if (activity == null) {
+        if (PermissionUtils.isFragmentUnavailable(supportFragment)) {
+            return;
+        }
+        Activity activity = supportFragment.getActivity();
+        if (PermissionUtils.isActivityUnavailable(activity)) {
             return;
         }
         if (permissions.isEmpty()) {
-            PermissionActivityIntentHandler.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
+            PermissionActivityIntentHandler.startActivity(supportFragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
         Intent intent = PermissionApi.getSmartPermissionIntent(activity, permissions);
-        PermissionActivityIntentHandler.startActivityForResult(fragment, intent, requestCode);
+        PermissionActivityIntentHandler.startActivityForResult(supportFragment, intent, requestCode);
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
                                                @NonNull String permission,
                                                @Nullable OnPermissionPageCallback callback) {
-        startPermissionActivity(fragment, PermissionUtils.asArrayList(permission), callback);
+        startPermissionActivity(supportFragment, PermissionUtils.asArrayList(permission), callback);
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
                                                @NonNull String[] permissions,
                                                @Nullable OnPermissionPageCallback callback) {
-        startPermissionActivity(fragment, PermissionUtils.asArrayLists(permissions), callback);
+        startPermissionActivity(supportFragment, PermissionUtils.asArrayLists(permissions), callback);
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
                                                @NonNull List<String> permissions,
                                                @Nullable OnPermissionPageCallback callback) {
-        Activity activity = fragment.getActivity();
-        if (activity == null || activity.isFinishing()) {
+        if (PermissionUtils.isFragmentUnavailable(supportFragment)) {
+            return;
+        }
+        Activity activity = supportFragment.getActivity();
+        if (PermissionUtils.isActivityUnavailable(activity)) {
             return;
         }
         if (AndroidVersionTools.isAndroid4_2() && activity.isDestroyed()) {
             return;
         }
         if (permissions.isEmpty()) {
-            PermissionActivityIntentHandler.startActivity(fragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
+            PermissionActivityIntentHandler.startActivity(supportFragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
-        RequestSpecialPermissionFragment.launch(activity, permissions, callback);
+        PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, supportFragment);
+        fragmentFactory.createAndCommitFragment(permissions, PermissionType.SPECIAL, () -> dispatchPermissionPageCallback(activity, permissions, callback));
+    }
+
+    /**
+     * 创建 Fragment 工厂
+     */
+    private static PermissionFragmentFactory<?, ?> generatePermissionFragmentFactory(@NonNull Activity activity) {
+        return generatePermissionFragmentFactory(activity, null, null);
+    }
+
+    private static PermissionFragmentFactory<?, ?> generatePermissionFragmentFactory(@NonNull Activity activity,
+                                                                                    @Nullable android.support.v4.app.Fragment supportFragment) {
+        return generatePermissionFragmentFactory(activity, supportFragment, null);
+    }
+
+    private static PermissionFragmentFactory<?, ?> generatePermissionFragmentFactory(@NonNull Activity activity,
+                                                                                    @Nullable Fragment appFragment) {
+        return generatePermissionFragmentFactory(activity, null, appFragment);
+    }
+
+    private static PermissionFragmentFactory<?, ?> generatePermissionFragmentFactory(@NonNull Activity activity,
+                                                                                    @Nullable android.support.v4.app.Fragment supportFragment,
+                                                                                    @Nullable Fragment appFragment) {
+        final PermissionFragmentFactory<?, ?> fragmentFactory;
+        if (supportFragment != null) {
+            fragmentFactory = new PermissionFragmentFactoryBySupport(supportFragment.getActivity(), supportFragment.getChildFragmentManager());
+        } else if (appFragment != null) {
+            fragmentFactory = new PermissionFragmentFactoryByApp(appFragment.getActivity(), appFragment.getChildFragmentManager());
+        } else if (activity instanceof FragmentActivity) {
+            FragmentActivity fragmentActivity = ((FragmentActivity) activity);
+            fragmentFactory = new PermissionFragmentFactoryBySupport(fragmentActivity, fragmentActivity.getSupportFragmentManager());
+        } else {
+            fragmentFactory = new PermissionFragmentFactoryByApp(activity, activity.getFragmentManager());
+        }
+        return fragmentFactory;
+    }
+
+    /**
+     * 派发权限设置页回调
+     */
+    private static void dispatchPermissionPageCallback(@NonNull Context context,
+                                                        @NonNull List<String> permissions,
+                                                        @Nullable OnPermissionPageCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        if (isGrantedPermission(context, permissions)) {
+            callback.onGranted();
+        } else {
+            callback.onDenied();
+        }
     }
 }

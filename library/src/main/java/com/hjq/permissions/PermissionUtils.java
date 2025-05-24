@@ -3,16 +3,15 @@ package com.hjq.permissions;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AppOpsManager;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.PackageManager.ResolveInfoFlags;
 import android.content.res.AssetManager;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,9 +21,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
-import android.view.Display;
-import android.view.Surface;
-import android.view.WindowManager;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -235,7 +231,7 @@ final class PermissionUtils {
      * 寻找上下文中的 Activity 对象
      */
     @Nullable
-    static Activity findActivity(@NonNull Context context) {
+    static Activity findActivity(@Nullable Context context) {
         do {
             if (context instanceof Activity) {
                 return (Activity) context;
@@ -249,6 +245,29 @@ final class PermissionUtils {
             }
         } while (context != null);
         return null;
+    }
+
+    /**
+     * 判断 Activity 是不是不可用
+     */
+    static boolean isActivityUnavailable(@Nullable Activity activity) {
+        return activity == null || activity.isFinishing() || activity.isDestroyed();
+    }
+
+    /**
+     * 判断 Fragment 是不是不可用（Support 包版本）
+     */
+    @SuppressWarnings("deprecation")
+    static boolean isFragmentUnavailable(@Nullable android.support.v4.app.Fragment supportFragment) {
+        return supportFragment == null || !supportFragment.isAdded() || supportFragment.isRemoving();
+    }
+
+    /**
+     * 判断 Fragment 是不是不可用（App 包版本）
+     */
+    @SuppressWarnings("deprecation")
+    static boolean isFragmentUnavailable(@Nullable Fragment appFragment) {
+        return appFragment == null || !appFragment.isAdded() || appFragment.isRemoving();
     }
 
     /**
@@ -318,63 +337,6 @@ final class PermissionUtils {
             e.printStackTrace();
         }
         return false;
-    }
-
-    /**
-     * 锁定当前 Activity 的方向
-     */
-    @SuppressLint("SwitchIntDef")
-    static void lockActivityOrientation(@NonNull Activity activity) {
-        try {
-            // 兼容问题：在 Android 8.0 的手机上可以固定 Activity 的方向，但是这个 Activity 不能是透明的，否则就会抛出异常
-            // 复现场景：只需要给 Activity 主题设置 <item name="android:windowIsTranslucent">true</item> 属性即可
-            switch (activity.getResources().getConfiguration().orientation) {
-                case Configuration.ORIENTATION_LANDSCAPE:
-                    activity.setRequestedOrientation(PermissionUtils.isActivityReverse(activity) ?
-                        ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                    break;
-                case Configuration.ORIENTATION_PORTRAIT:
-                    activity.setRequestedOrientation(PermissionUtils.isActivityReverse(activity) ?
-                        ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                    break;
-                default:
-                    break;
-            }
-        } catch (IllegalStateException e) {
-            // java.lang.IllegalStateException: Only fullscreen activities can request orientation
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 判断 Activity 是否反方向旋转了
-     */
-    static boolean isActivityReverse(@NonNull Activity activity) {
-        Display display = null;
-        if (AndroidVersionTools.isAndroid11()) {
-            display = activity.getDisplay();
-        } else {
-            WindowManager windowManager = activity.getWindowManager();
-            if (windowManager != null) {
-                display = windowManager.getDefaultDisplay();
-            }
-        }
-
-        if (display == null) {
-            return false;
-        }
-
-        // 获取 Activity 旋转的角度
-        int activityRotation = display.getRotation();
-        switch (activityRotation) {
-            case Surface.ROTATION_180:
-            case Surface.ROTATION_270:
-                return true;
-            case Surface.ROTATION_0:
-            case Surface.ROTATION_90:
-            default:
-                return false;
-        }
     }
 
     /**
