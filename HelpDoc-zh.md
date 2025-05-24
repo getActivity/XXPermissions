@@ -348,7 +348,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
         String permissionKey = String.valueOf(requestPermissions);
         long lastRequestPermissionTime = sharedPreferences.getLong(permissionKey, 0);
         if (System.currentTimeMillis() - lastRequestPermissionTime <= 1000 * 60 * 60 * 24 * 2) {
-            List<String> deniedPermissions = XXPermissions.getDeniedPermission(activity, requestPermissions);
+            List<String> deniedPermissions = XXPermissions.getDeniedPermissions(activity, requestPermissions);
             List<String> grantedPermissions = new ArrayList<>(requestPermissions);
             grantedPermissions.removeAll(deniedPermissions);
             deniedPermissions(activity, requestPermissions, deniedPermissions, true, callback);

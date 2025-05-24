@@ -178,7 +178,10 @@ XXPermissions.with(this)
 XXPermissions.isGrantedPermission(Context context, String... permissions);
 
 // 获取没有授予的权限
-XXPermissions.getDeniedPermission(Context context, String... permissions);
+XXPermissions.getDeniedPermissions(Context context, String... permissions);
+
+// 获取已授予的权限
+XXPermissions.getGrantedPermissions(Context context, String... permissions);
 
 // 判断某个权限是否为特殊权限
 XXPermissions.isSpecialPermission(String permission);

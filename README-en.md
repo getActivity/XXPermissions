@@ -172,7 +172,10 @@ XXPermissions.with(this)
 XXPermissions.isGrantedPermission(Context context, String... permissions);
 
 // Get permission not granted
-XXPermissions.getDeniedPermission(Context context, String... permissions);
+XXPermissions.getDeniedPermissions(Context context, String... permissions);
+
+// Get permission granted
+XXPermissions.getGrantedPermissions(Context context, String... permissions);
 
 // Determine whether a permission is a special permission
 XXPermissions.isSpecialPermission(String permission);
