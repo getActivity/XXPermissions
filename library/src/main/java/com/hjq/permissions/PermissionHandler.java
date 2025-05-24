@@ -22,10 +22,10 @@ final class PermissionHandler {
     /**
      * 发起权限请求
      */
-    static void request(@NonNull Activity activity, @NonNull List<String> allPermissions,
+    static void request(@NonNull Activity activity, @NonNull List<String> requestPermissions,
                         @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                         @NonNull OnPermissionInterceptor interceptor, @Nullable OnPermissionCallback callback) {
-        PermissionHandler permissionHandler = new PermissionHandler(activity, allPermissions, fragmentFactory, interceptor, callback);
+        PermissionHandler permissionHandler = new PermissionHandler(activity, requestPermissions, fragmentFactory, interceptor, callback);
         permissionHandler.startPermissionRequest();
     }
 
@@ -33,7 +33,7 @@ final class PermissionHandler {
     private final Activity mActivity;
 
     @NonNull
-    private final List<String> mAllPermissions;
+    private final List<String> mRequestPermissions;
 
     @NonNull
     private final PermissionFragmentFactory<?, ?> mFragmentFactory;
@@ -44,11 +44,11 @@ final class PermissionHandler {
     @Nullable
     private final OnPermissionCallback mCallBack;
 
-    private PermissionHandler(@NonNull Activity activity, @NonNull List<String> allPermissions,
+    private PermissionHandler(@NonNull Activity activity, @NonNull List<String> requestPermissions,
                                 @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                                 @NonNull OnPermissionInterceptor interceptor, @Nullable OnPermissionCallback callback) {
         mActivity = activity;
-        mAllPermissions = allPermissions;
+        mRequestPermissions = requestPermissions;
         mFragmentFactory = fragmentFactory;
         mInterceptor = interceptor;
         mCallBack = callback;
@@ -58,7 +58,7 @@ final class PermissionHandler {
      * 开始权限请求
      */
     private void startPermissionRequest() {
-        if (mAllPermissions.isEmpty()) {
+        if (mRequestPermissions.isEmpty()) {
             return;
         }
 
@@ -66,7 +66,7 @@ final class PermissionHandler {
         List<String> allSpecialPermissions = new ArrayList<>();
 
         // 对危险权限和特殊权限进行分类
-        for (String permission : mAllPermissions) {
+        for (String permission : mRequestPermissions) {
             if (PermissionApi.isSpecialPermission(permission)) {
                 allSpecialPermissions.add(permission);
             } else {
@@ -78,7 +78,7 @@ final class PermissionHandler {
         List<List<String>> unauthorizedDangerousPermissions = getUnauthorizedDangerousPermissions(mActivity, allDangerousPermissions);
 
         // 判断权限集合中第一个权限是特殊权限还是危险权限，如果是特殊权限就先申请所有的特殊权限，如果是危险权限就先申请所有的危险权限
-        if (PermissionHelper.isSpecialPermission(mAllPermissions.get(0))) {
+        if (PermissionHelper.isSpecialPermission(mRequestPermissions.get(0))) {
             // 请求所有的特殊权限
             requestAllSpecialPermission(unauthorizedSpecialPermissions, mFragmentFactory, () -> {
                 // 请求完特殊权限后，接下来请求危险权限
@@ -311,7 +311,7 @@ final class PermissionHandler {
 
         OnPermissionInterceptor interceptor = mInterceptor;
 
-        List<String> allPermissions = mAllPermissions;
+        List<String> requestPermissions = mRequestPermissions;
 
         Activity activity = mActivity;
 
@@ -320,9 +320,9 @@ final class PermissionHandler {
             return;
         }
 
-        int[] grantResults = new int[allPermissions.size()];
+        int[] grantResults = new int[requestPermissions.size()];
         for (int i = 0; i < grantResults.length; i++) {
-            String permission = allPermissions.get(i);
+            String permission = requestPermissions.get(i);
             grantResults[i] = PermissionApi.isGrantedPermission(activity, permission) ?
                 PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
 
@@ -332,33 +332,33 @@ final class PermissionHandler {
         }
 
         // 获取已授予的权限
-        List<String> grantedPermissions = PermissionApi.getGrantedPermissions(allPermissions, grantResults);
+        List<String> grantedPermissions = PermissionApi.getGrantedPermissions(requestPermissions, grantResults);
 
         // 如果请求成功的权限集合大小和请求的数组一样大时证明权限已经全部授予
-        if (grantedPermissions.size() == allPermissions.size()) {
+        if (grantedPermissions.size() == requestPermissions.size()) {
             // 代表申请的所有的权限都授予了
-            interceptor.grantedPermissionRequest(activity, allPermissions, grantedPermissions, true, callback);
+            interceptor.grantedPermissionRequest(activity, requestPermissions, grantedPermissions, true, callback);
             // 权限申请结束
-            interceptor.finishPermissionRequest(activity, allPermissions, false, callback);
+            interceptor.finishPermissionRequest(activity, requestPermissions, false, callback);
             // 延迟解锁 Activity 屏幕方向
             postDelayedUnlockActivityOrientation(activity);
             return;
         }
 
         // 获取被拒绝的权限
-        List<String> deniedPermissions = PermissionApi.getDeniedPermissions(allPermissions, grantResults);
+        List<String> deniedPermissions = PermissionApi.getDeniedPermissions(requestPermissions, grantResults);
 
         // 代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回 true 给开发人员，让开发者引导用户去设置界面开启权限
-        interceptor.deniedPermissionRequest(activity, allPermissions, deniedPermissions,
+        interceptor.deniedPermissionRequest(activity, requestPermissions, deniedPermissions,
             PermissionApi.isDoNotAskAgainPermission(activity, deniedPermissions), callback);
 
         // 证明还有一部分权限被成功授予，回调成功接口
         if (!grantedPermissions.isEmpty()) {
-            interceptor.grantedPermissionRequest(activity, allPermissions, grantedPermissions, false, callback);
+            interceptor.grantedPermissionRequest(activity, requestPermissions, grantedPermissions, false, callback);
         }
 
         // 权限申请结束
-        interceptor.finishPermissionRequest(activity, allPermissions, false, callback);
+        interceptor.finishPermissionRequest(activity, requestPermissions, false, callback);
 
         // 延迟解锁 Activity 屏幕方向
         postDelayedUnlockActivityOrientation(activity);

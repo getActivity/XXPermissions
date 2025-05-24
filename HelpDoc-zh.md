@@ -342,28 +342,28 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     private static final String SP_NAME_PERMISSION_REQUEST_TIME_RECORD = "permission_request_time_record";
 
     @Override
-    public void launchPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
+    public void launchPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
                                         @Nullable OnPermissionCallback callback) {
         SharedPreferences sharedPreferences = activity.getSharedPreferences(SP_NAME_PERMISSION_REQUEST_TIME_RECORD, Context.MODE_PRIVATE);
-        String permissionKey = String.valueOf(allPermissions);
+        String permissionKey = String.valueOf(requestPermissions);
         long lastRequestPermissionTime = sharedPreferences.getLong(permissionKey, 0);
         if (System.currentTimeMillis() - lastRequestPermissionTime <= 1000 * 60 * 60 * 24 * 2) {
-            List<String> deniedPermissions = XXPermissions.getDeniedPermission(activity, allPermissions);
-            List<String> grantedPermissions = new ArrayList<>(allPermissions);
+            List<String> deniedPermissions = XXPermissions.getDeniedPermission(activity, requestPermissions);
+            List<String> grantedPermissions = new ArrayList<>(requestPermissions);
             grantedPermissions.removeAll(deniedPermissions);
-            deniedPermissions(activity, allPermissions, deniedPermissions, true, callback);
+            deniedPermissions(activity, requestPermissions, deniedPermissions, true, callback);
             if (!grantedPermissions.isEmpty()) {
-                grantedPermissions(activity, allPermissions, grantedPermissions, false, callback);
+                grantedPermissions(activity, requestPermissions, grantedPermissions, false, callback);
             }
             return;
         }
         sharedPreferences.edit().putLong(permissionKey, System.currentTimeMillis()).apply();
         // 如果之前没有申请过权限，或者距离上次申请已经超过了 48 个小时，则进行申请权限
-        OnPermissionInterceptor.super.requestPermissions(activity, allPermissions, callback);
+        OnPermissionInterceptor.super.requestPermissions(activity, requestPermissions, callback);
     }
     
     @Override
-    public void grantedPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
+    public void grantedPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
                                          @NonNull List<String> grantedPermissions, boolean allGranted,
                                          @Nullable OnPermissionCallback callback) {
         if (callback == null) {
@@ -373,7 +373,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     }
 
     @Override
-    public void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
+    public void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
                                         @NonNull List<String> deniedPermissions, boolean doNotAskAgain,
                                         @Nullable OnPermissionCallback callback) {
         if (callback == null) {

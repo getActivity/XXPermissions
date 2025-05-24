@@ -95,7 +95,7 @@ final class PermissionChecker {
             return;
         }
 
-        List<String> allPermissions = new ArrayList<>();
+        List<String> permissions = new ArrayList<>();
         Field[] fields = Permission.class.getDeclaredFields();
         // 在开启代码混淆之后，反射 Permission 类中的字段会得到空的字段数组
         // 这个是因为编译后常量会在代码中直接引用，所以 Permission 常量字段在混淆的时候会被移除掉
@@ -107,13 +107,13 @@ final class PermissionChecker {
                 continue;
             }
             try {
-                allPermissions.add((String) field.get(null));
+                permissions.add((String) field.get(null));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
         for (String permission : requestPermissions) {
-            if (PermissionUtils.containsPermission(allPermissions, permission)) {
+            if (PermissionUtils.containsPermission(permissions, permission)) {
                 continue;
             }
             // 请不要申请危险权限和特殊权限之外的权限

@@ -59,9 +59,9 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     }
 
     @Override
-    public void launchPermissionRequest(@NonNull Activity activity, @NonNull PermissionFragmentFactory<?, ?> fragmentFactory, @NonNull List<String> allPermissions, @Nullable OnPermissionCallback callback) {
+    public void launchPermissionRequest(@NonNull Activity activity, @NonNull PermissionFragmentFactory<?, ?> fragmentFactory, @NonNull List<String> requestPermissions, @Nullable OnPermissionCallback callback) {
         mRequestFlag = true;
-        List<String> deniedPermissions = XXPermissions.getDeniedPermissions(activity, allPermissions);
+        List<String> deniedPermissions = XXPermissions.getDeniedPermissions(activity, requestPermissions);
 
         if (TextUtils.isEmpty(mPermissionDescription)) {
             mPermissionDescription = generatePermissionDescription(activity, deniedPermissions);
@@ -71,7 +71,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
         int activityOrientation = activity.getResources().getConfiguration().orientation;
 
         boolean showPopupWindow = activityOrientation == Configuration.ORIENTATION_PORTRAIT;
-        for (String permission : allPermissions) {
+        for (String permission : requestPermissions) {
             if (!XXPermissions.isSpecialPermission(permission)) {
                 continue;
             }
@@ -89,7 +89,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
         }
 
         if (showPopupWindow) {
-            dispatchPermissionRequest(activity, allPermissions, fragmentFactory, callback);
+            dispatchPermissionRequest(activity, requestPermissions, fragmentFactory, callback);
             // 延迟 300 毫秒是为了避免出现 PopupWindow 显示然后立马消失的情况
             // 因为框架没有办法在还没有申请权限的情况下，去判断权限是否永久拒绝了，必须要在发起权限申请之后
             // 所以只能通过延迟显示 PopupWindow 来做这件事，如果 300 毫秒内权限申请没有结束，证明本次申请的权限没有永久拒绝
@@ -106,7 +106,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
             showDialog(activity, activity.getString(R.string.common_permission_description_title),
                 mPermissionDescription, false, activity.getString(R.string.common_permission_granted), (dialog, which) -> {
                     dialog.dismiss();
-                    dispatchPermissionRequest(activity, allPermissions, fragmentFactory, callback);
+                    dispatchPermissionRequest(activity, requestPermissions, fragmentFactory, callback);
                 }, activity.getString(R.string.common_permission_denied), (dialog, which) -> {
                     dialog.dismiss();
                     if (callback == null) {
@@ -118,7 +118,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     }
 
     @Override
-    public void grantedPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
+    public void grantedPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
                                          @NonNull List<String> grantedPermissions, boolean allGranted,
                                          @Nullable OnPermissionCallback callback) {
         if (callback == null) {
@@ -128,7 +128,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     }
 
     @Override
-    public void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
+    public void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
                                         @NonNull List<String> deniedPermissions, boolean doNotAskAgain,
                                         @Nullable OnPermissionCallback callback) {
         if (callback != null) {
@@ -141,7 +141,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
                 return;
             }
 
-            showPermissionSettingDialog(activity, allPermissions, deniedPermissions, callback);
+            showPermissionSettingDialog(activity, requestPermissions, deniedPermissions, callback);
             return;
         }
 
@@ -174,7 +174,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     }
 
     @Override
-    public void finishPermissionRequest(@NonNull Activity activity, @NonNull List<String> allPermissions,
+    public void finishPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
                                         boolean skipRequest, @Nullable OnPermissionCallback callback) {
         mRequestFlag = false;
         dismissPopupWindow();
@@ -216,7 +216,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
         mPermissionPopup.dismiss();
     }
 
-    private void showPermissionSettingDialog(Activity activity, List<String> allPermissions,
+    private void showPermissionSettingDialog(Activity activity, List<String> requestPermissions,
                                              List<String> deniedPermissions, OnPermissionCallback callback) {
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
             return;
@@ -252,13 +252,13 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
                     if (callback == null) {
                         return;
                     }
-                    callback.onGranted(allPermissions, true);
+                    callback.onGranted(requestPermissions, true);
                 }
 
                 @Override
                 public void onDenied() {
-                    showPermissionSettingDialog(activity, allPermissions,
-                        XXPermissions.getDeniedPermissions(activity, allPermissions), callback);
+                    showPermissionSettingDialog(activity, requestPermissions,
+                        XXPermissions.getDeniedPermissions(activity, requestPermissions), callback);
                 }
             });
         });
