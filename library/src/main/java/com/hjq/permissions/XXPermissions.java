@@ -649,6 +649,7 @@ public final class XXPermissions {
         if (supportFragment != null) {
             fragmentFactory = new PermissionFragmentFactoryBySupport(supportFragment.getActivity(), supportFragment.getChildFragmentManager());
         } else if (appFragment != null) {
+            // appFragment.getChildFragmentManager 需要 minSdkVersion >=  17
             fragmentFactory = new PermissionFragmentFactoryByApp(appFragment.getActivity(), appFragment.getChildFragmentManager());
         } else if (activity instanceof FragmentActivity) {
             FragmentActivity fragmentActivity = ((FragmentActivity) activity);
