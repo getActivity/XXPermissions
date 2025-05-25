@@ -14,6 +14,7 @@ import android.os.Build;
 @SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
 final class AndroidVersionTools {
 
+    static final int ANDROID_15 = Build.VERSION_CODES.VANILLA_ICE_CREAM;
     static final int ANDROID_14 = Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     static final int ANDROID_13 = Build.VERSION_CODES.TIRAMISU;
     static final int ANDROID_12_L = Build.VERSION_CODES.S_V2;
@@ -35,14 +36,14 @@ final class AndroidVersionTools {
     static final int ANDROID_4_0 = Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 
     /**
-     * 获取当前 android sdk 版本码
+     * 获取当前 AndroidSdk 版本码
      */
     static int getCurrentAndroidVersionCode() {
         return Build.VERSION.SDK_INT;
     }
 
     /**
-     * 获取 targetSdk 版本码
+     * 获取 TargetSdk 版本码
      */
     static int getTargetSdkVersionCode(Context context) {
         return context.getApplicationInfo().targetSdkVersion;
@@ -55,6 +56,13 @@ final class AndroidVersionTools {
      */
     static boolean isAdaptationAndroidVersionNewFeatures(Context context, int androidSdkVersionCode) {
         return getCurrentAndroidVersionCode() >= androidSdkVersionCode && getTargetSdkVersionCode(context) >= androidSdkVersionCode;
+    }
+
+    /**
+     * 获取最新适配 AndroidSdk 版本码
+     */
+    static int getLatestAdaptationAndroidVersionCode() {
+        return ANDROID_15;
     }
 
     /**

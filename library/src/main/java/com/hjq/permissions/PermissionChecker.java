@@ -90,8 +90,8 @@ final class PermissionChecker {
             throw new IllegalArgumentException("The requested permission cannot be empty");
         }
 
-        if (AndroidVersionTools.getCurrentAndroidVersionCode() > AndroidVersionTools.ANDROID_13) {
-            // 如果是 Android 13 后面的版本，则不进行检查
+        if (AndroidVersionTools.getCurrentAndroidVersionCode() > AndroidVersionTools.getLatestAdaptationAndroidVersionCode()) {
+            // 如果框架没有适配到这个版本，则不进行检查
             return;
         }
 
