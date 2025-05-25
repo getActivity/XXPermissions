@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Insets;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -22,6 +23,10 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnApplyWindowInsetsListener;
+import android.view.WindowInsets;
+import com.hjq.bar.OnTitleBarListener;
+import com.hjq.bar.TitleBar;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
@@ -44,6 +49,31 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        TitleBar titleBar = findViewById(R.id.tb_main_bar);
+        titleBar.setOnTitleBarListener(new OnTitleBarListener() {
+            @Override
+            public void onTitleClick(TitleBar titleBar) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://github.com/getActivity/XXPermissions"));
+                startActivity(intent);
+            }
+        });
+
+        // 适配 Android 15 EdgeToEdge 特性
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            titleBar.setOnApplyWindowInsetsListener(new OnApplyWindowInsetsListener()  {
+
+                @NonNull
+                @Override
+                public WindowInsets onApplyWindowInsets(@NonNull View v, @NonNull WindowInsets insets) {
+                    Insets systemBars = insets.getInsets(WindowInsets.Type.systemBars());
+                    // v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+                    v.setPadding(0, systemBars.top, 0, 0);
+                    return insets;
+                }
+            });
+        }
 
         findViewById(R.id.btn_main_request_single_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_group_permission).setOnClickListener(this);
