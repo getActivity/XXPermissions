@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ final class PermissionHelper {
     private static final List<String> BACKGROUND_PERMISSION_LIST = new ArrayList<>(2);
 
     /** 危险权限组集合 */
-    private static final Map<PermissionGroupType, List<String>> DANGEROUS_PERMISSION_GROUP_MAP = new HashMap<>(9);
+    private static final Map<PermissionGroupType, List<String>> DANGEROUS_PERMISSION_GROUP_MAP = new EnumMap<>(PermissionGroupType.class);
 
     /** 危险权限对应的类型集合 */
     private static final Map<String, PermissionGroupType> DANGEROUS_PERMISSION_GROUP_TYPE_MAP = new HashMap<>(25);
