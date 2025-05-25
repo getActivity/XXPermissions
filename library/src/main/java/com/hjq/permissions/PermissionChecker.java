@@ -38,7 +38,7 @@ final class PermissionChecker {
                 "please manually determine the status of the activity");
         }
 
-        if (AndroidVersionTools.isAndroid4_2() && activity.isDestroyed()) {
+        if (activity.isDestroyed()) {
             // 这个 Activity 对象当前不能是销毁状态，这种情况常出现在执行异步请求后申请权限
             // 请自行在外层判断 Activity 状态是否正常之后再进入权限申请
             throw new IllegalStateException("The activity has been destroyed, " +
@@ -544,7 +544,7 @@ final class PermissionChecker {
             if (androidManifestInfo.usesSdkInfo != null) {
                 minSdkVersion = androidManifestInfo.usesSdkInfo.minSdkVersion;
             } else {
-                minSdkVersion = AndroidVersionTools.ANDROID_4_0;
+                minSdkVersion = AndroidVersionTools.ANDROID_4_2;
             }
         }
 

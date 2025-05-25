@@ -154,18 +154,4 @@ final class AndroidVersionTools {
     static boolean isAndroid4_3() {
         return Build.VERSION.SDK_INT >= ANDROID_4_3;
     }
-
-    /**
-     * 是否是 Android 4.2 及以上版本
-     */
-    static boolean isAndroid4_2() {
-        return Build.VERSION.SDK_INT >= ANDROID_4_2;
-    }
-
-    /**
-     * 是否是 Android 4.0 及以上版本
-     */
-    static boolean isAndroid4() {
-        return Build.VERSION.SDK_INT >= ANDROID_4_0;
-    }
 }

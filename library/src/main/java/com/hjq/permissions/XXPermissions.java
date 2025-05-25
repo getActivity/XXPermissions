@@ -542,9 +542,6 @@ public final class XXPermissions {
         if (PermissionUtils.isActivityUnavailable(activity)) {
             return;
         }
-        if (AndroidVersionTools.isAndroid4_2() && activity.isDestroyed()) {
-            return;
-        }
         if (permissions.isEmpty()) {
             PermissionActivityIntentHandler.startActivity(appFragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
@@ -612,9 +609,6 @@ public final class XXPermissions {
         }
         Activity activity = supportFragment.getActivity();
         if (PermissionUtils.isActivityUnavailable(activity)) {
-            return;
-        }
-        if (AndroidVersionTools.isAndroid4_2() && activity.isDestroyed()) {
             return;
         }
         if (permissions.isEmpty()) {
