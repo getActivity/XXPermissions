@@ -77,6 +77,7 @@ public interface OnPermissionInterceptor {
     default void dispatchPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
                                             @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                                             @Nullable OnPermissionCallback callback) {
-        PermissionHandler.request(activity, requestPermissions, fragmentFactory, this, callback);
+        new RequestPermissionLogicPresenter(activity, requestPermissions, fragmentFactory, this, callback)
+            .request();
     }
 }

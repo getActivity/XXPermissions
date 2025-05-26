@@ -18,16 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SuppressWarnings("deprecation")
 final class RequestPermissionLogicPresenter {
 
-    /**
-     * 发起权限请求
-     */
-    static void request(@NonNull Activity activity, @NonNull List<String> requestPermissions,
-                        @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
-                        @NonNull OnPermissionInterceptor interceptor, @Nullable OnPermissionCallback callback) {
-        RequestPermissionLogicPresenter presenter = new RequestPermissionLogicPresenter(activity, requestPermissions, fragmentFactory, interceptor, callback);
-        presenter.startPermissionRequest();
-    }
-
     @NonNull
     private final Activity mActivity;
 
@@ -43,7 +33,7 @@ final class RequestPermissionLogicPresenter {
     @Nullable
     private final OnPermissionCallback mCallBack;
 
-    private RequestPermissionLogicPresenter(@NonNull Activity activity, @NonNull List<String> requestPermissions,
+    RequestPermissionLogicPresenter(@NonNull Activity activity, @NonNull List<String> requestPermissions,
                                 @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                                 @NonNull OnPermissionInterceptor interceptor, @Nullable OnPermissionCallback callback) {
         mActivity = activity;
@@ -56,7 +46,7 @@ final class RequestPermissionLogicPresenter {
     /**
      * 开始权限请求
      */
-    private void startPermissionRequest() {
+    void request() {
         if (mRequestPermissions.isEmpty()) {
             return;
         }
