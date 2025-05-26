@@ -13,10 +13,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2018/06/15
- *    desc   : 权限申请处理器
+ *    desc   : 权限申请主要逻辑实现类
  */
 @SuppressWarnings("deprecation")
-final class PermissionHandler {
+final class RequestPermissionLogicPresenter {
 
     /**
      * 发起权限请求
@@ -24,8 +24,8 @@ final class PermissionHandler {
     static void request(@NonNull Activity activity, @NonNull List<String> requestPermissions,
                         @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                         @NonNull OnPermissionInterceptor interceptor, @Nullable OnPermissionCallback callback) {
-        PermissionHandler permissionHandler = new PermissionHandler(activity, requestPermissions, fragmentFactory, interceptor, callback);
-        permissionHandler.startPermissionRequest();
+        RequestPermissionLogicPresenter presenter = new RequestPermissionLogicPresenter(activity, requestPermissions, fragmentFactory, interceptor, callback);
+        presenter.startPermissionRequest();
     }
 
     @NonNull
@@ -43,7 +43,7 @@ final class PermissionHandler {
     @Nullable
     private final OnPermissionCallback mCallBack;
 
-    private PermissionHandler(@NonNull Activity activity, @NonNull List<String> requestPermissions,
+    private RequestPermissionLogicPresenter(@NonNull Activity activity, @NonNull List<String> requestPermissions,
                                 @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                                 @NonNull OnPermissionInterceptor interceptor, @Nullable OnPermissionCallback callback) {
         mActivity = activity;
