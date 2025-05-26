@@ -23,7 +23,7 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
             if (!AndroidVersionTools.isAndroid10()) {
                 return PermissionUtils.isGrantedPermission(context, Permission.READ_EXTERNAL_STORAGE);
             }
-            return isGrantedReadStoragePermission(context) &&
+            return isGrantedReadMediaPermission(context) &&
                 PermissionUtils.isGrantedPermission(context, Permission.ACCESS_MEDIA_LOCATION);
         }
 
@@ -91,7 +91,7 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
             if (!AndroidVersionTools.isAndroid10()) {
                 return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.READ_EXTERNAL_STORAGE);
             }
-            return isGrantedReadStoragePermission(activity) && PermissionUtils.isDoNotAskAgainPermission(activity, permission);
+            return isGrantedReadMediaPermission(activity) && PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ACTIVITY_RECOGNITION)) {
@@ -116,12 +116,15 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
     }
 
     /**
-     * 判断是否授予了读取文件的权限
+     * 判断是否授予了读取媒体的权限
      */
     @RequiresApi(AndroidVersionTools.ANDROID_6)
-    private boolean isGrantedReadStoragePermission(@NonNull Context context) {
+    private boolean isGrantedReadMediaPermission(@NonNull Context context) {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_13)) {
+            // 这里为什么加上 Android 14 和 READ_MEDIA_VISUAL_USER_SELECTED 权限判断？这是因为如果获取部分照片和视频
+            // 然后申请 Permission.ACCESS_MEDIA_LOCATION 系统会返回失败，必须要选择获取全部照片和视频才可以申请该权限
             return PermissionUtils.isGrantedPermission(context, Permission.READ_MEDIA_IMAGES) ||
+                    PermissionUtils.isGrantedPermission(context, Permission.READ_MEDIA_VIDEO) ||
                 isGrantedPermission(context, Permission.MANAGE_EXTERNAL_STORAGE, false);
         }
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_11)) {

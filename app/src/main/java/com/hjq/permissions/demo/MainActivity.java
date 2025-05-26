@@ -270,10 +270,16 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 @Override
                 public void run() {
                     XXPermissions.with(MainActivity.this)
-                            // Permission.READ_EXTERNAL_STORAGE 和 Permission.MANAGE_EXTERNAL_STORAGE 二选一
-                            // 如果 targetSdk >= 33，则添加 Permission.READ_MEDIA_IMAGES 和 Permission.MANAGE_EXTERNAL_STORAGE 二选一
-                            // 如果 targetSdk < 33，则添加 Permission.READ_EXTERNAL_STORAGE 和 Permission.MANAGE_EXTERNAL_STORAGE 二选一
+                            // 申请 ACCESS_MEDIA_LOCATION 的前提条件：
+                            // 1. 如果 targetSdk >= 33，有两种方案选择（二选一）：
+                            //    a. 申请 READ_MEDIA_IMAGES 或 READ_MEDIA_VIDEO 权限，需要注意的点是
+                            //       如果是在 Android 14 申请，只能选择允许访问全部的照片和视频，不能选择部分
+                            //    b. 申请 MANAGE_EXTERNAL_STORAGE 权限
+                            // 2. 如果 targetSdk < 33，，有两种方案选择（二选一）：
+                            //    a. 则添加 Permission.READ_EXTERNAL_STORAGE
+                            //    b. Permission.MANAGE_EXTERNAL_STORAGE 二选一
                             .permission(Permission.READ_MEDIA_IMAGES)
+                            .permission(Permission.READ_MEDIA_VIDEO)
                             .permission(Permission.ACCESS_MEDIA_LOCATION)
                             .interceptor(new PermissionInterceptor())
                             .request(new OnPermissionCallback() {
