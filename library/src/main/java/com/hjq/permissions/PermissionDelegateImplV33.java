@@ -14,7 +14,7 @@ import android.support.annotation.NonNull;
 class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
 
     @Override
-    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
         if (PermissionUtils.equalsPermission(permission, Permission.BODY_SENSORS_BACKGROUND)) {
             if (!AndroidVersionTools.isAndroid6()) {
                 return true;
@@ -65,7 +65,7 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
                 PermissionUtils.isGrantedPermission(context, Permission.READ_MEDIA_AUDIO);
         }
 
-        return super.isGrantedPermission(context, permission);
+        return super.isGrantedPermission(context, permission, requestFlag);
     }
 
     @Override

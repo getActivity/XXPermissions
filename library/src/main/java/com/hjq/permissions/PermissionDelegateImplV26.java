@@ -17,7 +17,7 @@ import android.support.annotation.RequiresApi;
 class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
 
     @Override
-    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
         if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES)) {
             if (!AndroidVersionTools.isAndroid8()) {
                 return true;
@@ -49,7 +49,7 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
             return PermissionUtils.isGrantedPermission(context, permission);
         }
 
-        return super.isGrantedPermission(context, permission);
+        return super.isGrantedPermission(context, permission, requestFlag);
     }
 
     @Override

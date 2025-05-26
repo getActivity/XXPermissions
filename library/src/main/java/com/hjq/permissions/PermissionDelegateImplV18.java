@@ -14,12 +14,12 @@ import android.support.annotation.NonNull;
 class PermissionDelegateImplV18 extends PermissionDelegateImpl {
 
     @Override
-    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
         if (PermissionUtils.equalsPermission(permission, Permission.BIND_NOTIFICATION_LISTENER_SERVICE)) {
             return NotificationListenerPermissionCompat.isGrantedPermission(context);
         }
 
-        return super.isGrantedPermission(context, permission);
+        return super.isGrantedPermission(context, permission, requestFlag);
     }
 
     @Override

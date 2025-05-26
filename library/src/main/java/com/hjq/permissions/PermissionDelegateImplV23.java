@@ -18,7 +18,7 @@ import android.support.annotation.RequiresApi;
 class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
 
     @Override
-    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
         if (!PermissionHelper.isSpecialPermission(permission)) {
             // 读取应用列表权限是比较特殊的危险权限，它和其他危险权限的判断方式不太一样，所以需要放在这里来判断
             if (PermissionUtils.equalsPermission(permission, Permission.GET_INSTALLED_APPS)) {
@@ -57,7 +57,7 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
         }
 
         // Android 6.0 及以下还有一些特殊权限需要判断
-        return super.isGrantedPermission(context, permission);
+        return super.isGrantedPermission(context, permission, requestFlag);
     }
 
     @Override

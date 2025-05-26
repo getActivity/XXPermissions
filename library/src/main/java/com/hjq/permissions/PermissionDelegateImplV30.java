@@ -17,7 +17,7 @@ import android.support.annotation.RequiresApi;
 class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
 
     @Override
-    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
         if (PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
             if (!AndroidVersionTools.isAndroid6()) {
                 return true;
@@ -34,7 +34,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
             return isGrantedManageStoragePermission();
         }
 
-        return super.isGrantedPermission(context, permission);
+        return super.isGrantedPermission(context, permission, requestFlag);
     }
 
     @Override

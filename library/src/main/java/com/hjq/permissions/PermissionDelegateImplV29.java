@@ -15,7 +15,7 @@ import android.support.annotation.RequiresApi;
 class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
 
     @Override
-    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_MEDIA_LOCATION)) {
             if (!AndroidVersionTools.isAndroid6()) {
                 return true;
@@ -63,7 +63,7 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
             return PermissionUtils.isGrantedPermission(context, permission);
         }
 
-        return super.isGrantedPermission(context, permission);
+        return super.isGrantedPermission(context, permission, requestFlag);
     }
 
     @Override
@@ -122,11 +122,11 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
     private boolean isGrantedReadStoragePermission(@NonNull Context context) {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_13)) {
             return PermissionUtils.isGrantedPermission(context, Permission.READ_MEDIA_IMAGES) ||
-                isGrantedPermission(context, Permission.MANAGE_EXTERNAL_STORAGE);
+                isGrantedPermission(context, Permission.MANAGE_EXTERNAL_STORAGE, false);
         }
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_11)) {
             return PermissionUtils.isGrantedPermission(context, Permission.READ_EXTERNAL_STORAGE) ||
-                isGrantedPermission(context, Permission.MANAGE_EXTERNAL_STORAGE);
+                isGrantedPermission(context, Permission.MANAGE_EXTERNAL_STORAGE, false);
         }
         return PermissionUtils.isGrantedPermission(context, Permission.READ_EXTERNAL_STORAGE);
     }

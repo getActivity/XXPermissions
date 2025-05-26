@@ -24,7 +24,15 @@ final class PermissionApi {
      * 判断某个权限是否授予
      */
     static boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
-        return DELEGATE.isGrantedPermission(context, permission);
+        return DELEGATE.isGrantedPermission(context, permission, false);
+    }
+
+    /**
+     * 获取权限回调的结果
+     */
+    static int getPermissionResult(@NonNull Context context, @NonNull String permission) {
+        return DELEGATE.isGrantedPermission(context, permission, true) ?
+                        PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
     }
 
     /**
@@ -39,13 +47,6 @@ final class PermissionApi {
      */
     static Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         return DELEGATE.getPermissionSettingIntent(context, permission);
-    }
-
-    /**
-     * 重新检查权限回调的结果
-     */
-    static boolean recheckPermissionResult(@NonNull Context context, @NonNull String permission, boolean grantResult) {
-        return DELEGATE.recheckPermissionResult(context, permission, grantResult);
     }
 
     /**

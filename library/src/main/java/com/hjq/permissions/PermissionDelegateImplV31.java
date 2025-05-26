@@ -17,7 +17,7 @@ import android.support.annotation.RequiresApi;
 class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
 
     @Override
-    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
         if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
             if (!AndroidVersionTools.isAndroid12()) {
                 return true;
@@ -45,7 +45,7 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
             return PermissionUtils.isGrantedPermission(context, permission);
         }
 
-        return super.isGrantedPermission(context, permission);
+        return super.isGrantedPermission(context, permission, requestFlag);
     }
 
     @Override

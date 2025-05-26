@@ -1,7 +1,6 @@
 package com.hjq.permissions;
 
 import android.app.Activity;
-import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -322,13 +321,7 @@ final class PermissionHandler {
 
         int[] grantResults = new int[requestPermissions.size()];
         for (int i = 0; i < grantResults.length; i++) {
-            String permission = requestPermissions.get(i);
-            grantResults[i] = PermissionApi.isGrantedPermission(activity, permission) ?
-                PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
-
-            grantResults[i] = PermissionApi.recheckPermissionResult(
-                activity, permission, grantResults[i] == PackageManager.PERMISSION_GRANTED)
-                ? PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
+            grantResults[i] = PermissionApi.getPermissionResult(activity, requestPermissions.get(i));
         }
 
         // 获取已授予的权限

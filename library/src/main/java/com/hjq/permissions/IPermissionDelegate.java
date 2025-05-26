@@ -16,17 +16,12 @@ public interface IPermissionDelegate {
     /**
      * 判断某个权限是否授予了
      */
-    boolean isGrantedPermission(@NonNull Context context, @NonNull String permission);
+    boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag);
 
     /**
      * 判断某个权限是否勾选了不再询问
      */
     boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission);
-
-    /**
-     * 重新检查权限回调的结果
-     */
-    boolean recheckPermissionResult(@NonNull Context context, @NonNull String permission, boolean grantResult);
 
     /**
      * 获取权限设置页的意图
