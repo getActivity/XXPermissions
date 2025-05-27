@@ -37,8 +37,8 @@ publishing {
     publications {
         release(MavenPublication) {
             groupId = 'com.github.getActivity'
-            artifactId = rootProject.name
-            version = android.defaultConfig.versionName
+            artifactId = 'XXPermissions'
+            version = '22.0'
         }
     }
 }
