@@ -58,6 +58,8 @@ final class PermissionHelper {
         SPECIAL_PERMISSION_LIST.add(Permission.BIND_NOTIFICATION_LISTENER_SERVICE);
         SPECIAL_PERMISSION_LIST.add(Permission.BIND_VPN_SERVICE);
 
+        /* ---------------------------------------------------------------------------------------------------- */
+
         PERMISSION_VERSION_MAP.put(Permission.SCHEDULE_EXACT_ALARM, AndroidVersionTools.ANDROID_12);
         PERMISSION_VERSION_MAP.put(Permission.MANAGE_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_11);
         PERMISSION_VERSION_MAP.put(Permission.REQUEST_INSTALL_PACKAGES, AndroidVersionTools.ANDROID_8);
@@ -113,10 +115,14 @@ final class PermissionHelper {
         PERMISSION_VERSION_MAP.put(Permission.RECEIVE_WAP_PUSH, AndroidVersionTools.ANDROID_6);
         PERMISSION_VERSION_MAP.put(Permission.RECEIVE_MMS, AndroidVersionTools.ANDROID_6);
 
+        /* ---------------------------------------------------------------------------------------------------- */
+
         VIRTUAL_PERMISSION_LIST.add(Permission.NOTIFICATION_SERVICE);
         VIRTUAL_PERMISSION_LIST.add(Permission.BIND_NOTIFICATION_LISTENER_SERVICE);
         VIRTUAL_PERMISSION_LIST.add(Permission.BIND_VPN_SERVICE);
         VIRTUAL_PERMISSION_LIST.add(Permission.PICTURE_IN_PICTURE);
+
+        /* ---------------------------------------------------------------------------------------------------- */
 
         // Android 13 以下开启通知栏服务，需要用到旧的通知栏权限（框架自己虚拟出来的）
         NEW_AND_OLD_PERMISSION_MAP.put(Permission.POST_NOTIFICATIONS, new String[] { Permission.NOTIFICATION_SERVICE });
@@ -136,10 +142,14 @@ final class PermissionHelper {
         // Android 8.0 以下读取电话号码需要用到读取电话状态的权限
         NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_PHONE_NUMBERS, new String[] { Permission.READ_PHONE_STATE });
 
+        /* ---------------------------------------------------------------------------------------------------- */
+        
         // 后台定位权限
         BACKGROUND_PERMISSION_LIST.add(Permission.ACCESS_BACKGROUND_LOCATION);
         // 后台传感器权限
         BACKGROUND_PERMISSION_LIST.add(Permission.BODY_SENSORS_BACKGROUND);
+
+        /* ---------------------------------------------------------------------------------------------------- */
 
         // 存储权限组
         List<String> storagePermissionGroup = Arrays.asList(Permission.READ_EXTERNAL_STORAGE,
@@ -212,6 +222,8 @@ final class PermissionHelper {
             DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.IMAGE_AND_VIDEO_MEDIA);
         }
 
+        /* ---------------------------------------------------------------------------------------------------- */
+
         // 设置权限请求间隔时间
         for (String permission : BACKGROUND_PERMISSION_LIST) {
             if (AndroidVersionTools.getCurrentAndroidVersionCode() < PermissionHelper.findAndroidVersionByPermission(permission)) {
@@ -222,6 +234,8 @@ final class PermissionHelper {
             // 为什么延迟时间是 150 毫秒？ 经过实践得出 100 还是有概率会出现失败，但是换成 150 试了很多次就都没有问题了
             PERMISSIONS_REQUEST_INTERVAL_TIME.put(permission, 150);
         }
+
+        /* ---------------------------------------------------------------------------------------------------- */
 
         // 设置权限回调等待的时间
         int normalSpecialPermissionWaitTime;
