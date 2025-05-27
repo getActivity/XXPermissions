@@ -15,8 +15,6 @@ import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -32,7 +30,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Properties;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -43,9 +40,6 @@ import org.xmlpull.v1.XmlPullParserException;
  *    desc   : 权限相关工具类
  */
 final class PermissionUtils {
-
-    /** Handler 对象 */
-    private static final Handler HANDLER = new Handler(Looper.getMainLooper());
 
     /**
      * 判断某个危险权限是否授予了
@@ -122,42 +116,6 @@ final class PermissionUtils {
     static boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
         return !isGrantedPermission(activity, permission) &&
             !shouldShowRequestPermissionRationale(activity, permission);
-    }
-
-    /**
-     * 延迟一段时间执行 OnActivityResult，避免有些机型明明授权了，但还是回调失败的问题
-     */
-    static void postActivityResult(@NonNull List<String> permissions, @NonNull Runnable runnable) {
-        long delayMillis;
-        if (AndroidVersionTools.isAndroid11()) {
-            delayMillis = 200;
-        } else {
-            delayMillis = 300;
-        }
-
-        if (PhoneRomUtils.isEmui() || PhoneRomUtils.isHarmonyOs()) {
-            // 需要加长时间等待，不然某些华为机型授权了但是获取不到权限
-            if (AndroidVersionTools.isAndroid8()) {
-                delayMillis = 300;
-            } else {
-                delayMillis = 500;
-            }
-        } else if (PhoneRomUtils.isMiui() && AndroidVersionTools.isAndroid11() &&
-            PermissionUtils.containsPermission(permissions, Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
-            // 经过测试，发现小米 Android 11 及以上的版本，申请这个权限需要 1000 毫秒才能判断到（测试了 800 毫秒还不行）
-            // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
-            // 然而在 Android 11 之后的，这个权限页面被小米改成了自己定制化的页面
-            // 测试了原生的模拟器和 vivo 云测并发现没有这个问题，所以断定这个 Bug 就是小米特有的
-            delayMillis = 1000;
-        }
-        postDelayed(runnable, delayMillis);
-    }
-
-    /**
-     * 延迟一段时间执行
-     */
-    static void postDelayed(@NonNull Runnable runnable, long delayMillis) {
-        HANDLER.postDelayed(runnable, delayMillis);
     }
 
     /**

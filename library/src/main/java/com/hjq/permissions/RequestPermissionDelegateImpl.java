@@ -20,6 +20,10 @@ abstract class RequestPermissionDelegateImpl implements IFragmentCallback {
     /** 请求码（自动生成）*/
     static final String REQUEST_CODE = "request_code";
 
+    /** 任务令牌 */
+    @NonNull
+    private final Object mTaskToken = new Object();
+
     /** 权限申请标记（防止系统杀死应用后重新触发请求的问题） */
     private boolean mRequestFlag;
 
@@ -92,6 +96,14 @@ abstract class RequestPermissionDelegateImpl implements IFragmentCallback {
         return arguments.getInt(REQUEST_CODE);
     }
 
+    void sendTask(@NonNull Runnable runnable, long delayMillis) {
+        PermissionTaskHandler.sendTask(runnable, mTaskToken, delayMillis);
+    }
+
+    void cancelTask() {
+        PermissionTaskHandler.cancelTask(mTaskToken);
+    }
+
     IStartActivityDelegate getStartActivityDelegate() {
         return mFragmentMethod;
     }
@@ -136,6 +148,8 @@ abstract class RequestPermissionDelegateImpl implements IFragmentCallback {
 
     @Override
     public void onFragmentDestroy() {
+        // 取消执行任务
+        cancelTask();
         // 释放回调对象，避免内存泄漏
         setCallback(null);
         if (mManualDetach) {

@@ -41,7 +41,9 @@ final class RequestPermissionDelegateImplBySpecial extends RequestPermissionDele
             return;
         }
 
-        PermissionUtils.postActivityResult(permissions, this::dispatchPermissionCallback);
+        // 延迟处理权限请求的结果
+        sendTask(this::dispatchPermissionCallback,
+                                        PermissionHelper.getMaxWaitTimeByPermissions(permissions));
     }
 
     private void dispatchPermissionCallback() {

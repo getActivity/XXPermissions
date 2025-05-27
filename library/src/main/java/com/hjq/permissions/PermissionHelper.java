@@ -38,6 +38,12 @@ final class PermissionHelper {
     /** 危险权限对应的类型集合 */
     private static final Map<String, PermissionGroupType> DANGEROUS_PERMISSION_GROUP_TYPE_MAP = new HashMap<>(25);
 
+    /** 权限请求间隔时长 */
+    private static final Map<String, Integer> PERMISSIONS_REQUEST_INTERVAL_TIME = new HashMap<>(2);
+
+    /** 权限结果等待时长 */
+    private static final Map<String, Integer> PERMISSIONS_RESULT_WAIT_TIME = new HashMap<>(25);
+
     static {
         SPECIAL_PERMISSION_LIST.add(Permission.SCHEDULE_EXACT_ALARM);
         SPECIAL_PERMISSION_LIST.add(Permission.MANAGE_EXTERNAL_STORAGE);
@@ -205,6 +211,51 @@ final class PermissionHelper {
         for (String permission : imageAndVideoPermissionGroup) {
             DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.IMAGE_AND_VIDEO_MEDIA);
         }
+
+        // 设置权限请求间隔时间
+        for (String permission : BACKGROUND_PERMISSION_LIST) {
+            if (AndroidVersionTools.getCurrentAndroidVersionCode() < PermissionHelper.findAndroidVersionByPermission(permission)) {
+                continue;
+            }
+            // 经过测试，在 Android 13 设备上面，先申请前台权限，然后立马申请后台权限大概率会出现失败
+            // 这里为了避免这种情况出现，所以加了一点延迟，这样就没有什么问题了
+            // 为什么延迟时间是 150 毫秒？ 经过实践得出 100 还是有概率会出现失败，但是换成 150 试了很多次就都没有问题了
+            PERMISSIONS_REQUEST_INTERVAL_TIME.put(permission, 150);
+        }
+
+        // 设置权限回调等待的时间
+        int normalSpecialPermissionWaitTime;
+        if (AndroidVersionTools.isAndroid11()) {
+            normalSpecialPermissionWaitTime = 200;
+        } else {
+            normalSpecialPermissionWaitTime = 300;
+        }
+
+        if (PhoneRomUtils.isEmui() || PhoneRomUtils.isHarmonyOs()) {
+            // 需要加长时间等待，不然某些华为机型授权了但是获取不到权限
+            if (AndroidVersionTools.isAndroid8()) {
+                normalSpecialPermissionWaitTime = 300;
+            } else {
+                normalSpecialPermissionWaitTime = 500;
+            }
+        }
+
+        for (String permission : SPECIAL_PERMISSION_LIST) {
+            // 特殊权限一律需要一定的等待时间
+            if (AndroidVersionTools.getCurrentAndroidVersionCode() < PermissionHelper.findAndroidVersionByPermission(permission)) {
+                continue;
+            }
+            PERMISSIONS_RESULT_WAIT_TIME.put(permission, normalSpecialPermissionWaitTime);
+        }
+
+        if (PhoneRomUtils.isMiui() && AndroidVersionTools.isAndroid11() &&
+                AndroidVersionTools.getCurrentAndroidVersionCode() >= PermissionHelper.findAndroidVersionByPermission(Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
+            // 经过测试，发现小米 Android 11 及以上的版本，申请这个权限需要 1000 毫秒才能判断到（测试了 800 毫秒还不行）
+            // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
+            // 然而在 Android 11 之后的，这个权限页面被小米改成了自己定制化的页面
+            // 测试了原生的模拟器和 vivo 云测并发现没有这个问题，所以断定这个 Bug 就是小米特有的
+            PERMISSIONS_RESULT_WAIT_TIME.put(Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, 1000);
+        }
     }
 
     /**
@@ -257,18 +308,6 @@ final class PermissionHelper {
     }
 
     /**
-     * 判断申请的权限列表中是否包含后台权限
-     */
-    static boolean containsBackgroundPermission(List<String> permissions) {
-        for (String backgroundPermission : BACKGROUND_PERMISSION_LIST) {
-            if (permissions.contains(backgroundPermission)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * 判断某个权限是否为后台权限
      */
     static boolean isBackgroundPermission(String permission) {
@@ -286,5 +325,35 @@ final class PermissionHelper {
             }
         }
         return null;
+    }
+
+    /**
+     * 通过权限请求间隔时间
+     */
+    static int getMaxIntervalTimeByPermissions(@NonNull List<String> permissions) {
+        int maxWaitTime = 0;
+        for (String permission : permissions) {
+            Integer time = PERMISSIONS_REQUEST_INTERVAL_TIME.get(permission);
+            if (time == null) {
+                continue;
+            }
+            maxWaitTime = Math.max(maxWaitTime, time);
+        }
+        return maxWaitTime;
+    }
+
+    /**
+     * 通过权限集合获取最大的回调等待时间
+     */
+    static int getMaxWaitTimeByPermissions(@NonNull List<String> permissions) {
+        int maxWaitTime = 0;
+        for (String permission : permissions) {
+            Integer time = PERMISSIONS_RESULT_WAIT_TIME.get(permission);
+            if (time == null) {
+                continue;
+            }
+            maxWaitTime = Math.max(maxWaitTime, time);
+        }
+        return maxWaitTime;
     }
 }

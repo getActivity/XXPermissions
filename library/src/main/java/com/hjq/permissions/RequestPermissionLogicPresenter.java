@@ -247,19 +247,13 @@ final class RequestPermissionLogicPresenter {
             public void run() {
                 index.incrementAndGet();
                 if (index.get() < dangerousPermissions.size()) {
-                    long delayMillis = 0;
                     List<String> permissions = dangerousPermissions.get(index.get());
-                    if (PermissionHelper.containsBackgroundPermission(permissions)) {
-                        // 经过测试，在 Android 13 设备上面，先申请前台权限，然后立马申请后台权限大概率会出现失败
-                        // 这里为了避免这种情况出现，所以加了一点延迟，这样就没有什么问题了
-                        // 为什么延迟时间是 150 毫秒？ 经过实践得出 100 还是有概率会出现失败，但是换成 150 试了很多次就都没有问题了
-                        delayMillis = AndroidVersionTools.isAndroid13() ? 150 : 0;
-                    }
-                    if (delayMillis == 0) {
+                    int maxWaitTimeByPermissions = PermissionHelper.getMaxIntervalTimeByPermissions(permissions);
+                    if (maxWaitTimeByPermissions == 0) {
                         requestSingleDangerousPermission(permissions, fragmentFactory,this);
                     } else {
-                        PermissionUtils.postDelayed(() ->
-                            requestSingleDangerousPermission(permissions, fragmentFactory, this), delayMillis);
+                        PermissionTaskHandler.sendTask(() ->
+                            requestSingleDangerousPermission(permissions, fragmentFactory, this), maxWaitTimeByPermissions);
                     }
                     return;
                 }
@@ -281,7 +275,7 @@ final class RequestPermissionLogicPresenter {
      * 延迟处理权限请求结果
      */
     private void postDelayedHandlerRequestPermissionsResult() {
-        PermissionUtils.postDelayed(this::handlePermissionRequestResult, 300);
+        PermissionTaskHandler.sendTask(this::handlePermissionRequestResult, 300);
     }
 
     /**
@@ -289,7 +283,7 @@ final class RequestPermissionLogicPresenter {
      */
     private void postDelayedUnlockActivityOrientation(@NonNull Activity activity) {
         // 延迟执行是为了让外层回调中的代码能够顺序执行完成
-        PermissionUtils.postDelayed(() -> ActivityOrientationControl.unlockActivityOrientation(activity), 100);
+        PermissionTaskHandler.sendTask(() -> ActivityOrientationControl.unlockActivityOrientation(activity), 100);
     }
 
     /**

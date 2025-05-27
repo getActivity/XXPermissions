@@ -44,6 +44,20 @@ final class RequestPermissionDelegateImplByDangerous extends RequestPermissionDe
             return;
         }
 
+        // 如果回调中的请求码和请求时设置的请求码不一致，则证明回调有问题，则不往下执行代码
+        if (requestCode != getPermissionRequestCode()) {
+            return;
+        }
+
+        // 释放对这个请求码的占用
+        PermissionRequestCodeManager.releaseRequestCode(requestCode);
+
+        // 延迟处理权限请求的结果
+        sendTask(this::dispatchPermissionCallback,
+            PermissionHelper.getMaxWaitTimeByPermissions(PermissionUtils.asArrayList(permissions)));
+    }
+
+    private void dispatchPermissionCallback() {
         if (isFragmentUnavailable()) {
             return;
         }
@@ -52,14 +66,6 @@ final class RequestPermissionDelegateImplByDangerous extends RequestPermissionDe
         if (PermissionUtils.isActivityUnavailable(activity)) {
             return;
         }
-
-        // 如果回调中的请求码和请求时设置的请求码不一致，则证明回调有问题，则不往下执行代码
-        if (requestCode != getPermissionRequestCode()) {
-            return;
-        }
-
-        // 释放对这个请求码的占用
-        PermissionRequestCodeManager.releaseRequestCode(requestCode);
 
         Runnable callback = getCallBack();
         // 释放监听对象的引用
