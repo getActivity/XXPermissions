@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
 apply from : '../common.gradle'
 
 android {
@@ -30,4 +31,14 @@ android {
 dependencies {
     // noinspection GradleCompatible
     implementation 'com.android.support:support-fragment:24.2.0'
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.github.getActivity'
+            artifactId = rootProject.name
+            version = android.defaultConfig.versionName
+        }
+    }
 }
