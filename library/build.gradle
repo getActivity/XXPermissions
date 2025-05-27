@@ -3,6 +3,8 @@ apply from : '../common.gradle'
 
 android {
 
+    namespace 'com.hjq.permissions'
+
     defaultConfig {
         // 最低安装版本
         minSdkVersion 17

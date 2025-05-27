@@ -3,6 +3,8 @@ apply from : '../common.gradle'
 
 android {
 
+    namespace 'com.hjq.permissions.demo'
+
     defaultConfig {
         applicationId "com.hjq.permissions.demo"
         // 最低安装版本
