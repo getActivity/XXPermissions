@@ -26,8 +26,8 @@ publishing {
     publications {
         release(MavenPublication) {
             groupId = 'com.github.getActivity'
-            artifactId = 'XXPermissions'
-            version = '22.0'
+            artifactId = rootProject.name
+            version = android.defaultConfig.versionName
             // 指定 aar 文件的确切路径：https://cloud.tencent.com/developer/ask/sof/106381154
             afterEvaluate {
                 artifact(bundleReleaseAar)
