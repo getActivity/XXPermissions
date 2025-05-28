@@ -15,6 +15,13 @@ android {
         // 剔除这个包下的所有文件（不会移除签名信息）
         exclude 'META-INF/*******'
     }
+
+    android.libraryVariants.configureEach { variant ->
+        // aar 输出文件名配置
+        variant.outputs.configureEach { output ->
+            outputFileName = "${rootProject.name}-${android.defaultConfig.versionName}.aar"
+        }
+    }
 }
 
 dependencies {
