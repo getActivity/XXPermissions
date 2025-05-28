@@ -275,7 +275,7 @@ final class RequestPermissionLogicPresenter {
      * 延迟处理权限请求结果
      */
     private void postDelayedHandlerRequestPermissionsResult() {
-        PermissionTaskHandler.sendTask(this::handlePermissionRequestResult, 300);
+        PermissionTaskHandler.sendTask(this::handlePermissionRequestResult, 100);
     }
 
     /**
