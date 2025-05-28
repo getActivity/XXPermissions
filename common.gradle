@@ -6,8 +6,8 @@ android {
     defaultConfig {
         // Android 版本适配指南：https://github.com/getActivity/AndroidVersionAdapter
         targetSdk 35
-        versionCode 2200
-        versionName "22.0"
+        versionCode 2220
+        versionName "22.2"
     }
 
     // 支持 Java JDK 8
