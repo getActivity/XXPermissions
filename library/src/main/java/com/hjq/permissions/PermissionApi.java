@@ -260,4 +260,16 @@ final class PermissionApi {
         }
         return permissions;
     }
+
+    /**
+     * 判断传入的权限组是不是都是危险权限
+     */
+    static boolean areAllDangerousPermission(@NonNull List<String> permissions) {
+        for (String permission : permissions) {
+            if (isSpecialPermission(permission)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

@@ -8,6 +8,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *    author : Android 轮子哥
@@ -30,7 +31,7 @@ final class PermissionHelper {
     private static final Map<String, String[]> NEW_AND_OLD_PERMISSION_MAP = new HashMap<>(10);
 
     /** 后台权限列表 */
-    private static final List<String> BACKGROUND_PERMISSION_LIST = new ArrayList<>(2);
+    private static final Map<String, List<String>> BACKGROUND_PERMISSION_MAP = new HashMap<>(2);
 
     /** 危险权限组集合 */
     private static final Map<PermissionGroupType, List<String>> DANGEROUS_PERMISSION_GROUP_MAP = new EnumMap<>(PermissionGroupType.class);
@@ -147,9 +148,11 @@ final class PermissionHelper {
         /* ---------------------------------------------------------------------------------------------------- */
         
         // 后台定位权限
-        BACKGROUND_PERMISSION_LIST.add(Permission.ACCESS_BACKGROUND_LOCATION);
+        BACKGROUND_PERMISSION_MAP.put(Permission.ACCESS_BACKGROUND_LOCATION, PermissionUtils.asArrayList(Permission.ACCESS_FINE_LOCATION, Permission.ACCESS_COARSE_LOCATION));
         // 后台传感器权限
-        BACKGROUND_PERMISSION_LIST.add(Permission.BODY_SENSORS_BACKGROUND);
+        BACKGROUND_PERMISSION_MAP.put(Permission.BODY_SENSORS_BACKGROUND, PermissionUtils.asArrayList(Permission.BODY_SENSORS));
+        // 后台权限列表（先获取，后面的代码会用到）
+        Set<String> backgroundPermissions = BACKGROUND_PERMISSION_MAP.keySet();
 
         /* ---------------------------------------------------------------------------------------------------- */
 
@@ -253,7 +256,7 @@ final class PermissionHelper {
         /* ---------------------------------------------------------------------------------------------------- */
 
         // 设置权限请求间隔时间
-        for (String permission : BACKGROUND_PERMISSION_LIST) {
+        for (String permission : backgroundPermissions) {
             if (AndroidVersionTools.getCurrentAndroidVersionCode() < PermissionHelper.findAndroidVersionByPermission(permission)) {
                 continue;
             }
@@ -353,7 +356,15 @@ final class PermissionHelper {
      * 判断某个权限是否为后台权限
      */
     static boolean isBackgroundPermission(String permission) {
-        return BACKGROUND_PERMISSION_LIST.contains(permission);
+        return BACKGROUND_PERMISSION_MAP.containsKey(permission);
+    }
+
+    /**
+     * 根据后台权限获得前台权限
+     */
+    @Nullable
+    static List<String> queryForegroundPermissionByBackgroundPermission(String permission) {
+        return BACKGROUND_PERMISSION_MAP.get(permission);
     }
 
     /**

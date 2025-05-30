@@ -7,7 +7,6 @@ import android.text.TextUtils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *    author : Android 轮子哥
@@ -58,50 +57,86 @@ final class RequestPermissionLogicPresenter {
             return;
         }
 
-        List<String> allDangerousPermissions = new ArrayList<>();
-        List<String> allSpecialPermissions = new ArrayList<>();
+        List<List<String>> unauthorizedPermissions = getUnauthorizedPermissions(mActivity, mRequestPermissions);
+        if (unauthorizedPermissions.isEmpty()) {
+            // 证明没有权限可以请求，直接处理权限请求结果
+            handlePermissionRequestResult();
+            return;
+        }
 
-        // 对危险权限和特殊权限进行分类
-        for (String permission : mRequestPermissions) {
-            if (PermissionApi.isSpecialPermission(permission)) {
-                allSpecialPermissions.add(permission);
-            } else {
-                allDangerousPermissions.add(permission);
+        Iterator<List<String>> iterator = unauthorizedPermissions.iterator();
+        List<String> firstPermissions = null;
+        while (iterator.hasNext() && (firstPermissions == null || firstPermissions.isEmpty())) {
+            firstPermissions = iterator.next();
+        }
+        if (firstPermissions == null || firstPermissions.isEmpty()) {
+            // 证明没有权限可以请求，直接处理权限请求结果
+            handlePermissionRequestResult();
+            return;
+        }
+
+        final Activity activity = mActivity;
+        final PermissionFragmentFactory<?, ?> fragmentFactory = mFragmentFactory;
+        final OnPermissionDescription permissionDescription = mPermissionDescription;
+
+        // 发起权限请求
+        requestPermissions(activity, firstPermissions, fragmentFactory, permissionDescription, new Runnable() {
+            @Override
+            public void run() {
+                List<String> nextPermissions = null;
+                while (iterator.hasNext() && (nextPermissions == null || nextPermissions.isEmpty())) {
+                    nextPermissions = iterator.next();
+                }
+
+                if (nextPermissions == null || nextPermissions.isEmpty()) {
+                    // 证明请求已经全部完成，延迟发送权限处理结果
+                    postDelayedHandlerRequestPermissionsResult();
+                    return;
+                }
+
+                // 如果下一个请求的权限是后台权限
+                if (nextPermissions.size() == 1 && PermissionApi.isBackgroundPermission(nextPermissions.get(0))) {
+                    List<String> foregroundPermissions = PermissionHelper.queryForegroundPermissionByBackgroundPermission(nextPermissions.get(0));
+                    // 如果这个后台权限对应的前台权限没有申请成功，则不要去申请后台权限，因为申请了也没有用，系统肯定不会给通过的
+                    // 如果这种情况下还硬要去申请，等下还可能会触发权限说明弹窗，但是没有实际去申请权限的情况
+                    if (foregroundPermissions != null && !foregroundPermissions.isEmpty() && !PermissionApi.isGrantedPermissions(activity, foregroundPermissions)) {
+                        // 直接进行下一轮申请
+                        this.run();
+                        return;
+                    }
+                }
+
+                final List<String> finalPermissions = nextPermissions;
+                int maxWaitTimeByPermissions = PermissionHelper.getMaxIntervalTimeByPermissions(nextPermissions);
+                if (maxWaitTimeByPermissions == 0) {
+                    requestPermissions(activity, finalPermissions, fragmentFactory, permissionDescription, this);
+                } else {
+                    PermissionTaskHandler.sendTask(() ->
+                        requestPermissions(activity, finalPermissions, fragmentFactory, permissionDescription, this), maxWaitTimeByPermissions);
+                }
             }
-        }
-
-        List<String> unauthorizedSpecialPermissions = getUnauthorizedSpecialPermissions(mActivity, allSpecialPermissions);
-        List<List<String>> unauthorizedDangerousPermissions = getUnauthorizedDangerousPermissions(mActivity, allDangerousPermissions);
-
-        // 判断权限集合中第一个权限是特殊权限还是危险权限，如果是特殊权限就先申请所有的特殊权限，如果是危险权限就先申请所有的危险权限
-        if (PermissionHelper.isSpecialPermission(mRequestPermissions.get(0))) {
-            // 请求所有的特殊权限
-            requestAllSpecialPermission(mActivity, unauthorizedSpecialPermissions, mFragmentFactory,
-                mPermissionDescription, () -> {
-                // 请求完特殊权限后，接下来请求危险权限
-                requestAllDangerousPermission(mActivity, unauthorizedDangerousPermissions, mFragmentFactory,
-                    mPermissionDescription, this::postDelayedHandlerRequestPermissionsResult);
-            });
-        } else {
-            // 请求所有的危险权限
-            requestAllDangerousPermission(mActivity, unauthorizedDangerousPermissions, mFragmentFactory,
-                mPermissionDescription, () -> {
-                // 请求完危险权限后，接下来请求特殊权限
-                requestAllSpecialPermission(mActivity, unauthorizedSpecialPermissions, mFragmentFactory,
-                    mPermissionDescription, this::postDelayedHandlerRequestPermissionsResult);
-            });
-        }
+        });
     }
 
     /**
-     * 获取未授权的特殊权限
+     * 获取未授权的危险权限
      */
-    private static List<String> getUnauthorizedSpecialPermissions(@NonNull Activity activity,
-                                                                    @NonNull List<String> allSpecialPermissions) {
-        List<String> unauthorizedSpecialPermissions = new ArrayList<>();
-        for (String permission : allSpecialPermissions) {
+    private static List<List<String>> getUnauthorizedPermissions(@NonNull Activity activity, @NonNull List<String> requestPermissions) {
+        // 未授权的权限列表
+        List<List<String>> unauthorizedPermissions = new ArrayList<>(requestPermissions.size());
+        // 已处理的权限列表
+        List<String> alreadyDonePermissions = new ArrayList<>(requestPermissions.size());
+        // 遍历需要请求的权限列表
+        for (String permission : requestPermissions) {
+
+            // 如果这个权限在前面已经处理过了，就不再处理
+            if (alreadyDonePermissions.contains(permission)) {
+                continue;
+            }
+            alreadyDonePermissions.add(permission);
+
+            // 如果这个权限已授权，就不纳入申请的范围内
             if (PermissionApi.isGrantedPermission(activity, permission)) {
-                // 已经授予过了，可以跳过
                 continue;
             }
 
@@ -111,137 +146,104 @@ final class RequestPermissionLogicPresenter {
                 continue;
             }
 
-            unauthorizedSpecialPermissions.add(permission);
-        }
-        return unauthorizedSpecialPermissions;
-    }
+            // ---------------------------------- 下面处理特殊权限的逻辑 ------------------------------------------ //
 
-    /**
-     * 获取未授权的危险权限
-     */
-    private static List<List<String>> getUnauthorizedDangerousPermissions(@NonNull Activity activity,
-                                                                            @NonNull List<String> allDangerousPermissions) {
-        // 已处理的危险权限列表
-        List<String> alreadyProcessedDangerousPermissions = new ArrayList<>();
-
-        // 记录需要申请的危险权限或者权限组
-        List<List<String>> unauthorizedDangerousPermissions = new ArrayList<>();
-
-        for (String dangerousPermission : allDangerousPermissions) {
-
-            // 如果这个危险权限在前面已经处理过了，就不再处理
-            if (alreadyProcessedDangerousPermissions.contains(dangerousPermission)) {
+            if (PermissionApi.isSpecialPermission(permission)) {
+                // 如果这是一个特殊权限，那么就作为单独的一次权限进行处理
+                unauthorizedPermissions.add(PermissionUtils.asArrayList(permission));
                 continue;
             }
-            alreadyProcessedDangerousPermissions.add(dangerousPermission);
 
-            // 查询权限所在的权限组类型
-            PermissionGroupType permissionGroupType = PermissionHelper.queryDangerousPermissionGroupType(dangerousPermission);
+            // ---------------------------------- 下面处理危险权限的逻辑 ------------------------------------------ //
+
+            // 查询危险权限所在的权限组类型
+            PermissionGroupType permissionGroupType = PermissionHelper.queryDangerousPermissionGroupType(permission);
             if (permissionGroupType == null) {
-                // 如果这个权限已授权，就不纳入申请的范围内
-                if (!PermissionApi.isGrantedPermission(activity, dangerousPermission)) {
-                    // 如果这个权限没有组别，就直接单独做为一次权限申请
-                    unauthorizedDangerousPermissions.add(PermissionUtils.asArrayList(dangerousPermission));
-                }
+                // 如果这个权限没有组别，就直接单独做为一次权限申请
+                unauthorizedPermissions.add(PermissionUtils.asArrayList(permission));
                 continue;
             }
 
             // 如果这个权限有组别，那么就获取这个组别的全部权限
-            List<String> dangerousPermissionGroup = new ArrayList<>(PermissionHelper.getDangerousPermissionGroup(permissionGroupType));
+            List<String> dangerousPermissions = new ArrayList<>(PermissionHelper.getDangerousPermissionGroup(permissionGroupType));
             // 对这个组别的权限进行逐个遍历
-            Iterator<String> iterator = dangerousPermissionGroup.iterator();
+            Iterator<String> iterator = dangerousPermissions.iterator();
             while (iterator.hasNext()) {
+                String dangerousPermission = iterator.next();
+                // 如果这个危险权限在前面已经处理过了，就不再处理
+                if (alreadyDonePermissions.contains(dangerousPermission)) {
+                    continue;
+                }
+                alreadyDonePermissions.add(dangerousPermission);
 
-                String permission = iterator.next();
-
-                if (PermissionHelper.findAndroidVersionByPermission(permission) > AndroidVersionTools.getCurrentAndroidVersionCode()) {
+                if (PermissionHelper.findAndroidVersionByPermission(dangerousPermission) >
+                                        AndroidVersionTools.getCurrentAndroidVersionCode()) {
                     // 如果申请的权限是新系统才出现的，但是当前是旧系统运行，就从权限组中移除
                     iterator.remove();
-                    // 这里需要加入到已处理的列表中，这样遍历到它的时候就会忽略掉
-                    alreadyProcessedDangerousPermissions.add(permission);
                     continue;
                 }
 
                 // 判断申请的权限列表中是否有包含权限组中的权限
-                if (allDangerousPermissions.contains(permission)) {
-                    // 如果包含的话，就加入到已处理的列表中，这样遍历到它的时候就会忽略掉
-                    alreadyProcessedDangerousPermissions.add(permission);
-                } else {
+                if (!requestPermissions.contains(dangerousPermission)) {
                     // 如果不包含的话，就从权限组中移除
                     iterator.remove();
                 }
             }
 
             // 如果这个权限组为空，证明剩余的权限是在高版本系统才会出现，这里无需再次发起申请
-            if (dangerousPermissionGroup.isEmpty()) {
+            if (dangerousPermissions.isEmpty()) {
                 continue;
             }
 
             // 如果这个权限组已经全部授权，就不纳入申请的范围内
-            if (PermissionApi.isGrantedPermissions(activity, dangerousPermissionGroup)) {
+            if (PermissionApi.isGrantedPermissions(activity, dangerousPermissions)) {
                 continue;
             }
 
             // 判断申请的权限组是否包含后台权限（例如后台定位权限，后台传感器权限），如果有的话，不能在一起申请，需要进行拆分申请
-            String backgroundPermission = PermissionHelper.getBackgroundPermissionByGroup(dangerousPermissionGroup);
-            if (!TextUtils.isEmpty(backgroundPermission)) {
-                List<String> foregroundPermissions = new ArrayList<>(dangerousPermissionGroup);
-                foregroundPermissions.remove(backgroundPermission);
-
-                // 添加前台权限（前提得是没有授权）
-                if (!foregroundPermissions.isEmpty() &&
-                    !PermissionApi.isGrantedPermissions(activity, foregroundPermissions)) {
-                    unauthorizedDangerousPermissions.add(foregroundPermissions);
-                }
-                // 添加后台权限
-                unauthorizedDangerousPermissions.add(PermissionUtils.asArrayList(backgroundPermission));
+            String backgroundPermission = PermissionHelper.getBackgroundPermissionByGroup(dangerousPermissions);
+            if (TextUtils.isEmpty(backgroundPermission)) {
+                // 如果不包含后台权限，则直接添加到待申请的列表
+                unauthorizedPermissions.add(dangerousPermissions);
                 continue;
             }
 
-            // 直接申请权限组（不区分前台权限和后台权限）
-            unauthorizedDangerousPermissions.add(dangerousPermissionGroup);
+            List<String> foregroundPermissions = new ArrayList<>(dangerousPermissions);
+            foregroundPermissions.remove(backgroundPermission);
+
+            // 添加前台权限（前提得是没有授权）
+            if (!foregroundPermissions.isEmpty() &&
+                !PermissionApi.isGrantedPermissions(activity, foregroundPermissions)) {
+                unauthorizedPermissions.add(foregroundPermissions);
+            }
+            // 添加后台权限
+            unauthorizedPermissions.add(PermissionUtils.asArrayList(backgroundPermission));
         }
 
-        return unauthorizedDangerousPermissions;
+        return unauthorizedPermissions;
     }
 
     /**
-     * 请求所有的特殊权限
+     * 发起一次权限请求
      */
-    private static void requestAllSpecialPermission(@NonNull Activity activity,
-                                                    @NonNull List<String> specialPermissions,
-                                                    @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
-                                                    @NonNull OnPermissionDescription permissionDescription,
-                                                    @NonNull Runnable finishRunnable) {
-        if (specialPermissions.isEmpty()) {
+    private static void requestPermissions(@NonNull Activity activity, List<String> permissions,
+                                            @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
+                                            @NonNull OnPermissionDescription permissionDescription,
+                                            @NonNull Runnable finishRunnable) {
+        if (permissions.isEmpty()) {
             finishRunnable.run();
             return;
         }
 
-        AtomicInteger index = new AtomicInteger();
-        requestSingleSpecialPermission(activity, specialPermissions.get(index.get()), fragmentFactory, permissionDescription, new Runnable() {
-            @Override
-            public void run() {
-                index.incrementAndGet();
-                if (index.get() < specialPermissions.size()) {
-                    requestSingleSpecialPermission(activity, specialPermissions.get(index.get()), fragmentFactory, permissionDescription, this);
-                    return;
-                }
-                finishRunnable.run();
-            }
-        });
-    }
+        PermissionType permissionType = PermissionApi.areAllDangerousPermission(permissions) ?
+                                        PermissionType.DANGEROUS : PermissionType.SPECIAL;
+        if (permissionType == PermissionType.DANGEROUS && !AndroidVersionTools.isAndroid6()) {
+            // 如果是 Android 6.0 以下，没有危险权限的概念
+            finishRunnable.run();
+            return;
+        }
 
-    /**
-     * 请求单个特殊权限
-     */
-    private static void requestSingleSpecialPermission(@NonNull Activity activity,
-                                                        @NonNull String specialPermission,
-                                                        @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
-                                                        @NonNull OnPermissionDescription permissionDescription,
-                                                        @NonNull Runnable finishRunnable) {
-        List<String> permissions = PermissionUtils.asArrayList(specialPermission);
-        Runnable confirmRequestRunnable = () -> fragmentFactory.createAndCommitFragment(permissions, PermissionType.SPECIAL, new OnPermissionFlowCallback() {
+        Runnable confirmRequestRunnable = () -> fragmentFactory.createAndCommitFragment(permissions, permissionType, new OnPermissionFlowCallback() {
 
             @Override
             public void onRequestPermissionNow() {
@@ -259,77 +261,8 @@ final class RequestPermissionLogicPresenter {
                 permissionDescription.onRequestPermissionEnd(activity, permissions);
             }
         });
+
         permissionDescription.askWhetherRequestPermission(activity, permissions, confirmRequestRunnable, finishRunnable);
-    }
-
-    /**
-     * 申请所有危险权限
-     */
-    private static void requestAllDangerousPermission(@NonNull Activity activity,
-                                                        @NonNull List<List<String>> dangerousPermissions,
-                                                        @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
-                                                        @NonNull OnPermissionDescription permissionDescription,
-                                                        @NonNull Runnable finishRunnable) {
-        if (!AndroidVersionTools.isAndroid6()) {
-            // 如果是 Android 6.0 以下，没有危险权限的概念
-            finishRunnable.run();
-            return;
-        }
-
-
-        if (dangerousPermissions.isEmpty()) {
-            finishRunnable.run();
-            return;
-        }
-
-        AtomicInteger index = new AtomicInteger();
-        requestSingleDangerousPermission(activity, dangerousPermissions.get(index.get()), fragmentFactory, permissionDescription, new Runnable() {
-            @Override
-            public void run() {
-                index.incrementAndGet();
-                if (index.get() < dangerousPermissions.size()) {
-                    List<String> permissions = dangerousPermissions.get(index.get());
-                    int maxWaitTimeByPermissions = PermissionHelper.getMaxIntervalTimeByPermissions(permissions);
-                    if (maxWaitTimeByPermissions == 0) {
-                        requestSingleDangerousPermission(activity, permissions, fragmentFactory, permissionDescription, this);
-                    } else {
-                        PermissionTaskHandler.sendTask(() ->
-                            requestSingleDangerousPermission(activity, permissions, fragmentFactory, permissionDescription, this), maxWaitTimeByPermissions);
-                    }
-                    return;
-                }
-                finishRunnable.run();
-            }
-        });
-    }
-
-    /**
-     * 申请单个危险权限
-     */
-    private static void requestSingleDangerousPermission(@NonNull Activity activity,
-                                                        @NonNull List<String> dangerousPermissions,
-                                                        @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
-                                                        @NonNull OnPermissionDescription permissionDescription,
-                                                        @NonNull Runnable finishRunnable) {
-        Runnable confirmRequestRunnable = () -> fragmentFactory.createAndCommitFragment(dangerousPermissions, PermissionType.DANGEROUS, new OnPermissionFlowCallback() {
-
-            @Override
-            public void onRequestPermissionNow() {
-                permissionDescription.onRequestPermissionStart(activity, dangerousPermissions);
-            }
-
-            @Override
-            public void onRequestPermissionFinish() {
-                permissionDescription.onRequestPermissionEnd(activity, dangerousPermissions);
-                finishRunnable.run();
-            }
-
-            @Override
-            public void onRequestPermissionAnomaly() {
-                permissionDescription.onRequestPermissionEnd(activity, dangerousPermissions);
-            }
-        });
-        permissionDescription.askWhetherRequestPermission(activity, dangerousPermissions, confirmRequestRunnable, finishRunnable);
     }
 
     /**
