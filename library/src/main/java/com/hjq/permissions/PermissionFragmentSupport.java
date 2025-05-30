@@ -19,7 +19,7 @@ public abstract class PermissionFragmentSupport extends Fragment implements IFra
     /**
      * 设置回调对象
      */
-    public void setCallback(@Nullable Runnable callback) {
+    public void setCallback(@Nullable OnPermissionFlowCallback callback) {
         getRequestPermissionDelegateImpl().setCallback(callback);
     }
 

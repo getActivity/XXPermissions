@@ -22,7 +22,7 @@ public interface IFragmentMethodExtension<FM> {
     void commitDetach();
 
     /** 设置权限回调监听 */
-    void setCallback(@Nullable Runnable callback);
+    void setCallback(@Nullable OnPermissionFlowCallback callback);
 
     /** 设置权限申请标记 */
     void setRequestFlag(boolean flag);

@@ -6,7 +6,7 @@ package com.hjq.permissions;
  *    time   : 2024/10/19
  *    desc   : 权限组分类
  */
-public enum PermissionGroupType {
+enum PermissionGroupType {
 
     /** 存储权限 */
     STORAGE,
@@ -26,12 +26,15 @@ public enum PermissionGroupType {
     /** 传感器权限组 */
     SENSORS,
 
+    /** 电话权限组 */
+    PHONE,
+
     /** 通话记录权限组 */
     CALL_LOG,
 
     /** 附近设备权限组 */
     NEARBY_DEVICES,
 
-    /** 照片和视频权限组 */
+    /** 照片和视频权限组（注意：不包含音频权限） */
     IMAGE_AND_VIDEO_MEDIA
 }

@@ -19,7 +19,7 @@ public abstract class PermissionFragmentApp extends Fragment implements IFragmen
     /**
      * 设置回调对象
      */
-    public void setCallback(@Nullable Runnable callback) {
+    public void setCallback(@Nullable OnPermissionFlowCallback callback) {
         getRequestPermissionDelegateImpl().setCallback(callback);
     }
 

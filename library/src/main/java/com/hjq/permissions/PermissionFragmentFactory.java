@@ -73,7 +73,7 @@ public abstract class PermissionFragmentFactory<A extends Activity, F> {
      */
     abstract void createAndCommitFragment(@NonNull List<String> permissions,
                                             @NonNull PermissionType permissionType,
-                                            @Nullable Runnable callback);
+                                            @Nullable OnPermissionFlowCallback callback);
 
     /**
      * 生成权限请求的参数

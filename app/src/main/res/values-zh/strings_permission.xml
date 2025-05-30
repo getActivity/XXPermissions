@@ -56,4 +56,6 @@
     <string name="common_permission_picture_in_picture">画中画权限</string>
     <string name="common_permission_vpn">\tVPN\t权限</string>
 
+    <string name="common_permission_description_demo">用于 xx 业务</string>
+
 </resources>

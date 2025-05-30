@@ -67,12 +67,12 @@ final class RequestPermissionDelegateImplByDangerous extends RequestPermissionDe
             return;
         }
 
-        Runnable callback = getCallBack();
+        OnPermissionFlowCallback callback = getCallBack();
         // 释放监听对象的引用
         setCallback(null);
 
         if (callback != null) {
-            callback.run();
+            callback.onRequestPermissionFinish();
         }
 
         // 将 Fragment 从 Activity 移除

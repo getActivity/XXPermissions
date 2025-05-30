@@ -23,7 +23,10 @@ public final class XXPermissions {
     public static final int REQUEST_CODE = 1024 + 1;
 
     /** 权限请求拦截器 */
-    private static OnPermissionInterceptor sInterceptor;
+    private static OnPermissionInterceptor sPermissionInterceptor;
+
+    /** 设置权限请求描述 */
+    private static Class<OnPermissionDescription> sPermissionDescriptionClass;
 
     /** 当前是否为检查模式 */
     private static Boolean sCheckMode;
@@ -55,18 +58,48 @@ public final class XXPermissions {
     /**
      * 设置全局的权限请求拦截器
      */
-    public static void setPermissionInterceptor(OnPermissionInterceptor interceptor) {
-        sInterceptor = interceptor;
+    public static void setPermissionInterceptor(OnPermissionInterceptor permissionInterceptor) {
+        sPermissionInterceptor = permissionInterceptor;
     }
 
     /**
      * 获取全局权限请求拦截器
      */
+    @NonNull
     public static OnPermissionInterceptor getPermissionInterceptor() {
-        if (sInterceptor == null) {
-            sInterceptor = new OnPermissionInterceptor() {};
+        if (sPermissionInterceptor == null) {
+            sPermissionInterceptor = new OnPermissionInterceptor() {};
         }
-        return sInterceptor;
+        return sPermissionInterceptor;
+    }
+
+    /**
+     * 设置全局的权限说明的类型
+     *
+     * 这里解释一下，为什么不开放普通对象，而是只开放 Class 对象，这是因为如果用普通对象，那么就会导致全局都复用这一个对象
+     * 而这个会带来一个后果，就是可能出现类内部字段的使用冲突，为了避免这一个问题，最好的解决方案是不去复用同一个对象
+     */
+    public static void setPermissionDescription(Class<OnPermissionDescription> permissionDescriptionClass) {
+        sPermissionDescriptionClass = permissionDescriptionClass;
+    }
+
+    /**
+     * 获取全局的权限说明
+     */
+    @NonNull
+    public static OnPermissionDescription getPermissionDescription() {
+        OnPermissionDescription permissionDescription = null;
+        if (sPermissionDescriptionClass != null) {
+            try {
+                permissionDescription = sPermissionDescriptionClass.newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (permissionDescription == null) {
+            permissionDescription = new OnPermissionDescription() {};
+        }
+        return permissionDescription;
     }
 
     /** 申请的权限列表 */
@@ -87,7 +120,11 @@ public final class XXPermissions {
 
     /** 权限请求拦截器 */
     @Nullable
-    private OnPermissionInterceptor mInterceptor;
+    private OnPermissionInterceptor mPermissionInterceptor;
+
+    /** 权限请求描述 */
+    @Nullable
+    private OnPermissionDescription mPermissionDescription;
 
     /** 设置不检查 */
     @Nullable
@@ -152,8 +189,16 @@ public final class XXPermissions {
     /**
      * 设置权限请求拦截器
      */
-    public XXPermissions interceptor(@Nullable OnPermissionInterceptor interceptor) {
-        mInterceptor = interceptor;
+    public XXPermissions interceptor(@Nullable OnPermissionInterceptor permissionInterceptor) {
+        mPermissionInterceptor = permissionInterceptor;
+        return this;
+    }
+
+    /**
+     * 设置权限请求描述
+     */
+    public XXPermissions description(@Nullable OnPermissionDescription permissionDescription) {
+        mPermissionDescription = permissionDescription;
         return this;
     }
 
@@ -173,8 +218,12 @@ public final class XXPermissions {
             return;
         }
 
-        if (mInterceptor == null) {
-            mInterceptor = getPermissionInterceptor();
+        if (mPermissionInterceptor == null) {
+            mPermissionInterceptor = getPermissionInterceptor();
+        }
+
+        if (mPermissionDescription == null) {
+            mPermissionDescription = getPermissionDescription();
         }
 
         final Context context = mContext;
@@ -183,7 +232,9 @@ public final class XXPermissions {
 
         final android.support.v4.app.Fragment supportFragment = mSupportFragment;
 
-        final OnPermissionInterceptor interceptor = mInterceptor;
+        final OnPermissionInterceptor permissionInterceptor = mPermissionInterceptor;
+
+        final OnPermissionDescription permissionDescription = mPermissionDescription;
 
         // 权限请求列表（为什么直接不用字段？因为框架要兼容新旧权限，在低版本下会自动添加旧权限申请，为了避免重复添加）
         List<String> permissions = new ArrayList<>(mPermissions);
@@ -238,8 +289,8 @@ public final class XXPermissions {
         // 判断要申请的权限是否都授予了
         if (PermissionApi.isGrantedPermissions(context, permissions)) {
             // 如果是的话，就不申请权限，而是通知权限申请成功
-            interceptor.grantedPermissionRequest(activity, permissions, permissions, true, callback);
-            interceptor.finishPermissionRequest(activity, permissions, true, callback);
+            permissionInterceptor.grantedPermissionRequest(activity, permissions, permissions, true, callback);
+            permissionInterceptor.finishPermissionRequest(activity, permissions, true, callback);
             return;
         }
 
@@ -257,7 +308,7 @@ public final class XXPermissions {
         final PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, supportFragment, appFragment);
 
         // 申请没有授予过的权限
-        interceptor.launchPermissionRequest(activity, fragmentFactory, permissions, callback);
+        permissionInterceptor.launchPermissionRequest(activity, permissions, fragmentFactory, permissionDescription, callback);
     }
 
     /**
@@ -377,6 +428,24 @@ public final class XXPermissions {
     }
 
     /**
+     * 判断某个权限是否为后台权限
+     */
+    public static boolean isBackgroundPermission(@NonNull String permission) {
+        return PermissionApi.isBackgroundPermission(permission);
+    }
+
+    /**
+     * 判断权限列表中是否包含特殊权限
+     */
+    public static boolean containsBackgroundPermission(@NonNull String... permissions) {
+        return containsBackgroundPermission(PermissionUtils.asArrayList(permissions));
+    }
+
+    public static boolean containsBackgroundPermission(@NonNull List<String> permissions) {
+        return PermissionApi.containsBackgroundPermission(permissions);
+    }
+
+    /**
      * 判断一个或多个权限是否被勾选了不再询问的选项
      *
      * 注意不能在请求权限之前调用，一定要在 {@link OnPermissionCallback#onDenied(List, boolean)} 方法中调用
@@ -393,6 +462,13 @@ public final class XXPermissions {
 
     public static boolean isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull List<String> permissions) {
         return PermissionApi.isDoNotAskAgainPermissions(activity, permissions);
+    }
+
+    /**
+     * 判断某个权限出现的版本是否高于当前的设备的版本
+     */
+    public static boolean isHighVersionPermission(@NonNull String permission) {
+        return PermissionHelper.findAndroidVersionByPermission(permission) > AndroidVersionTools.getCurrentAndroidVersionCode();
     }
 
     /* android.content.Context */
@@ -478,7 +554,12 @@ public final class XXPermissions {
             return;
         }
         PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity);
-        fragmentFactory.createAndCommitFragment(permissions, PermissionType.SPECIAL, () -> dispatchPermissionPageCallback(activity, permissions, callback));
+        fragmentFactory.createAndCommitFragment(permissions, PermissionType.SPECIAL, () -> {
+            if (PermissionUtils.isActivityUnavailable(activity)) {
+                return;
+            }
+            dispatchPermissionPageCallback(activity, permissions, callback);
+        });
     }
 
     /* android.app.Fragment */
@@ -509,7 +590,7 @@ public final class XXPermissions {
             return;
         }
         Activity activity = appFragment.getActivity();
-        if (PermissionUtils.isActivityUnavailable(activity)) {
+        if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(appFragment)) {
             return;
         }
         if (permissions.isEmpty()) {
@@ -539,7 +620,7 @@ public final class XXPermissions {
             return;
         }
         Activity activity = appFragment.getActivity();
-        if (PermissionUtils.isActivityUnavailable(activity)) {
+        if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(appFragment)) {
             return;
         }
         if (permissions.isEmpty()) {
@@ -547,7 +628,12 @@ public final class XXPermissions {
             return;
         }
         PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, appFragment);
-        fragmentFactory.createAndCommitFragment(permissions, PermissionType.SPECIAL, () -> dispatchPermissionPageCallback(activity, permissions, callback));
+        fragmentFactory.createAndCommitFragment(permissions, PermissionType.SPECIAL, () -> {
+            if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(appFragment)) {
+                return;
+            }
+            dispatchPermissionPageCallback(activity, permissions, callback);
+        });
     }
 
     /* android.support.v4.app.Fragment */
@@ -578,7 +664,7 @@ public final class XXPermissions {
             return;
         }
         Activity activity = supportFragment.getActivity();
-        if (PermissionUtils.isActivityUnavailable(activity)) {
+        if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(supportFragment)) {
             return;
         }
         if (permissions.isEmpty()) {
@@ -608,7 +694,7 @@ public final class XXPermissions {
             return;
         }
         Activity activity = supportFragment.getActivity();
-        if (PermissionUtils.isActivityUnavailable(activity)) {
+        if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(supportFragment)) {
             return;
         }
         if (permissions.isEmpty()) {
@@ -616,7 +702,12 @@ public final class XXPermissions {
             return;
         }
         PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, supportFragment);
-        fragmentFactory.createAndCommitFragment(permissions, PermissionType.SPECIAL, () -> dispatchPermissionPageCallback(activity, permissions, callback));
+        fragmentFactory.createAndCommitFragment(permissions, PermissionType.SPECIAL, () -> {
+            if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(supportFragment)) {
+                return;
+            }
+            dispatchPermissionPageCallback(activity, permissions, callback);
+        });
     }
 
     /**

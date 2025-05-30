@@ -110,6 +110,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                 .permission(Permission.CAMERA)
                 .interceptor(new PermissionInterceptor())
+                .description(new PermissionDescription())
                 .request(new OnPermissionCallback() {
 
                     @Override
@@ -118,7 +119,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             return;
                         }
                         toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                            PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                            PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                     }
                 });
 
@@ -129,6 +130,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .permission(Permission.READ_CALENDAR)
                     .permission(Permission.WRITE_CALENDAR)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -137,7 +139,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                         }
                     });
 
@@ -149,6 +151,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     // 如果不需要在后台使用定位功能，请不要申请此权限
                     .permission(Permission.ACCESS_BACKGROUND_LOCATION)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -157,7 +160,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                         }
                     });
 
@@ -167,6 +170,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .permission(Permission.BODY_SENSORS)
                     .permission(Permission.BODY_SENSORS_BACKGROUND)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -175,7 +179,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                         }
                     });
 
@@ -184,6 +188,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     .permission(Permission.ACTIVITY_RECOGNITION)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -192,7 +197,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                             addCountStepListener();
                         }
                     });
@@ -214,6 +219,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .permission(Permission.BLUETOOTH_CONNECT)
                             .permission(Permission.BLUETOOTH_ADVERTISE)
                             .interceptor(new PermissionInterceptor())
+                            .description(new PermissionDescription())
                             .request(new OnPermissionCallback() {
 
                                 @Override
@@ -222,7 +228,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                         return;
                                     }
                                     toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                                 }
                             });
                 }
@@ -243,6 +249,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     XXPermissions.with(MainActivity.this)
                             .permission(Permission.NEARBY_WIFI_DEVICES)
                             .interceptor(new PermissionInterceptor())
+                            .description(new PermissionDescription())
                             .request(new OnPermissionCallback() {
 
                                 @Override
@@ -251,7 +258,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                         return;
                                     }
                                     toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                                 }
                             });
                 }
@@ -282,6 +289,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .permission(Permission.READ_MEDIA_VIDEO)
                             .permission(Permission.ACCESS_MEDIA_LOCATION)
                             .interceptor(new PermissionInterceptor())
+                            .description(new PermissionDescription())
                             .request(new OnPermissionCallback() {
 
                                 @Override
@@ -290,7 +298,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                         return;
                                     }
                                     toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                                     new Thread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -324,6 +332,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .permission(Permission.READ_MEDIA_VISUAL_USER_SELECTED)
                             .permission(Permission.WRITE_EXTERNAL_STORAGE)
                             .interceptor(new PermissionInterceptor())
+                            .description(new PermissionDescription())
                             .request(new OnPermissionCallback() {
 
                                 @Override
@@ -332,7 +341,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                         return;
                                     }
                                     toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                                     getAllImagesFromGallery(false);
                                 }
                             });
@@ -357,6 +366,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             // 不适配分区存储应该这样写
                             .permission(Permission.MANAGE_EXTERNAL_STORAGE)
                             .interceptor(new PermissionInterceptor())
+                            .description(new PermissionDescription())
                             .request(new OnPermissionCallback() {
 
                                 @Override
@@ -365,7 +375,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                         return;
                                     }
                                     toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                                 }
                             });
                 }
@@ -376,6 +386,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     .permission(Permission.REQUEST_INSTALL_PACKAGES)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -384,7 +395,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                         }
                     });
 
@@ -393,6 +404,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     .permission(Permission.SYSTEM_ALERT_WINDOW)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -401,7 +413,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                         }
                     });
 
@@ -410,6 +422,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     .permission(Permission.WRITE_SETTINGS)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -418,7 +431,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                         }
                     });
 
@@ -427,6 +440,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     .permission(Permission.NOTIFICATION_SERVICE)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -435,7 +449,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                         }
                     });
 
@@ -454,6 +468,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     XXPermissions.with(MainActivity.this)
                             .permission(Permission.POST_NOTIFICATIONS)
                             .interceptor(new PermissionInterceptor())
+                            .description(new PermissionDescription())
                             .request(new OnPermissionCallback() {
 
                                 @Override
@@ -462,7 +477,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                         return;
                                     }
                                     toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                                 }
                             });
                 }
@@ -473,6 +488,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     .permission(Permission.BIND_NOTIFICATION_LISTENER_SERVICE)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -481,7 +497,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
                                 toggleNotificationListenerService();
                             }
@@ -493,6 +509,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     .permission(Permission.PACKAGE_USAGE_STATS)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -501,7 +518,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                         }
                     });
 
@@ -510,6 +527,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     .permission(Permission.SCHEDULE_EXACT_ALARM)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -518,7 +536,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                         }
                     });
 
@@ -527,6 +545,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     .permission(Permission.ACCESS_NOTIFICATION_POLICY)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -535,7 +554,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                         }
                     });
 
@@ -544,6 +563,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     .permission(Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -552,7 +572,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                         }
                     });
 
@@ -561,6 +581,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     .permission(Permission.PICTURE_IN_PICTURE)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -569,7 +590,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                         }
                     });
 
@@ -578,6 +599,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     .permission(Permission.BIND_VPN_SERVICE)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -586,7 +608,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                         }
                     });
 
@@ -595,6 +617,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     .permission(Permission.GET_INSTALLED_APPS)
                     .interceptor(new PermissionInterceptor())
+                    .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
 
                         @Override
@@ -603,7 +626,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                 return;
                             }
                             toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                                    PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                             getAppList();
                         }
                     });
@@ -614,6 +637,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 .permission(Permission.CAMERA)
                 .permission(Permission.SYSTEM_ALERT_WINDOW)
                 .interceptor(new PermissionInterceptor())
+                .description(new PermissionDescription())
                 .request(new OnPermissionCallback() {
 
                     @Override
@@ -622,7 +646,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             return;
                         }
                         toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                            PermissionNameConvert.getPermissionNames(MainActivity.this, permissions)));
+                            PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                     }
                 });
 

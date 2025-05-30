@@ -69,7 +69,7 @@ public final class Permission {
     public static final String PICTURE_IN_PICTURE = "android.permission.PICTURE_IN_PICTURE";
 
     /**
-     * 悬浮窗权限（特殊权限，Android 6.0 新增的权限）
+     * 悬浮窗权限（特殊权限，Android 6.0 新增的权限，但是有些国产的厂商在 Android 6.0 之前的设备就兼容了）
      *
      * 在 Android 10 及之前的版本能跳转到应用悬浮窗设置页面，而在 Android 11 及之后的版本只能跳转到系统设置悬浮窗管理列表了
      * 官方解释：https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION

@@ -20,7 +20,7 @@ final class PermissionFragmentFactoryByApp extends PermissionFragmentFactory<Act
     }
 
     @Override
-    void createAndCommitFragment(@NonNull List<String> permissions, @NonNull PermissionType permissionType, @Nullable Runnable callback) {
+    void createAndCommitFragment(@NonNull List<String> permissions, @NonNull PermissionType permissionType, @Nullable OnPermissionFlowCallback callback) {
         IFragmentMethod<Activity, FragmentManager> fragment;
         if (permissionType == PermissionType.SPECIAL) {
             fragment = new PermissionFragmentAppBySpecial();

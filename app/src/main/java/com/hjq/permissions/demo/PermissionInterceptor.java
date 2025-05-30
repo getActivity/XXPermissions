@@ -1,31 +1,19 @@
 package com.hjq.permissions.demo;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.OnPermissionInterceptor;
 import com.hjq.permissions.OnPermissionPageCallback;
 import com.hjq.permissions.Permission;
-import com.hjq.permissions.PermissionFragmentFactory;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.toast.Toaster;
 import java.util.List;
@@ -37,95 +25,6 @@ import java.util.List;
  *    desc   : 权限申请拦截器
  */
 public final class PermissionInterceptor implements OnPermissionInterceptor {
-
-    public static final Handler HANDLER = new Handler(Looper.getMainLooper());
-
-    /** 权限申请标记 */
-    private boolean mRequestFlag;
-
-    /** 权限申请说明 Popup */
-    private PopupWindow mPermissionPopup;
-
-    /** 权限说明文案 */
-    @Nullable
-    private String mPermissionDescription;
-
-    public PermissionInterceptor() {
-        this(null);
-    }
-
-    public PermissionInterceptor(@Nullable String permissionDescription) {
-        mPermissionDescription = permissionDescription;
-    }
-
-    @Override
-    public void launchPermissionRequest(@NonNull Activity activity, @NonNull PermissionFragmentFactory<?, ?> fragmentFactory, @NonNull List<String> requestPermissions, @Nullable OnPermissionCallback callback) {
-        mRequestFlag = true;
-        List<String> deniedPermissions = XXPermissions.getDeniedPermissions(activity, requestPermissions);
-
-        if (TextUtils.isEmpty(mPermissionDescription)) {
-            mPermissionDescription = generatePermissionDescription(activity, deniedPermissions);
-        }
-
-        ViewGroup decorView = (ViewGroup) activity.getWindow().getDecorView();
-        int activityOrientation = activity.getResources().getConfiguration().orientation;
-
-        boolean showPopupWindow = activityOrientation == Configuration.ORIENTATION_PORTRAIT;
-        for (String permission : requestPermissions) {
-            if (!XXPermissions.isSpecialPermission(permission)) {
-                continue;
-            }
-            if (XXPermissions.isGrantedPermissions(activity, permission)) {
-                continue;
-            }
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R &&
-                    TextUtils.equals(Permission.MANAGE_EXTERNAL_STORAGE, permission)) {
-                continue;
-            }
-            // 如果申请的权限带有特殊权限，并且还没有授予的话
-            // 就不用 PopupWindow 对话框来显示，而是用 Dialog 来显示
-            showPopupWindow = false;
-            break;
-        }
-
-        if (showPopupWindow) {
-            dispatchPermissionRequest(activity, requestPermissions, fragmentFactory, callback);
-            // 延迟 300 毫秒是为了避免出现 PopupWindow 显示然后立马消失的情况
-            // 因为框架没有办法在还没有申请权限的情况下，去判断权限是否永久拒绝了，必须要在发起权限申请之后
-            // 所以只能通过延迟显示 PopupWindow 来做这件事，如果 300 毫秒内权限申请没有结束，证明本次申请的权限没有永久拒绝
-            HANDLER.postDelayed(() -> {
-                if (!mRequestFlag) {
-                    return;
-                }
-                if (activity.isFinishing() || activity.isDestroyed()) {
-                    return;
-                }
-                showPopupWindow(activity, decorView, mPermissionDescription);
-            }, 300);
-        } else {
-            showDialog(activity, activity.getString(R.string.common_permission_description_title),
-                mPermissionDescription, false, activity.getString(R.string.common_permission_granted), (dialog, which) -> {
-                    dialog.dismiss();
-                    dispatchPermissionRequest(activity, requestPermissions, fragmentFactory, callback);
-                }, activity.getString(R.string.common_permission_denied), (dialog, which) -> {
-                    dialog.dismiss();
-                    if (callback == null) {
-                        return;
-                    }
-                    callback.onDenied(deniedPermissions, false);
-                });
-        }
-    }
-
-    @Override
-    public void grantedPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
-                                         @NonNull List<String> grantedPermissions, boolean allGranted,
-                                         @Nullable OnPermissionCallback callback) {
-        if (callback == null) {
-            return;
-        }
-        callback.onGranted(grantedPermissions, allGranted);
-    }
 
     @Override
     public void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
@@ -163,57 +62,13 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
         }
 
         final String message;
-        List<String> permissionNames = PermissionNameConvert.permissionsToNames(activity, deniedPermissions);
+        String permissionNames = PermissionConverter.getNamesByPermissions(activity, deniedPermissions);
         if (!permissionNames.isEmpty()) {
-            message = activity.getString(R.string.common_permission_fail_assign_hint,
-                    PermissionNameConvert.listToString(activity, permissionNames));
+            message = activity.getString(R.string.common_permission_fail_assign_hint, permissionNames);
         } else {
             message = activity.getString(R.string.common_permission_fail_hint);
         }
         Toaster.show(message);
-    }
-
-    @Override
-    public void finishPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
-                                        boolean skipRequest, @Nullable OnPermissionCallback callback) {
-        mRequestFlag = false;
-        dismissPopupWindow();
-    }
-
-    /**
-     * 生成权限说明文案
-     */
-    protected String generatePermissionDescription(Context context, @NonNull List<String> permissions) {
-        return PermissionDescriptionConvert.getPermissionDescription(context, permissions);
-    }
-
-    private void showPopupWindow(Activity activity, ViewGroup decorView, String message) {
-        if (mPermissionPopup == null) {
-            View contentView = LayoutInflater.from(activity)
-                    .inflate(R.layout.permission_description_popup, decorView, false);
-            mPermissionPopup = new PopupWindow(activity);
-            mPermissionPopup.setContentView(contentView);
-            mPermissionPopup.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
-            mPermissionPopup.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-            mPermissionPopup.setAnimationStyle(android.R.style.Animation_Dialog);
-            mPermissionPopup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            mPermissionPopup.setTouchable(true);
-            mPermissionPopup.setOutsideTouchable(true);
-        }
-        TextView messageView = mPermissionPopup.getContentView().findViewById(R.id.tv_permission_description_message);
-        messageView.setText(message);
-        // 注意：这里的 PopupWindow 只是示例，没有监听 Activity onDestroy 来处理 PopupWindow 生命周期
-        mPermissionPopup.showAtLocation(decorView, Gravity.TOP, 0, 0);
-    }
-
-    private void dismissPopupWindow() {
-        if (mPermissionPopup == null) {
-            return;
-        }
-        if (!mPermissionPopup.isShowing()) {
-            return;
-        }
-        mPermissionPopup.dismiss();
     }
 
     private void showPermissionSettingDialog(Activity activity, List<String> requestPermissions,
@@ -224,7 +79,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
 
         String message = null;
 
-        List<String> permissionNames = PermissionNameConvert.permissionsToNames(activity, deniedPermissions);
+        String permissionNames = PermissionConverter.getNamesByPermissions(activity, deniedPermissions);
         if (!permissionNames.isEmpty()) {
             if (deniedPermissions.size() == 1) {
                 String deniedPermission = deniedPermissions.get(0);
@@ -236,8 +91,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
                 }
             }
             if (TextUtils.isEmpty(message)) {
-                message = activity.getString(R.string.common_permission_manual_assign_fail_hint,
-                    PermissionNameConvert.listToString(activity, permissionNames));
+                message = activity.getString(R.string.common_permission_manual_assign_fail_hint, permissionNames);
             }
         } else {
             message = activity.getString(R.string.common_permission_manual_fail_hint);
@@ -299,27 +153,31 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     private void showDialog(@NonNull Activity activity, @Nullable String dialogTitle, @Nullable String dialogMessage, boolean dialogCancelable,
                             @Nullable String confirmButtonText, @Nullable DialogInterface.OnClickListener confirmListener,
                             @Nullable String cancelButtonText, @Nullable DialogInterface.OnClickListener cancelListener) {
-        // 注意：这里的 Dialog 只是示例，没有用 DialogFragment 来处理 Dialog 生命周期
         // 另外这里需要判断 Activity 的类型来申请权限，这是因为只有 AppCompatActivity 才能调用 Support 包的 AlertDialog 来显示，否则会出现报错
         // java.lang.IllegalStateException: You need to use a Theme.AppCompat theme (or descendant) with this activity
         // 为什么不直接用 App 包 AlertDialog 来显示，而是两套规则？因为 App 包 AlertDialog 是系统自带的类，不同 Android 版本展现的样式可能不太一样
         // 如果这个 Android 版本比较低，那么这个对话框的样式就会变得很丑，准确来讲也不能说丑，而是当时系统的 UI 设计就是那样，它只是跟随系统的样式而已
+        Dialog dialog;
         if (activity instanceof AppCompatActivity) {
-            new android.support.v7.app.AlertDialog.Builder(activity)
+            dialog = new android.support.v7.app.AlertDialog.Builder(activity)
                 .setTitle(dialogTitle)
                 .setMessage(dialogMessage)
                 .setCancelable(dialogCancelable)
                 .setPositiveButton(confirmButtonText, confirmListener)
                 .setNegativeButton(cancelButtonText, cancelListener)
-                .show();
+                .create();
         } else {
-            new AlertDialog.Builder(activity)
+            dialog = new Builder(activity)
                 .setTitle(dialogTitle)
                 .setMessage(dialogMessage)
                 .setCancelable(dialogCancelable)
                 .setPositiveButton(confirmButtonText, confirmListener)
                 .setNegativeButton(cancelButtonText, cancelListener)
-                .show();
+                .create();
         }
+        dialog.show();
+        // 将 Activity 和 Dialog 生命周期绑定在一起，避免可能会出现的内存泄漏
+        // 当然如果上面创建的 Dialog 已经有做了生命周期管理，则不需要执行下面这行代码
+        WindowLifecycleManager.bindDialogLifecycle(activity, dialog);
     }
 }

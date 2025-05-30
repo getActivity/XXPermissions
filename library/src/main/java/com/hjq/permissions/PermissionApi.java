@@ -57,6 +57,13 @@ final class PermissionApi {
     }
 
     /**
+     * 判断某个权限是否是后台权限
+     */
+    static boolean isBackgroundPermission(@NonNull String permission) {
+        return PermissionHelper.isBackgroundPermission(permission);
+    }
+
+    /**
      * 判断某个权限集合是否包含特殊权限
      */
     static boolean containsSpecialPermission(List<String> permissions) {
@@ -66,6 +73,22 @@ final class PermissionApi {
 
         for (String permission : permissions) {
             if (isSpecialPermission(permission)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断某个权限集合是否包含后台权限
+     */
+    static boolean containsBackgroundPermission(List<String> permissions) {
+        if (permissions == null || permissions.isEmpty()) {
+            return false;
+        }
+
+        for (String permission : permissions) {
+            if (isBackgroundPermission(permission)) {
                 return true;
             }
         }

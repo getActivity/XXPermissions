@@ -28,18 +28,25 @@ final class RequestPermissionLogicPresenter {
     private final PermissionFragmentFactory<?, ?> mFragmentFactory;
 
     @NonNull
-    private final OnPermissionInterceptor mInterceptor;
+    private final OnPermissionInterceptor mPermissionInterceptor;
+
+    @NonNull
+    private final OnPermissionDescription mPermissionDescription;
 
     @Nullable
     private final OnPermissionCallback mCallBack;
 
-    RequestPermissionLogicPresenter(@NonNull Activity activity, @NonNull List<String> requestPermissions,
-                                @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
-                                @NonNull OnPermissionInterceptor interceptor, @Nullable OnPermissionCallback callback) {
+    RequestPermissionLogicPresenter(@NonNull Activity activity,
+                                    @NonNull List<String> requestPermissions,
+                                    @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
+                                    @NonNull OnPermissionInterceptor permissionInterceptor,
+                                    @NonNull OnPermissionDescription permissionDescription,
+                                    @Nullable OnPermissionCallback callback) {
         mActivity = activity;
         mRequestPermissions = requestPermissions;
         mFragmentFactory = fragmentFactory;
-        mInterceptor = interceptor;
+        mPermissionInterceptor = permissionInterceptor;
+        mPermissionDescription = permissionDescription;
         mCallBack = callback;
     }
 
@@ -69,15 +76,19 @@ final class RequestPermissionLogicPresenter {
         // 判断权限集合中第一个权限是特殊权限还是危险权限，如果是特殊权限就先申请所有的特殊权限，如果是危险权限就先申请所有的危险权限
         if (PermissionHelper.isSpecialPermission(mRequestPermissions.get(0))) {
             // 请求所有的特殊权限
-            requestAllSpecialPermission(unauthorizedSpecialPermissions, mFragmentFactory, () -> {
+            requestAllSpecialPermission(mActivity, unauthorizedSpecialPermissions, mFragmentFactory,
+                mPermissionDescription, () -> {
                 // 请求完特殊权限后，接下来请求危险权限
-                requestAllDangerousPermission(unauthorizedDangerousPermissions, mFragmentFactory, this::postDelayedHandlerRequestPermissionsResult);
+                requestAllDangerousPermission(mActivity, unauthorizedDangerousPermissions, mFragmentFactory,
+                    mPermissionDescription, this::postDelayedHandlerRequestPermissionsResult);
             });
         } else {
             // 请求所有的危险权限
-            requestAllDangerousPermission(unauthorizedDangerousPermissions, mFragmentFactory, () -> {
+            requestAllDangerousPermission(mActivity, unauthorizedDangerousPermissions, mFragmentFactory,
+                mPermissionDescription, () -> {
                 // 请求完危险权限后，接下来请求特殊权限
-                requestAllSpecialPermission(unauthorizedSpecialPermissions, mFragmentFactory, this::postDelayedHandlerRequestPermissionsResult);
+                requestAllSpecialPermission(mActivity, unauthorizedSpecialPermissions, mFragmentFactory,
+                    mPermissionDescription, this::postDelayedHandlerRequestPermissionsResult);
             });
         }
     }
@@ -127,8 +138,11 @@ final class RequestPermissionLogicPresenter {
             // 查询权限所在的权限组类型
             PermissionGroupType permissionGroupType = PermissionHelper.queryDangerousPermissionGroupType(dangerousPermission);
             if (permissionGroupType == null) {
-                // 如果这个权限没有组别，就直接单独做为一次权限申请
-                unauthorizedDangerousPermissions.add(PermissionUtils.asArrayList(dangerousPermission));
+                // 如果这个权限已授权，就不纳入申请的范围内
+                if (!PermissionApi.isGrantedPermission(activity, dangerousPermission)) {
+                    // 如果这个权限没有组别，就直接单独做为一次权限申请
+                    unauthorizedDangerousPermissions.add(PermissionUtils.asArrayList(dangerousPermission));
+                }
                 continue;
             }
 
@@ -143,6 +157,8 @@ final class RequestPermissionLogicPresenter {
                 if (PermissionHelper.findAndroidVersionByPermission(permission) > AndroidVersionTools.getCurrentAndroidVersionCode()) {
                     // 如果申请的权限是新系统才出现的，但是当前是旧系统运行，就从权限组中移除
                     iterator.remove();
+                    // 这里需要加入到已处理的列表中，这样遍历到它的时候就会忽略掉
+                    alreadyProcessedDangerousPermissions.add(permission);
                     continue;
                 }
 
@@ -192,8 +208,10 @@ final class RequestPermissionLogicPresenter {
     /**
      * 请求所有的特殊权限
      */
-    private static void requestAllSpecialPermission(@NonNull List<String> specialPermissions,
+    private static void requestAllSpecialPermission(@NonNull Activity activity,
+                                                    @NonNull List<String> specialPermissions,
                                                     @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
+                                                    @NonNull OnPermissionDescription permissionDescription,
                                                     @NonNull Runnable finishRunnable) {
         if (specialPermissions.isEmpty()) {
             finishRunnable.run();
@@ -201,12 +219,12 @@ final class RequestPermissionLogicPresenter {
         }
 
         AtomicInteger index = new AtomicInteger();
-        requestSingleSpecialPermission(specialPermissions.get(index.get()), fragmentFactory, new Runnable() {
+        requestSingleSpecialPermission(activity, specialPermissions.get(index.get()), fragmentFactory, permissionDescription, new Runnable() {
             @Override
             public void run() {
                 index.incrementAndGet();
                 if (index.get() < specialPermissions.size()) {
-                    requestSingleSpecialPermission(specialPermissions.get(index.get()), fragmentFactory, this);
+                    requestSingleSpecialPermission(activity, specialPermissions.get(index.get()), fragmentFactory, permissionDescription, this);
                     return;
                 }
                 finishRunnable.run();
@@ -217,17 +235,40 @@ final class RequestPermissionLogicPresenter {
     /**
      * 请求单个特殊权限
      */
-    private static void requestSingleSpecialPermission(@NonNull String specialPermission,
+    private static void requestSingleSpecialPermission(@NonNull Activity activity,
+                                                        @NonNull String specialPermission,
                                                         @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
+                                                        @NonNull OnPermissionDescription permissionDescription,
                                                         @NonNull Runnable finishRunnable) {
-        fragmentFactory.createAndCommitFragment(PermissionUtils.asArrayList(specialPermission), PermissionType.SPECIAL, finishRunnable);
+        List<String> permissions = PermissionUtils.asArrayList(specialPermission);
+        Runnable confirmRequestRunnable = () -> fragmentFactory.createAndCommitFragment(permissions, PermissionType.SPECIAL, new OnPermissionFlowCallback() {
+
+            @Override
+            public void onRequestPermissionNow() {
+                permissionDescription.onRequestPermissionStart(activity, permissions);
+            }
+
+            @Override
+            public void onRequestPermissionFinish() {
+                permissionDescription.onRequestPermissionEnd(activity, permissions);
+                finishRunnable.run();
+            }
+
+            @Override
+            public void onRequestPermissionAnomaly() {
+                permissionDescription.onRequestPermissionEnd(activity, permissions);
+            }
+        });
+        permissionDescription.askWhetherRequestPermission(activity, permissions, confirmRequestRunnable, finishRunnable);
     }
 
     /**
      * 申请所有危险权限
      */
-    private static void requestAllDangerousPermission(@NonNull List<List<String>> dangerousPermissions,
+    private static void requestAllDangerousPermission(@NonNull Activity activity,
+                                                        @NonNull List<List<String>> dangerousPermissions,
                                                         @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
+                                                        @NonNull OnPermissionDescription permissionDescription,
                                                         @NonNull Runnable finishRunnable) {
         if (!AndroidVersionTools.isAndroid6()) {
             // 如果是 Android 6.0 以下，没有危险权限的概念
@@ -242,7 +283,7 @@ final class RequestPermissionLogicPresenter {
         }
 
         AtomicInteger index = new AtomicInteger();
-        requestSingleDangerousPermission(dangerousPermissions.get(index.get()), fragmentFactory, new Runnable() {
+        requestSingleDangerousPermission(activity, dangerousPermissions.get(index.get()), fragmentFactory, permissionDescription, new Runnable() {
             @Override
             public void run() {
                 index.incrementAndGet();
@@ -250,10 +291,10 @@ final class RequestPermissionLogicPresenter {
                     List<String> permissions = dangerousPermissions.get(index.get());
                     int maxWaitTimeByPermissions = PermissionHelper.getMaxIntervalTimeByPermissions(permissions);
                     if (maxWaitTimeByPermissions == 0) {
-                        requestSingleDangerousPermission(permissions, fragmentFactory,this);
+                        requestSingleDangerousPermission(activity, permissions, fragmentFactory, permissionDescription, this);
                     } else {
                         PermissionTaskHandler.sendTask(() ->
-                            requestSingleDangerousPermission(permissions, fragmentFactory, this), maxWaitTimeByPermissions);
+                            requestSingleDangerousPermission(activity, permissions, fragmentFactory, permissionDescription, this), maxWaitTimeByPermissions);
                     }
                     return;
                 }
@@ -265,10 +306,30 @@ final class RequestPermissionLogicPresenter {
     /**
      * 申请单个危险权限
      */
-    private static void requestSingleDangerousPermission(@NonNull List<String> dangerousPermissions,
+    private static void requestSingleDangerousPermission(@NonNull Activity activity,
+                                                        @NonNull List<String> dangerousPermissions,
                                                         @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
+                                                        @NonNull OnPermissionDescription permissionDescription,
                                                         @NonNull Runnable finishRunnable) {
-        fragmentFactory.createAndCommitFragment(dangerousPermissions, PermissionType.DANGEROUS, finishRunnable);
+        Runnable confirmRequestRunnable = () -> fragmentFactory.createAndCommitFragment(dangerousPermissions, PermissionType.DANGEROUS, new OnPermissionFlowCallback() {
+
+            @Override
+            public void onRequestPermissionNow() {
+                permissionDescription.onRequestPermissionStart(activity, dangerousPermissions);
+            }
+
+            @Override
+            public void onRequestPermissionFinish() {
+                permissionDescription.onRequestPermissionEnd(activity, dangerousPermissions);
+                finishRunnable.run();
+            }
+
+            @Override
+            public void onRequestPermissionAnomaly() {
+                permissionDescription.onRequestPermissionEnd(activity, dangerousPermissions);
+            }
+        });
+        permissionDescription.askWhetherRequestPermission(activity, dangerousPermissions, confirmRequestRunnable, finishRunnable);
     }
 
     /**
@@ -292,7 +353,7 @@ final class RequestPermissionLogicPresenter {
     private void handlePermissionRequestResult() {
         OnPermissionCallback callback = mCallBack;
 
-        OnPermissionInterceptor interceptor = mInterceptor;
+        OnPermissionInterceptor interceptor = mPermissionInterceptor;
 
         List<String> requestPermissions = mRequestPermissions;
 

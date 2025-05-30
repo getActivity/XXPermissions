@@ -19,9 +19,12 @@ public interface OnPermissionInterceptor {
      * @param requestPermissions        申请的权限
      * @param callback                  权限申请回调
      */
-    default void launchPermissionRequest(@NonNull Activity activity, @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
-                                        @NonNull List<String> requestPermissions, @Nullable OnPermissionCallback callback) {
-        dispatchPermissionRequest(activity, requestPermissions, fragmentFactory, callback);
+    default void launchPermissionRequest(@NonNull Activity activity,
+                                        @NonNull List<String> requestPermissions,
+                                        @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
+                                        @NonNull OnPermissionDescription permissionDescription,
+                                        @Nullable OnPermissionCallback callback) {
+        dispatchPermissionRequest(activity, requestPermissions, fragmentFactory, permissionDescription, callback);
     }
 
     /**
@@ -32,7 +35,8 @@ public interface OnPermissionInterceptor {
      * @param allGranted                 是否全部授予
      * @param callback                   权限申请回调
      */
-    default void grantedPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
+    default void grantedPermissionRequest(@NonNull Activity activity,
+                                            @NonNull List<String> requestPermissions,
                                             @NonNull List<String> grantedPermissions, boolean allGranted,
                                             @Nullable OnPermissionCallback callback) {
         if (callback == null) {
@@ -76,8 +80,9 @@ public interface OnPermissionInterceptor {
      */
     default void dispatchPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
                                             @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
+                                            @NonNull OnPermissionDescription permissionDescription,
                                             @Nullable OnPermissionCallback callback) {
-        new RequestPermissionLogicPresenter(activity, requestPermissions, fragmentFactory, this, callback)
+        new RequestPermissionLogicPresenter(activity, requestPermissions, fragmentFactory, this, permissionDescription, callback)
             .request();
     }
 }

@@ -56,12 +56,12 @@ final class RequestPermissionDelegateImplBySpecial extends RequestPermissionDele
             return;
         }
 
-        Runnable callback = getCallBack();
+        OnPermissionFlowCallback callback = getCallBack();
         // 释放监听对象的引用
         setCallback(null);
 
         if (callback != null) {
-            callback.run();
+            callback.onRequestPermissionFinish();
         }
 
         commitDetach();

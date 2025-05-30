@@ -39,7 +39,7 @@ abstract class RequestPermissionDelegateImpl implements IFragmentCallback {
 
     /** 权限回调对象 */
     @Nullable
-    private Runnable mCallBack;
+    private OnPermissionFlowCallback mCallBack;
 
     RequestPermissionDelegateImpl(@NonNull IFragmentMethod<?, ?> fragmentMethod) {
         mFragmentMethod = fragmentMethod;
@@ -49,12 +49,12 @@ abstract class RequestPermissionDelegateImpl implements IFragmentCallback {
         mRequestFlag = flag;
     }
 
-    void setCallback(@Nullable Runnable callback) {
+    void setCallback(@Nullable OnPermissionFlowCallback callback) {
         mCallBack = callback;
     }
 
     @Nullable
-    Runnable getCallBack() {
+    OnPermissionFlowCallback getCallBack() {
         return mCallBack;
     }
 
@@ -144,14 +144,25 @@ abstract class RequestPermissionDelegateImpl implements IFragmentCallback {
         startPermissionRequest(activity, permissions, requestCode);
         // 锁定 Activity 屏幕方向
         ActivityOrientationControl.lockActivityOrientation(activity);
+        OnPermissionFlowCallback callback = getCallBack();
+        if (callback == null) {
+            return;
+        }
+        callback.onRequestPermissionNow();
     }
 
     @Override
     public void onFragmentDestroy() {
         // 取消执行任务
         cancelTask();
-        // 释放回调对象，避免内存泄漏
-        setCallback(null);
+        OnPermissionFlowCallback callBack = getCallBack();
+        // 如果回调还没有置空，则证明前面没有回调权限回调完成
+        if (callBack != null) {
+            // 告诉外层本次权限回调有异常
+            callBack.onRequestPermissionAnomaly();
+            // 释放回调对象，避免内存泄漏
+            setCallback(null);
+        }
         if (mManualDetach) {
             return;
         }

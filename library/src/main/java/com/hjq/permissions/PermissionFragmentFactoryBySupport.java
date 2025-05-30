@@ -19,7 +19,7 @@ final class PermissionFragmentFactoryBySupport extends PermissionFragmentFactory
     }
 
     @Override
-    void createAndCommitFragment(@NonNull List<String> permissions, @NonNull PermissionType permissionType, @Nullable Runnable callback) {
+    void createAndCommitFragment(@NonNull List<String> permissions, @NonNull PermissionType permissionType, @Nullable OnPermissionFlowCallback callback) {
         IFragmentMethod<FragmentActivity, FragmentManager> fragment;
         if (permissionType == PermissionType.SPECIAL) {
             fragment = new PermissionFragmentSupportBySpecial();

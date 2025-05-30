@@ -64,7 +64,9 @@ final class PermissionHelper {
         PERMISSION_VERSION_MAP.put(Permission.MANAGE_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_11);
         PERMISSION_VERSION_MAP.put(Permission.REQUEST_INSTALL_PACKAGES, AndroidVersionTools.ANDROID_8);
         PERMISSION_VERSION_MAP.put(Permission.PICTURE_IN_PICTURE, AndroidVersionTools.ANDROID_8);
-        PERMISSION_VERSION_MAP.put(Permission.SYSTEM_ALERT_WINDOW, AndroidVersionTools.ANDROID_6);
+        // 虽然悬浮窗权限是在 Android 6.0 新增的权限，但是有些国产的厂商在 Android 6.0 之前的版本就自己加了，并且框架已经有做兼容了
+        // 所以为了兼容更低的 Android 版本，这里需要将悬浮窗权限出现的 Android 版本成 API 17（即框架要求 minSdkVersion 版本）
+        PERMISSION_VERSION_MAP.put(Permission.SYSTEM_ALERT_WINDOW, AndroidVersionTools.ANDROID_4_2);
         PERMISSION_VERSION_MAP.put(Permission.WRITE_SETTINGS, AndroidVersionTools.ANDROID_6);
         PERMISSION_VERSION_MAP.put(Permission.ACCESS_NOTIFICATION_POLICY, AndroidVersionTools.ANDROID_6);
         PERMISSION_VERSION_MAP.put(Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, AndroidVersionTools.ANDROID_6);
@@ -197,13 +199,39 @@ final class PermissionHelper {
         for (String permission : sensorsPermissionGroup) {
             DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.SENSORS);
         }
-        // 通话记录权限组
+        // 电话权限组和通话记录权限组
+        List<String> phonePermissionGroup = Arrays.asList(Permission.READ_PHONE_STATE,
+                                                            Permission.CALL_PHONE,
+                                                            Permission.ADD_VOICEMAIL,
+                                                            Permission.USE_SIP,
+                                                            Permission.READ_PHONE_NUMBERS,
+                                                            Permission.ANSWER_PHONE_CALLS,
+                                                            Permission.ACCEPT_HANDOVER);
         List<String> callLogPermissionGroup = Arrays.asList(Permission.READ_CALL_LOG,
-                                                            Permission.WRITE_CALL_LOG);
-        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.CALL_LOG, callLogPermissionGroup);
-        for (String permission : callLogPermissionGroup) {
-            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.CALL_LOG);
+                                                        Permission.WRITE_CALL_LOG,
+                                                        Permission.PROCESS_OUTGOING_CALLS);
+
+        // 注意：在 Android 9.0 的时候，读写通话记录权限已经归到一个单独的权限组了，但是在 Android 9.0 之前，读写通话记录权限归属电话权限组
+        if (AndroidVersionTools.isAndroid9()) {
+            DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.PHONE, phonePermissionGroup);
+            for (String permission : phonePermissionGroup) {
+                DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.PHONE);
+            }
+            DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.CALL_LOG, callLogPermissionGroup);
+            for (String permission : callLogPermissionGroup) {
+                DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.CALL_LOG);
+            }
+        } else {
+            List<String> oldPhonePermissionGroup = new ArrayList<>();
+            oldPhonePermissionGroup.addAll(phonePermissionGroup);
+            oldPhonePermissionGroup.addAll(callLogPermissionGroup);
+            DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.PHONE, oldPhonePermissionGroup);
+
+            for (String permission : oldPhonePermissionGroup) {
+                DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.PHONE);
+            }
         }
+
         // 附近设备权限组
         List<String> nearbyDevicesPermissionGroup = Arrays.asList(Permission.BLUETOOTH_SCAN,
                                                                 Permission.BLUETOOTH_CONNECT,
