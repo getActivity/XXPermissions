@@ -45,6 +45,9 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
+            if (!AndroidVersionTools.isAndroid6()) {
+                return true;
+            }
             if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_11)) {
                 // 这里补充一下这样写的具体原因：
                 // 1. 当 targetSdk >= Android 11 并且在此版本及之上申请 WRITE_EXTERNAL_STORAGE，虽然可以弹出授权框，但是没有什么实际作用
@@ -102,6 +105,9 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
+            if (!AndroidVersionTools.isAndroid6()) {
+                return false;
+            }
             if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_11)) {
                 return false;
             }
