@@ -193,6 +193,7 @@ public final class Permission {
      * 获取活动步数（Android 10.0 新增的权限）
      *
      * 需要注意的是：Android 10 以下不需要传感器（BODY_SENSORS）权限也能获取到步数
+     * Github issue 地址：https://github.com/getActivity/XXPermissions/issues/150
      */
     public static final String ACTIVITY_RECOGNITION = "android.permission.ACTIVITY_RECOGNITION";
 

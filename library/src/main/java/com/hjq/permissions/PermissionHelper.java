@@ -143,8 +143,6 @@ final class PermissionHelper {
         // Android 11 以下访问完整的文件管理需要用到读写外部存储的权限
         NEW_AND_OLD_PERMISSION_MAP.put(Permission.MANAGE_EXTERNAL_STORAGE, new String[] {
                                                     Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE });
-        // Android 10 以下获取运动步数需要用到传感器权限（因为 ACTIVITY_RECOGNITION 是从 Android 10 开始才从传感器权限中剥离成独立权限）
-        NEW_AND_OLD_PERMISSION_MAP.put(Permission.ACTIVITY_RECOGNITION, new String[] { Permission.BODY_SENSORS });
         // Android 8.0 以下读取电话号码需要用到读取电话状态的权限
         NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_PHONE_NUMBERS, new String[] { Permission.READ_PHONE_STATE });
 
