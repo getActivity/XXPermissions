@@ -262,6 +262,23 @@ final class PermissionApi {
     }
 
     /**
+     * 优化权限的请求顺序
+     *
+     * @param requestPermissions            请求的权限组
+     */
+    static List<String> compatiblePermissionRequestSequence(@NonNull List<String> requestPermissions) {
+        List<String> lowLevelPermissions = PermissionHelper.getLowLevelPermissions();
+        for (String lowLevelPermission : lowLevelPermissions) {
+            if (!PermissionUtils.containsPermission(requestPermissions, lowLevelPermission)) {
+                continue;
+            }
+            requestPermissions.remove(lowLevelPermission);
+            requestPermissions.add(lowLevelPermission);
+        }
+        return requestPermissions;
+    }
+
+    /**
      * 判断传入的权限组是不是都是危险权限
      */
     static boolean areAllDangerousPermission(@NonNull List<String> permissions) {

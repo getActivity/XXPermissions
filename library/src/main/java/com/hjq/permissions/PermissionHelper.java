@@ -39,6 +39,9 @@ final class PermissionHelper {
     /** 危险权限对应的类型集合 */
     private static final Map<String, PermissionGroupType> DANGEROUS_PERMISSION_GROUP_TYPE_MAP = new HashMap<>(25);
 
+    /** 低等级权限列表（排序时放最后） */
+    private static final List<String> LOW_LEVEL_PERMISSION_LIST = new ArrayList<>(3);
+
     /** 权限请求间隔时长 */
     private static final Map<String, Integer> PERMISSIONS_REQUEST_INTERVAL_TIME = new HashMap<>(2);
 
@@ -255,6 +258,13 @@ final class PermissionHelper {
 
         /* ---------------------------------------------------------------------------------------------------- */
 
+        // 将后台权限定义为低等级权限
+        LOW_LEVEL_PERMISSION_LIST.addAll(BACKGROUND_PERMISSION_MAP.keySet());
+        // 将读取图片位置权限定义为低等级权限
+        LOW_LEVEL_PERMISSION_LIST.add(Permission.ACCESS_MEDIA_LOCATION);
+
+        /* ---------------------------------------------------------------------------------------------------- */
+
         // 设置权限请求间隔时间
         for (String permission : backgroundPermissions) {
             if (AndroidVersionTools.getCurrentAndroidVersionCode() < PermissionHelper.findAndroidVersionByPermission(permission)) {
@@ -378,6 +388,14 @@ final class PermissionHelper {
             }
         }
         return null;
+    }
+
+    /**
+     * 获取低等级权限列表
+     */
+    @NonNull
+    static List<String> getLowLevelPermissions() {
+        return LOW_LEVEL_PERMISSION_LIST;
     }
 
     /**
