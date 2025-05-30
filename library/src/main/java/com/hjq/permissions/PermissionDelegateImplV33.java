@@ -16,9 +16,6 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
         if (PermissionUtils.equalsPermission(permission, Permission.BODY_SENSORS_BACKGROUND)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return true;
-            }
             if (!AndroidVersionTools.isAndroid13()) {
                 return PermissionUtils.isGrantedPermission(context, Permission.BODY_SENSORS);
             }
@@ -35,9 +32,6 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.NEARBY_WIFI_DEVICES)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return true;
-            }
             if (!AndroidVersionTools.isAndroid13()) {
                 return PermissionUtils.isGrantedPermission(context, Permission.ACCESS_FINE_LOCATION);
             }
@@ -49,9 +43,6 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
             Permission.READ_MEDIA_VIDEO,
             Permission.READ_MEDIA_AUDIO
         }, permission)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return true;
-            }
             if (!AndroidVersionTools.isAndroid13()) {
                 return PermissionUtils.isGrantedPermission(context, Permission.READ_EXTERNAL_STORAGE);
             }
@@ -71,9 +62,6 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.BODY_SENSORS_BACKGROUND)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return false;
-            }
             if (!AndroidVersionTools.isAndroid13()) {
                 return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.BODY_SENSORS);
             }
@@ -94,9 +82,6 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.NEARBY_WIFI_DEVICES)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return false;
-            }
             if (!AndroidVersionTools.isAndroid13()) {
                 return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.ACCESS_FINE_LOCATION);
             }
@@ -108,9 +93,6 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
             Permission.READ_MEDIA_VIDEO,
             Permission.READ_MEDIA_AUDIO
         }, permission)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return false;
-            }
             if (!AndroidVersionTools.isAndroid13()) {
                 return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.READ_EXTERNAL_STORAGE);
             }

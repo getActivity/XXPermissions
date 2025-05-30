@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.PermissionInfo;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 
 /**
  *    author : Android 轮子哥
@@ -22,11 +21,7 @@ final class GetInstalledAppsPermissionCompat {
     private static final int MIUI_OP_GET_INSTALLED_APPS_DEFAULT_VALUE = 10022;
 
     static boolean isGrantedPermission(@NonNull Context context) {
-        if (!AndroidVersionTools.isAndroid4_4()) {
-            return true;
-        }
-
-        if (AndroidVersionTools.isAndroid6() && isSupportGetInstalledAppsPermission(context)) {
+        if (isSupportGetInstalledAppsPermission(context)) {
             return PermissionUtils.isGrantedPermission(context, Permission.GET_INSTALLED_APPS);
         }
 
@@ -46,11 +41,7 @@ final class GetInstalledAppsPermissionCompat {
     }
 
     static boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
-        if (!AndroidVersionTools.isAndroid4_4()) {
-            return false;
-        }
-
-        if (AndroidVersionTools.isAndroid6() && isSupportGetInstalledAppsPermission(activity)) {
+        if (isSupportGetInstalledAppsPermission(activity)) {
             // 如果支持申请，那么再去判断权限是否永久拒绝
             return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.GET_INSTALLED_APPS);
         }
@@ -84,9 +75,12 @@ final class GetInstalledAppsPermissionCompat {
     /**
      * 判断是否支持获取应用列表权限
      */
-    @RequiresApi(AndroidVersionTools.ANDROID_6)
     @SuppressWarnings("deprecation")
     private static boolean isSupportGetInstalledAppsPermission(Context context) {
+        if (!AndroidVersionTools.isAndroid6()) {
+            // 如果是 Android 6.0 以下，判定它是不支持的
+            return false;
+        }
         try {
             PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(Permission.GET_INSTALLED_APPS, 0);
             if (permissionInfo != null) {

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 
 /**
  *    author : Android 轮子哥
@@ -19,16 +18,10 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
         if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
-            if (!AndroidVersionTools.isAndroid12()) {
-                return true;
-            }
             return isGrantedAlarmPermission(context);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_SCAN)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return true;
-            }
             if (!AndroidVersionTools.isAndroid12()) {
                 return PermissionUtils.isGrantedPermission(context, Permission.ACCESS_FINE_LOCATION);
             }
@@ -55,9 +48,6 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_SCAN)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return false;
-            }
             if (!AndroidVersionTools.isAndroid12()) {
                 return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.ACCESS_FINE_LOCATION);
             }
@@ -75,7 +65,7 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION) &&
-            AndroidVersionTools.isAndroid6() && AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_12) {
+            AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_12) {
 
             if (!PermissionUtils.isGrantedPermission(activity, Permission.ACCESS_FINE_LOCATION) &&
                 !PermissionUtils.isGrantedPermission(activity, Permission.ACCESS_COARSE_LOCATION)) {
@@ -91,9 +81,6 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
     @Override
     public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
-            if (!AndroidVersionTools.isAndroid12()) {
-                return getApplicationDetailsIntent(context);
-            }
             return getAlarmPermissionIntent(context);
         }
 
@@ -103,16 +90,20 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
     /**
      * 是否有闹钟权限
      */
-    @RequiresApi(AndroidVersionTools.ANDROID_12)
     private static boolean isGrantedAlarmPermission(@NonNull Context context) {
+        if (!AndroidVersionTools.isAndroid12()) {
+            return true;
+        }
         return context.getSystemService(AlarmManager.class).canScheduleExactAlarms();
     }
 
     /**
      * 获取闹钟权限设置界面意图
      */
-    @RequiresApi(AndroidVersionTools.ANDROID_12)
     private static Intent getAlarmPermissionIntent(@NonNull Context context) {
+        if (!AndroidVersionTools.isAndroid12()) {
+            return getApplicationDetailsIntent(context);
+        }
         Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
         intent.setData(PermissionUtils.getPackageNameUri(context));
         if (!PermissionUtils.areActivityIntent(context, intent)) {

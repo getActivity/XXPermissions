@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 
 /**
  *    author : Android 轮子哥
@@ -19,23 +18,14 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
         if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES)) {
-            if (!AndroidVersionTools.isAndroid8()) {
-                return true;
-            }
             return isGrantedInstallPermission(context);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.PICTURE_IN_PICTURE)) {
-            if (!AndroidVersionTools.isAndroid8()) {
-                return true;
-            }
             return isGrantedPictureInPicturePermission(context);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.READ_PHONE_NUMBERS)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return true;
-            }
             if (!AndroidVersionTools.isAndroid8()) {
                 return PermissionUtils.isGrantedPermission(context, Permission.READ_PHONE_STATE);
             }
@@ -63,9 +53,6 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.READ_PHONE_NUMBERS)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return false;
-            }
             if (!AndroidVersionTools.isAndroid8()) {
                 return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.READ_PHONE_STATE);
             }
@@ -85,16 +72,10 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
     @Override
     public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES)) {
-            if (!AndroidVersionTools.isAndroid8()) {
-                return getApplicationDetailsIntent(context);
-            }
             return getInstallPermissionIntent(context);
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.PICTURE_IN_PICTURE)) {
-            if (!AndroidVersionTools.isAndroid8()) {
-                return getApplicationDetailsIntent(context);
-            }
             return getPictureInPicturePermissionIntent(context);
         }
 
@@ -104,16 +85,20 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
     /**
      * 是否有安装权限
      */
-    @RequiresApi(AndroidVersionTools.ANDROID_8)
     private static boolean isGrantedInstallPermission(@NonNull Context context) {
+        if (!AndroidVersionTools.isAndroid8()) {
+            return true;
+        }
         return context.getPackageManager().canRequestPackageInstalls();
     }
 
     /**
      * 获取安装权限设置界面意图
      */
-    @RequiresApi(AndroidVersionTools.ANDROID_8)
     private static Intent getInstallPermissionIntent(@NonNull Context context) {
+        if (!AndroidVersionTools.isAndroid8()) {
+            return getApplicationDetailsIntent(context);
+        }
         Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
         intent.setData(PermissionUtils.getPackageNameUri(context));
         if (!PermissionUtils.areActivityIntent(context, intent)) {
@@ -125,16 +110,20 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
     /**
      * 是否有画中画权限
      */
-    @RequiresApi(AndroidVersionTools.ANDROID_8)
     private static boolean isGrantedPictureInPicturePermission(@NonNull Context context) {
+        if (!AndroidVersionTools.isAndroid8()) {
+            return true;
+        }
         return PermissionUtils.checkOpNoThrow(context, AppOpsManager.OPSTR_PICTURE_IN_PICTURE);
     }
 
     /**
      * 获取画中画权限设置界面意图
      */
-    @RequiresApi(AndroidVersionTools.ANDROID_8)
     private static Intent getPictureInPicturePermissionIntent(@NonNull Context context) {
+        if (!AndroidVersionTools.isAndroid8()) {
+            return getApplicationDetailsIntent(context);
+        }
         // android.provider.Settings.ACTION_PICTURE_IN_PICTURE_SETTINGS
         Intent intent = new Intent("android.settings.PICTURE_IN_PICTURE_SETTINGS");
         intent.setData(PermissionUtils.getPackageNameUri(context));

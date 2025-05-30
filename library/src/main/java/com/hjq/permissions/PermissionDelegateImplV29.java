@@ -17,9 +17,6 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_MEDIA_LOCATION)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return true;
-            }
             if (!AndroidVersionTools.isAndroid10()) {
                 return PermissionUtils.isGrantedPermission(context, Permission.READ_EXTERNAL_STORAGE);
             }
@@ -28,9 +25,6 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return true;
-            }
             if (!AndroidVersionTools.isAndroid10()) {
                 return PermissionUtils.isGrantedPermission(context, Permission.ACCESS_FINE_LOCATION);
             }
@@ -45,9 +39,6 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return true;
-            }
             if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_11)) {
                 // 这里补充一下这样写的具体原因：
                 // 1. 当 targetSdk >= Android 11 并且在此版本及之上申请 WRITE_EXTERNAL_STORAGE，虽然可以弹出授权框，但是没有什么实际作用
@@ -72,9 +63,6 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_BACKGROUND_LOCATION)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return false;
-            }
             if (!AndroidVersionTools.isAndroid10()) {
                 return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.ACCESS_FINE_LOCATION);
             }
@@ -88,9 +76,6 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.ACCESS_MEDIA_LOCATION)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return false;
-            }
             if (!AndroidVersionTools.isAndroid10()) {
                 return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.READ_EXTERNAL_STORAGE);
             }
@@ -105,9 +90,6 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
         }
 
         if (PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
-            if (!AndroidVersionTools.isAndroid6()) {
-                return false;
-            }
             if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_11)) {
                 return false;
             }
@@ -124,7 +106,6 @@ class PermissionDelegateImplV29 extends PermissionDelegateImplV28 {
     /**
      * 判断是否授予了读取媒体的权限
      */
-    @RequiresApi(AndroidVersionTools.ANDROID_6)
     private boolean isGrantedReadMediaPermission(@NonNull Context context) {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_13)) {
             // 这里为什么加上 Android 14 和 READ_MEDIA_VISUAL_USER_SELECTED 权限判断？这是因为如果获取部分照片和视频

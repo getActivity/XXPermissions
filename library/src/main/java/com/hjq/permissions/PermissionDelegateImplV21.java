@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 
 /**
  *    author : Android 轮子哥
@@ -19,9 +18,6 @@ class PermissionDelegateImplV21 extends PermissionDelegateImplV19 {
     @Override
     public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
         if (PermissionUtils.equalsPermission(permission, Permission.PACKAGE_USAGE_STATS)) {
-            if (!AndroidVersionTools.isAndroid5()) {
-                return true;
-            }
             return isGrantedPackagePermission(context);
         }
 
@@ -40,9 +36,6 @@ class PermissionDelegateImplV21 extends PermissionDelegateImplV19 {
     @Override
     public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
         if (PermissionUtils.equalsPermission(permission, Permission.PACKAGE_USAGE_STATS)) {
-            if (!AndroidVersionTools.isAndroid5()) {
-                return getApplicationDetailsIntent(context);
-            }
             return getPackagePermissionIntent(context);
         }
 
@@ -52,16 +45,20 @@ class PermissionDelegateImplV21 extends PermissionDelegateImplV19 {
     /**
      * 是否有使用统计权限
      */
-    @RequiresApi(AndroidVersionTools.ANDROID_5)
     private static boolean isGrantedPackagePermission(@NonNull Context context) {
+        if (!AndroidVersionTools.isAndroid5()) {
+            return true;
+        }
         return PermissionUtils.checkOpNoThrow(context, AppOpsManager.OPSTR_GET_USAGE_STATS);
     }
 
     /**
      * 获取使用统计权限设置界面意图
      */
-    @RequiresApi(AndroidVersionTools.ANDROID_5)
     private static Intent getPackagePermissionIntent(@NonNull Context context) {
+        if (!AndroidVersionTools.isAndroid5()) {
+            return getApplicationDetailsIntent(context);
+        }
         Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
         if (AndroidVersionTools.isAndroid10()) {
             // 经过测试，只有在 Android 10 及以上加包名才有效果

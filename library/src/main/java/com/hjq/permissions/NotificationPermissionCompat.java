@@ -21,11 +21,7 @@ final class NotificationPermissionCompat {
         if (AndroidVersionTools.isAndroid7()) {
             return context.getSystemService(NotificationManager.class).areNotificationsEnabled();
         }
-
-        if (AndroidVersionTools.isAndroid4_4()) {
-            return PermissionUtils.checkOpNoThrow(context, OP_POST_NOTIFICATION_FIELD_NAME, OP_POST_NOTIFICATION_DEFAULT_VALUE);
-        }
-        return true;
+        return PermissionUtils.checkOpNoThrow(context, OP_POST_NOTIFICATION_FIELD_NAME, OP_POST_NOTIFICATION_DEFAULT_VALUE);
     }
 
     static Intent getPermissionIntent(@NonNull Context context) {

@@ -17,7 +17,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,14 +43,18 @@ final class PermissionUtils {
     /**
      * 判断某个危险权限是否授予了
      */
-    @RequiresApi(AndroidVersionTools.ANDROID_6)
     static boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
+        if (!AndroidVersionTools.isAndroid6()) {
+            return true;
+        }
         return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     @SuppressWarnings("ConstantConditions")
-    @RequiresApi(AndroidVersionTools.ANDROID_4_4)
     static boolean checkOpNoThrow(Context context, String opFieldName, int opDefaultValue) {
+        if (!AndroidVersionTools.isAndroid4_4()) {
+            return true;
+        }
         AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
         ApplicationInfo appInfo = context.getApplicationInfo();
         String pkg = context.getApplicationContext().getPackageName();
@@ -74,8 +77,10 @@ final class PermissionUtils {
         }
     }
 
-    @RequiresApi(AndroidVersionTools.ANDROID_4_4)
     static boolean checkOpNoThrow(Context context, String opName) {
+        if (!AndroidVersionTools.isAndroid4_4()) {
+            return true;
+        }
         AppOpsManager appOps = (AppOpsManager)
             context.getSystemService(Context.APP_OPS_SERVICE);
         int mode;
@@ -94,9 +99,11 @@ final class PermissionUtils {
      *
      * issues 地址：https://github.com/getActivity/XXPermissions/issues/133
      */
-    @RequiresApi(api = AndroidVersionTools.ANDROID_6)
     @SuppressWarnings({"JavaReflectionMemberAccess", "ConstantConditions", "BooleanMethodIsAlwaysInverted"})
     static boolean shouldShowRequestPermissionRationale(@NonNull Activity activity, @NonNull String permission) {
+        if (!AndroidVersionTools.isAndroid6()) {
+            return false;
+        }
         if (AndroidVersionTools.getCurrentAndroidVersionCode() == AndroidVersionTools.ANDROID_12) {
             try {
                 PackageManager packageManager = activity.getApplication().getPackageManager();
@@ -112,8 +119,10 @@ final class PermissionUtils {
     /**
      * 判断某个权限是否勾选了不再询问的选项
      */
-    @RequiresApi(api = AndroidVersionTools.ANDROID_6)
     static boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
+        if (!AndroidVersionTools.isAndroid6()) {
+            return false;
+        }
         return !isGrantedPermission(activity, permission) &&
             !shouldShowRequestPermissionRationale(activity, permission);
     }
