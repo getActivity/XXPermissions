@@ -189,13 +189,51 @@ final class PermissionHelper {
             DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.SMS);
         }
         // 定位权限组
-        List<String> locationPermissionGroup = Arrays.asList(Permission.ACCESS_COARSE_LOCATION,
+        List<String> locationPermissionGroup = PermissionUtils.asArrayList(Permission.ACCESS_COARSE_LOCATION,
                                                             Permission.ACCESS_FINE_LOCATION,
                                                             Permission.ACCESS_BACKGROUND_LOCATION);
+        // 蓝牙相关的权限组
+        List<String> bluetoothPermissions = Arrays.asList(Permission.BLUETOOTH_SCAN,
+                                                            Permission.BLUETOOTH_CONNECT,
+                                                            Permission.BLUETOOTH_ADVERTISE);
+
+        // WIFI 相关的权限组
+        String wifiPermission = Permission.NEARBY_WIFI_DEVICES;
+
+        // 附近设备权限
+        List<String> nearbyDevicesPermissionGroup;
+        if (AndroidVersionTools.isAndroid13())  {
+            nearbyDevicesPermissionGroup = new ArrayList<>(bluetoothPermissions.size() + 1);
+        } else {
+            nearbyDevicesPermissionGroup = new ArrayList<>(bluetoothPermissions.size());
+        }
+
+        // 注意：在 Android 12 的时候，蓝牙相关的权限已经归到附近设备的权限组了，但是在 Android 12 之前，蓝牙相关的权限归属定位权限组
+        if (AndroidVersionTools.isAndroid12())  {
+            nearbyDevicesPermissionGroup.addAll(bluetoothPermissions);
+        } else {
+            locationPermissionGroup.addAll(bluetoothPermissions);
+        }
+
+        // 注意：在 Android 13 的时候，WIFI 相关的权限已经归到附近设备的权限组了，但是在 Android 13 之前，WIFI 相关的权限归属定位权限组
+        if (AndroidVersionTools.isAndroid13())  {
+            nearbyDevicesPermissionGroup.add(wifiPermission);
+        } else {
+            locationPermissionGroup.add(wifiPermission);
+        }
+
+        if (!nearbyDevicesPermissionGroup.isEmpty()) {
+            DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.NEARBY_DEVICES, nearbyDevicesPermissionGroup);
+            for (String permission : nearbyDevicesPermissionGroup) {
+                DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.NEARBY_DEVICES);
+            }
+        }
+
         DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.LOCATION, locationPermissionGroup);
         for (String permission : locationPermissionGroup) {
             DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.LOCATION);
         }
+
         // 传感器权限组
         List<String> sensorsPermissionGroup = Arrays.asList(Permission.BODY_SENSORS,
                                                             Permission.BODY_SENSORS_BACKGROUND);
@@ -236,15 +274,6 @@ final class PermissionHelper {
             }
         }
 
-        // 附近设备权限组
-        List<String> nearbyDevicesPermissionGroup = Arrays.asList(Permission.BLUETOOTH_SCAN,
-                                                                Permission.BLUETOOTH_CONNECT,
-                                                                Permission.BLUETOOTH_ADVERTISE,
-                                                                Permission.NEARBY_WIFI_DEVICES);
-        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.NEARBY_DEVICES, nearbyDevicesPermissionGroup);
-        for (String permission : nearbyDevicesPermissionGroup) {
-            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.NEARBY_DEVICES);
-        }
         // 读取照片和视频媒体文件权限组
         List<String> imageAndVideoPermissionGroup = Arrays.asList(Permission.READ_MEDIA_IMAGES,
                                                                 Permission.READ_MEDIA_VIDEO,

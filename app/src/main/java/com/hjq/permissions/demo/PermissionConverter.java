@@ -46,7 +46,29 @@ final class PermissionConverter {
 
         PERMISSION_NAME_MAP.put(Permission.ACCESS_FINE_LOCATION, R.string.common_permission_location);
         PERMISSION_NAME_MAP.put(Permission.ACCESS_COARSE_LOCATION, R.string.common_permission_location);
-        PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_location, R.string.common_permission_description_demo);
+
+        // 注意：在 Android 12 的时候，蓝牙相关的权限已经归到附近设备的权限组了，但是在 Android 12 之前，蓝牙相关的权限归属定位权限组
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)  {
+            PERMISSION_NAME_MAP.put(Permission.BLUETOOTH_SCAN, R.string.common_permission_nearby_devices);
+            PERMISSION_NAME_MAP.put(Permission.BLUETOOTH_CONNECT, R.string.common_permission_nearby_devices);
+            PERMISSION_NAME_MAP.put(Permission.BLUETOOTH_ADVERTISE, R.string.common_permission_nearby_devices);
+            // 注意：在 Android 13 的时候，WIFI 相关的权限已经归到附近设备的权限组了，但是在 Android 13 之前，WIFI 相关的权限归属定位权限组
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)  {
+                PERMISSION_NAME_MAP.put(Permission.NEARBY_WIFI_DEVICES, R.string.common_permission_nearby_devices);
+                PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_nearby_devices, R.string.common_permission_description_demo);
+                PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_location, R.string.common_permission_description_demo);
+            } else {
+                PERMISSION_NAME_MAP.put(Permission.NEARBY_WIFI_DEVICES, R.string.common_permission_location);
+                PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_nearby_devices, R.string.common_permission_description_demo);
+                PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_location, R.string.common_permission_description_demo);
+            }
+        } else {
+            PERMISSION_NAME_MAP.put(Permission.BLUETOOTH_SCAN, R.string.common_permission_location);
+            PERMISSION_NAME_MAP.put(Permission.BLUETOOTH_CONNECT, R.string.common_permission_location);
+            PERMISSION_NAME_MAP.put(Permission.BLUETOOTH_ADVERTISE, R.string.common_permission_location);
+            PERMISSION_NAME_MAP.put(Permission.NEARBY_WIFI_DEVICES, R.string.common_permission_location);
+            PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_location, R.string.common_permission_description_demo);
+        }
 
         PERMISSION_NAME_MAP.put(Permission.ACCESS_BACKGROUND_LOCATION, R.string.common_permission_location_background);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_location_background, R.string.common_permission_description_demo);
@@ -56,12 +78,6 @@ final class PermissionConverter {
 
         PERMISSION_NAME_MAP.put(Permission.BODY_SENSORS_BACKGROUND, R.string.common_permission_body_sensors_background);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_body_sensors_background, R.string.common_permission_description_demo);
-
-        PERMISSION_NAME_MAP.put(Permission.BLUETOOTH_SCAN, R.string.common_permission_nearby_devices);
-        PERMISSION_NAME_MAP.put(Permission.BLUETOOTH_CONNECT, R.string.common_permission_nearby_devices);
-        PERMISSION_NAME_MAP.put(Permission.BLUETOOTH_ADVERTISE, R.string.common_permission_nearby_devices);
-        PERMISSION_NAME_MAP.put(Permission.NEARBY_WIFI_DEVICES, R.string.common_permission_nearby_devices);
-        PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_nearby_devices, R.string.common_permission_description_demo);
 
         PERMISSION_NAME_MAP.put(Permission.READ_PHONE_STATE, R.string.common_permission_phone);
         PERMISSION_NAME_MAP.put(Permission.CALL_PHONE, R.string.common_permission_phone);
