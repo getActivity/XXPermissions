@@ -91,7 +91,7 @@ final class PermissionHelper {
         PERMISSION_VERSION_MAP.put(Permission.ACCEPT_HANDOVER, AndroidVersionTools.ANDROID_9);
         PERMISSION_VERSION_MAP.put(Permission.ANSWER_PHONE_CALLS, AndroidVersionTools.ANDROID_8);
         PERMISSION_VERSION_MAP.put(Permission.READ_PHONE_NUMBERS, AndroidVersionTools.ANDROID_8);
-        PERMISSION_VERSION_MAP.put(Permission.GET_INSTALLED_APPS, AndroidVersionTools.ANDROID_6);
+        PERMISSION_VERSION_MAP.put(Permission.GET_INSTALLED_APPS, AndroidVersionTools.ANDROID_4_2);
         PERMISSION_VERSION_MAP.put(Permission.READ_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_6);
         PERMISSION_VERSION_MAP.put(Permission.WRITE_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_6);
         PERMISSION_VERSION_MAP.put(Permission.CAMERA, AndroidVersionTools.ANDROID_6);
