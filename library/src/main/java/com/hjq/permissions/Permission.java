@@ -197,13 +197,13 @@ public final class Permission {
     public static final String ACTIVITY_RECOGNITION = "android.permission.ACTIVITY_RECOGNITION";
 
     /**
-     * 读取照片中的地理位置（Android 10.0 新增的权限）
+     * 读取媒体文件的位置位置（Android 10.0 新增的权限）
      *
      * 需要注意的是：如果这个权限申请成功了但是不能正常读取照片的地理信息，那么需要先申请存储权限，具体可分别下面两种情况：
      *
      * 1. 如果适配了分区存储的情况下：
      *     1) 如果项目 targetSdkVersion <= 32 需要申请 {@link Permission#READ_EXTERNAL_STORAGE}
-     *     2) 如果项目 targetSdkVersion >= 33 需要申请 {@link Permission#READ_MEDIA_IMAGES}
+     *     2) 如果项目 targetSdkVersion >= 33 需要申请 {@link Permission#READ_MEDIA_IMAGES} 或 {@link Permission#READ_MEDIA_VIDEO}，并且需要全部授予，不能部分授予
      *
      * 2. 如果没有适配分区存储的情况下：
      *     1) 如果项目 targetSdkVersion <= 29 需要申请 {@link Permission#READ_EXTERNAL_STORAGE}
