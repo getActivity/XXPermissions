@@ -98,8 +98,14 @@ final class WindowPermissionCompat {
             return intent;
         }
 
+        // 经过测试，锤子手机 5.1 及以上的手机的可以直接通过直接跳转到应用详情开启悬浮窗权限，但是 4.4 以下的手机就不行，需要跳转到安全中心
+        if (PhoneRomUtils.isSmartisanOS() && !AndroidVersionTools.isAndroid5_1()) {
+            Intent intent = PermissionIntentManager.getSmartisanWindowPermissionPageIntent(context);
+            intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, PermissionIntentManager.getApplicationDetailsIntent(context));
+            return intent;
+        }
+
         // 360 第一部发布的手机是 360 N4，Android 版本是 6.0 了，所以根本不需要跳转到指定的页面开启悬浮窗权限
-        // 经过测试，锤子手机 6.0 以下手机的可以直接通过直接跳转到应用详情开启悬浮窗权限
         // 经过测试，魅族手机 6.0 可以直接通过直接跳转到应用详情开启悬浮窗权限
 
         return PermissionIntentManager.getApplicationDetailsIntent(context);

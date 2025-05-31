@@ -168,6 +168,14 @@ final class PermissionIntentManager {
         return getOneUiPermissionPageIntent(context);
     }
 
+    /**
+     * 获取锤子手机悬浮窗权限设置意图
+     */
+    @Nullable
+    static Intent getSmartisanWindowPermissionPageIntent(Context context) {
+        return getSmartisanPermissionPageIntent(context);
+    }
+
     /* ---------------------------------------------------------------------------------------- */
 
     @Nullable
@@ -273,6 +281,35 @@ final class PermissionIntentManager {
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;
         }
+        return null;
+    }
+
+    /**
+     * 获取锤子安全中心权限设置页意图
+     */
+    @Nullable
+    static Intent getSmartisanPermissionPageIntent(Context context) {
+        Intent intent = new Intent("com.smartisanos.security.action.PACKAGE_OVERVIEW");
+        if (PermissionUtils.areActivityIntent(context, intent)) {
+            return intent;
+        }
+
+        intent = new Intent();
+        intent.setClassName("com.smartisanos.security", "com.smartisanos.security.PackagesOverview");
+        if (PermissionUtils.areActivityIntent(context, intent)) {
+            return intent;
+        }
+
+        intent = context.getPackageManager().getLaunchIntentForPackage("com.smartisanos.security");
+        if (PermissionUtils.areActivityIntent(context, intent)) {
+            return intent;
+        }
+
+        intent = context.getPackageManager().getLaunchIntentForPackage("com.smartisanos.securitycenter");
+        if (PermissionUtils.areActivityIntent(context, intent)) {
+            return intent;
+        }
+
         return null;
     }
 

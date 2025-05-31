@@ -26,6 +26,7 @@ final class PhoneRomUtils {
     private static final String[] ROM_NUBIA     = {"nubia"};
     private static final String[] ROM_SAMSUNG = {"samsung"};
     private static final String[] ROM_HONOR = {"honor"};
+    private static final String[] ROM_SMARTISAN = {"smartisan"};
 
     private static final String ROM_NAME_MIUI = "ro.miui.ui.version.name";
     private static final String ROM_NAME_HYPER_OS = "ro.mi.os.version.name";
@@ -135,6 +136,13 @@ final class PhoneRomUtils {
      */
     static boolean isMagicOs() {
         return isRightRom(getBrand(), getManufacturer(), ROM_HONOR);
+    }
+
+    /**
+     * 判断当前是否为 SmartisanOS 系统（锤子手机的系统）
+     */
+    static boolean isSmartisanOS() {
+        return isRightRom(getBrand(), getManufacturer(), ROM_SMARTISAN);
     }
 
     /**
