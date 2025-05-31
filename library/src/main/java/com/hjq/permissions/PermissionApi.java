@@ -194,14 +194,13 @@ final class PermissionApi {
     }
 
     /**
-     * 通过新权限兼容旧权限
-     *
-     * @param requestPermissions            请求的权限组
+     * 根据新权限添加旧权限
      */
-    static List<String> compatibleOldPermissionByNewPermission(@NonNull List<String> requestPermissions) {
-        List<String> permissions = new ArrayList<>(requestPermissions);
+    static void compatibleOldPermissionByNewPermission(@NonNull List<String> requestPermissions) {
+        // 需要补充的权限列表
+        List<String> needSupplementPermissions =  null;
         for (String permission : requestPermissions) {
-            // 如果当前运行的 Android 版本大于权限出现的 Android 版本，则证明这个权限在当前设备上不用向下兼容
+            // 如果当前运行的 Android 版本大于权限出现的 Android 版本，则证明这个权限在当前设备上不用添加旧权限
             if (AndroidVersionTools.getCurrentAndroidVersionCode() >= PermissionHelper.findAndroidVersionByPermission(permission)) {
                 continue;
             }
@@ -212,22 +211,33 @@ final class PermissionApi {
             }
             for (String oldPermission : oldPermissions) {
                 // 如果请求列表已经包含此权限，就不重复添加，直接跳过
-                if (PermissionUtils.containsPermission(permissions, oldPermission)) {
+                if (PermissionUtils.containsPermission(requestPermissions, oldPermission)) {
                     continue;
                 }
-                // 添加旧版的权限
-                permissions.add(oldPermission);
+                if (needSupplementPermissions == null) {
+                    needSupplementPermissions = new ArrayList<>();
+                }
+                // 先检查一下有没有添加过，避免重复添加
+                if (PermissionUtils.containsPermission(needSupplementPermissions, oldPermission)) {
+                    continue;
+                }
+                // 添加旧版的权限到需要补充的权限列表中
+                // 这里解释一下为什么直接添加到 requestPermissions 对象？而是重新弄一个新的集合来存放
+                // 这是当前 for 循环正在遍历 requestPermissions 对象，如果在此时添加新的元素，会导致异常
+                needSupplementPermissions.add(oldPermission);
             }
         }
-        return permissions;
+
+        if (needSupplementPermissions == null || needSupplementPermissions.isEmpty()) {
+            return;
+        }
+        requestPermissions.addAll(needSupplementPermissions);
     }
 
     /**
-     * 优化权限的请求顺序
-     *
-     * @param requestPermissions            请求的权限组
+     * 调整权限的请求顺序
      */
-    static List<String> compatiblePermissionRequestSequence(@NonNull List<String> requestPermissions) {
+    static void compatiblePermissionRequestSequence(@NonNull List<String> requestPermissions) {
         List<String> lowLevelPermissions = PermissionHelper.getLowLevelPermissions();
         for (String lowLevelPermission : lowLevelPermissions) {
             if (!PermissionUtils.containsPermission(requestPermissions, lowLevelPermission)) {
@@ -236,7 +246,6 @@ final class PermissionApi {
             requestPermissions.remove(lowLevelPermission);
             requestPermissions.add(lowLevelPermission);
         }
-        return requestPermissions;
     }
 
     /**
