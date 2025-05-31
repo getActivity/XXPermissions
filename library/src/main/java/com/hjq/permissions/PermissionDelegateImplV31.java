@@ -28,10 +28,8 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
             return PermissionUtils.isGrantedPermission(context, permission);
         }
 
-        if (PermissionUtils.containsPermission(new String[] {
-            Permission.BLUETOOTH_CONNECT,
-            Permission.BLUETOOTH_ADVERTISE
-        }, permission)) {
+        if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_CONNECT) ||
+            PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_ADVERTISE)) {
             if (!AndroidVersionTools.isAndroid12()) {
                 return true;
             }
@@ -54,10 +52,8 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
             return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
-        if (PermissionUtils.containsPermission(new String[] {
-            Permission.BLUETOOTH_CONNECT,
-            Permission.BLUETOOTH_ADVERTISE
-        }, permission)) {
+        if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_CONNECT) ||
+            PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_ADVERTISE)) {
             if (!AndroidVersionTools.isAndroid12()) {
                 return false;
             }

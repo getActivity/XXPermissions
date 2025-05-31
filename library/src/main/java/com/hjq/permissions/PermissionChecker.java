@@ -332,10 +332,8 @@ final class PermissionChecker {
 
         for (AndroidManifestInfo.PermissionInfo permissionInfo : permissionInfoList) {
             // 必须是蓝牙扫描权限或者 WIFI 权限才需要走这个检查
-            if (!PermissionUtils.containsPermission(new String[] {
-                Permission.BLUETOOTH_SCAN,
-                Permission.NEARBY_WIFI_DEVICES
-            }, permissionInfo.name)) {
+            if (!PermissionUtils.equalsPermission(permissionInfo.name, Permission.BLUETOOTH_SCAN) &&
+                !PermissionUtils.equalsPermission(permissionInfo.name, Permission.NEARBY_WIFI_DEVICES)) {
                 continue;
             }
 
@@ -497,11 +495,9 @@ final class PermissionChecker {
                 // READ_MEDIA_VISUAL_USER_SELECTED 这个权限比较特殊，不需要调高 targetSdk 的版本才能申请，但是需要和 READ_MEDIA_IMAGES 和 READ_MEDIA_VIDEO 组合使用
                 // 这个权限不能单独申请，只能和 READ_MEDIA_IMAGES、READ_MEDIA_VIDEO 一起申请，否则会有问题，所以这个权限的 targetSdk 最低要求为 33 及以上
                 targetSdkMinVersion = AndroidVersionTools.ANDROID_13;
-            } else if (PermissionUtils.containsPermission(new String[] {
-                Permission.BLUETOOTH_SCAN,
-                Permission.BLUETOOTH_CONNECT,
-                Permission.BLUETOOTH_ADVERTISE
-            }, permission)) {
+            } else if (PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_SCAN) ||
+                        PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_CONNECT) ||
+                        PermissionUtils.equalsPermission(permission, Permission.BLUETOOTH_ADVERTISE)) {
                 // 部分厂商修改了蓝牙权限机制，在 targetSdk 不满足条件的情况下（小于 31），仍需要让应用申请这个权限
                 // 相关的 issue 地址：
                 // 1. https://github.com/getActivity/XXPermissions/issues/123
@@ -585,11 +581,9 @@ final class PermissionChecker {
             }
 
             // Android 13
-            if (PermissionUtils.containsPermission(new String[] {
-                Permission.READ_MEDIA_IMAGES,
-                Permission.READ_MEDIA_VIDEO,
-                Permission.READ_MEDIA_AUDIO
-            }, permission)) {
+            if (PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES) ||
+                PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO) ||
+                PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO)) {
                 checkManifestPermission(permissionInfoList, Permission.READ_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_12_L);
                 continue;
             }

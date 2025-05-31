@@ -38,11 +38,9 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
             return PermissionUtils.isGrantedPermission(context, permission);
         }
 
-        if (PermissionUtils.containsPermission(new String[] {
-            Permission.READ_MEDIA_IMAGES,
-            Permission.READ_MEDIA_VIDEO,
-            Permission.READ_MEDIA_AUDIO
-        }, permission)) {
+        if (PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES) ||
+            PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO) ||
+            PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO)) {
             if (!AndroidVersionTools.isAndroid13()) {
                 return PermissionUtils.isGrantedPermission(context, Permission.READ_EXTERNAL_STORAGE);
             }
@@ -88,11 +86,9 @@ class PermissionDelegateImplV33 extends PermissionDelegateImplV31 {
             return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
-        if (PermissionUtils.containsPermission(new String[] {
-            Permission.READ_MEDIA_IMAGES,
-            Permission.READ_MEDIA_VIDEO,
-            Permission.READ_MEDIA_AUDIO
-        }, permission)) {
+        if (PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES) ||
+            PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO) ||
+            PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_AUDIO)) {
             if (!AndroidVersionTools.isAndroid13()) {
                 return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.READ_EXTERNAL_STORAGE);
             }

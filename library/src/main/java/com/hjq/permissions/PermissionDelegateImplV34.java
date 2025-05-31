@@ -22,9 +22,8 @@ class PermissionDelegateImplV34 extends PermissionDelegateImplV33 {
         }
 
         if (requestFlag && AndroidVersionTools.isAndroid14() &&
-                        PermissionUtils.containsPermission(new String[] {
-                                                            Permission.READ_MEDIA_IMAGES,
-                                                            Permission.READ_MEDIA_VIDEO}, permission)) {
+                (PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_IMAGES) ||
+                 PermissionUtils.equalsPermission(permission, Permission.READ_MEDIA_VIDEO))) {
             // 如果是在 Android 14 上面，并且是图片权限或者视频权限，则需要重新检查权限的状态
             // 这是因为用户授权部分图片或者视频的时候，READ_MEDIA_VISUAL_USER_SELECTED 权限状态是授予的
             // 但是 READ_MEDIA_IMAGES 和 READ_MEDIA_VIDEO 的权限状态是拒绝的

@@ -345,10 +345,6 @@ final class PermissionUtils {
     /**
      * 判断权限集合中是否包含某个权限
      */
-    static boolean containsPermission(@NonNull String[] permissions, @NonNull String permission) {
-        return containsPermission(PermissionUtils.asArrayList(permissions), permission);
-    }
-
     static boolean containsPermission(@NonNull Collection<String> permissions, @NonNull String permission) {
         if (permissions.isEmpty()) {
             return false;

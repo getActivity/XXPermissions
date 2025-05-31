@@ -56,12 +56,10 @@ class PermissionDelegateImplV23 extends PermissionDelegateImplV21 {
             return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
-        if (PermissionUtils.containsPermission(new String[] {
-            Permission.SYSTEM_ALERT_WINDOW,
-            Permission.WRITE_SETTINGS,
-            Permission.ACCESS_NOTIFICATION_POLICY,
-            Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
-        }, permission)) {
+        if (PermissionUtils.equalsPermission(permission, Permission.SYSTEM_ALERT_WINDOW) ||
+            PermissionUtils.equalsPermission(permission, Permission.WRITE_SETTINGS) ||
+            PermissionUtils.equalsPermission(permission, Permission.ACCESS_NOTIFICATION_POLICY) ||
+            PermissionUtils.equalsPermission(permission, Permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)) {
             return false;
         }
 
