@@ -23,7 +23,10 @@ public final class NotificationMonitorService extends NotificationListenerServic
      */
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
-        super.onNotificationPosted(sbn);
+        // 需要注释掉回调 super.onNotificationPosted 的调用，测试在原生 Android 4.3 版本会触发崩溃
+        // 但是测试在原生 Android 5.0 的版本却没有这个问题，证明这个是一个历史遗留问题
+        // java.lang.AbstractMethodError: abstract method not implemented
+        // super.onNotificationPosted(sbn);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             return;
         }
@@ -45,6 +48,9 @@ public final class NotificationMonitorService extends NotificationListenerServic
      */
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
-        super.onNotificationRemoved(sbn);
+        // 需要注释掉回调 super.onNotificationRemoved 的调用，测试在原生 Android 4.3 版本会触发崩溃
+        // 但是测试在原生 Android 5.0 的版本却没有这个问题，证明这个是一个历史遗留问题
+        // java.lang.AbstractMethodError: abstract method not implemented
+        // super.onNotificationRemoved(sbn);
     }
 }
