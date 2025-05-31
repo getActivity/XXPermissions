@@ -3,7 +3,6 @@ package com.hjq.permissions;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -158,28 +157,28 @@ final class PermissionHelper {
         /* ---------------------------------------------------------------------------------------------------- */
 
         // 存储权限组
-        List<String> storagePermissionGroup = Arrays.asList(Permission.READ_EXTERNAL_STORAGE,
+        List<String> storagePermissionGroup = PermissionUtils.asArrayList(Permission.READ_EXTERNAL_STORAGE,
                                                             Permission.WRITE_EXTERNAL_STORAGE);
         DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.STORAGE, storagePermissionGroup);
         for (String permission : storagePermissionGroup) {
             DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.STORAGE);
         }
         // 日历权限组
-        List<String> calendarPermissionGroup = Arrays.asList(Permission.READ_CALENDAR,
+        List<String> calendarPermissionGroup = PermissionUtils.asArrayList(Permission.READ_CALENDAR,
                                                             Permission.WRITE_CALENDAR);
         DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.CALENDAR, calendarPermissionGroup);
         for (String permission : calendarPermissionGroup) {
             DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.CALENDAR);
         }
         // 联系人权限组
-        List<String> contactsPermissionGroup = Arrays.asList(Permission.READ_CONTACTS,
+        List<String> contactsPermissionGroup = PermissionUtils.asArrayList(Permission.READ_CONTACTS,
                                                             Permission.WRITE_CONTACTS);
         DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.CONTACTS, contactsPermissionGroup);
         for (String permission : contactsPermissionGroup) {
             DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.CONTACTS);
         }
         // 短信权限组
-        List<String> smsPermissionGroup = Arrays.asList(Permission.SEND_SMS,
+        List<String> smsPermissionGroup = PermissionUtils.asArrayList(Permission.SEND_SMS,
                                                         Permission.READ_SMS,
                                                         Permission.RECEIVE_SMS,
                                                         Permission.RECEIVE_WAP_PUSH,
@@ -193,7 +192,7 @@ final class PermissionHelper {
                                                             Permission.ACCESS_FINE_LOCATION,
                                                             Permission.ACCESS_BACKGROUND_LOCATION);
         // 蓝牙相关的权限组
-        List<String> bluetoothPermissions = Arrays.asList(Permission.BLUETOOTH_SCAN,
+        List<String> bluetoothPermissions = PermissionUtils.asArrayList(Permission.BLUETOOTH_SCAN,
                                                             Permission.BLUETOOTH_CONNECT,
                                                             Permission.BLUETOOTH_ADVERTISE);
 
@@ -235,21 +234,21 @@ final class PermissionHelper {
         }
 
         // 传感器权限组
-        List<String> sensorsPermissionGroup = Arrays.asList(Permission.BODY_SENSORS,
+        List<String> sensorsPermissionGroup = PermissionUtils.asArrayList(Permission.BODY_SENSORS,
                                                             Permission.BODY_SENSORS_BACKGROUND);
         DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.SENSORS, sensorsPermissionGroup);
         for (String permission : sensorsPermissionGroup) {
             DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.SENSORS);
         }
         // 电话权限组和通话记录权限组
-        List<String> phonePermissionGroup = Arrays.asList(Permission.READ_PHONE_STATE,
+        List<String> phonePermissionGroup = PermissionUtils.asArrayList(Permission.READ_PHONE_STATE,
                                                             Permission.CALL_PHONE,
                                                             Permission.ADD_VOICEMAIL,
                                                             Permission.USE_SIP,
                                                             Permission.READ_PHONE_NUMBERS,
                                                             Permission.ANSWER_PHONE_CALLS,
                                                             Permission.ACCEPT_HANDOVER);
-        List<String> callLogPermissionGroup = Arrays.asList(Permission.READ_CALL_LOG,
+        List<String> callLogPermissionGroup = PermissionUtils.asArrayList(Permission.READ_CALL_LOG,
                                                         Permission.WRITE_CALL_LOG,
                                                         Permission.PROCESS_OUTGOING_CALLS);
 
@@ -275,7 +274,7 @@ final class PermissionHelper {
         }
 
         // 读取照片和视频媒体文件权限组
-        List<String> imageAndVideoPermissionGroup = Arrays.asList(Permission.READ_MEDIA_IMAGES,
+        List<String> imageAndVideoPermissionGroup = PermissionUtils.asArrayList(Permission.READ_MEDIA_IMAGES,
                                                                 Permission.READ_MEDIA_VIDEO,
                                                                 Permission.READ_MEDIA_VISUAL_USER_SELECTED);
         DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.IMAGE_AND_VIDEO_MEDIA, imageAndVideoPermissionGroup);

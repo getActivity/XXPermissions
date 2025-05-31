@@ -27,7 +27,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
 import org.xmlpull.v1.XmlPullParserException;
@@ -347,7 +346,7 @@ final class PermissionUtils {
      * 判断权限集合中是否包含某个权限
      */
     static boolean containsPermission(@NonNull String[] permissions, @NonNull String permission) {
-        return containsPermission(Arrays.asList(permissions), permission);
+        return containsPermission(PermissionUtils.asArrayList(permissions), permission);
     }
 
     static boolean containsPermission(@NonNull Collection<String> permissions, @NonNull String permission) {
