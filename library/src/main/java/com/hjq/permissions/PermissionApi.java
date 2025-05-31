@@ -66,7 +66,7 @@ final class PermissionApi {
     /**
      * 判断某个权限集合是否包含特殊权限
      */
-    static boolean containsSpecialPermission(List<String> permissions) {
+    static boolean containsSpecialPermission(@Nullable List<String> permissions) {
         if (permissions == null || permissions.isEmpty()) {
             return false;
         }
@@ -82,7 +82,7 @@ final class PermissionApi {
     /**
      * 判断某个权限集合是否包含后台权限
      */
-    static boolean containsBackgroundPermission(List<String> permissions) {
+    static boolean containsBackgroundPermission(@Nullable List<String> permissions) {
         if (permissions == null || permissions.isEmpty()) {
             return false;
         }
