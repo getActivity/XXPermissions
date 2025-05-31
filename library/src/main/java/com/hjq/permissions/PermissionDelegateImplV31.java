@@ -16,7 +16,7 @@ import android.support.annotation.NonNull;
 class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
 
     @Override
-    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean skipRequest) {
         if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
             return isGrantedAlarmPermission(context);
         }
@@ -36,7 +36,7 @@ class PermissionDelegateImplV31 extends PermissionDelegateImplV30 {
             return PermissionUtils.isGrantedPermission(context, permission);
         }
 
-        return super.isGrantedPermission(context, permission, requestFlag);
+        return super.isGrantedPermission(context, permission, skipRequest);
     }
 
     @Override

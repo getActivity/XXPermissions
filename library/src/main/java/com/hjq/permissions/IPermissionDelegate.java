@@ -16,7 +16,7 @@ public interface IPermissionDelegate {
     /**
      * 判断某个权限是否授予了
      */
-    boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag);
+    boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean skipRequest);
 
     /**
      * 判断某个权限是否勾选了不再询问

@@ -13,7 +13,7 @@ import android.support.annotation.NonNull;
 class PermissionDelegateImplV28 extends PermissionDelegateImplV26 {
 
     @Override
-    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean skipRequest) {
         if (PermissionUtils.equalsPermission(permission, Permission.ACCEPT_HANDOVER)) {
             if (!AndroidVersionTools.isAndroid9()) {
                 return true;
@@ -21,7 +21,7 @@ class PermissionDelegateImplV28 extends PermissionDelegateImplV26 {
             return PermissionUtils.isGrantedPermission(context, permission);
         }
 
-        return super.isGrantedPermission(context, permission, requestFlag);
+        return super.isGrantedPermission(context, permission, skipRequest);
     }
 
     @Override

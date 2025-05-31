@@ -16,7 +16,7 @@ import java.util.Collections;
 class PermissionDelegateImpl implements IPermissionDelegate {
 
     @Override
-    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean skipRequest) {
         if (PermissionUtils.equalsPermission(permission, Permission.BIND_VPN_SERVICE)) {
             return isGrantedVpnPermission(context);
         }

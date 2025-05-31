@@ -301,7 +301,7 @@ final class RequestPermissionLogicPresenter {
         List<String> deniedPermissions = new ArrayList<>(requestPermissions.size());
         // 遍历请求的权限，并且根据权限的授权状态进行分类
         for (String permission : requestPermissions) {
-            if (PermissionApi.isGrantedPermission(activity, permission, true)) {
+            if (PermissionApi.isGrantedPermission(activity, permission, false)) {
                 grantedPermissions.add(permission);
             } else {
                 deniedPermissions.add(permission);

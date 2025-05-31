@@ -16,12 +16,12 @@ import android.support.annotation.NonNull;
 class PermissionDelegateImplV21 extends PermissionDelegateImplV19 {
 
     @Override
-    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean skipRequest) {
         if (PermissionUtils.equalsPermission(permission, Permission.PACKAGE_USAGE_STATS)) {
             return isGrantedPackagePermission(context);
         }
 
-        return super.isGrantedPermission(context, permission, requestFlag);
+        return super.isGrantedPermission(context, permission, skipRequest);
     }
 
     @Override

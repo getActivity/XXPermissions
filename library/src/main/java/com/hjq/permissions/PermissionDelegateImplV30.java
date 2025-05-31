@@ -17,7 +17,7 @@ import android.support.annotation.RequiresApi;
 class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
 
     @Override
-    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean skipRequest) {
         if (PermissionUtils.equalsPermission(permission, Permission.MANAGE_EXTERNAL_STORAGE)) {
             if (!AndroidVersionTools.isAndroid11()) {
                 // 这个是 Android 10 上面的历史遗留问题，假设申请的是 MANAGE_EXTERNAL_STORAGE 权限
@@ -31,7 +31,7 @@ class PermissionDelegateImplV30 extends PermissionDelegateImplV29 {
             return isGrantedManageStoragePermission();
         }
 
-        return super.isGrantedPermission(context, permission, requestFlag);
+        return super.isGrantedPermission(context, permission, skipRequest);
     }
 
     @Override

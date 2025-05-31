@@ -23,14 +23,16 @@ final class PermissionApi {
      * 判断某个权限是否授予
      */
     static boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
-        return isGrantedPermission(context, permission, false);
+        return isGrantedPermission(context, permission, true);
     }
 
     /**
      * 判断某个权限是否授予
+     *
+     * @param skipRequest           是否跳过权限请求，直接判断权限状态
      */
-    static boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
-        return DELEGATE.isGrantedPermission(context, permission, requestFlag);
+    static boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean skipRequest) {
+        return DELEGATE.isGrantedPermission(context, permission, skipRequest);
     }
 
     /**

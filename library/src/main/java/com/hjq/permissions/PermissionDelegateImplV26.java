@@ -16,7 +16,7 @@ import android.support.annotation.NonNull;
 class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
 
     @Override
-    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
+    public boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean skipRequest) {
         if (PermissionUtils.equalsPermission(permission, Permission.REQUEST_INSTALL_PACKAGES)) {
             return isGrantedInstallPermission(context);
         }
@@ -39,7 +39,7 @@ class PermissionDelegateImplV26 extends PermissionDelegateImplV23 {
             return PermissionUtils.isGrantedPermission(context, permission);
         }
 
-        return super.isGrantedPermission(context, permission, requestFlag);
+        return super.isGrantedPermission(context, permission, skipRequest);
     }
 
     @Override
