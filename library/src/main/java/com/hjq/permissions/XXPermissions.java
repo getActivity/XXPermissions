@@ -26,7 +26,7 @@ public final class XXPermissions {
     private static OnPermissionInterceptor sPermissionInterceptor;
 
     /** 设置权限请求描述 */
-    private static Class<OnPermissionDescription> sPermissionDescriptionClass;
+    private static Class<? extends OnPermissionDescription> sPermissionDescriptionClass;
 
     /** 当前是否为检查模式 */
     private static Boolean sCheckMode;
@@ -79,7 +79,7 @@ public final class XXPermissions {
      * 这里解释一下，为什么不开放普通对象，而是只开放 Class 对象，这是因为如果用普通对象，那么就会导致全局都复用这一个对象
      * 而这个会带来一个后果，就是可能出现类内部字段的使用冲突，为了避免这一个问题，最好的解决方案是不去复用同一个对象
      */
-    public static void setPermissionDescription(Class<OnPermissionDescription> permissionDescriptionClass) {
+    public static void setPermissionDescription(Class<? extends OnPermissionDescription> permissionDescriptionClass) {
         sPermissionDescriptionClass = permissionDescriptionClass;
     }
 
