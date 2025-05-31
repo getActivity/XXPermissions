@@ -196,7 +196,7 @@ final class PermissionApi {
     /**
      * 根据新权限添加旧权限
      */
-    static void compatibleOldPermissionByNewPermission(@NonNull List<String> requestPermissions) {
+    static void addOldPermissionsByNewPermissions(@NonNull List<String> requestPermissions) {
         // 需要补充的权限列表
         List<String> needSupplementPermissions =  null;
         for (String permission : requestPermissions) {
@@ -237,12 +237,16 @@ final class PermissionApi {
     /**
      * 调整权限的请求顺序
      */
-    static void compatiblePermissionRequestSequence(@NonNull List<String> requestPermissions) {
+    static void adjustPermissionsSort(@NonNull List<String> requestPermissions) {
+        // 获取低等级权限列表
         List<String> lowLevelPermissions = PermissionHelper.getLowLevelPermissions();
         for (String lowLevelPermission : lowLevelPermissions) {
             if (!PermissionUtils.containsPermission(requestPermissions, lowLevelPermission)) {
                 continue;
             }
+            // 如果请求的权限中包含这个低等级权限，则先删除再添加，这个权限就会排到最后面了
+            // 这样做的好处在于，可以避免出现的一种情况，当前这个权限严重依赖其他权限
+            // 例如：ACCESS_MEDIA_LOCATION 权限需要已授予存储相关权限的情况下才可以申请成功
             requestPermissions.remove(lowLevelPermission);
             requestPermissions.add(lowLevelPermission);
         }

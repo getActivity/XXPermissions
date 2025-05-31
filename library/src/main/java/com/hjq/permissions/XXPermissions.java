@@ -279,9 +279,9 @@ public final class XXPermissions {
         }
 
         // 优化所申请的权限列表
-        PermissionApi.compatibleOldPermissionByNewPermission(permissions);
+        PermissionApi.addOldPermissionsByNewPermissions(permissions);
         // 优化申请的权限顺序
-        PermissionApi.compatiblePermissionRequestSequence(permissions);
+        PermissionApi.adjustPermissionsSort(permissions);
 
         // 检查 Activity 是不是不可用
         if (PermissionUtils.isActivityUnavailable(activity)) {
