@@ -198,38 +198,35 @@ final class PermissionApi {
             return PermissionIntentManager.getApplicationDetailsIntent(context);
         }
 
-        // 危险权限统一处理
-        if (!PermissionApi.containsSpecialPermission(permissions)) {
-            if (permissions.size() == 1) {
-                return PermissionApi.getPermissionSettingIntent(context, permissions.get(0));
+        // 创建一个新的集合对象，避免复用对象可能引发外层的冲突
+        List<String> realPermissions = new ArrayList<>(permissions);
+        for (String permission : permissions) {
+            if (PermissionHelper.findAndroidVersionByPermission(permission) >
+                            AndroidVersionTools.getCurrentAndroidVersionCode()) {
+                // 如果当前权限是高版本才出现的权限，则进行剔除
+                realPermissions.remove(permission);
+                continue;
             }
-            return PermissionIntentManager.getApplicationDetailsIntent(context, permissions);
+
+            List<String> oldPermissions = PermissionUtils.asArrayList(PermissionHelper.queryOldPermissionByNewPermission(permission));
+            // 1. 如果旧版本列表不为空，并且当前权限是特殊权限，就剔除它对应的旧版本权限
+            // 例如：MANAGE_EXTERNAL_STORAGE -> READ_EXTERNAL_STORAGE、WRITE_EXTERNAL_STORAGE
+            // 2. 如果旧版本列表不为空，并且当前权限对应的旧版本权限包含了特殊权限，就剔除它对应的旧版本权限
+            // 例如：POST_NOTIFICATIONS -> NOTIFICATION_SERVICE
+            if (!oldPermissions.isEmpty() && (isSpecialPermission(permission) || containsSpecialPermission(oldPermissions))) {
+                realPermissions.removeAll(oldPermissions);
+            }
         }
 
-        // 特殊权限统一处理
-        switch (permissions.size()) {
-            case 1:
-                // 如果当前只有一个权限被拒绝了
-                return PermissionApi.getPermissionSettingIntent(context, permissions.get(0));
-            case 2:
-                if (!AndroidVersionTools.isAndroid13() &&
-                    PermissionUtils.containsPermission(permissions, Permission.NOTIFICATION_SERVICE) &&
-                    PermissionUtils.containsPermission(permissions, Permission.POST_NOTIFICATIONS)) {
-                    return PermissionApi.getPermissionSettingIntent(context, Permission.NOTIFICATION_SERVICE);
-                }
-                break;
-            case 3:
-                if (AndroidVersionTools.isAndroid11() &&
-                    PermissionUtils.containsPermission(permissions, Permission.MANAGE_EXTERNAL_STORAGE) &&
-                    PermissionUtils.containsPermission(permissions, Permission.READ_EXTERNAL_STORAGE) &&
-                    PermissionUtils.containsPermission(permissions, Permission.WRITE_EXTERNAL_STORAGE)) {
-                    return PermissionApi.getPermissionSettingIntent(context, Permission.MANAGE_EXTERNAL_STORAGE);
-                }
-                break;
-            default:
-                break;
+        if (realPermissions.isEmpty()) {
+            return PermissionIntentManager.getApplicationDetailsIntent(context);
         }
-        return PermissionIntentManager.getApplicationDetailsIntent(context);
+
+        if (realPermissions.size() == 1) {
+            return PermissionApi.getPermissionSettingIntent(context, realPermissions.get(0));
+        }
+
+        return PermissionIntentManager.getApplicationDetailsIntent(context, realPermissions);
     }
 
     /**
