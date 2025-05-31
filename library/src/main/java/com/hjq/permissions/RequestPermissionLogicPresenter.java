@@ -297,13 +297,16 @@ final class RequestPermissionLogicPresenter {
             return;
         }
 
-        int[] grantResults = new int[requestPermissions.size()];
-        for (int i = 0; i < grantResults.length; i++) {
-            grantResults[i] = PermissionApi.getPermissionResult(activity, requestPermissions.get(i));
+        List<String> grantedPermissions = new ArrayList<>(requestPermissions.size());
+        List<String> deniedPermissions = new ArrayList<>(requestPermissions.size());
+        // 遍历请求的权限，并且根据权限的授权状态进行分类
+        for (String permission : requestPermissions) {
+            if (PermissionApi.isGrantedPermission(activity, permission, true)) {
+                grantedPermissions.add(permission);
+            } else {
+                deniedPermissions.add(permission);
+            }
         }
-
-        // 获取已授予的权限
-        List<String> grantedPermissions = PermissionApi.getGrantedPermissions(requestPermissions, grantResults);
 
         // 如果请求成功的权限集合大小和请求的数组一样大时证明权限已经全部授予
         if (grantedPermissions.size() == requestPermissions.size()) {
@@ -315,9 +318,6 @@ final class RequestPermissionLogicPresenter {
             postDelayedUnlockActivityOrientation(activity);
             return;
         }
-
-        // 获取被拒绝的权限
-        List<String> deniedPermissions = PermissionApi.getDeniedPermissions(requestPermissions, grantResults);
 
         // 代表申请的权限中有不同意授予的，如果有某个权限被永久拒绝就返回 true 给开发人员，让开发者引导用户去设置界面开启权限
         interceptor.deniedPermissionRequest(activity, requestPermissions, deniedPermissions,

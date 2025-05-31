@@ -3,7 +3,6 @@ package com.hjq.permissions;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import java.util.ArrayList;
@@ -24,15 +23,14 @@ final class PermissionApi {
      * 判断某个权限是否授予
      */
     static boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
-        return DELEGATE.isGrantedPermission(context, permission, false);
+        return isGrantedPermission(context, permission, false);
     }
 
     /**
-     * 获取权限回调的结果
+     * 判断某个权限是否授予
      */
-    static int getPermissionResult(@NonNull Context context, @NonNull String permission) {
-        return DELEGATE.isGrantedPermission(context, permission, true) ?
-                        PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
+    static boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean requestFlag) {
+        return DELEGATE.isGrantedPermission(context, permission, requestFlag);
     }
 
     /**
@@ -151,40 +149,6 @@ final class PermissionApi {
             }
         }
         return false;
-    }
-
-    /**
-     * 获取没有授予的权限
-     *
-     * @param permissions           需要请求的权限组
-     * @param grantResults          允许结果组
-     */
-    static List<String> getDeniedPermissions(@NonNull List<String> permissions, @NonNull int[] grantResults) {
-        List<String> deniedPermissions = new ArrayList<>();
-        for (int i = 0; i < grantResults.length; i++) {
-            // 把没有授予过的权限加入到集合中
-            if (grantResults[i] == PackageManager.PERMISSION_DENIED) {
-                deniedPermissions.add(permissions.get(i));
-            }
-        }
-        return deniedPermissions;
-    }
-
-    /**
-     * 获取已授予的权限
-     *
-     * @param permissions       需要请求的权限组
-     * @param grantResults      允许结果组
-     */
-    static List<String> getGrantedPermissions(@NonNull List<String> permissions, @NonNull int[] grantResults) {
-        List<String> grantedPermissions = new ArrayList<>();
-        for (int i = 0; i < grantResults.length; i++) {
-            // 把授予过的权限加入到集合中
-            if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                grantedPermissions.add(permissions.get(i));
-            }
-        }
-        return grantedPermissions;
     }
 
     /**
