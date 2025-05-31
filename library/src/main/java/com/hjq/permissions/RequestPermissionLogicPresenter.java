@@ -130,7 +130,7 @@ final class RequestPermissionLogicPresenter {
         for (String permission : requestPermissions) {
 
             // 如果这个权限在前面已经处理过了，就不再处理
-            if (alreadyDonePermissions.contains(permission)) {
+            if (PermissionUtils.containsPermission(alreadyDonePermissions, permission)) {
                 continue;
             }
             alreadyDonePermissions.add(permission);
@@ -171,7 +171,7 @@ final class RequestPermissionLogicPresenter {
             while (iterator.hasNext()) {
                 String dangerousPermission = iterator.next();
                 // 如果这个危险权限在前面已经处理过了，就不再处理
-                if (alreadyDonePermissions.contains(dangerousPermission)) {
+                if (PermissionUtils.containsPermission(alreadyDonePermissions, dangerousPermission)) {
                     continue;
                 }
                 alreadyDonePermissions.add(dangerousPermission);
@@ -184,7 +184,7 @@ final class RequestPermissionLogicPresenter {
                 }
 
                 // 判断申请的权限列表中是否有包含权限组中的权限
-                if (!requestPermissions.contains(dangerousPermission)) {
+                if (!PermissionUtils.containsPermission(requestPermissions, dangerousPermission)) {
                     // 如果不包含的话，就从权限组中移除
                     iterator.remove();
                 }
