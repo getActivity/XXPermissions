@@ -97,7 +97,18 @@ public final class XXPermissions {
             }
         }
         if (permissionDescription == null) {
-            permissionDescription = new OnPermissionDescription() {};
+            permissionDescription = new OnPermissionDescription() {
+
+                @Override
+                public void onRequestPermissionStart(@NonNull Activity activity, @NonNull List<String> requestPermissions) {
+                    // default implementation ignored
+                }
+
+                @Override
+                public void onRequestPermissionEnd(@NonNull Activity activity, @NonNull List<String> requestPermissions) {
+                    // default implementation ignored
+                }
+            };
         }
         return permissionDescription;
     }

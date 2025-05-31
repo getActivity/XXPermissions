@@ -57,7 +57,7 @@ public final class PermissionDescription implements OnPermissionDescription {
 
     @Override
     public void askWhetherRequestPermission(@NonNull Activity activity, @NonNull List<String> requestPermissions,
-                                            @NonNull Runnable confirmRequestRunnable, @NonNull Runnable cancelRequestRunnable) {
+                                            @NonNull Runnable continueRequestRunnable, @NonNull Runnable breakRequestRunnable) {
         if (XXPermissions.containsSpecialPermission(requestPermissions)) {
             // 如果请求的权限中包含特殊权限，那么就用 Dialog 来展示权限说明弹窗
             mDescriptionWindowType = DESCRIPTION_WINDOW_TYPE_DIALOG;
@@ -73,7 +73,7 @@ public final class PermissionDescription implements OnPermissionDescription {
         }
 
         if (mDescriptionWindowType == DESCRIPTION_WINDOW_TYPE_POPUP) {
-            confirmRequestRunnable.run();
+            continueRequestRunnable.run();
             return;
         }
 
@@ -81,10 +81,10 @@ public final class PermissionDescription implements OnPermissionDescription {
             generatePermissionDescription(activity, requestPermissions),
             activity.getString(R.string.common_permission_granted), (dialog, which) -> {
                 dialog.dismiss();
-                confirmRequestRunnable.run();
+                continueRequestRunnable.run();
             }, activity.getString(R.string.common_permission_denied), (dialog, which) -> {
                 dialog.dismiss();
-                cancelRequestRunnable.run();
+                breakRequestRunnable.run();
             });
     }
 

@@ -243,7 +243,7 @@ final class RequestPermissionLogicPresenter {
             return;
         }
 
-        Runnable confirmRequestRunnable = () -> fragmentFactory.createAndCommitFragment(permissions, permissionType, new OnPermissionFlowCallback() {
+        Runnable continueRequestRunnable = () -> fragmentFactory.createAndCommitFragment(permissions, permissionType, new OnPermissionFlowCallback() {
 
             @Override
             public void onRequestPermissionNow() {
@@ -262,7 +262,7 @@ final class RequestPermissionLogicPresenter {
             }
         });
 
-        permissionDescription.askWhetherRequestPermission(activity, permissions, confirmRequestRunnable, finishRunnable);
+        permissionDescription.askWhetherRequestPermission(activity, permissions, continueRequestRunnable, finishRunnable);
     }
 
     /**

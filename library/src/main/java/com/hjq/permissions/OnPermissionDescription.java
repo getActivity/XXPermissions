@@ -17,17 +17,29 @@ public interface OnPermissionDescription {
      *
      * @param activity                      Activity 对象
      * @param requestPermissions            请求的权限
-     * @param confirmRequestRunnable        确认按钮
-     * @param cancelRequestRunnable
+     * @param continueRequestRunnable       继续请求任务对象
+     * @param breakRequestRunnable          中断请求任务对象
      */
     default void askWhetherRequestPermission(@NonNull Activity activity,
                                             @NonNull List<String> requestPermissions,
-                                            @NonNull Runnable confirmRequestRunnable,
-                                            @NonNull Runnable cancelRequestRunnable) {
-        confirmRequestRunnable.run();
+                                            @NonNull Runnable continueRequestRunnable,
+                                            @NonNull Runnable breakRequestRunnable) {
+        continueRequestRunnable.run();
     }
 
-    default void onRequestPermissionStart(@NonNull Activity activity, @NonNull List<String> requestPermissions) {}
+    /**
+     * 权限请求开始
+     *
+     * @param activity                      Activity 对象
+     * @param requestPermissions            请求的权限
+     */
+    void onRequestPermissionStart(@NonNull Activity activity, @NonNull List<String> requestPermissions);
 
-    default void onRequestPermissionEnd(@NonNull Activity activity, @NonNull List<String> requestPermissions) {}
+    /**
+     * 权限请求结束
+     *
+     * @param activity                      Activity 对象
+     * @param requestPermissions            请求的权限
+     */
+    void onRequestPermissionEnd(@NonNull Activity activity, @NonNull List<String> requestPermissions);
 }
