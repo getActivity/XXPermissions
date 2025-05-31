@@ -154,11 +154,9 @@ final class PermissionApi {
     }
 
     /**
-     * 根据传入的权限自动选择最合适的权限设置页
-     *
-     * @param permissions                 请求失败的权限
+     * 根据传入的权限自动选择最合适的权限设置页的意图
      */
-    static Intent getSmartPermissionIntent(@NonNull Context context, @Nullable List<String> permissions) {
+    static Intent getBestPermissionSettingIntent(@NonNull Context context, @Nullable List<String> permissions) {
         // 如果失败的权限里面不包含特殊权限
         if (permissions == null || permissions.isEmpty()) {
             return PermissionIntentManager.getApplicationDetailsIntent(context);

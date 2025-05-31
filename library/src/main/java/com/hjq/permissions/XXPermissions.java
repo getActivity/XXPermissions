@@ -498,7 +498,7 @@ public final class XXPermissions {
             startPermissionActivity(activity, permissions);
             return;
         }
-        Intent intent = PermissionApi.getSmartPermissionIntent(context, permissions);
+        Intent intent = PermissionApi.getBestPermissionSettingIntent(context, permissions);
         if (!(context instanceof Activity)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
@@ -529,7 +529,7 @@ public final class XXPermissions {
     public static void startPermissionActivity(@NonNull Activity activity,
                                                @NonNull List<String> permissions,
                                                int requestCode) {
-        Intent intent = PermissionApi.getSmartPermissionIntent(activity, permissions);
+        Intent intent = PermissionApi.getBestPermissionSettingIntent(activity, permissions);
         PermissionActivityIntentHandler.startActivityForResult(activity, intent, requestCode);
     }
 
@@ -599,7 +599,7 @@ public final class XXPermissions {
             PermissionActivityIntentHandler.startActivity(appFragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
-        Intent intent = PermissionApi.getSmartPermissionIntent(activity, permissions);
+        Intent intent = PermissionApi.getBestPermissionSettingIntent(activity, permissions);
         PermissionActivityIntentHandler.startActivityForResult(appFragment, intent, requestCode);
     }
 
@@ -673,7 +673,7 @@ public final class XXPermissions {
             PermissionActivityIntentHandler.startActivity(supportFragment, PermissionIntentManager.getApplicationDetailsIntent(activity));
             return;
         }
-        Intent intent = PermissionApi.getSmartPermissionIntent(activity, permissions);
+        Intent intent = PermissionApi.getBestPermissionSettingIntent(activity, permissions);
         PermissionActivityIntentHandler.startActivityForResult(supportFragment, intent, requestCode);
     }
 

@@ -21,7 +21,7 @@ final class RequestPermissionDelegateImplBySpecial extends RequestPermissionDele
     @Override
     void startPermissionRequest(@NonNull Activity activity, @NonNull List<String> permissions, int requestCode) {
         PermissionActivityIntentHandler.startActivityForResult(getStartActivityDelegate(),
-                    PermissionApi.getSmartPermissionIntent(activity, permissions), requestCode);
+                    PermissionApi.getBestPermissionSettingIntent(activity, permissions), requestCode);
     }
 
     @Override
