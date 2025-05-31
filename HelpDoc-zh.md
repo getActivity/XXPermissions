@@ -129,13 +129,15 @@ XXPermissions.with(MainActivity.this)
 
 #### 我想在申请前和申请后统一弹对话框该怎么处理
 
-* 框架内部有提供一个拦截器接口，通过实现框架中提供的 [OnPermissionInterceptor](/library/src/main/java/com/hjq/permissions/OnPermissionInterceptor.java) 接口即可，具体实现可参考 Demo 中提供的 [PermissionInterceptor](app/src/main/java/com/hjq/permissions/demo/PermissionInterceptor.java) 类，建议下载源码后进行阅读，再将代码引入到项目中
+* 框架内部有提供接口可以实现这一需求，通过实现框架中提供的 [OnPermissionDescription](library/src/main/java/com/hjq/permissions/OnPermissionDescription.java) 和 [OnPermissionInterceptor](library/src/main/java/com/hjq/permissions/OnPermissionInterceptor.java) 接口即可，具体实现可参考 Demo 中提供的 [PermissionDescription](app/src/main/java/com/hjq/permissions/demo/PermissionDescription.java)  和 [PermissionInterceptor](app/src/main/java/com/hjq/permissions/demo/PermissionInterceptor.java) 类，建议下载源码后进行阅读，再将代码引入到项目中
 
-* 使用拦截的方式也很简单，具体有两种设置方式，一种针对局部设置，另外一种是全局设置
+* 使用方式也很简单，具体有两种设置方式，一种针对局部设置，另外一种是全局设置
 
 ```java
 XXPermissions.with(this)
         .permission(Permission.XXX)
+        // 设置权限说明（局部设置）
+        .description(new PermissionDescription())
         // 设置权限请求拦截器（局部设置）
         .interceptor(new PermissionInterceptor())
         .request(new OnPermissionCallback() {
@@ -159,6 +161,8 @@ public class XxxApplication extends Application {
     public void onCreate() {
         super.onCreate();
         
+        // 设置权限说明（全局设置）
+        XXPermissions.setPermissionDescription(PermissionDescription.class);
         // 设置权限请求拦截器（全局设置）
         XXPermissions.setPermissionInterceptor(new PermissionInterceptor());
     }
