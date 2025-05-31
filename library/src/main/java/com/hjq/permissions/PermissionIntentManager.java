@@ -31,6 +31,12 @@ final class PermissionIntentManager {
     /** vivo 安全中心 App 包名 */
     private static final String ORIGIN_OS_MOBILE_MANAGER_APP_PACKAGE_NAME = "com.iqoo.secure";
 
+    /** 锤子安全中心包名 */
+    private static final String SMARTISAN_OS_SECURITY_CENTER_APP_PACKAGE_NAME = "com.smartisanos.securitycenter";
+
+    /** 锤子安全组件包名 */
+    private static final String SMARTISAN_OS_SECURITY_COMPONENT_APP_PACKAGE_NAME = "com.smartisanos.security";
+
     /**
      * 获取华为悬浮窗权限设置意图
      */
@@ -289,23 +295,23 @@ final class PermissionIntentManager {
      */
     @Nullable
     static Intent getSmartisanPermissionPageIntent(Context context) {
-        Intent intent = new Intent("com.smartisanos.security.action.PACKAGE_OVERVIEW");
+        Intent intent = new Intent(SMARTISAN_OS_SECURITY_COMPONENT_APP_PACKAGE_NAME + ".action.PACKAGE_OVERVIEW");
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;
         }
 
         intent = new Intent();
-        intent.setClassName("com.smartisanos.security", "com.smartisanos.security.PackagesOverview");
+        intent.setClassName(SMARTISAN_OS_SECURITY_COMPONENT_APP_PACKAGE_NAME, SMARTISAN_OS_SECURITY_COMPONENT_APP_PACKAGE_NAME + ".PackagesOverview");
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;
         }
 
-        intent = context.getPackageManager().getLaunchIntentForPackage("com.smartisanos.security");
+        intent = context.getPackageManager().getLaunchIntentForPackage(SMARTISAN_OS_SECURITY_COMPONENT_APP_PACKAGE_NAME);
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;
         }
 
-        intent = context.getPackageManager().getLaunchIntentForPackage("com.smartisanos.securitycenter");
+        intent = context.getPackageManager().getLaunchIntentForPackage(SMARTISAN_OS_SECURITY_CENTER_APP_PACKAGE_NAME);
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;
         }
