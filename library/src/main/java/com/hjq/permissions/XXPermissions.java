@@ -466,7 +466,7 @@ public final class XXPermissions {
      * 判断某个权限出现的版本是否高于当前的设备的版本
      */
     public static boolean isHighVersionPermission(@NonNull String permission) {
-        return PermissionHelper.findAndroidVersionByPermission(permission) > AndroidVersionTools.getCurrentAndroidVersionCode();
+        return PermissionApi.isHighVersionPermission(permission);
     }
 
     /* android.content.Context */

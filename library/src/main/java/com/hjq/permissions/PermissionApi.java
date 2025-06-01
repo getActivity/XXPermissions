@@ -264,4 +264,11 @@ final class PermissionApi {
         }
         return true;
     }
+
+    /**
+     * 判断某个权限出现的版本是否高于当前的设备的版本
+     */
+    static boolean isHighVersionPermission(@NonNull String permission) {
+        return PermissionHelper.findAndroidVersionByPermission(permission) > AndroidVersionTools.getCurrentAndroidVersionCode();
+    }
 }
