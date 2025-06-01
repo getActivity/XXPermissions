@@ -172,12 +172,13 @@ final class PermissionApi {
                 continue;
             }
 
-            List<String> oldPermissions = PermissionUtils.asArrayList(PermissionHelper.queryOldPermissionByNewPermission(permission));
+            List<String> oldPermissions = PermissionHelper.queryOldPermissionByNewPermission(permission);
             // 1. 如果旧版本列表不为空，并且当前权限是特殊权限，就剔除它对应的旧版本权限
             // 例如：MANAGE_EXTERNAL_STORAGE -> READ_EXTERNAL_STORAGE、WRITE_EXTERNAL_STORAGE
             // 2. 如果旧版本列表不为空，并且当前权限对应的旧版本权限包含了特殊权限，就剔除它对应的旧版本权限
             // 例如：POST_NOTIFICATIONS -> NOTIFICATION_SERVICE
-            if (!oldPermissions.isEmpty() && (isSpecialPermission(permission) || containsSpecialPermission(oldPermissions))) {
+            if (oldPermissions != null && !oldPermissions.isEmpty() &&
+                (isSpecialPermission(permission) || containsSpecialPermission(oldPermissions))) {
                 realPermissions.removeAll(oldPermissions);
             }
         }
@@ -205,8 +206,8 @@ final class PermissionApi {
                 continue;
             }
             // 通过新权限查询到对应的旧权限
-            String[] oldPermissions = PermissionHelper.queryOldPermissionByNewPermission(permission);
-            if (oldPermissions == null) {
+            List<String> oldPermissions = PermissionHelper.queryOldPermissionByNewPermission(permission);
+            if (oldPermissions == null || oldPermissions.isEmpty()) {
                 continue;
             }
             for (String oldPermission : oldPermissions) {

@@ -27,7 +27,7 @@ final class PermissionHelper {
     private static final List<String> VIRTUAL_PERMISSION_LIST = new ArrayList<>(4);
 
     /** 新旧权限映射集合 */
-    private static final Map<String, String[]> NEW_AND_OLD_PERMISSION_MAP = new HashMap<>(10);
+    private static final Map<String, List<String>> NEW_AND_OLD_PERMISSION_MAP = new HashMap<>(10);
 
     /** 后台权限列表 */
     private static final Map<String, List<String>> BACKGROUND_PERMISSION_MAP = new HashMap<>(2);
@@ -130,20 +130,20 @@ final class PermissionHelper {
         /* ---------------------------------------------------------------------------------------------------- */
 
         // Android 13 以下开启通知栏服务，需要用到旧的通知栏权限（框架自己虚拟出来的）
-        NEW_AND_OLD_PERMISSION_MAP.put(Permission.POST_NOTIFICATIONS, new String[] { Permission.NOTIFICATION_SERVICE });
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.POST_NOTIFICATIONS, PermissionUtils.asArrayList(Permission.NOTIFICATION_SERVICE));
         // Android 13 以下使用 WIFI 功能需要用到精确定位的权限
-        NEW_AND_OLD_PERMISSION_MAP.put(Permission.NEARBY_WIFI_DEVICES, new String[] { Permission.ACCESS_FINE_LOCATION });
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.NEARBY_WIFI_DEVICES, PermissionUtils.asArrayList(Permission.ACCESS_FINE_LOCATION));
         // Android 13 以下访问媒体文件需要用到读取外部存储的权限
-        NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_MEDIA_IMAGES, new String[] { Permission.READ_EXTERNAL_STORAGE });
-        NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_MEDIA_VIDEO, new String[] { Permission.READ_EXTERNAL_STORAGE });
-        NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_MEDIA_AUDIO, new String[] { Permission.READ_EXTERNAL_STORAGE });
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_MEDIA_IMAGES, PermissionUtils.asArrayList(Permission.READ_EXTERNAL_STORAGE));
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_MEDIA_VIDEO, PermissionUtils.asArrayList(Permission.READ_EXTERNAL_STORAGE));
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_MEDIA_AUDIO, PermissionUtils.asArrayList(Permission.READ_EXTERNAL_STORAGE));
         // Android 12 以下扫描蓝牙需要精确定位权限
-        NEW_AND_OLD_PERMISSION_MAP.put(Permission.BLUETOOTH_SCAN, new String[] { Permission.ACCESS_FINE_LOCATION });
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.BLUETOOTH_SCAN, PermissionUtils.asArrayList(Permission.ACCESS_FINE_LOCATION));
         // Android 11 以下访问完整的文件管理需要用到读写外部存储的权限
-        NEW_AND_OLD_PERMISSION_MAP.put(Permission.MANAGE_EXTERNAL_STORAGE, new String[] {
-                                                    Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE });
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.MANAGE_EXTERNAL_STORAGE, PermissionUtils.asArrayList(Permission.READ_EXTERNAL_STORAGE,
+                                                                                                        Permission.WRITE_EXTERNAL_STORAGE));
         // Android 8.0 以下读取电话号码需要用到读取电话状态的权限
-        NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_PHONE_NUMBERS, new String[] { Permission.READ_PHONE_STATE });
+        NEW_AND_OLD_PERMISSION_MAP.put(Permission.READ_PHONE_NUMBERS, PermissionUtils.asArrayList(Permission.READ_PHONE_STATE));
 
         /* ---------------------------------------------------------------------------------------------------- */
         
@@ -368,7 +368,7 @@ final class PermissionHelper {
      * 通过新权限查询到对应的旧权限
      */
     @Nullable
-    static String[] queryOldPermissionByNewPermission(@NonNull String permission) {
+    static List<String> queryOldPermissionByNewPermission(@NonNull String permission) {
         return NEW_AND_OLD_PERMISSION_MAP.get(permission);
     }
 
