@@ -210,7 +210,6 @@ public final class PermissionDescription implements OnPermissionDescription {
         mPermissionPopupWindow.setOutsideTouchable(true);
         TextView messageView = mPermissionPopupWindow.getContentView().findViewById(R.id.tv_permission_description_message);
         messageView.setText(content);
-        // 注意：这里的 PopupWindow 只是示例，没有监听 Activity onDestroy 来处理 PopupWindow 生命周期
         mPermissionPopupWindow.showAtLocation(decorView, Gravity.TOP, 0, 0);
         // 将 Activity 和 PopupWindow 生命周期绑定在一起，避免可能会出现的内存泄漏
         // 当然如果上面创建的 PopupWindow 已经有做了生命周期管理，则不需要执行下面这行代码
