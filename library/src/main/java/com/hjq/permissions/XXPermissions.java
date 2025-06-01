@@ -88,29 +88,14 @@ public final class XXPermissions {
      */
     @NonNull
     public static OnPermissionDescription getPermissionDescription() {
-        OnPermissionDescription permissionDescription = null;
         if (sPermissionDescriptionClass != null) {
             try {
-                permissionDescription = sPermissionDescriptionClass.newInstance();
+                return sPermissionDescriptionClass.newInstance();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        if (permissionDescription == null) {
-            permissionDescription = new OnPermissionDescription() {
-
-                @Override
-                public void onRequestPermissionStart(@NonNull Activity activity, @NonNull List<String> requestPermissions) {
-                    // default implementation ignored
-                }
-
-                @Override
-                public void onRequestPermissionEnd(@NonNull Activity activity, @NonNull List<String> requestPermissions) {
-                    // default implementation ignored
-                }
-            };
-        }
-        return permissionDescription;
+        return new DefaultPermissionDescription();
     }
 
     /** 申请的权限列表 */

@@ -20,12 +20,10 @@ public interface OnPermissionDescription {
      * @param continueRequestRunnable       继续请求任务对象
      * @param breakRequestRunnable          中断请求任务对象
      */
-    default void askWhetherRequestPermission(@NonNull Activity activity,
-                                            @NonNull List<String> requestPermissions,
-                                            @NonNull Runnable continueRequestRunnable,
-                                            @NonNull Runnable breakRequestRunnable) {
-        continueRequestRunnable.run();
-    }
+    void askWhetherRequestPermission(@NonNull Activity activity,
+                                    @NonNull List<String> requestPermissions,
+                                    @NonNull Runnable continueRequestRunnable,
+                                    @NonNull Runnable breakRequestRunnable);
 
     /**
      * 权限请求开始
