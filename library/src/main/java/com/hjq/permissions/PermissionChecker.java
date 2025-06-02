@@ -546,8 +546,7 @@ final class PermissionChecker {
 
         for (String permission : requestPermissions) {
 
-            if (PermissionHelper.isVirtualPermission(permission)) {
-                // 不检测这些权限有没有在清单文件中注册，因为这几个权限是框架虚拟出来的，有没有在清单文件中注册都没关系
+            if (PermissionHelper.isNonMandatoryRegisterPermission(permission)) {
                 continue;
             }
 

@@ -23,8 +23,8 @@ final class PermissionHelper {
     /** 权限和 Android 版本对应的集合 */
     private static final Map<String, Integer> PERMISSION_VERSION_MAP = new HashMap<>(53);
 
-    /** 框架自己虚拟出来的权限列表（此类权限不需要清单文件中静态注册也能动态申请） */
-    private static final List<String> VIRTUAL_PERMISSION_LIST = new ArrayList<>(4);
+    /** 不需要静态注册的权限列表 */
+    private static final List<String> NON_MANDATORY_REGISTER_PERMISSION_LIST = new ArrayList<>(4);
 
     /** 新旧权限映射集合 */
     private static final Map<String, List<String>> NEW_AND_OLD_PERMISSION_MAP = new HashMap<>(10);
@@ -122,10 +122,10 @@ final class PermissionHelper {
 
         /* ---------------------------------------------------------------------------------------------------- */
 
-        VIRTUAL_PERMISSION_LIST.add(Permission.NOTIFICATION_SERVICE);
-        VIRTUAL_PERMISSION_LIST.add(Permission.BIND_NOTIFICATION_LISTENER_SERVICE);
-        VIRTUAL_PERMISSION_LIST.add(Permission.BIND_VPN_SERVICE);
-        VIRTUAL_PERMISSION_LIST.add(Permission.PICTURE_IN_PICTURE);
+        NON_MANDATORY_REGISTER_PERMISSION_LIST.add(Permission.NOTIFICATION_SERVICE);
+        NON_MANDATORY_REGISTER_PERMISSION_LIST.add(Permission.BIND_NOTIFICATION_LISTENER_SERVICE);
+        NON_MANDATORY_REGISTER_PERMISSION_LIST.add(Permission.BIND_VPN_SERVICE);
+        NON_MANDATORY_REGISTER_PERMISSION_LIST.add(Permission.PICTURE_IN_PICTURE);
 
         /* ---------------------------------------------------------------------------------------------------- */
 
@@ -358,10 +358,10 @@ final class PermissionHelper {
     }
 
     /**
-     * 判断权限是否为框架自己虚拟出来的
+     * 判断权限是不是属于非强制静态注册的范畴
      */
-    static boolean isVirtualPermission(@NonNull String permission) {
-        return PermissionUtils.containsPermission(VIRTUAL_PERMISSION_LIST, permission);
+    static boolean isNonMandatoryRegisterPermission(@NonNull String permission) {
+        return PermissionUtils.containsPermission(NON_MANDATORY_REGISTER_PERMISSION_LIST, permission);
     }
 
     /**
