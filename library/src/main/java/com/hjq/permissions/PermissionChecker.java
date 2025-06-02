@@ -552,6 +552,8 @@ final class PermissionChecker {
 
             if (PermissionUtils.equalsPermission(permission, Permission.WRITE_EXTERNAL_STORAGE)) {
                 checkWriteExternalStoragePermission(context, androidManifestInfo.applicationInfo, permissionInfoList);
+            } else if (PermissionUtils.equalsPermission(permission, Permission.SCHEDULE_EXACT_ALARM)) {
+                checkScheduleExactAlarmPermission(context, permissionInfoList);
             } else {
                 checkManifestPermission(permissionInfoList, permission);
             }
@@ -658,6 +660,30 @@ final class PermissionChecker {
         } else {
             checkManifestPermission(permissionInfoList, checkPermission, AndroidVersionTools.ANDROID_9);
         }
+    }
+
+    /**
+     * 检查 {@link Permission#SCHEDULE_EXACT_ALARM } 权限
+     */
+    static void checkScheduleExactAlarmPermission(@NonNull Context context, @NonNull List<AndroidManifestInfo.PermissionInfo> permissionInfoList) {
+        String useExactAlarmPermissionName;
+        if (AndroidVersionTools.isAndroid13()) {
+            useExactAlarmPermissionName = Manifest.permission.USE_EXACT_ALARM;
+        } else {
+            useExactAlarmPermissionName = "android.permission.USE_EXACT_ALARM";
+        }
+
+        if (AndroidVersionTools.getTargetSdkVersionCode(context) >= AndroidVersionTools.ANDROID_13 &&
+                        findPermissionInfoByList(permissionInfoList, useExactAlarmPermissionName) != null) {
+            // 如果当前项目适配了 Android 13 的话，并且在清单文件中注册了 USE_EXACT_ALARM 权限，那么 SCHEDULE_EXACT_ALARM 权限在清单文件中可以这样注册
+            // <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
+            // 相关文档地址：https://developer.android.google.cn/reference/android/Manifest.permission#USE_EXACT_ALARM
+            // 如果你的应用要上架 GooglePlay，那么需要慎重添加 USE_EXACT_ALARM 权限，因为不是日历、闹钟、时钟这类应用添加 USE_EXACT_ALARM 权限很难通过 GooglePlay 上架审核
+            checkManifestPermission(permissionInfoList, Permission.SCHEDULE_EXACT_ALARM, AndroidVersionTools.ANDROID_12_L);
+            return;
+        }
+
+        checkManifestPermission(permissionInfoList, Permission.SCHEDULE_EXACT_ALARM);
     }
 
     static void checkManifestPermission(@NonNull List<AndroidManifestInfo.PermissionInfo> permissionInfoList,
