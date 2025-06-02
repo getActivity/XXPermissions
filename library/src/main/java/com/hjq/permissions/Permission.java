@@ -35,6 +35,15 @@ public final class Permission {
     public static final String GET_INSTALLED_APPS = "com.android.permission.GET_INSTALLED_APPS";
 
     /**
+     * 全屏通知权限（特殊权限，Android 14 新增的权限）
+     *
+     * 需要注意的是，如果你的应用需要上架 GooglePlay，请慎重添加此权限，相关文档介绍如下：
+     * 1. 了解前台服务和全屏 intent 要求：https://support.google.com/googleplay/android-developer/answer/13392821?hl=zh-Hans
+     * 2. Google Play 对 Android 14 全屏 Intent 的要求：https://orangeoma.zendesk.com/hc/en-us/articles/14126775576988-Google-Play-requirements-on-Full-screen-intent-for-Android-14
+     */
+    public static final String USE_FULL_SCREEN_INTENT = "android.permission.USE_FULL_SCREEN_INTENT";
+
+    /**
      * 闹钟权限（特殊权限，Android 12 新增的权限）
      *
      * 需要注意的是：这个权限和其他特殊权限不同的是，默认已经是授予状态，用户也可以手动撤销授权

@@ -54,6 +54,7 @@
     <string name="common_permission_do_not_disturb_access">勿扰权限</string>
     <string name="common_permission_ignore_battery_optimize">忽略电池优化权限</string>
     <string name="common_permission_picture_in_picture">画中画权限</string>
+    <string name="common_permission_full_screen_notifications">全屏通知权限</string>
     <string name="common_permission_vpn">\tVPN\t权限</string>
 
     <string name="common_permission_description_demo">用于 xx 业务</string>

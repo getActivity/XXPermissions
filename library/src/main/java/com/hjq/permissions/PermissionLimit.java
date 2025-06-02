@@ -13,6 +13,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @StringDef({
     Permission.GET_INSTALLED_APPS,
+    Permission.USE_FULL_SCREEN_INTENT,
     Permission.SCHEDULE_EXACT_ALARM,
     Permission.MANAGE_EXTERNAL_STORAGE,
     Permission.REQUEST_INSTALL_PACKAGES,

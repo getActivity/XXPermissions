@@ -1,7 +1,10 @@
 package com.hjq.permissions;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 
 /**
@@ -31,6 +34,10 @@ class PermissionDelegateImplV34 extends PermissionDelegateImplV33 {
             return isGrantedPermission(context, Permission.READ_MEDIA_VISUAL_USER_SELECTED, skipRequest);
         }
 
+        if (PermissionUtils.equalsPermission(permission, Permission.USE_FULL_SCREEN_INTENT)) {
+            return isGrantedFullScreenNotificationsPermission(context);
+        }
+
         return super.isGrantedPermission(context, permission, skipRequest);
     }
 
@@ -43,6 +50,44 @@ class PermissionDelegateImplV34 extends PermissionDelegateImplV33 {
             return PermissionUtils.isDoNotAskAgainPermission(activity, permission);
         }
 
+        if (PermissionUtils.equalsPermission(permission, Permission.USE_FULL_SCREEN_INTENT)) {
+            return false;
+        }
+
         return super.isDoNotAskAgainPermission(activity, permission);
+    }
+
+    @Override
+    public Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
+        if (PermissionUtils.equalsPermission(permission, Permission.USE_FULL_SCREEN_INTENT)) {
+            return getFullScreenNotificationsPermissionIntent(context);
+        }
+
+        return super.getPermissionSettingIntent(context, permission);
+    }
+
+    /**
+     * 是否授予了全屏通知权限
+     */
+    private static boolean isGrantedFullScreenNotificationsPermission(@NonNull Context context) {
+        if (!AndroidVersionTools.isAndroid14()) {
+            return true;
+        }
+        return context.getSystemService(NotificationManager.class).canUseFullScreenIntent();
+    }
+
+    /**
+     * 获取全屏通知权限设置界面意图
+     */
+    private static Intent getFullScreenNotificationsPermissionIntent(@NonNull Context context) {
+        if (!AndroidVersionTools.isAndroid14()) {
+            return getApplicationDetailsIntent(context);
+        }
+        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT);
+        intent.setData(PermissionUtils.getPackageNameUri(context));
+        if (!PermissionUtils.areActivityIntent(context, intent)) {
+            intent = getApplicationDetailsIntent(context);
+        }
+        return intent;
     }
 }

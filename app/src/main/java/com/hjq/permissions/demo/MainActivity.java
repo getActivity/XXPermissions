@@ -98,6 +98,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_ignore_battery_optimizations_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_picture_in_picture_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_bind_vpn_service_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_full_screen_notifications_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_get_installed_apps_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_start_permission_activity).setOnClickListener(this);
     }
@@ -611,6 +612,25 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                                     PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
                         }
                     });
+
+        } else if (viewId == R.id.btn_main_request_full_screen_notifications_permission) {
+
+            XXPermissions.with(this)
+                .permission(Permission.USE_FULL_SCREEN_INTENT)
+                .interceptor(new PermissionInterceptor())
+                .description(new PermissionDescription())
+                .request(new OnPermissionCallback() {
+
+                    @Override
+                    public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+                        if (!allGranted) {
+                            return;
+                        }
+                        toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                            PermissionConverter.getNamesByPermissions(MainActivity.this, permissions)));
+                        getAppList();
+                    }
+                });
 
         } else if (viewId == R.id.btn_main_request_get_installed_apps_permission) {
 

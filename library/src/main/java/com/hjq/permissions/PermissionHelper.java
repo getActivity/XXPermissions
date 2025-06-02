@@ -18,7 +18,7 @@ import java.util.Set;
 final class PermissionHelper {
 
     /** 特殊权限列表 */
-    private static final List<String> SPECIAL_PERMISSION_LIST = new ArrayList<>(12);
+    private static final List<String> SPECIAL_PERMISSION_LIST = new ArrayList<>(13);
 
     /** 权限和 Android 版本对应的集合 */
     private static final Map<String, Integer> PERMISSION_VERSION_MAP = new HashMap<>(53);
@@ -48,6 +48,7 @@ final class PermissionHelper {
     private static final Map<String, Integer> PERMISSIONS_RESULT_WAIT_TIME = new HashMap<>(25);
 
     static {
+        SPECIAL_PERMISSION_LIST.add(Permission.USE_FULL_SCREEN_INTENT);
         SPECIAL_PERMISSION_LIST.add(Permission.SCHEDULE_EXACT_ALARM);
         SPECIAL_PERMISSION_LIST.add(Permission.MANAGE_EXTERNAL_STORAGE);
         SPECIAL_PERMISSION_LIST.add(Permission.REQUEST_INSTALL_PACKAGES);
@@ -63,6 +64,7 @@ final class PermissionHelper {
 
         /* ---------------------------------------------------------------------------------------------------- */
 
+        PERMISSION_VERSION_MAP.put(Permission.USE_FULL_SCREEN_INTENT, AndroidVersionTools.ANDROID_14);
         PERMISSION_VERSION_MAP.put(Permission.SCHEDULE_EXACT_ALARM, AndroidVersionTools.ANDROID_12);
         PERMISSION_VERSION_MAP.put(Permission.MANAGE_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_11);
         PERMISSION_VERSION_MAP.put(Permission.REQUEST_INSTALL_PACKAGES, AndroidVersionTools.ANDROID_8);

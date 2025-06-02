@@ -167,6 +167,9 @@ final class PermissionConverter {
 
         PERMISSION_NAME_MAP.put(Permission.PICTURE_IN_PICTURE, R.string.common_permission_picture_in_picture);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_picture_in_picture, R.string.common_permission_description_demo);
+
+        PERMISSION_NAME_MAP.put(Permission.USE_FULL_SCREEN_INTENT, R.string.common_permission_full_screen_notifications);
+        PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_full_screen_notifications, R.string.common_permission_description_demo);
     }
 
     /**

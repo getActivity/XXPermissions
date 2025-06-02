@@ -36,6 +36,7 @@
     <string name="demo_request_ignore_battery_optimize_permission">Request ignore battery optimize permission</string>
     <string name="demo_request_picture_in_picture_permission">Request picture-in-picture permission</string>
     <string name="demo_request_vpn_permission">Request vpn permission</string>
+    <string name="demo_request_full_screen_notifications">Request full screen notifications permission</string>
     <string name="demo_request_get_installed_apps_permission">Request get installed application information permission</string>
     <string name="demo_request_multiple_type_permission">Request dangerous permission and special permission</string>
     <string name="demo_start_app_details_activity">Start app details activity</string>
