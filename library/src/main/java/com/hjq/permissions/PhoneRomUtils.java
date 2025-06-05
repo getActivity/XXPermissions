@@ -125,6 +125,10 @@ final class PhoneRomUtils {
             Class<?> buildExClass = Class.forName("com.huawei.system.BuildEx");
             Object osBrand = buildExClass.getMethod("getOsBrand").invoke(buildExClass);
             return "Harmony".equalsIgnoreCase(String.valueOf(osBrand));
+        } catch (ClassNotFoundException ignore) {
+            // 如果是类找不到的问题，就不打印日志，否则会影响看 Logcat 的体验
+            // 相关 Github issue 地址：https://github.com/getActivity/XXPermissions/issues/368
+            return false;
         } catch (Throwable throwable) {
             throwable.printStackTrace();
             return false;
