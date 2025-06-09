@@ -180,19 +180,6 @@ final class PermissionUtils {
         return list;
     }
 
-    @SafeVarargs
-    @NonNull
-    static <T> ArrayList<T> asArrayLists(@Nullable T[]... arrays) {
-        ArrayList<T> list = new ArrayList<>();
-        if (arrays == null || arrays.length == 0) {
-            return list;
-        }
-        for (T[] ts : arrays) {
-            list.addAll(asArrayList(ts));
-        }
-        return list;
-    }
-
     /**
      * 寻找上下文中的 Activity 对象
      */

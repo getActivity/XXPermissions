@@ -160,14 +160,6 @@ public final class XXPermissions {
         return this;
     }
 
-    public XXPermissions permission(@Nullable String... permissions) {
-        return permission(PermissionUtils.asArrayList(permissions));
-    }
-
-    public XXPermissions permission(@Nullable String[]... permissions) {
-        return permission(PermissionUtils.asArrayLists(permissions));
-    }
-
     public XXPermissions permission(@Nullable List<String> permissions) {
         if (permissions == null || permissions.isEmpty()) {
             return this;
@@ -369,10 +361,6 @@ public final class XXPermissions {
         return isGrantedPermissions(context, PermissionUtils.asArrayList(permissions));
     }
 
-    public static boolean isGrantedPermissions(@NonNull Context context, @NonNull String[]... permissions) {
-        return isGrantedPermissions(context, PermissionUtils.asArrayLists(permissions));
-    }
-
     public static boolean isGrantedPermissions(@NonNull Context context, @NonNull List<String> permissions) {
         return PermissionApi.isGrantedPermissions(context, permissions);
     }
@@ -384,10 +372,6 @@ public final class XXPermissions {
         return getGrantedPermissions(context, PermissionUtils.asArrayList(permissions));
     }
 
-    public static List<String> getGrantedPermissions(@NonNull Context context, @NonNull String[]... permissions) {
-        return getGrantedPermissions(context, PermissionUtils.asArrayLists(permissions));
-    }
-
     public static List<String> getGrantedPermissions(@NonNull Context context, @NonNull List<String> permissions) {
         return PermissionApi.getGrantedPermissions(context, permissions);
     }
@@ -397,10 +381,6 @@ public final class XXPermissions {
      */
     public static List<String> getDeniedPermissions(@NonNull Context context, @NonNull String... permissions) {
         return getDeniedPermissions(context, PermissionUtils.asArrayList(permissions));
-    }
-
-    public static List<String> getDeniedPermissions(@NonNull Context context, @NonNull String[]... permissions) {
-        return getDeniedPermissions(context, PermissionUtils.asArrayLists(permissions));
     }
 
     public static List<String> getDeniedPermissions(@NonNull Context context, @NonNull List<String> permissions) {
@@ -454,10 +434,6 @@ public final class XXPermissions {
         return isDoNotAskAgainPermissions(activity, PermissionUtils.asArrayList(permissions));
     }
 
-    public static boolean isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull String[]... permissions) {
-        return isDoNotAskAgainPermissions(activity, PermissionUtils.asArrayLists(permissions));
-    }
-
     public static boolean isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull List<String> permissions) {
         return PermissionApi.isDoNotAskAgainPermissions(activity, permissions);
     }
@@ -477,10 +453,6 @@ public final class XXPermissions {
 
     public static void startPermissionActivity(@NonNull Context context, @NonNull String... permissions) {
         startPermissionActivity(context, PermissionUtils.asArrayList(permissions));
-    }
-
-    public static void startPermissionActivity(@NonNull Context context, @NonNull String[]... permissions) {
-        startPermissionActivity(context, PermissionUtils.asArrayLists(permissions));
     }
 
     /**
@@ -513,11 +485,6 @@ public final class XXPermissions {
     }
 
     public static void startPermissionActivity(@NonNull Activity activity,
-                                               @NonNull String[]... permissions) {
-        startPermissionActivity(activity, PermissionUtils.asArrayLists(permissions));
-    }
-
-    public static void startPermissionActivity(@NonNull Activity activity,
                                                @NonNull List<String> permissions) {
         startPermissionActivity(activity, permissions, REQUEST_CODE);
     }
@@ -533,12 +500,6 @@ public final class XXPermissions {
                                                @NonNull String permission,
                                                @Nullable OnPermissionPageCallback callback) {
         startPermissionActivity(activity, PermissionUtils.asArrayList(permission), callback);
-    }
-
-    public static void startPermissionActivity(@NonNull Activity activity,
-                                               @NonNull String[] permissions,
-                                               @Nullable OnPermissionPageCallback callback) {
-        startPermissionActivity(activity, PermissionUtils.asArrayLists(permissions), callback);
     }
 
     public static void startPermissionActivity(@NonNull Activity activity,
@@ -572,11 +533,6 @@ public final class XXPermissions {
     }
 
     public static void startPermissionActivity(@NonNull Fragment appFragment,
-                                               @NonNull String[]... permissions) {
-        startPermissionActivity(appFragment, PermissionUtils.asArrayLists(permissions));
-    }
-
-    public static void startPermissionActivity(@NonNull Fragment appFragment,
                                                @NonNull List<String> permissions) {
         startPermissionActivity(appFragment, permissions, REQUEST_CODE);
     }
@@ -600,15 +556,9 @@ public final class XXPermissions {
     }
 
     public static void startPermissionActivity(@NonNull Fragment appFragment,
-                                               @NonNull String permission,
-                                               @Nullable OnPermissionPageCallback callback) {
+                                                @NonNull String permission,
+                                                @Nullable OnPermissionPageCallback callback) {
         startPermissionActivity(appFragment, PermissionUtils.asArrayList(permission), callback);
-    }
-
-    public static void startPermissionActivity(@NonNull Fragment appFragment,
-                                               @NonNull String[] permissions,
-                                               @Nullable OnPermissionPageCallback callback) {
-        startPermissionActivity(appFragment, PermissionUtils.asArrayLists(permissions), callback);
     }
 
     public static void startPermissionActivity(@NonNull Fragment appFragment,
@@ -646,11 +596,6 @@ public final class XXPermissions {
     }
 
     public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
-                                               @NonNull String[]... permissions) {
-        startPermissionActivity(supportFragment, PermissionUtils.asArrayLists(permissions));
-    }
-
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
                                                @NonNull List<String> permissions) {
         startPermissionActivity(supportFragment, permissions, REQUEST_CODE);
     }
@@ -677,12 +622,6 @@ public final class XXPermissions {
                                                @NonNull String permission,
                                                @Nullable OnPermissionPageCallback callback) {
         startPermissionActivity(supportFragment, PermissionUtils.asArrayList(permission), callback);
-    }
-
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
-                                               @NonNull String[] permissions,
-                                               @Nullable OnPermissionPageCallback callback) {
-        startPermissionActivity(supportFragment, PermissionUtils.asArrayLists(permissions), callback);
     }
 
     public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
