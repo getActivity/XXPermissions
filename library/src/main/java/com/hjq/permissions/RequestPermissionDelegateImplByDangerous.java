@@ -1,7 +1,6 @@
 package com.hjq.permissions;
 
 import android.app.Activity;
-import android.content.pm.PackageManager;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import java.util.List;
@@ -24,14 +23,11 @@ final class RequestPermissionDelegateImplByDangerous extends RequestPermissionDe
         String[] permissionArray = permissions.toArray(new String[permissions.size()]);
         if (!AndroidVersionTools.isAndroid6()) {
             // 如果当前系统是 Android 6.0 以下，则没有危险权限的概念，则直接回调权限监听
-            int[] grantResults = new int[permissions.size()];
-            for (int i = 0; i < grantResults.length; i++) {
-                // 这里解释一下，为什么不直接赋值 PackageManager.PERMISSION_GRANTED，而是选择动态判断
-                // 这是因为要照顾一下 Permission.GET_INSTALLED_APPS 权限，这个权限还兼容了 miui 的 Android 6.0 以下的版本
-                grantResults[i] = PermissionApi.isGrantedPermission(activity, permissions.get(i)) ?
-                    PackageManager.PERMISSION_GRANTED : PackageManager.PERMISSION_DENIED;
-            }
-            onFragmentRequestPermissionsResult(requestCode, permissionArray, grantResults);
+            // 有人看到这句代码，忍不住想吐槽了，你这不是太阳能手电筒，纯纯脱裤子放屁
+            // 实则不然，也有例外的情况，GET_INSTALLED_APPS 权限虽然是危险权限
+            // 但是框架在 miui 上面兼容到了 Android 6.0 以下，但是由于无法调用 requestPermissions
+            // 只能通过跳转 Activity 授予该权限，所以只能告诉外层权限请求失败，迫使外层跳转 Activity 来授权
+            sendTask(this::dispatchPermissionCallback, 0);
             return;
         }
 
@@ -41,11 +37,6 @@ final class RequestPermissionDelegateImplByDangerous extends RequestPermissionDe
 
     @Override
     public void onFragmentRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/236
-        if (permissions == null || permissions.length == 0 || grantResults == null || grantResults.length == 0) {
-            return;
-        }
-
         // 如果回调中的请求码和请求时设置的请求码不一致，则证明回调有问题，则不往下执行代码
         if (requestCode != getPermissionRequestCode()) {
             return;
