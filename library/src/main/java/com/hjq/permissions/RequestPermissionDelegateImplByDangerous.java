@@ -20,7 +20,6 @@ final class RequestPermissionDelegateImplByDangerous extends RequestPermissionDe
     @Override
     void startPermissionRequest(@NonNull Activity activity, @NonNull List<String> permissions,
                                 @IntRange(from = 1, to = 65535) int requestCode) {
-        String[] permissionArray = permissions.toArray(new String[permissions.size()]);
         if (!AndroidVersionTools.isAndroid6()) {
             // 如果当前系统是 Android 6.0 以下，则没有危险权限的概念，则直接回调权限监听
             // 有人看到这句代码，忍不住想吐槽了，你这不是太阳能手电筒，纯纯脱裤子放屁
@@ -32,7 +31,7 @@ final class RequestPermissionDelegateImplByDangerous extends RequestPermissionDe
         }
 
         // 如果不需要的话就直接申请全部的危险权限
-        requestPermissions(permissionArray, requestCode);
+        requestPermissions(PermissionUtils.toStringArray(permissions), requestCode);
     }
 
     @Override

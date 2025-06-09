@@ -28,6 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -178,6 +179,21 @@ final class PermissionUtils {
             list.add(t);
         }
         return list;
+    }
+
+    /**
+     * 将 List 对象转换成 String 数组
+     */
+    @NonNull
+    static String[] toStringArray(@Nullable List<String> list) {
+        if (list == null || list.isEmpty()) {
+            return new String[0];
+        }
+        String[] stringArray = new String[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            stringArray[i] = list.get(i);
+        }
+        return stringArray;
     }
 
     /**
