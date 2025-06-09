@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
@@ -491,7 +492,7 @@ public final class XXPermissions {
 
     public static void startPermissionActivity(@NonNull Activity activity,
                                                @NonNull List<String> permissions,
-                                               int requestCode) {
+                                               @IntRange(from = 1, to = 65535) int requestCode) {
         Intent intent = PermissionApi.getBestPermissionSettingIntent(activity, permissions);
         PermissionActivityIntentHandler.startActivityForResult(activity, intent, requestCode);
     }
@@ -539,7 +540,7 @@ public final class XXPermissions {
 
     public static void startPermissionActivity(@NonNull Fragment appFragment,
                                                @NonNull List<String> permissions,
-                                               int requestCode) {
+                                               @IntRange(from = 1, to = 65535) int requestCode) {
         if (PermissionUtils.isFragmentUnavailable(appFragment)) {
             return;
         }
@@ -602,7 +603,7 @@ public final class XXPermissions {
 
     public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
                                                @NonNull List<String> permissions,
-                                               int requestCode) {
+                                               @IntRange(from = 1, to = 65535) int requestCode) {
         if (PermissionUtils.isFragmentUnavailable(supportFragment)) {
             return;
         }

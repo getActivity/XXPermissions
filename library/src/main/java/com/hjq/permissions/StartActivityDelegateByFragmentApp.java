@@ -2,6 +2,7 @@ package com.hjq.permissions;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
 /**
@@ -29,7 +30,7 @@ class StartActivityDelegateByFragmentApp implements IStartActivityDelegate {
     }
 
     @Override
-    public void startActivityForResult(Intent intent, int requestCode) {
+    public void startActivityForResult(Intent intent, @IntRange(from = 1, to = 65535) int requestCode) {
         if (intent == null) {
             return;
         }

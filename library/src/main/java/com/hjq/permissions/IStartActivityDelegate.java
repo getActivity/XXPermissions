@@ -1,6 +1,7 @@
 package com.hjq.permissions;
 
 import android.content.Intent;
+import android.support.annotation.IntRange;
 
 /**
  *    author : Android 轮子哥
@@ -14,5 +15,5 @@ interface IStartActivityDelegate {
     void startActivity(Intent intent);
 
     /** 跳转 Activity（需要返回结果） */
-    void startActivityForResult(Intent intent, int requestCode);
+    void startActivityForResult(Intent intent, @IntRange(from = 1, to = 65535) int requestCode);
 }

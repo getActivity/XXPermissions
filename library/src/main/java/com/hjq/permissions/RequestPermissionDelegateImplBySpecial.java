@@ -2,6 +2,7 @@ package com.hjq.permissions;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import java.util.List;
@@ -19,7 +20,8 @@ final class RequestPermissionDelegateImplBySpecial extends RequestPermissionDele
     }
 
     @Override
-    void startPermissionRequest(@NonNull Activity activity, @NonNull List<String> permissions, int requestCode) {
+    void startPermissionRequest(@NonNull Activity activity, @NonNull List<String> permissions,
+                                @IntRange(from = 1, to = 65535) int requestCode) {
         PermissionActivityIntentHandler.startActivityForResult(getStartActivityDelegate(),
                     PermissionApi.getBestPermissionSettingIntent(activity, permissions), requestCode);
     }

@@ -2,6 +2,7 @@ package com.hjq.permissions;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import java.util.List;
@@ -75,7 +76,7 @@ abstract class RequestPermissionDelegateImpl implements IFragmentCallback {
         return !mFragmentMethod.isAdded() || mFragmentMethod.isRemoving();
     }
 
-    void requestPermissions(@NonNull String[] permissions, int requestCode) {
+    void requestPermissions(@NonNull String[] permissions, @IntRange(from = 1, to = 65535) int requestCode) {
         mFragmentMethod.requestPermissions(permissions, requestCode);
     }
 
@@ -111,7 +112,8 @@ abstract class RequestPermissionDelegateImpl implements IFragmentCallback {
     /**
      * 开启权限请求
      */
-    abstract void startPermissionRequest(@NonNull Activity activity, @NonNull List<String> permissions, int requestCode);
+    abstract void startPermissionRequest(@NonNull Activity activity, @NonNull List<String> permissions,
+                                         @IntRange(from = 1, to = 65535) int requestCode);
 
     @Override
     public void onFragmentResume() {

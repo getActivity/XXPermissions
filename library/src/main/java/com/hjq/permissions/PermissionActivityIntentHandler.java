@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -95,20 +96,24 @@ final class PermissionActivityIntentHandler {
         }
     }
 
-    static boolean startActivityForResult(@NonNull Activity activity, @NonNull Intent intent, int requestCode) {
+    static boolean startActivityForResult(@NonNull Activity activity, @NonNull Intent intent,
+                                          @IntRange(from = 1, to = 65535) int requestCode) {
         return startActivityForResult(new StartActivityDelegateByActivity(activity), intent, requestCode);
     }
 
     @SuppressWarnings("deprecation")
-    static boolean startActivityForResult(@NonNull Fragment fragment, @NonNull Intent intent, int requestCode) {
+    static boolean startActivityForResult(@NonNull Fragment fragment, @NonNull Intent intent,
+                                          @IntRange(from = 1, to = 65535) int requestCode) {
         return startActivityForResult(new StartActivityDelegateByFragmentApp(fragment), intent, requestCode);
     }
 
-    static boolean startActivityForResult(@NonNull android.support.v4.app.Fragment fragment, @NonNull Intent intent, int requestCode) {
+    static boolean startActivityForResult(@NonNull android.support.v4.app.Fragment fragment, @NonNull Intent intent,
+                                          @IntRange(from = 1, to = 65535) int requestCode) {
         return startActivityForResult(new StartActivityDelegateByFragmentSupport(fragment), intent, requestCode);
     }
 
-    static boolean startActivityForResult(@NonNull IStartActivityDelegate delegate, @NonNull Intent intent, int requestCode) {
+    static boolean startActivityForResult(@NonNull IStartActivityDelegate delegate, @NonNull Intent intent,
+                                          @IntRange(from = 1, to = 65535) int requestCode) {
         try {
             delegate.startActivityForResult(intent, requestCode);
             return true;

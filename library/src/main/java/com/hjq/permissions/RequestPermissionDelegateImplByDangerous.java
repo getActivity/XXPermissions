@@ -2,6 +2,7 @@ package com.hjq.permissions;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import java.util.List;
 
@@ -18,7 +19,8 @@ final class RequestPermissionDelegateImplByDangerous extends RequestPermissionDe
     }
 
     @Override
-    void startPermissionRequest(@NonNull Activity activity, @NonNull List<String> permissions, int requestCode) {
+    void startPermissionRequest(@NonNull Activity activity, @NonNull List<String> permissions,
+                                @IntRange(from = 1, to = 65535) int requestCode) {
         String[] permissionArray = permissions.toArray(new String[permissions.size()]);
         if (!AndroidVersionTools.isAndroid6()) {
             // 如果当前系统是 Android 6.0 以下，则没有危险权限的概念，则直接回调权限监听

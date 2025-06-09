@@ -2,6 +2,7 @@ package com.hjq.permissions;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 
 /**
@@ -16,7 +17,7 @@ public interface IFragmentMethodNative<A extends Activity> extends IStartActivit
     A getActivity();
 
     /** 请求权限 */
-    void requestPermissions(@NonNull String[] permissions, int requestCode);
+    void requestPermissions(@NonNull String[] permissions, @IntRange(from = 1, to = 65535) int requestCode);
 
     /** 获得参数集 */
     Bundle getArguments();

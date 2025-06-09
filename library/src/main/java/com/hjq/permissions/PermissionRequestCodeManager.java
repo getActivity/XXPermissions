@@ -31,6 +31,7 @@ final class PermissionRequestCodeManager {
     /**
      * 随机生成一个请求码
      */
+    @IntRange(from = 1, to = 65535)
     static synchronized int generateRandomRequestCode(@IntRange(from = 1, to = 65535) int maxRequestCode) {
         int requestCode;
         // 请求码随机生成，避免随机产生之前的请求码，必须进行循环判断
