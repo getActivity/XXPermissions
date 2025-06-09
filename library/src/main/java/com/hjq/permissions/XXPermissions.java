@@ -23,10 +23,10 @@ public final class XXPermissions {
     /** 权限设置页跳转请求码 */
     public static final int REQUEST_CODE = 1024 + 1;
 
-    /** 权限请求拦截器 */
-    private static OnPermissionInterceptor sPermissionInterceptor;
+    /** 设置权限请求拦截器类型 */
+    private static Class<? extends OnPermissionInterceptor> sPermissionInterceptorClass;
 
-    /** 设置权限请求描述 */
+    /** 设置权限请求描述类型 */
     private static Class<? extends OnPermissionDescription> sPermissionDescriptionClass;
 
     /** 当前是否为检查模式 */
@@ -59,8 +59,8 @@ public final class XXPermissions {
     /**
      * 设置全局的权限请求拦截器
      */
-    public static void setPermissionInterceptor(OnPermissionInterceptor permissionInterceptor) {
-        sPermissionInterceptor = permissionInterceptor;
+    public static void setPermissionInterceptor(Class<? extends OnPermissionInterceptor> clazz) {
+        sPermissionInterceptorClass = clazz;
     }
 
     /**
@@ -68,10 +68,14 @@ public final class XXPermissions {
      */
     @NonNull
     public static OnPermissionInterceptor getPermissionInterceptor() {
-        if (sPermissionInterceptor == null) {
-            sPermissionInterceptor = new OnPermissionInterceptor() {};
+        if (sPermissionInterceptorClass != null) {
+            try {
+                return sPermissionInterceptorClass.newInstance();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        return sPermissionInterceptor;
+        return new DefaultPermissionInterceptor();
     }
 
     /**
@@ -80,8 +84,8 @@ public final class XXPermissions {
      * 这里解释一下，为什么不开放普通对象，而是只开放 Class 对象，这是因为如果用普通对象，那么就会导致全局都复用这一个对象
      * 而这个会带来一个后果，就是可能出现类内部字段的使用冲突，为了避免这一个问题，最好的解决方案是不去复用同一个对象
      */
-    public static void setPermissionDescription(Class<? extends OnPermissionDescription> permissionDescriptionClass) {
-        sPermissionDescriptionClass = permissionDescriptionClass;
+    public static void setPermissionDescription(Class<? extends OnPermissionDescription> clazz) {
+        sPermissionDescriptionClass = clazz;
     }
 
     /**

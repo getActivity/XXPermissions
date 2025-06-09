@@ -199,7 +199,7 @@ XXPermissions.startPermissionActivity(Fragment fragment, String... permissions, 
 // 设置不触发错误检测机制（全局设置）
 XXPermissions.setCheckMode(false);
 // 设置权限申请拦截器（全局设置）
-XXPermissions.setPermissionInterceptor(new OnPermissionInterceptor() {});
+XXPermissions.setPermissionInterceptor(PermissionInterceptor.class);
 ```
 
 #### 关于权限监听回调参数说明

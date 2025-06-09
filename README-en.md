@@ -193,7 +193,7 @@ XXPermissions.startPermissionActivity(Fragment fragment, String... permissions, 
 // Setting not to trigger error detection mechanism (global setting)
 XXPermissions.setCheckMode(false);
 // Set permission request interceptor (global setting)
-XXPermissions.setPermissionInterceptor(new OnPermissionInterceptor() {});
+XXPermissions.setPermissionInterceptor(PermissionInterceptor.class);
 ```
 
 #### About the permission monitoring callback parameter description

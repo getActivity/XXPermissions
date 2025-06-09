@@ -164,7 +164,7 @@ public class XxxApplication extends Application {
         // 设置权限说明（全局设置）
         XXPermissions.setPermissionDescription(PermissionDescription.class);
         // 设置权限请求拦截器（全局设置）
-        XXPermissions.setPermissionInterceptor(new PermissionInterceptor());
+        XXPermissions.setPermissionInterceptor(PermissionInterceptor.class);
     }
 }
 ```

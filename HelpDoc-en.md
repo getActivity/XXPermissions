@@ -158,7 +158,7 @@ public class XxxApplication extends Application {
         // Set permission request description (global setting)
         XXPermissions.setPermissionDescription(PermissionDescription.class);
         // Set permission request interceptor (global setting)
-        XXPermissions.setPermissionInterceptor(new PermissionInterceptor());
+        XXPermissions.setPermissionInterceptor(PermissionInterceptor.class);
     }
 }
 ```
