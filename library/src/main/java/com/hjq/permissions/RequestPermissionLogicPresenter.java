@@ -187,6 +187,14 @@ final class RequestPermissionLogicPresenter {
                 if (!PermissionUtils.containsPermission(requestPermissions, dangerousPermission)) {
                     // 如果不包含的话，就从权限组中移除
                     iterator.remove();
+                    continue;
+                }
+
+                // 判断要申请的权限是否授予
+                if (PermissionApi.isGrantedPermission(activity, dangerousPermission)) {
+                    // 如果这个权限已经授予，就从权限组中移除
+                    // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/369
+                    iterator.remove();
                 }
             }
 
