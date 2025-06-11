@@ -5,7 +5,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
-import android.support.annotation.RequiresApi;
 
 import com.hjq.toast.Toaster;
 
@@ -15,7 +14,6 @@ import com.hjq.toast.Toaster;
  *    time   : 2022/01/22
  *    desc   : 通知消息监控服务
  */
-@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public final class NotificationMonitorService extends NotificationListenerService {
 
     /**
