@@ -59,6 +59,13 @@ public final class AndroidVersionTools {
     }
 
     /**
+     * 是否是 Android 15 及以上版本
+     */
+    public static boolean isAndroid15() {
+        return Build.VERSION.SDK_INT >= ANDROID_15;
+    }
+
+    /**
      * 是否是 Android 14 及以上版本
      */
     public static boolean isAndroid14() {
