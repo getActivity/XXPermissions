@@ -1,0 +1,142 @@
+package com.hjq.permissions.permission.special;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import com.hjq.permissions.AndroidVersionTools;
+import com.hjq.permissions.PermissionUtils;
+import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.common.SpecialPermission;
+
+/**
+ *    author : Android 轮子哥
+ *    github : https://github.com/getActivity/XXPermissions
+ *    time   : 2025/06/11
+ *    desc   : 通知权限类
+ */
+public final class NotificationServicePermission extends SpecialPermission {
+
+    private static final String OP_POST_NOTIFICATION_FIELD_NAME = "OP_POST_NOTIFICATION";
+    private static final int OP_POST_NOTIFICATION_DEFAULT_VALUE = 11;
+
+    public static final Parcelable.Creator<NotificationServicePermission> CREATOR = new Parcelable.Creator<NotificationServicePermission>() {
+
+        @Override
+        public NotificationServicePermission createFromParcel(Parcel source) {
+            return new NotificationServicePermission(source);
+        }
+
+        @Override
+        public NotificationServicePermission[] newArray(int size) {
+            return new NotificationServicePermission[size];
+        }
+    };
+
+    @Nullable
+    private final String mChannelId;
+
+    public NotificationServicePermission() {
+        this((String) null);
+    }
+
+    public NotificationServicePermission(@Nullable String channelId) {
+        mChannelId = channelId;
+    }
+
+    private NotificationServicePermission(Parcel in) {
+        this(in.readString());
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(mChannelId);
+    }
+
+    @NonNull
+    @Override
+    public String getName() {
+        return PermissionConstants.NOTIFICATION_SERVICE;
+    }
+
+    @Override
+    public int getFromAndroidVersion() {
+        return AndroidVersionTools.ANDROID_4_4;
+    }
+
+    @Override
+    public boolean isMandatoryStaticRegister() {
+        // 表示该权限不需要在清单文件中静态注册
+        return false;
+    }
+
+    @Override
+    public boolean isGranted(@NonNull Context context, boolean skipRequest) {
+        if (AndroidVersionTools.isAndroid7()) {
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            if (!notificationManager.areNotificationsEnabled()) {
+                return false;
+            }
+            if (TextUtils.isEmpty(mChannelId) || !AndroidVersionTools.isAndroid8()) {
+                return true;
+            }
+            NotificationChannel notificationChannel = notificationManager.getNotificationChannel(mChannelId);
+            return notificationChannel != null && notificationChannel.getImportance() != NotificationManager.IMPORTANCE_NONE;
+        }
+        return checkOpNoThrow(context, OP_POST_NOTIFICATION_FIELD_NAME, OP_POST_NOTIFICATION_DEFAULT_VALUE);
+    }
+
+    @NonNull
+    @Override
+    public Intent getSettingIntent(@NonNull Context context) {
+        Intent intent = new Intent();
+        if (AndroidVersionTools.isAndroid8()) {
+            // 添加应用的包名参数
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            NotificationChannel notificationChannel = null;
+            if (!TextUtils.isEmpty(mChannelId)) {
+                notificationChannel = notificationManager.getNotificationChannel(mChannelId);
+            }
+            // 设置通知渠道 id 参数的前提条件有两个
+            // 1. 这个通知渠道还存在
+            // 2. 当前授予了通知权限
+            if (notificationChannel != null && notificationManager.areNotificationsEnabled()) {
+                // 将 Action 修改成具体通知渠道的页面
+                intent.setAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
+                // 指定通知渠道 id
+                intent.putExtra(Settings.EXTRA_CHANNEL_ID, notificationChannel.getId());
+                if (AndroidVersionTools.isAndroid11()) {
+                    // 高版本会优先从会话 id 中找到对应的通知渠道，找不到再从渠道 id 上面找到对应的通知渠道
+                    intent.putExtra(Settings.EXTRA_CONVERSATION_ID, notificationChannel.getConversationId());
+                }
+                // 如果系统不支持这个意图，就将 Action 修改成通知权限设置的页面
+                if (!PermissionUtils.areActivityIntent(context, intent)) {
+                    intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                }
+            } else {
+                // 没有指定通知渠道，就将 Action 修改成通知权限设置的页面
+                intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            }
+
+        } else if (AndroidVersionTools.isAndroid5()) {
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent.putExtra("app_package", context.getPackageName());
+            intent.putExtra("app_uid", context.getApplicationInfo().uid);
+        }
+
+        if (!PermissionUtils.areActivityIntent(context, intent)) {
+            intent = getApplicationDetailsIntent(context);
+        }
+
+        return intent;
+    }
+}

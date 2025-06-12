@@ -6,7 +6,7 @@ package com.hjq.permissions;
  *    time   : 2025/05/20
  *    desc   : 权限类型
  */
-enum PermissionType {
+public enum PermissionType {
 
     /** 危险权限 */
     DANGEROUS,

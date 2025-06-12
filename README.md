@@ -105,18 +105,15 @@ android.enableJetifier = true
 
 ```java
 XXPermissions.with(this)
-        // 申请单个权限
-        .permission(Permission.RECORD_AUDIO)
         // 申请多个权限
-        .permission(Permission.Group.CALENDAR)
-        // 设置权限请求拦截器（局部设置）
-        //.interceptor(new PermissionInterceptor())
+        .permission(PermissionManifest.RECORD_AUDIO)
+        .permission(PermissionManifest.CAMERA)
         // 设置不触发错误检测机制（局部设置）
         //.unchecked()
         .request(new OnPermissionCallback() {
 
             @Override
-            public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
                 if (!allGranted) {
                     toast("获取部分权限成功，但部分权限未正常授予");
                     return;
@@ -125,7 +122,7 @@ XXPermissions.with(this)
             }
 
             @Override
-            public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
+            public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
                 if (doNotAskAgain) {
                     toast("被永久拒绝授权，请手动授予录音和日历权限");
                     // 如果是被永久拒绝就跳转到应用权限系统设置页面
@@ -141,17 +138,14 @@ XXPermissions.with(this)
 
 ```kotlin
 XXPermissions.with(this)
-    // 申请单个权限
-    .permission(Permission.RECORD_AUDIO)
     // 申请多个权限
-    .permission(Permission.Group.CALENDAR)
-    // 设置权限请求拦截器（局部设置）
-    //.interceptor(new PermissionInterceptor())
+    .permission(PermissionManifest.RECORD_AUDIO)
+    .permission(PermissionManifest.CAMERA)
     // 设置不触发错误检测机制（局部设置）
     //.unchecked()
     .request(object : OnPermissionCallback {
 
-        override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {
+        override fun onGranted(permissions: MutableList<IPermission>, allGranted: Boolean) {
             if (!allGranted) {
                 toast("获取部分权限成功，但部分权限未正常授予")
                 return
@@ -159,7 +153,7 @@ XXPermissions.with(this)
             toast("获取录音和日历权限成功")
         }
 
-        override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
+        override fun onDenied(permissions: MutableList<IPermission>, doNotAskAgain: Boolean) {
             if (doNotAskAgain) {
                 toast("被永久拒绝授权，请手动授予录音和日历权限")
                 // 如果是被永久拒绝就跳转到应用权限系统设置页面
@@ -175,31 +169,75 @@ XXPermissions.with(this)
 
 ```java
 // 判断一个或多个权限是否全部授予了
-XXPermissions.isGrantedPermissions(Context context, String... permissions);
+XXPermissions.isGrantedPermission(@NonNull Context context, @NonNull IPermission permission);
+XXPermissions.isGrantedPermissions(@NonNull Context context, @NonNull IPermission[] permissions);
+XXPermissions.isGrantedPermissions(@NonNull Context context, @NonNull List<IPermission> permissions);
 
-// 获取没有授予的权限
-XXPermissions.getDeniedPermissions(Context context, String... permissions);
+// 从权限列表中获取已授予的权限
+XXPermissions.getGrantedPermissions(@NonNull Context context, @NonNull IPermission[] permissions);
+XXPermissions.getGrantedPermissions(@NonNull Context context, @NonNull List<IPermission> permissions);
 
-// 获取已授予的权限
-XXPermissions.getGrantedPermissions(Context context, String... permissions);
+// 从权限列表中获取没有授予的权限
+XXPermissions.getDeniedPermissions(@NonNull Context context, @NonNull IPermission[] permissions);
+XXPermissions.getDeniedPermissions(@NonNull Context context, @NonNull List<IPermission> permissions);
 
 // 判断某个权限是否为特殊权限
-XXPermissions.isSpecialPermission(String permission);
+XXPermissions.isSpecialPermission(@NonNull IPermission permission);
+// 判断权限列表中是否包含特殊权限
+XXPermissions.containsSpecialPermission(@NonNull IPermission[] permissions);
+XXPermissions.containsSpecialPermission(@NonNull List<IPermission> permissions);
+
+// 判断某个权限是否为后台权限
+XXPermissions.isBackgroundPermission(@NonNull IPermission permission);
+// 判断权限列表中是否包含后台权限
+XXPermissions.containsBackgroundPermission(@NonNull IPermission[] permissions);
+XXPermissions.containsBackgroundPermission(@NonNull List<IPermission> permissions);
 
 // 判断一个或多个权限是否被勾选了《不再询问》的选项（一定要在权限申请的回调方法中调用才有效果）
-XXPermissions.isDoNotAskAgainPermissions(Activity activity, String... permissions);
+XXPermissions.isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull IPermission permission);
+XXPermissions.isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull IPermission[] permissions);
+XXPermissions.isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull List<IPermission> permissions);
 
-// 跳转到应用权限设置页
-XXPermissions.startPermissionActivity(Context context, String... permissions);
-XXPermissions.startPermissionActivity(Activity activity, String... permissions);
-XXPermissions.startPermissionActivity(Activity activity, String... permission, OnPermissionPageCallback callback);
-XXPermissions.startPermissionActivity(Fragment fragment, String... permissions);
-XXPermissions.startPermissionActivity(Fragment fragment, String... permissions, OnPermissionPageCallback callback);
+// 判断某个权限出现的版本是否高于当前的设备的版本
+XXPermissions.isLowVersionRunning(@NonNull IPermission permission);
 
-// 设置不触发错误检测机制（全局设置）
-XXPermissions.setCheckMode(false);
+// 跳转到权限设置页（Context 版本）
+XXPermissions.startPermissionActivity(@NonNull Context context);
+XXPermissions.startPermissionActivity(@NonNull Context context, @NonNull IPermission... permissions);
+XXPermissions.startPermissionActivity(@NonNull Context context, @NonNull List<IPermission> permissions);
+
+// 跳转到权限设置页（Activity 版本）
+XXPermissions.startPermissionActivity(@NonNull Activity activity);
+XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull IPermission... permissions);
+XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions);
+XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
+XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull IPermission permission, @Nullable OnPermissionPageCallback callback);
+XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions, @Nullable OnPermissionPageCallback callback);
+
+// 跳转到权限设置页（App Fragment 版本）
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment);
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull IPermission... permissions);
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions);
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull IPermission permission, @Nullable OnPermissionPageCallback callback);
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionPageCallback callback);
+
+// 跳转到权限设置页（Support Fragment 版本）
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment);
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull IPermission... permissions);
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions);
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull IPermission permission, @Nullable OnPermissionPageCallback callback);
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionPageCallback callback);
+
+// 设置权限描述器（全局设置）
+XXPermissions.setPermissionDescription(Class<? extends OnPermissionDescription> clazz);
+
 // 设置权限申请拦截器（全局设置）
-XXPermissions.setPermissionInterceptor(PermissionInterceptor.class);
+XXPermissions.setPermissionInterceptor(Class<? extends OnPermissionInterceptor> clazz);
+
+// 设置是否开启错误检测模式（全局设置）
+XXPermissions.setCheckMode(false);
 ```
 
 #### 关于权限监听回调参数说明
@@ -210,7 +248,7 @@ XXPermissions.setPermissionInterceptor(PermissionInterceptor.class);
 
 * 框架会先调用 `onDenied` 方法，再调用 `onGranted` 方法。其中我们可以通过 `onGranted` 方法中的 `allGranted` 参数来判断权限是否全部授予了。
 
-* 如果想知道回调中的某个权限是否被授权或者拒绝，可以调用 `List` 类中的 `contains(Permission.XXX)` 方法来判断这个集合中是否包含了这个权限。
+* 如果想知道回调中的某个权限是否被授权或者拒绝，可以调用 `List` 类中的 `contains(PermissionManifest.XXX)` 方法来判断这个集合中是否包含了这个权限。
 
 ## [其他常见疑问请点击此处查看](HelpDoc-zh.md)
 

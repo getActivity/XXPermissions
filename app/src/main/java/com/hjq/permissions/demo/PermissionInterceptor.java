@@ -13,8 +13,9 @@ import android.text.TextUtils;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.OnPermissionInterceptor;
 import com.hjq.permissions.OnPermissionPageCallback;
-import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
+import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.toast.Toaster;
 import java.util.List;
 
@@ -27,15 +28,15 @@ import java.util.List;
 public final class PermissionInterceptor implements OnPermissionInterceptor {
 
     @Override
-    public void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
-                                        @NonNull List<String> deniedPermissions, boolean doNotAskAgain,
+    public void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
+                                        @NonNull List<IPermission> deniedPermissions, boolean doNotAskAgain,
                                         @Nullable OnPermissionCallback callback) {
         if (callback != null) {
             callback.onDenied(deniedPermissions, doNotAskAgain);
         }
 
         if (doNotAskAgain) {
-            if (deniedPermissions.size() == 1 && Permission.ACCESS_MEDIA_LOCATION.equals(deniedPermissions.get(0))) {
+            if (deniedPermissions.size() == 1 && PermissionManifest.ACCESS_MEDIA_LOCATION.equals(deniedPermissions.get(0))) {
                 Toaster.show(R.string.common_permission_media_location_hint_fail);
                 return;
             }
@@ -46,23 +47,23 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
 
         if (deniedPermissions.size() == 1) {
 
-            String deniedPermission = deniedPermissions.get(0);
+            IPermission deniedPermission = deniedPermissions.get(0);
 
             String backgroundPermissionOptionLabel = getBackgroundPermissionOptionLabel(activity);
 
-            if (Permission.ACCESS_BACKGROUND_LOCATION.equals(deniedPermission)) {
+            if (PermissionManifest.ACCESS_BACKGROUND_LOCATION.equals(deniedPermission)) {
                 Toaster.show(activity.getString(R.string.common_permission_background_location_fail_hint, backgroundPermissionOptionLabel));
                 return;
             }
 
-            if (Permission.BODY_SENSORS_BACKGROUND.equals(deniedPermission)) {
+            if (PermissionManifest.BODY_SENSORS_BACKGROUND.equals(deniedPermission)) {
                 Toaster.show(activity.getString(R.string.common_permission_background_sensors_fail_hint, backgroundPermissionOptionLabel));
                 return;
             }
         }
 
         final String message;
-        String permissionNames = PermissionConverter.getNamesByPermissions(activity, deniedPermissions);
+        String permissionNames = PermissionConverter.getNickNamesByPermissions(activity, deniedPermissions);
         if (!permissionNames.isEmpty()) {
             message = activity.getString(R.string.common_permission_fail_assign_hint, permissionNames);
         } else {
@@ -71,22 +72,22 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
         Toaster.show(message);
     }
 
-    private void showPermissionSettingDialog(Activity activity, List<String> requestPermissions,
-                                             List<String> deniedPermissions, OnPermissionCallback callback) {
+    private void showPermissionSettingDialog(Activity activity, List<IPermission> requestPermissions,
+                                             List<IPermission> deniedPermissions, OnPermissionCallback callback) {
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
             return;
         }
 
         String message = null;
 
-        String permissionNames = PermissionConverter.getNamesByPermissions(activity, deniedPermissions);
+        String permissionNames = PermissionConverter.getNickNamesByPermissions(activity, deniedPermissions);
         if (!permissionNames.isEmpty()) {
             if (deniedPermissions.size() == 1) {
-                String deniedPermission = deniedPermissions.get(0);
+                IPermission deniedPermission = deniedPermissions.get(0);
 
-                if (Permission.ACCESS_BACKGROUND_LOCATION.equals(deniedPermission)) {
+                if (PermissionManifest.ACCESS_BACKGROUND_LOCATION.equals(deniedPermission)) {
                     message = activity.getString(R.string.common_permission_manual_assign_fail_background_location_hint, getBackgroundPermissionOptionLabel(activity));
-                } else if (Permission.BODY_SENSORS_BACKGROUND.equals(deniedPermission)) {
+                } else if (PermissionManifest.BODY_SENSORS_BACKGROUND.equals(deniedPermission)) {
                     message = activity.getString(R.string.common_permission_manual_assign_fail_background_sensors_hint, getBackgroundPermissionOptionLabel(activity));
                 }
             }

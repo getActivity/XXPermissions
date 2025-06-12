@@ -14,7 +14,7 @@ import android.support.annotation.Nullable;
  *    time   : 2023/04/05
  *    desc   : 权限页意图处理器
  */
-final class PermissionActivityIntentHandler {
+public final class PermissionActivityIntentHandler {
 
     /** 存取子意图所用的 Intent Key */
     private static final String SUB_INTENT_KEY = "sub_intent_key";
@@ -53,7 +53,7 @@ final class PermissionActivityIntentHandler {
      * @param mainIntent            主意图对象
      * @param subIntent             子意图对象
      */
-    static Intent addSubIntentForMainIntent(@Nullable Intent mainIntent, @Nullable Intent subIntent) {
+    public static Intent addSubIntentForMainIntent(@Nullable Intent mainIntent, @Nullable Intent subIntent) {
         if (mainIntent == null && subIntent != null) {
             return subIntent;
         }

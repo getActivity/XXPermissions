@@ -1,0 +1,159 @@
+package com.hjq.permissions.permission.special;
+
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.TextUtils;
+import com.hjq.permissions.AndroidVersionTools;
+import com.hjq.permissions.PermissionUtils;
+import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.common.SpecialPermission;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ *    author : Android 轮子哥
+ *    github : https://github.com/getActivity/XXPermissions
+ *    time   : 2025/06/11
+ *    desc   : 通知栏监听权限类
+ */
+public final class NotificationListenerServicePermission extends SpecialPermission {
+
+    public static final Parcelable.Creator<NotificationListenerServicePermission> CREATOR = new Parcelable.Creator<NotificationListenerServicePermission>() {
+
+        @Override
+        public NotificationListenerServicePermission createFromParcel(Parcel source) {
+            return new NotificationListenerServicePermission(source);
+        }
+
+        @Override
+        public NotificationListenerServicePermission[] newArray(int size) {
+            return new NotificationListenerServicePermission[size];
+        }
+    };
+
+    /** Settings.Secure.ENABLED_NOTIFICATION_LISTENERS */
+    private static final String SETTING_ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
+
+    @Nullable
+    private final String mClazzName;
+
+    public NotificationListenerServicePermission() {
+        this((String) null);
+    }
+
+    public NotificationListenerServicePermission(@Nullable Class<? extends Service> clazz) {
+        this(clazz != null ? clazz.getName() : null);
+    }
+
+    public NotificationListenerServicePermission(@Nullable String clazzName) {
+        mClazzName = clazzName;
+    }
+
+    private NotificationListenerServicePermission(Parcel in) {
+        this(in.readString());
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(mClazzName);
+    }
+
+    @NonNull
+    @Override
+    public String getName() {
+        return PermissionConstants.BIND_NOTIFICATION_LISTENER_SERVICE;
+    }
+
+    @Override
+    public int getFromAndroidVersion() {
+        return AndroidVersionTools.ANDROID_4_3;
+    }
+
+    @Override
+    public boolean isMandatoryStaticRegister() {
+        // 表示该权限不需要在清单文件中静态注册
+        return false;
+    }
+
+    @Override
+    public boolean isGranted(@NonNull Context context, boolean skipRequest) {
+        // 经过实践得出，通知监听权限是在 Android 4.3 才出现的，所以前面的版本统一返回 true
+        if (!AndroidVersionTools.isAndroid4_3()) {
+            return true;
+        }
+        final String enabledNotificationListeners = Settings.Secure.getString(context.getContentResolver(), SETTING_ENABLED_NOTIFICATION_LISTENERS);
+        if (TextUtils.isEmpty(enabledNotificationListeners)) {
+            return false;
+        }
+        // com.hjq.permissions.demo/com.hjq.permissions.demo.NotificationMonitorService:com.huawei.health/com.huawei.bone.ui.setting.NotificationPushListener
+        final String[] allComponentNameArray = enabledNotificationListeners.split(":");
+
+        List<ComponentName> appComponentNameList = new ArrayList<>();
+        for (String component : allComponentNameArray) {
+            ComponentName componentName = ComponentName.unflattenFromString(component);
+            if (componentName == null) {
+                continue;
+            }
+            if (!TextUtils.equals(componentName.getPackageName(), context.getPackageName())) {
+                continue;
+            }
+            // 先筛选出来是当前应用的的组件
+            appComponentNameList.add(componentName);
+        }
+
+        // 判断是否指定了类名且类存在
+        if (PermissionUtils.isClassExist(mClazzName)) {
+            // 精准匹配
+            for (ComponentName componentName : appComponentNameList) {
+                if (TextUtils.equals(mClazzName, componentName.getClassName())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // 模糊匹配
+        for (ComponentName componentName : appComponentNameList) {
+            if (PermissionUtils.isClassExist(componentName.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @NonNull
+    @Override
+    public Intent getSettingIntent(@NonNull Context context) {
+        Intent intent = null;
+        if (AndroidVersionTools.isAndroid11() && PermissionUtils.isClassExist(mClazzName)) {
+            intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS);
+            intent.putExtra(Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME, new ComponentName(context, mClazzName).flattenToString());
+            if (!PermissionUtils.areActivityIntent(context, intent)) {
+                intent = null;
+            }
+        }
+
+        if (intent == null) {
+            if (AndroidVersionTools.isAndroid5_1()) {
+                intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
+            } else {
+                // android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+                intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+            }
+        }
+
+        if (!PermissionUtils.areActivityIntent(context, intent)) {
+            intent = getApplicationDetailsIntent(context);
+        }
+
+        return intent;
+    }
+}

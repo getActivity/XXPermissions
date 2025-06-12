@@ -2,7 +2,6 @@ package com.hjq.permissions;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AppOpsManager;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -18,12 +17,12 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import com.hjq.permissions.permission.base.IPermission;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -38,94 +37,7 @@ import org.xmlpull.v1.XmlPullParserException;
  *    time   : 2018/06/15
  *    desc   : 权限相关工具类
  */
-final class PermissionUtils {
-
-    /**
-     * 判断某个危险权限是否授予了
-     */
-    static boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
-        if (!AndroidVersionTools.isAndroid6()) {
-            return true;
-        }
-        return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    static boolean checkOpNoThrow(Context context, String opFieldName, int opDefaultValue) {
-        if (!AndroidVersionTools.isAndroid4_4()) {
-            return true;
-        }
-        AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
-        ApplicationInfo appInfo = context.getApplicationInfo();
-        String pkg = context.getApplicationContext().getPackageName();
-        int uid = appInfo.uid;
-        try {
-            Class<?> appOpsClass = Class.forName(AppOpsManager.class.getName());
-            int opValue;
-            try {
-                Field opValueField = appOpsClass.getDeclaredField(opFieldName);
-                opValue = (int) opValueField.get(Integer.class);
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-                opValue = opDefaultValue;
-            }
-            Method checkOpNoThrowMethod = appOpsClass.getMethod("checkOpNoThrow", Integer.TYPE, Integer.TYPE, String.class);
-            return ((int) checkOpNoThrowMethod.invoke(appOps, opValue, uid, pkg) == AppOpsManager.MODE_ALLOWED);
-        } catch (ClassNotFoundException | NoSuchMethodException |
-                 InvocationTargetException | IllegalAccessException | RuntimeException e) {
-            return true;
-        }
-    }
-
-    static boolean checkOpNoThrow(Context context, String opName) {
-        if (!AndroidVersionTools.isAndroid4_4()) {
-            return true;
-        }
-        AppOpsManager appOps = (AppOpsManager)
-            context.getSystemService(Context.APP_OPS_SERVICE);
-        int mode;
-        if (AndroidVersionTools.isAndroid10()) {
-            mode = appOps.unsafeCheckOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
-        } else {
-            mode = appOps.checkOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
-        }
-        return mode == AppOpsManager.MODE_ALLOWED;
-    }
-
-    /**
-     * 解决 Android 12 调用 shouldShowRequestPermissionRationale 出现内存泄漏的问题
-     * Android 12L 和 Android 13 版本经过测试不会出现这个问题，证明 Google 在新版本上已经修复了这个问题
-     * 但是对于 Android 12 仍是一个历史遗留问题，这是我们所有 Android App 开发者不得不面对的一个事情
-     *
-     * issues 地址：https://github.com/getActivity/XXPermissions/issues/133
-     */
-    @SuppressWarnings({"JavaReflectionMemberAccess", "ConstantConditions", "BooleanMethodIsAlwaysInverted"})
-    static boolean shouldShowRequestPermissionRationale(@NonNull Activity activity, @NonNull String permission) {
-        if (!AndroidVersionTools.isAndroid6()) {
-            return false;
-        }
-        if (AndroidVersionTools.getCurrentAndroidVersionCode() == AndroidVersionTools.ANDROID_12) {
-            try {
-                PackageManager packageManager = activity.getApplication().getPackageManager();
-                Method method = PackageManager.class.getMethod("shouldShowRequestPermissionRationale", String.class);
-                return (boolean) method.invoke(packageManager, permission);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        return activity.shouldShowRequestPermissionRationale(permission);
-    }
-
-    /**
-     * 判断某个权限是否勾选了不再询问的选项
-     */
-    static boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
-        if (!AndroidVersionTools.isAndroid6()) {
-            return false;
-        }
-        return !isGrantedPermission(activity, permission) &&
-            !shouldShowRequestPermissionRationale(activity, permission);
-    }
+public final class PermissionUtils {
 
     /**
      * 当前是否处于 debug 模式
@@ -179,21 +91,6 @@ final class PermissionUtils {
             list.add(t);
         }
         return list;
-    }
-
-    /**
-     * 将 List 对象转换成 String 数组
-     */
-    @NonNull
-    static String[] toStringArray(@Nullable List<String> list) {
-        if (list == null || list.isEmpty()) {
-            return new String[0];
-        }
-        String[] stringArray = new String[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            stringArray[i] = list.get(i);
-        }
-        return stringArray;
     }
 
     /**
@@ -312,7 +209,7 @@ final class PermissionUtils {
      * 判断这个意图的 Activity 是否存在
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    static boolean areActivityIntent(@NonNull Context context, @Nullable Intent intent) {
+    public static boolean areActivityIntent(@NonNull Context context, @Nullable Intent intent) {
         if (intent == null) {
             return false;
         }
@@ -329,7 +226,7 @@ final class PermissionUtils {
     /**
      * 判断两个权限字符串是否为同一个
      */
-    static boolean equalsPermission(@NonNull String permission1, @NonNull String permission2) {
+    public static boolean equalsPermission(@NonNull String permission1, @NonNull String permission2) {
         int length = permission1.length();
         if (length != permission2.length()) {
             return false;
@@ -346,15 +243,22 @@ final class PermissionUtils {
     }
 
     /**
+     * 判断两个权限字符串是否为同一个
+     */
+    public static boolean equalsPermission(@NonNull IPermission permission1, @NonNull IPermission permission2) {
+        return equalsPermission(permission1.getName(), permission2.getName());
+    }
+
+    /**
      * 判断权限集合中是否包含某个权限
      */
-    static boolean containsPermission(@NonNull Collection<String> permissions, @NonNull String permission) {
+    static boolean containsPermission(@NonNull Collection<IPermission> permissions, @NonNull IPermission permission) {
         if (permissions.isEmpty()) {
             return false;
         }
-        for (String s : permissions) {
+        for (IPermission item : permissions) {
             // 使用 equalsPermission 来判断可以提升代码执行效率
-            if (equalsPermission(s, permission)) {
+            if (equalsPermission(item.getName(), permission.getName())) {
                 return true;
             }
         }
@@ -362,10 +266,73 @@ final class PermissionUtils {
     }
 
     /**
+     * 将 List<IPermission> 转换成 List<String> 对象
+     */
+    @NonNull
+    static List<String> convertPermissionList(@Nullable List<IPermission> permissions) {
+        List<String> list = new ArrayList<>();
+        if (permissions == null || permissions.isEmpty()) {
+            return list;
+        }
+        for (IPermission permission : permissions) {
+            list.add(permission.getName());
+        }
+        return list;
+    }
+
+    @NonNull
+    static List<String> convertPermissionList(@Nullable IPermission[] permissions) {
+        List<String> list = new ArrayList<>();
+        if (permissions == null) {
+            return list;
+        }
+        for (IPermission permission : permissions) {
+            list.add(permission.getName());
+        }
+        return list;
+    }
+
+    /**
+     * 将 List<IPermission> 转换成 String[] 对象
+     */
+    @NonNull
+    static String[] convertPermissionArray(@Nullable List<IPermission> permissions) {
+        if (permissions == null || permissions.isEmpty()) {
+            return new String[0];
+        }
+        String[] list = new String[permissions.size()];
+        for (int i = 0; i < permissions.size(); i++) {
+            list[i] = permissions.get(i).getName();
+        }
+        return list;
+    }
+
+    /**
      * 获取包名 uri
      */
-    static Uri getPackageNameUri(@NonNull Context context) {
+    public static Uri getPackageNameUri(@NonNull Context context) {
         return Uri.parse("package:" + context.getPackageName());
+    }
+
+    /**
+     * 判断某个类的类名是否存在
+     */
+    public static boolean isClassExist(@Nullable String className) {
+        if (className == null) {
+            return false;
+        }
+        if (className.isEmpty()) {
+            return false;
+        }
+        try {
+            // 判断这个类有是否存在，如果存在的话，证明是有效的
+            // 如果不存在的话，证明无效的，也是需要重新授权的
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**

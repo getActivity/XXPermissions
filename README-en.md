@@ -99,18 +99,15 @@ android.enableJetifier = true
 
 ```java
 XXPermissions.with(this)
-        // Request single permission
-        .permission(Permission.RECORD_AUDIO)
         // Request multiple permission
-        .permission(Permission.Group.CALENDAR)
-        // Set permission request interceptor (local setting)
-        //.interceptor(new PermissionInterceptor())
+        .permission(PermissionManifest.RECORD_AUDIO)
+        .permission(PermissionManifest.CAMERA)
         // Setting does not trigger error detection mechanism (local setting)
         //.unchecked()
         .request(new OnPermissionCallback() {
 
             @Override
-            public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
                 if (!allGranted) {
                     toast("Some permissions were obtained successfully, but some permissions were not granted normally");
                     return;
@@ -119,7 +116,7 @@ XXPermissions.with(this)
             }
 
             @Override
-            public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
+            public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
                 if (doNotAskAgain) {
                     toast("Authorization denied permanently, please grant recording and calendar permissions manually");
                     // If it is permanently denied, jump to the application permission system settings page
@@ -135,17 +132,14 @@ XXPermissions.with(this)
 
 ```kotlin
 XXPermissions.with(this)
-    // Request single permission
-    .permission(Permission.RECORD_AUDIO)
     // Request multiple permission
-    .permission(Permission.Group.CALENDAR)
-    // Set permission request interceptor (local settings)
-    //.interceptor(new PermissionInterceptor())
+    .permission(PermissionManifest.RECORD_AUDIO)
+    .permission(PermissionManifest.CAMERA)
     // Setting does not trigger error detection mechanism (local setting)
     //.unchecked()
     .request(object : OnPermissionCallback {
 
-        override fun onGranted(permissions: MutableList<String>, allGranted: Boolean) {
+        override fun onGranted(permissions: MutableList<IPermission>, allGranted: Boolean) {
             if (!allGranted) {
                 toast("Some permissions were obtained successfully, but some permissions were not granted normally")
                 return
@@ -153,7 +147,7 @@ XXPermissions.with(this)
             toast("Acquired recording and calendar permissions successfully")
         }
 
-        override fun onDenied(permissions: MutableList<String>, doNotAskAgain: Boolean) {
+        override fun onDenied(permissions: MutableList<IPermission>, doNotAskAgain: Boolean) {
             if (doNotAskAgain) {
                 toast("Authorization denied permanently, please grant recording and calendar permissions manually")
                 // If it is permanently denied, jump to the application permission system settings page
@@ -168,32 +162,77 @@ XXPermissions.with(this)
 #### Introduction to other APIs of the framework
 
 ```java
-// Determine if one or more permissions are all granted
-XXPermissions.isGrantedPermissions(Context context, String... permissions);
+// Check if a single permission is granted
+XXPermissions.isGrantedPermission(@NonNull Context context, @NonNull IPermission permission);
+XXPermissions.isGrantedPermissions(@NonNull Context context, @NonNull IPermission[] permissions);
+XXPermissions.isGrantedPermissions(@NonNull Context context, @NonNull List<IPermission> permissions);
 
-// Get permission not granted
-XXPermissions.getDeniedPermissions(Context context, String... permissions);
+// Get the granted permissions from a permission list
+XXPermissions.getGrantedPermissions(@NonNull Context context, @NonNull IPermission[] permissions);
+XXPermissions.getGrantedPermissions(@NonNull Context context, @NonNull List<IPermission> permissions);
 
-// Get permission granted
-XXPermissions.getGrantedPermissions(Context context, String... permissions);
+// Get the denied permissions from a permission list
+XXPermissions.getDeniedPermissions(@NonNull Context context, @NonNull IPermission[] permissions);
+XXPermissions.getDeniedPermissions(@NonNull Context context, @NonNull List<IPermission> permissions);
 
-// Determine whether a permission is a special permission
-XXPermissions.isSpecialPermission(String permission);
+// Check if a permission is a special permission
+XXPermissions.isSpecialPermission(@NonNull IPermission permission);
+// Check if a permission list contains any special permissions
+XXPermissions.containsSpecialPermission(@NonNull IPermission[] permissions);
+XXPermissions.containsSpecialPermission(@NonNull List<IPermission> permissions);
 
-// Determine whether one or more permissions have the "Do Not Ask Again" option checked (must be called in the callback method of the permission request to have an effect)
-XXPermissions.isDoNotAskAgainPermissions(Activity activity, String... permissions);
+// Check if a permission is a background permission
+XXPermissions.isBackgroundPermission(@NonNull IPermission permission);
+// Check if a permission list contains any background permissions
+XXPermissions.containsBackgroundPermission(@NonNull IPermission[] permissions);
+XXPermissions.containsBackgroundPermission(@NonNull List<IPermission> permissions);
 
-// Start app details activity
-XXPermissions.startPermissionActivity(Context context, String... permissions);
-XXPermissions.startPermissionActivity(Activity activity, String... permissions);
-XXPermissions.startPermissionActivity(Activity activity, String... permission, OnPermissionPageCallback callback);
-XXPermissions.startPermissionActivity(Fragment fragment, String... permissions);
-XXPermissions.startPermissionActivity(Fragment fragment, String... permissions, OnPermissionPageCallback callback);
+// Check if a permission has been denied with the "Never ask again" option selected 
+// (Must be called within the permission request callback to be effective)
+XXPermissions.isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull IPermission permission);
+XXPermissions.isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull IPermission[] permissions);
+XXPermissions.isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull List<IPermission> permissions);
 
-// Setting not to trigger error detection mechanism (global setting)
+// Check if the API level required by a permission is higher than the current device's API level
+XXPermissions.isLowVersionRunning(@NonNull IPermission permission);
+
+// Navigate to the permission settings page (Context version)
+XXPermissions.startPermissionActivity(@NonNull Context context);
+XXPermissions.startPermissionActivity(@NonNull Context context, @NonNull IPermission... permissions);
+XXPermissions.startPermissionActivity(@NonNull Context context, @NonNull List<IPermission> permissions);
+
+// Navigate to the permission settings page (Activity version)
+XXPermissions.startPermissionActivity(@NonNull Activity activity);
+XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull IPermission... permissions);
+XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions);
+XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
+XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull IPermission permission, @Nullable OnPermissionPageCallback callback);
+XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions, @Nullable OnPermissionPageCallback callback);
+
+// Navigate to the permission settings page (App Fragment version)
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment);
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull IPermission... permissions);
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions);
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull IPermission permission, @Nullable OnPermissionPageCallback callback);
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionPageCallback callback);
+
+// Navigate to the permission settings page (Support Fragment version)
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment);
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull IPermission... permissions);
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions);
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull IPermission permission, @Nullable OnPermissionPageCallback callback);
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionPageCallback callback);
+
+// Set the permission description provider (Global setting)
+XXPermissions.setPermissionDescription(Class<? extends OnPermissionDescription> clazz);
+
+// Set the permission request interceptor (Global setting)
+XXPermissions.setPermissionInterceptor(Class<? extends OnPermissionInterceptor> clazz);
+
+// Set whether to enable error detection mode (Global setting)
 XXPermissions.setCheckMode(false);
-// Set permission request interceptor (global setting)
-XXPermissions.setPermissionInterceptor(PermissionInterceptor.class);
 ```
 
 #### About the permission monitoring callback parameter description
@@ -204,7 +243,7 @@ XXPermissions.setPermissionInterceptor(PermissionInterceptor.class);
 
 * The framework will call first `onDenied` method, then call `onGranted` method. of which we can pass `onGranted` in the method `allGranted` parameters to determine whether all permissions are granted.
 
-* If you want to know whether a permission in the callback is granted or denied, you can call `List` in class `contains(Permission.XXX)` method to determine whether this permission is included in this collection.
+* If you want to know whether a permission in the callback is granted or denied, you can call `List` in class `contains(PermissionManifest.XXX)` method to determine whether this permission is included in this collection.
 
 ## [For other frequently asked questions, please click here](HelpDoc-en.md)
 

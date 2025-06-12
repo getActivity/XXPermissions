@@ -1,4 +1,4 @@
-package com.hjq.permissions;
+package com.hjq.permissions.permission.dangerous;
 
 import android.app.Activity;
 import android.app.AppOpsManager;
@@ -6,23 +6,64 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PermissionInfo;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import com.hjq.permissions.AndroidVersionTools;
+import com.hjq.permissions.PermissionActivityIntentHandler;
+import com.hjq.permissions.PermissionIntentManager;
+import com.hjq.permissions.PhoneRomUtils;
+import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.common.DangerousPermission;
 
 /**
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
- *    time   : 2023/03/12
- *    desc   : 读取应用列表权限兼容类
+ *    time   : 2025/06/11
+ *    desc   : 读取应用列表权限
  */
-final class GetInstalledAppsPermissionCompat {
+public final class GetInstalledAppsPermission extends DangerousPermission {
 
     private static final String MIUI_OP_GET_INSTALLED_APPS_FIELD_NAME = "OP_GET_INSTALLED_APPS";
     private static final int MIUI_OP_GET_INSTALLED_APPS_DEFAULT_VALUE = 10022;
 
-    static boolean isGrantedPermission(@NonNull Context context) {
+    public static final Parcelable.Creator<GetInstalledAppsPermission> CREATOR = new Parcelable.Creator<GetInstalledAppsPermission>() {
+
+        @Override
+        public GetInstalledAppsPermission createFromParcel(Parcel source) {
+            return new GetInstalledAppsPermission(source);
+        }
+
+        @Override
+        public GetInstalledAppsPermission[] newArray(int size) {
+            return new GetInstalledAppsPermission[size];
+        }
+    };
+
+    public GetInstalledAppsPermission() {
+        // default implementation ignored
+    }
+
+    private GetInstalledAppsPermission(Parcel in) {
+        super(in);
+    }
+
+    @NonNull
+    @Override
+    public String getName() {
+        return PermissionConstants.GET_INSTALLED_APPS;
+    }
+
+    @Override
+    public int getFromAndroidVersion() {
+        return AndroidVersionTools.ANDROID_4_2;
+    }
+
+    @Override
+    public boolean isGranted(@NonNull Context context, boolean skipRequest) {
         if (isSupportGetInstalledAppsPermission(context)) {
-            return PermissionUtils.isGrantedPermission(context, Permission.GET_INSTALLED_APPS);
+            return checkSelfPermission(context, getName());
         }
 
         if (PhoneRomUtils.isMiui() && isMiuiSupportGetInstalledAppsPermission()) {
@@ -33,17 +74,18 @@ final class GetInstalledAppsPermissionCompat {
                 return true;
             }
             // 经过测试发现，OP_GET_INSTALLED_APPS 是小米在 Android 6.0 才加上的，看了 Android 5.0 的 miui 并没有出现读取应用列表的权限
-            return PermissionUtils.checkOpNoThrow(context, MIUI_OP_GET_INSTALLED_APPS_FIELD_NAME, MIUI_OP_GET_INSTALLED_APPS_DEFAULT_VALUE);
+            return checkOpNoThrow(context, MIUI_OP_GET_INSTALLED_APPS_FIELD_NAME, MIUI_OP_GET_INSTALLED_APPS_DEFAULT_VALUE);
         }
 
         // 如果不支持申请，则直接返回 true（代表有这个权限），反正也不会崩溃，顶多就是获取不到第三方应用列表
         return true;
     }
 
-    static boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
+    @Override
+    public boolean isDoNotAskAgain(@NonNull Activity activity) {
         if (isSupportGetInstalledAppsPermission(activity)) {
             // 如果支持申请，那么再去判断权限是否永久拒绝
-            return PermissionUtils.isDoNotAskAgainPermission(activity, Permission.GET_INSTALLED_APPS);
+            return checkDoNotAskAgainPermission(activity, getName());
         }
 
         if (PhoneRomUtils.isMiui() && isMiuiSupportGetInstalledAppsPermission()) {
@@ -51,38 +93,40 @@ final class GetInstalledAppsPermissionCompat {
                 return false;
             }
             // 如果在没有授权的情况下返回 true 表示永久拒绝，这样就能走后面的判断，让外层调用者跳转到小米定制的权限设置页面
-            return !isGrantedPermission(activity);
+            return !isGranted(activity);
         }
 
         // 如果不支持申请，则直接返回 false（代表没有永久拒绝）
         return false;
     }
 
-    static Intent getPermissionIntent(@NonNull Context context) {
+    @NonNull
+    @Override
+    public Intent getSettingIntent(@NonNull Context context) {
         if (PhoneRomUtils.isMiui()) {
             Intent intent = null;
             if (PhoneRomUtils.isMiuiOptimization()) {
                 intent = PermissionIntentManager.getMiuiPermissionPageIntent(context);
             }
             // 另外跳转到应用详情页也可以开启读取应用列表权限
-            intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, PermissionIntentManager.getApplicationDetailsIntent(context));
+            intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
             return intent;
         }
 
-        return PermissionIntentManager.getApplicationDetailsIntent(context);
+        return getApplicationDetailsIntent(context);
     }
 
     /**
      * 判断是否支持获取应用列表权限
      */
     @SuppressWarnings("deprecation")
-    private static boolean isSupportGetInstalledAppsPermission(Context context) {
+    private boolean isSupportGetInstalledAppsPermission(Context context) {
         if (!AndroidVersionTools.isAndroid6()) {
             // 如果是 Android 6.0 以下，判定它是不支持的
             return false;
         }
         try {
-            PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(Permission.GET_INSTALLED_APPS, 0);
+            PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(getName(), 0);
             if (permissionInfo != null) {
                 if (AndroidVersionTools.isAndroid9()) {
                     return permissionInfo.getProtection() == PermissionInfo.PROTECTION_DANGEROUS;

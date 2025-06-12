@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.hjq.permissions.permission.base.IPermission;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,21 +72,22 @@ public abstract class PermissionFragmentFactory<A extends Activity, F> {
     /**
      * 创建 Fragment 对象
      */
-    abstract void createAndCommitFragment(@NonNull List<String> permissions,
+    abstract void createAndCommitFragment(@NonNull List<IPermission> permissions,
                                             @NonNull PermissionType permissionType,
                                             @Nullable OnPermissionFlowCallback callback);
 
     /**
      * 生成权限请求的参数
+     * @noinspection unchecked
      */
     @NonNull
-    Bundle generatePermissionArguments(@NonNull List<String> permissions, @IntRange(from = 1, to = 65535) int requestCode) {
+    Bundle generatePermissionArguments(@NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode) {
         Bundle bundle = new Bundle();
         bundle.putInt(RequestPermissionDelegateImpl.REQUEST_CODE, requestCode);
         if (permissions instanceof ArrayList) {
-            bundle.putStringArrayList(RequestPermissionDelegateImpl.REQUEST_PERMISSIONS, (ArrayList<String>) permissions);
+            bundle.putParcelableArrayList(RequestPermissionDelegateImpl.REQUEST_PERMISSIONS, (ArrayList<IPermission>) permissions);
         } else {
-            bundle.putStringArrayList(RequestPermissionDelegateImpl.REQUEST_PERMISSIONS, new ArrayList<>(permissions));
+            bundle.putParcelableArrayList(RequestPermissionDelegateImpl.REQUEST_PERMISSIONS, new ArrayList<>(permissions));
         }
         return bundle;
     }

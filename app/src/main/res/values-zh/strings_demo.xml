@@ -14,6 +14,9 @@
 
     <string name="demo_notification_listener_toast">监听到新的通知消息，标题为：%s，内容为：%s</string>
 
+    <string name="test_notification_channel_id">test</string>
+    <string name="test_notification_channel_name">用于测试的通知渠道名称</string>
+
     <string name="demo_request_single_dangerous_permission">申请单个危险权限</string>
     <string name="demo_request_multiple_dangerous_permission">申请多个危险权限</string>
     <string name="demo_request_location_permission">申请定位权限</string>

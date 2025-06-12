@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.hjq.permissions.permission.base.IPermission;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
  *    time   : 2023/03/12
  *    desc   : 国内手机厂商权限设置页管理器
  */
-final class PermissionIntentManager {
+public final class PermissionIntentManager {
 
     /** 华为手机管家 App 包名 */
     private static final String EMUI_MOBILE_MANAGER_APP_PACKAGE_NAME = "com.huawei.systemmanager";
@@ -41,7 +42,7 @@ final class PermissionIntentManager {
      * 获取华为悬浮窗权限设置意图
      */
     @Nullable
-    static Intent getEmuiWindowPermissionPageIntent(Context context) {
+    public static Intent getEmuiWindowPermissionPageIntent(Context context) {
         // EMUI 发展史：http://www.360doc.com/content/19/1017/10/9113704_867381705.shtml
         // android 华为版本历史,一文看完华为EMUI发展史：https://blog.csdn.net/weixin_39959369/article/details/117351161
 
@@ -94,7 +95,7 @@ final class PermissionIntentManager {
      * 获取小米悬浮窗权限设置意图
      */
     @Nullable
-    static Intent getMiuiWindowPermissionPageIntent(Context context) {
+    public static Intent getMiuiWindowPermissionPageIntent(Context context) {
         return getMiuiPermissionPageIntent(context);
     }
 
@@ -102,7 +103,7 @@ final class PermissionIntentManager {
      * 获取 oppo 悬浮窗权限设置意图
      */
     @Nullable
-    static Intent getColorOsWindowPermissionPageIntent(Context context) {
+    public static Intent getColorOsWindowPermissionPageIntent(Context context) {
         // com.color.safecenter 是之前 oppo 安全中心的包名，而 com.oppo.safe 是 oppo 后面改的安全中心的包名
         // 经过测试发现是在 ColorOs 2.1 的时候改的，Android 4.4 还是 com.color.safecenter，到了 Android 5.0 变成了 com.oppo.safe
 
@@ -147,7 +148,7 @@ final class PermissionIntentManager {
      * 获取 vivo 悬浮窗权限设置意图
      */
     @Nullable
-    static Intent getOriginOsWindowPermissionPageIntent(Context context) {
+    public static Intent getOriginOsWindowPermissionPageIntent(Context context) {
         // java.lang.SecurityException: Permission Denial: starting Intent
         // { cmp=com.iqoo.secure/.ui.phoneoptimize.FloatWindowManager (has extras) } from
         // ProcessRecord{2c3023cf 21847:com.hjq.permissions.demo/u0a4633} (pid=21847, uid=14633) not exported from uid 10055
@@ -170,7 +171,7 @@ final class PermissionIntentManager {
     }
 
     @Nullable
-    static Intent getOneUiWindowPermissionPageIntent(Context context) {
+    public static Intent getOneUiWindowPermissionPageIntent(Context context) {
         return getOneUiPermissionPageIntent(context);
     }
 
@@ -178,14 +179,14 @@ final class PermissionIntentManager {
      * 获取锤子手机悬浮窗权限设置意图
      */
     @Nullable
-    static Intent getSmartisanWindowPermissionPageIntent(Context context) {
+    public static Intent getSmartisanWindowPermissionPageIntent(Context context) {
         return getSmartisanPermissionPageIntent(context);
     }
 
     /* ---------------------------------------------------------------------------------------- */
 
     @Nullable
-    static Intent getMiuiPermissionPageIntent(Context context) {
+    public static Intent getMiuiPermissionPageIntent(Context context) {
         Intent appPermEditorActionIntent = new Intent()
             .setAction("miui.intent.action.APP_PERM_EDITOR")
             .putExtra("extra_pkgname", context.getPackageName());
@@ -204,22 +205,11 @@ final class PermissionIntentManager {
         return intent;
     }
 
-    @Nullable
-    static Intent getOriginOsPermissionPageIntent(Context context) {
-        // vivo iQOO 9 Pro（OriginOs 2.0 Android 12）
-        Intent intent = new Intent("permission.intent.action.softPermissionDetail");
-        intent.putExtra("packagename", context.getPackageName());
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
-        }
-        return null;
-    }
-
     /**
      * 获取三星权限设置意图
      */
     @Nullable
-    static Intent getOneUiPermissionPageIntent(Context context) {
+    public static Intent getOneUiPermissionPageIntent(Context context) {
         Intent intent = new Intent();
         intent.setClassName("com.android.settings", "com.android.settings.Settings$AppOpsDetailsActivity");
         Bundle extraShowFragmentArguments = new Bundle();
@@ -238,7 +228,7 @@ final class PermissionIntentManager {
      * 返回华为手机管家 App 意图
      */
     @Nullable
-    static Intent getHuaWeiMobileManagerAppIntent(Context context) {
+    public static Intent getHuaWeiMobileManagerAppIntent(Context context) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(EMUI_MOBILE_MANAGER_APP_PACKAGE_NAME);
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;
@@ -250,7 +240,7 @@ final class PermissionIntentManager {
      * 返回小米手机管家 App 意图
      */
     @Nullable
-    static Intent getXiaoMiMobileManagerAppIntent(Context context) {
+    public static Intent getXiaoMiMobileManagerAppIntent(Context context) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(MIUI_MOBILE_MANAGER_APP_PACKAGE_NAME);
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;
@@ -262,7 +252,7 @@ final class PermissionIntentManager {
      * 获取 oppo 安全中心 App 意图
      */
     @Nullable
-    static Intent getOppoSafeCenterAppIntent(Context context) {
+    public static Intent getOppoSafeCenterAppIntent(Context context) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(COLOR_OS_SAFE_CENTER_APP_PACKAGE_NAME_1);
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;
@@ -282,7 +272,7 @@ final class PermissionIntentManager {
      * 获取 vivo 管家手机意图
      */
     @Nullable
-    static Intent getVivoMobileManagerAppIntent(Context context) {
+    public static Intent getVivoMobileManagerAppIntent(Context context) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(ORIGIN_OS_MOBILE_MANAGER_APP_PACKAGE_NAME);
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;
@@ -294,7 +284,7 @@ final class PermissionIntentManager {
      * 获取锤子安全中心权限设置页意图
      */
     @Nullable
-    static Intent getSmartisanPermissionPageIntent(Context context) {
+    public static Intent getSmartisanPermissionPageIntent(Context context) {
         Intent intent = new Intent(SMARTISAN_OS_SECURITY_COMPONENT_APP_PACKAGE_NAME + ".action.PACKAGE_OVERVIEW");
         if (PermissionUtils.areActivityIntent(context, intent)) {
             return intent;
@@ -322,23 +312,24 @@ final class PermissionIntentManager {
     /* ---------------------------------------------------------------------------------------- */
 
     @NonNull
-    static Intent getApplicationDetailsIntent(@NonNull Context context) {
-        return getApplicationDetailsIntent(context, null);
+    public static Intent getApplicationDetailsIntent(@NonNull Context context) {
+        return getApplicationDetailsIntent(context, (IPermission[]) null);
     }
 
     /**
      * 获取应用详情界面意图
      */
     @NonNull
-    static Intent getApplicationDetailsIntent(@NonNull Context context, @Nullable List<String> permissions) {
+    public static Intent getApplicationDetailsIntent(@NonNull Context context, @Nullable IPermission... permissions) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(PermissionUtils.getPackageNameUri(context));
-        if (permissions != null && !permissions.isEmpty() && PhoneRomUtils.isColorOs()) {
+        if (permissions != null && permissions.length > 0 && PhoneRomUtils.isColorOs()) {
             // OPPO 应用权限受阻跳转优化适配：https://open.oppomobile.com/new/developmentDoc/info?id=12983
             Bundle bundle = new Bundle();
+            List<String> permissionList = PermissionUtils.convertPermissionList(permissions);
             // 元素为受阻权限的原生权限名字符串常量
-            bundle.putStringArrayList("permissionList", permissions instanceof ArrayList ?
-                (ArrayList<String>) permissions : new ArrayList<>(permissions));
+            bundle.putStringArrayList("permissionList", permissionList instanceof ArrayList ?
+                (ArrayList<String>) permissionList : new ArrayList<>(permissionList));
             intent.putExtras(bundle);
             // 传入跳转优化标识
             intent.putExtra("isGetPermission", true);
@@ -361,7 +352,7 @@ final class PermissionIntentManager {
 
     /** 跳转到系统设置页面 */
     @NonNull
-    static Intent getAndroidSettingAppIntent() {
+    public static Intent getAndroidSettingAppIntent() {
         return new Intent(Settings.ACTION_SETTINGS);
     }
 }

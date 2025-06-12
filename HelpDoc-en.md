@@ -75,13 +75,14 @@ android
 ```java
 XXPermissions.with(MainActivity.this)
         // The scoped storage that has been adapted to Android 11 needs to be called like this
-        //.permission(Permission.Group.STORAGE)
+        //.permission(PermissionManifest.READ_EXTERNAL_STORAGE)
+        //.permission(PermissionManifest.WRITE_EXTERNAL_STORAGE)
         // Not yet adapted to Android 11 scoped storage needs to be called like this
-        .permission(Permission.MANAGE_EXTERNAL_STORAGE)
+        .permission(PermissionManifest.MANAGE_EXTERNAL_STORAGE)
         .request(new OnPermissionCallback() {
 
             @Override
-            public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
                 if (allGranted) {
                     toast("获取存储权限成功");
                 }
@@ -129,7 +130,7 @@ XXPermissions.with(MainActivity.this)
 
 ```java
 XXPermissions.with(this)
-        .permission(Permission.XXX)
+        .permission(PermissionManifest.XXX)
         // Set permission request description (local settings)
         .description(new PermissionDescription())
         // Set permission request interceptor (local settings)
@@ -137,12 +138,12 @@ XXPermissions.with(this)
         .request(new OnPermissionCallback() {
 
             @Override
-            public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
                 ......
             }
 
             @Override
-            public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
+            public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
                 ......
             }
         });
@@ -169,20 +170,21 @@ public class XxxApplication extends Application {
 
 ```java
 XXPermissions.with(this)
-        .permission(Permission.RECORD_AUDIO)
-        .permission(Permission.Group.CALENDAR)
+        .permission(PermissionManifest.RECORD_AUDIO)
+        .permission(PermissionManifest.READ_CALENDAR)
+        .permission(PermissionManifest.WRITE_CALENDAR)
         .request(new OnPermissionCallback() {
 
             @Override
-            public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
                 if (allGranted) {
                     toast("Acquired recording and calendar permissions successfully");
                 }
             }
 
             @Override
-            public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
-                if (doNotAskAgain && permissions.contains(Permission.RECORD_AUDIO) &&
+            public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
+                if (doNotAskAgain && permissions.contains(PermissionManifest.RECORD_AUDIO) &&
                         XXPermissions.isDoNotAskAgainPermissions(MainActivity.this, Permission.RECORD_AUDIO)) {
                     toast("The recording permission request was denied, and the user checked Do not ask");
                 }
@@ -214,19 +216,19 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 
     private void requestCameraPermission() {
         XXPermissions.with(this)
-                .permission(Permission.CAMERA)
+                .permission(PermissionManifest.CAMERA)
                 .request(this);
     }
 
     @Override
-    public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+    public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
         if (allGranted) {
             toast("Successfully obtained permission to take camera");
         }
     }
 
     @Override
-    public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
+    public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
         if (doNotAskAgain) {
             toast("Authorization is permanently denied, please manually grant permission to take camera");
             // If it is permanently denied, jump to the application permission system settings page
@@ -286,4 +288,4 @@ context.startActivity(intent);
 
 ![](picture/en/help_doc_install_package_miui_1.jpg) ![](picture/en/help_doc_install_package_miui_2.jpg)
 
-* See here, I believe you have noticed some differences, also jump to install apk page, on the Android native system, will show the `Cancel` and `Settings` option, click `Cancel` option will cancel the installation, only click `Settings` option, will let you grant the installation package permissions, On top of miui, the `Allow` and `Restrict` options are displayed, as well as a `Don't show again` option. If the user checks `Don't show again` and clicks the `Restrict` option, The next time the application goes to the install apk page, it will be directly rejected by the system, and only a toast prompt will be displayed. The conclusion of the problem is: You can directly jump to the page of installing apk, but it is not recommended to do so, because on some mobile phones, the system may directly reject the request to install apk, so the standard writing should be, first judge whether there is no installation permission, if not, apply for, if there is, then jump to the page of installing apk.
+* See here, I believe you have noticed some differences, also jump to install apk page, on the Android native system, will show the `Cancel` and `Settings` option, click `Cancel` option will cancel the installation, only click `Settings` option, will let you grant the installation package permissions, On top of miui, the `Allow` and `Restrict` options are displayed, as well as a `Don't show again` option. If the user checks `Don't show again` and clicks the `Restrict` option, The next time the application goes to the install apk page, it will be directly rejected by the system, and only a toast prompt will be displayed. The conclusion of the problem is: You can directly jump to the page of installing apk, but it is not recommended to do so, because on some mobile phones, the system may directly reject the request to install apk, so the standard writing should be, first judge whether there is no installation permission, if not, apply for, if there is, then jump to the page of installing apk, Of course, if you apply for installation permissions using this framework, you don't need to determine whether there are permissions or not to apply directly. Whether there is authorization or not, it will inform you through the callback, and you can then handle it from the callback.

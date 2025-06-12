@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import com.hjq.permissions.permission.base.IPermission;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ final class PermissionFragmentFactoryBySupport extends PermissionFragmentFactory
     }
 
     @Override
-    void createAndCommitFragment(@NonNull List<String> permissions, @NonNull PermissionType permissionType, @Nullable OnPermissionFlowCallback callback) {
+    void createAndCommitFragment(@NonNull List<IPermission> permissions, @NonNull PermissionType permissionType, @Nullable OnPermissionFlowCallback callback) {
         IFragmentMethod<FragmentActivity, FragmentManager> fragment;
         if (permissionType == PermissionType.SPECIAL) {
             fragment = new PermissionFragmentSupportBySpecial();

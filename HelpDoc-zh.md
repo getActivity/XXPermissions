@@ -81,13 +81,14 @@ android
 ```java
 XXPermissions.with(MainActivity.this)
         // 适配 Android 11 分区存储这样写
-        //.permission(Permission.Group.STORAGE)
+        //.permission(PermissionManifest.READ_EXTERNAL_STORAGE)
+        //.permission(PermissionManifest.WRITE_EXTERNAL_STORAGE)
         // 不适配 Android 11 分区存储这样写
-        .permission(Permission.MANAGE_EXTERNAL_STORAGE)
+        .permission(PermissionManifest.MANAGE_EXTERNAL_STORAGE)
         .request(new OnPermissionCallback() {
 
             @Override
-            public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
                 if (allGranted) {
                     toast("获取存储权限成功");
                 }
@@ -135,7 +136,7 @@ XXPermissions.with(MainActivity.this)
 
 ```java
 XXPermissions.with(this)
-        .permission(Permission.XXX)
+        .permission(PermissionManifest.XXX)
         // 设置权限说明（局部设置）
         .description(new PermissionDescription())
         // 设置权限请求拦截器（局部设置）
@@ -143,12 +144,12 @@ XXPermissions.with(this)
         .request(new OnPermissionCallback() {
 
             @Override
-            public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
                 ......
             }
 
             @Override
-            public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
+            public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
                 ......
             }
         });
@@ -175,20 +176,21 @@ public class XxxApplication extends Application {
 
 ```java
 XXPermissions.with(this)
-        .permission(Permission.RECORD_AUDIO)
-        .permission(Permission.Group.CALENDAR)
+        .permission(PermissionManifest.RECORD_AUDIO)
+        .permission(PermissionManifest.READ_CALENDAR)
+        .permission(PermissionManifest.WRITE_CALENDAR)
         .request(new OnPermissionCallback() {
 
             @Override
-            public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
                 if (allGranted) {
                     toast("获取录音和日历权限成功");
                 }
             }
 
             @Override
-            public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
-                if (doNotAskAgain && permissions.contains(Permission.RECORD_AUDIO) &&
+            public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
+                if (doNotAskAgain && permissions.contains(PermissionManifest.RECORD_AUDIO) &&
                         XXPermissions.isDoNotAskAgainPermissions(MainActivity.this, Permission.RECORD_AUDIO)) {
                     toast("录音权限请求被拒绝了，并且用户勾选了不再询问");
                 }
@@ -228,19 +230,19 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 
     private void requestCameraPermission() {
         XXPermissions.with(this)
-                .permission(Permission.CAMERA)
+                .permission(PermissionManifest.CAMERA)
                 .request(this);
     }
 
     @Override
-    public void onGranted(@NonNull List<String> permissions, boolean allGranted) {
+    public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
         if (allGranted) {
             toast("获取拍照权限成功");
         }
     }
 
     @Override
-    public void onDenied(@NonNull List<String> permissions, boolean doNotAskAgain) {
+    public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
         if (doNotAskAgain) {
             toast("被永久拒绝授权，请手动授予拍照权限");
             // 如果是被永久拒绝就跳转到应用权限系统设置页面
@@ -334,7 +336,7 @@ context.startActivity(intent);
 
 ![](picture/zh/help_doc_install_package_miui_1.jpg) ![](picture/zh/help_doc_install_package_miui_2.jpg)
 
-* 看到这里，我相信大家已经发现了一些差异，同样是跳转到安装 apk 页面，在 Android 原生系统上面，会显示 `取消` 和 `设置` 的选项，点击 `取消` 的选项会取消安装，只有点击 `设置` 的选项，才会让你授予安装包权限，授予了才能进行安装，而在 miui 上面，会显示 `允许` 和 `禁止` 的选项，另外还有一个 `记住我的选择` 的选项，如果用户勾选了这个 `记住我的选择` 并且点击了 `禁止` 的选项，那么应用下次跳转到安装 apk 页面会被系统直接拒绝，并且只会显示一个 toast 提示，问题结论是：可以直接跳转到安装 apk 页面，但是不建议那么做，因为在有些手机上面，系统可能会直接拒绝这个安装 apk 的请求，所以标准的写法应该是，先判断有没有安装权限，没有的话就申请，有的话再去跳转到安装 apk 的页面。
+* 看到这里，我相信大家已经发现了一些差异，同样是跳转到安装 apk 页面，在 Android 原生系统上面，会显示 `取消` 和 `设置` 的选项，点击 `取消` 的选项会取消安装，只有点击 `设置` 的选项，才会让你授予安装包权限，授予了才能进行安装，而在 miui 上面，会显示 `允许` 和 `禁止` 的选项，另外还有一个 `记住我的选择` 的选项，如果用户勾选了这个 `记住我的选择` 并且点击了 `禁止` 的选项，那么应用下次跳转到安装 apk 页面会被系统直接拒绝，并且只会显示一个 toast 提示，问题结论是：可以直接跳转到安装 apk 页面，但是不建议那么做，因为在有些手机上面，系统可能会直接拒绝这个安装 apk 的请求，针对这个问题，所以标准的写法应该是，先判断有没有安装权限，没有的话就申请，有的话再去跳转到安装 apk 的页面，当然你如果用的是本框架申请的安装权限，可以不需要判断有没有权限直接申请，有授权和没有授权都会通过回调告诉你，你再从回调中做处理。
 
 #### 如何应对国内某些应用商店在明确拒绝权限后 48 小时内不允许再次申请的问题
 
@@ -346,29 +348,31 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     private static final String SP_NAME_PERMISSION_REQUEST_TIME_RECORD = "permission_request_time_record";
 
     @Override
-    public void launchPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
+    public void launchPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
+                                        @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
+                                        @NonNull OnPermissionDescription permissionDescription, 
                                         @Nullable OnPermissionCallback callback) {
         SharedPreferences sharedPreferences = activity.getSharedPreferences(SP_NAME_PERMISSION_REQUEST_TIME_RECORD, Context.MODE_PRIVATE);
         String permissionKey = String.valueOf(requestPermissions);
         long lastRequestPermissionTime = sharedPreferences.getLong(permissionKey, 0);
         if (System.currentTimeMillis() - lastRequestPermissionTime <= 1000 * 60 * 60 * 24 * 2) {
-            List<String> deniedPermissions = XXPermissions.getDeniedPermissions(activity, requestPermissions);
-            List<String> grantedPermissions = new ArrayList<>(requestPermissions);
+            List<IPermission> deniedPermissions = XXPermissions.getDeniedPermissions(activity, requestPermissions);
+            List<IPermission> grantedPermissions = new ArrayList<>(requestPermissions);
             grantedPermissions.removeAll(deniedPermissions);
-            deniedPermissions(activity, requestPermissions, deniedPermissions, true, callback);
+            deniedPermissionRequest(activity, requestPermissions, deniedPermissions, true, callback);
             if (!grantedPermissions.isEmpty()) {
-                grantedPermissions(activity, requestPermissions, grantedPermissions, false, callback);
+                grantedPermissionRequest(activity, requestPermissions, grantedPermissions, false, callback);
             }
             return;
         }
         sharedPreferences.edit().putLong(permissionKey, System.currentTimeMillis()).apply();
         // 如果之前没有申请过权限，或者距离上次申请已经超过了 48 个小时，则进行申请权限
-        OnPermissionInterceptor.super.requestPermissions(activity, requestPermissions, callback);
+        dispatchPermissionRequest(activity, requestPermissions, fragmentFactory, permissionDescription, callback);
     }
-    
+
     @Override
-    public void grantedPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
-                                         @NonNull List<String> grantedPermissions, boolean allGranted,
+    public void grantedPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
+                                         @NonNull List<IPermission> grantedPermissions, boolean allGranted,
                                          @Nullable OnPermissionCallback callback) {
         if (callback == null) {
             return;
@@ -377,8 +381,8 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     }
 
     @Override
-    public void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
-                                        @NonNull List<String> deniedPermissions, boolean doNotAskAgain,
+    public void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
+                                        @NonNull List<IPermission> deniedPermissions, boolean doNotAskAgain,
                                         @Nullable OnPermissionCallback callback) {
         if (callback == null) {
             return;

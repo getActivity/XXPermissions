@@ -14,6 +14,9 @@
 
     <string name="demo_notification_listener_toast">A new notification message was listened for with the title: %s and the content: %s</string>
 
+    <string name="test_notification_channel_id">test</string>
+    <string name="test_notification_channel_name">test notification channel name</string>
+
     <string name="demo_request_single_dangerous_permission">Request single dangerous permission</string>
     <string name="demo_request_multiple_dangerous_permission">Request multiple dangerous permission</string>
     <string name="demo_request_location_permission">Request location permission</string>

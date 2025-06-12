@@ -3,7 +3,7 @@ package com.hjq.permissions;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
+import com.hjq.permissions.permission.base.IPermission;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -21,7 +21,7 @@ final class RequestPermissionLogicPresenter {
     private final Activity mActivity;
 
     @NonNull
-    private final List<String> mRequestPermissions;
+    private final List<IPermission> mRequestPermissions;
 
     @NonNull
     private final PermissionFragmentFactory<?, ?> mFragmentFactory;
@@ -36,7 +36,7 @@ final class RequestPermissionLogicPresenter {
     private final OnPermissionCallback mCallBack;
 
     RequestPermissionLogicPresenter(@NonNull Activity activity,
-                                    @NonNull List<String> requestPermissions,
+                                    @NonNull List<IPermission> requestPermissions,
                                     @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                                     @NonNull OnPermissionInterceptor permissionInterceptor,
                                     @NonNull OnPermissionDescription permissionDescription,
@@ -57,15 +57,15 @@ final class RequestPermissionLogicPresenter {
             return;
         }
 
-        List<List<String>> unauthorizedPermissions = getUnauthorizedPermissions(mActivity, mRequestPermissions);
+        List<List<IPermission>> unauthorizedPermissions = getUnauthorizedPermissions(mActivity, mRequestPermissions);
         if (unauthorizedPermissions.isEmpty()) {
             // 证明没有权限可以请求，直接处理权限请求结果
             handlePermissionRequestResult();
             return;
         }
 
-        Iterator<List<String>> iterator = unauthorizedPermissions.iterator();
-        List<String> firstPermissions = null;
+        Iterator<List<IPermission>> iterator = unauthorizedPermissions.iterator();
+        List<IPermission> firstPermissions = null;
         while (iterator.hasNext() && (firstPermissions == null || firstPermissions.isEmpty())) {
             firstPermissions = iterator.next();
         }
@@ -83,7 +83,7 @@ final class RequestPermissionLogicPresenter {
         requestPermissions(activity, firstPermissions, fragmentFactory, permissionDescription, new Runnable() {
             @Override
             public void run() {
-                List<String> nextPermissions = null;
+                List<IPermission> nextPermissions = null;
                 while (iterator.hasNext() && (nextPermissions == null || nextPermissions.isEmpty())) {
                     nextPermissions = iterator.next();
                 }
@@ -96,7 +96,7 @@ final class RequestPermissionLogicPresenter {
 
                 // 如果下一个请求的权限是后台权限
                 if (nextPermissions.size() == 1 && PermissionApi.isBackgroundPermission(nextPermissions.get(0))) {
-                    List<String> foregroundPermissions = PermissionHelper.queryForegroundPermissionByBackgroundPermission(nextPermissions.get(0));
+                    List<IPermission> foregroundPermissions = PermissionHelper.queryForegroundPermissionByBackgroundPermission(nextPermissions.get(0));
                     // 如果这个后台权限对应的前台权限没有申请成功，则不要去申请后台权限，因为申请了也没有用，系统肯定不会给通过的
                     // 如果这种情况下还硬要去申请，等下还可能会触发权限说明弹窗，但是没有实际去申请权限的情况
                     if (foregroundPermissions != null && !foregroundPermissions.isEmpty() && !PermissionApi.isGrantedPermissions(activity, foregroundPermissions)) {
@@ -106,7 +106,7 @@ final class RequestPermissionLogicPresenter {
                     }
                 }
 
-                final List<String> finalPermissions = nextPermissions;
+                final List<IPermission> finalPermissions = nextPermissions;
                 int maxWaitTimeByPermissions = PermissionHelper.getMaxIntervalTimeByPermissions(nextPermissions);
                 if (maxWaitTimeByPermissions == 0) {
                     requestPermissions(activity, finalPermissions, fragmentFactory, permissionDescription, this);
@@ -121,13 +121,13 @@ final class RequestPermissionLogicPresenter {
     /**
      * 获取未授权的危险权限
      */
-    private static List<List<String>> getUnauthorizedPermissions(@NonNull Activity activity, @NonNull List<String> requestPermissions) {
+    private static List<List<IPermission>> getUnauthorizedPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
         // 未授权的权限列表
-        List<List<String>> unauthorizedPermissions = new ArrayList<>(requestPermissions.size());
+        List<List<IPermission>> unauthorizedPermissions = new ArrayList<>(requestPermissions.size());
         // 已处理的权限列表
-        List<String> alreadyDonePermissions = new ArrayList<>(requestPermissions.size());
+        List<IPermission> alreadyDonePermissions = new ArrayList<>(requestPermissions.size());
         // 遍历需要请求的权限列表
-        for (String permission : requestPermissions) {
+        for (IPermission permission : requestPermissions) {
 
             // 如果这个权限在前面已经处理过了，就不再处理
             if (PermissionUtils.containsPermission(alreadyDonePermissions, permission)) {
@@ -136,19 +136,19 @@ final class RequestPermissionLogicPresenter {
             alreadyDonePermissions.add(permission);
 
             // 如果这个权限已授权，就不纳入申请的范围内
-            if (PermissionApi.isGrantedPermission(activity, permission)) {
+            if (permission.isGranted(activity)) {
                 continue;
             }
 
             // 如果当前设备的版本还没有出现过这个特殊权限，并且权限还没有授权的情况，证明这个特殊权限有向下兼容的权限
             // 这种情况就不要跳转到权限设置页，例如 MANAGE_EXTERNAL_STORAGE 权限
-            if (AndroidVersionTools.getCurrentAndroidVersionCode() < PermissionHelper.findAndroidVersionByPermission(permission)) {
+            if (permission.isLowVersionRunning()) {
                 continue;
             }
 
             // ---------------------------------- 下面处理特殊权限的逻辑 ------------------------------------------ //
 
-            if (PermissionApi.isSpecialPermission(permission)) {
+            if (permission.getType() == PermissionType.SPECIAL) {
                 // 如果这是一个特殊权限，那么就作为单独的一次权限进行处理
                 unauthorizedPermissions.add(PermissionUtils.asArrayList(permission));
                 continue;
@@ -165,19 +165,18 @@ final class RequestPermissionLogicPresenter {
             }
 
             // 如果这个权限有组别，那么就获取这个组别的全部权限
-            List<String> dangerousPermissions = new ArrayList<>(PermissionHelper.getDangerousPermissionGroup(permissionGroupType));
+            List<IPermission> dangerousPermissions = new ArrayList<>(PermissionHelper.getDangerousPermissionGroup(permissionGroupType));
             // 对这个组别的权限进行逐个遍历
-            Iterator<String> iterator = dangerousPermissions.iterator();
+            Iterator<IPermission> iterator = dangerousPermissions.iterator();
             while (iterator.hasNext()) {
-                String dangerousPermission = iterator.next();
+                IPermission dangerousPermission = iterator.next();
                 // 如果这个危险权限在前面已经处理过了，就不再处理
                 if (PermissionUtils.containsPermission(alreadyDonePermissions, dangerousPermission)) {
                     continue;
                 }
                 alreadyDonePermissions.add(dangerousPermission);
 
-                if (PermissionHelper.findAndroidVersionByPermission(dangerousPermission) >
-                                        AndroidVersionTools.getCurrentAndroidVersionCode()) {
+                if (dangerousPermission.isLowVersionRunning()) {
                     // 如果申请的权限是新系统才出现的，但是当前是旧系统运行，就从权限组中移除
                     iterator.remove();
                     continue;
@@ -191,7 +190,7 @@ final class RequestPermissionLogicPresenter {
                 }
 
                 // 判断要申请的权限是否授予
-                if (PermissionApi.isGrantedPermission(activity, dangerousPermission)) {
+                if (dangerousPermission.isGranted(activity)) {
                     // 如果这个权限已经授予，就从权限组中移除
                     // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/369
                     iterator.remove();
@@ -209,14 +208,14 @@ final class RequestPermissionLogicPresenter {
             }
 
             // 判断申请的权限组是否包含后台权限（例如后台定位权限，后台传感器权限），如果有的话，不能在一起申请，需要进行拆分申请
-            String backgroundPermission = PermissionHelper.getBackgroundPermissionByGroup(dangerousPermissions);
-            if (TextUtils.isEmpty(backgroundPermission)) {
+            IPermission backgroundPermission = PermissionHelper.getBackgroundPermissionByGroup(dangerousPermissions);
+            if (backgroundPermission == null) {
                 // 如果不包含后台权限，则直接添加到待申请的列表
                 unauthorizedPermissions.add(dangerousPermissions);
                 continue;
             }
 
-            List<String> foregroundPermissions = new ArrayList<>(dangerousPermissions);
+            List<IPermission> foregroundPermissions = new ArrayList<>(dangerousPermissions);
             foregroundPermissions.remove(backgroundPermission);
 
             // 添加前台权限（前提得是没有授权）
@@ -234,7 +233,7 @@ final class RequestPermissionLogicPresenter {
     /**
      * 发起一次权限请求
      */
-    private static void requestPermissions(@NonNull Activity activity, List<String> permissions,
+    private static void requestPermissions(@NonNull Activity activity, List<IPermission> permissions,
                                             @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                                             @NonNull OnPermissionDescription permissionDescription,
                                             @NonNull Runnable finishRunnable) {
@@ -296,7 +295,7 @@ final class RequestPermissionLogicPresenter {
 
         OnPermissionInterceptor interceptor = mPermissionInterceptor;
 
-        List<String> requestPermissions = mRequestPermissions;
+        List<IPermission> requestPermissions = mRequestPermissions;
 
         Activity activity = mActivity;
 
@@ -305,11 +304,11 @@ final class RequestPermissionLogicPresenter {
             return;
         }
 
-        List<String> grantedPermissions = new ArrayList<>(requestPermissions.size());
-        List<String> deniedPermissions = new ArrayList<>(requestPermissions.size());
+        List<IPermission> grantedPermissions = new ArrayList<>(requestPermissions.size());
+        List<IPermission> deniedPermissions = new ArrayList<>(requestPermissions.size());
         // 遍历请求的权限，并且根据权限的授权状态进行分类
-        for (String permission : requestPermissions) {
-            if (PermissionApi.isGrantedPermission(activity, permission, false)) {
+        for (IPermission permission : requestPermissions) {
+            if (permission.isGranted(activity, false)) {
                 grantedPermissions.add(permission);
             } else {
                 deniedPermissions.add(permission);

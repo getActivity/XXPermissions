@@ -3,6 +3,7 @@ package com.hjq.permissions;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.hjq.permissions.permission.base.IPermission;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ public interface OnPermissionInterceptor {
      * @param callback                  权限申请回调
      */
     default void launchPermissionRequest(@NonNull Activity activity,
-                                        @NonNull List<String> requestPermissions,
+                                        @NonNull List<IPermission> requestPermissions,
                                         @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                                         @NonNull OnPermissionDescription permissionDescription,
                                         @Nullable OnPermissionCallback callback) {
@@ -36,8 +37,8 @@ public interface OnPermissionInterceptor {
      * @param callback                   权限申请回调
      */
     default void grantedPermissionRequest(@NonNull Activity activity,
-                                            @NonNull List<String> requestPermissions,
-                                            @NonNull List<String> grantedPermissions, boolean allGranted,
+                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull List<IPermission> grantedPermissions, boolean allGranted,
                                             @Nullable OnPermissionCallback callback) {
         if (callback == null) {
             return;
@@ -53,8 +54,8 @@ public interface OnPermissionInterceptor {
      * @param doNotAskAgain             是否勾选了不再询问选项
      * @param callback                  权限申请回调
      */
-    default void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
-                                            @NonNull List<String> deniedPermissions, boolean doNotAskAgain,
+    default void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
+                                            @NonNull List<IPermission> deniedPermissions, boolean doNotAskAgain,
                                             @Nullable OnPermissionCallback callback) {
         if (callback == null) {
             return;
@@ -69,7 +70,7 @@ public interface OnPermissionInterceptor {
      * @param skipRequest               是否跳过了申请过程
      * @param callback                  权限申请回调
      */
-    default void finishPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
+    default void finishPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
                                             boolean skipRequest, @Nullable OnPermissionCallback callback) {}
 
     /**
@@ -78,7 +79,7 @@ public interface OnPermissionInterceptor {
      * @param requestPermissions        申请的权限
      * @param callback                  权限申请回调
      */
-    default void dispatchPermissionRequest(@NonNull Activity activity, @NonNull List<String> requestPermissions,
+    default void dispatchPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
                                             @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                                             @NonNull OnPermissionDescription permissionDescription,
                                             @Nullable OnPermissionCallback callback) {

@@ -2,6 +2,7 @@ package com.hjq.permissions;
 
 import android.app.Activity;
 import android.support.annotation.NonNull;
+import com.hjq.permissions.permission.base.IPermission;
 import java.util.List;
 
 /**
@@ -21,7 +22,7 @@ public interface OnPermissionDescription {
      * @param breakRequestRunnable          中断请求任务对象
      */
     void askWhetherRequestPermission(@NonNull Activity activity,
-                                    @NonNull List<String> requestPermissions,
+                                    @NonNull List<IPermission> requestPermissions,
                                     @NonNull Runnable continueRequestRunnable,
                                     @NonNull Runnable breakRequestRunnable);
 
@@ -31,7 +32,7 @@ public interface OnPermissionDescription {
      * @param activity                      Activity 对象
      * @param requestPermissions            请求的权限
      */
-    void onRequestPermissionStart(@NonNull Activity activity, @NonNull List<String> requestPermissions);
+    void onRequestPermissionStart(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions);
 
     /**
      * 权限请求结束
@@ -39,5 +40,5 @@ public interface OnPermissionDescription {
      * @param activity                      Activity 对象
      * @param requestPermissions            请求的权限
      */
-    void onRequestPermissionEnd(@NonNull Activity activity, @NonNull List<String> requestPermissions);
+    void onRequestPermissionEnd(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions);
 }

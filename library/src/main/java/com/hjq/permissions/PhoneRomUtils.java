@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
  *    time   : 2023/04/05
  *    desc   : 厂商 Rom 工具类
  */
-final class PhoneRomUtils {
+public final class PhoneRomUtils {
 
     private static final String[] ROM_HUAWEI    = {"huawei"};
     private static final String[] ROM_VIVO      = {"vivo"};
@@ -40,6 +40,7 @@ final class PhoneRomUtils {
     private static final String VERSION_PROPERTY_ZTE     = "ro.build.MiFavor_version";
     private static final String VERSION_PROPERTY_ONEPLUS = "ro.rom.version";
     private static final String VERSION_PROPERTY_NUBIA   = "ro.build.rom.id";
+
     /**
      * 经过测试，得出以下结论
      * Magic 7.0 存放系统版本的属性是 msc.config.magic.version，
@@ -52,28 +53,28 @@ final class PhoneRomUtils {
     /**
      * 判断当前厂商系统是否为 emui
      */
-    static boolean isEmui() {
+    public static boolean isEmui() {
         return !TextUtils.isEmpty(PermissionUtils.getSystemPropertyValue(VERSION_PROPERTY_HUAWEI));
     }
 
     /**
      * 判断当前厂商系统是否为 miui
      */
-    static boolean isMiui() {
+    public static boolean isMiui() {
         return !TextUtils.isEmpty(PermissionUtils.getSystemPropertyValue(ROM_NAME_MIUI));
     }
 
     /**
      * 判断当前厂商系统是否为澎湃系统
      */
-    static boolean isHyperOs() {
+    public static boolean isHyperOs() {
         return !TextUtils.isEmpty(PermissionUtils.getSystemPropertyValue(ROM_NAME_HYPER_OS));
     }
 
     /**
      * 判断当前厂商系统是否为 ColorOs
      */
-    static boolean isColorOs() {
+    public static boolean isColorOs() {
         for (String property : VERSION_PROPERTY_OPPO) {
             String versionName = PermissionUtils.getSystemPropertyValue(property);
             if (TextUtils.isEmpty(versionName)) {
@@ -87,7 +88,7 @@ final class PhoneRomUtils {
     /**
      * 判断当前厂商系统是否为 OriginOS
      */
-    static boolean isOriginOs() {
+    public static boolean isOriginOs() {
         return !TextUtils.isEmpty(PermissionUtils.getSystemPropertyValue(VERSION_PROPERTY_VIVO));
     }
 
@@ -95,7 +96,7 @@ final class PhoneRomUtils {
      * 判断当前厂商系统是否为 OneUI
      */
     @SuppressLint("PrivateApi")
-    static boolean isOneUi() {
+    public static boolean isOneUi() {
         return isRightRom(getBrand(), getManufacturer(), ROM_SAMSUNG);
         // 暂时无法通过下面的方式判断是否为 OneUI，只能通过品牌和机型来判断
         // https://stackoverflow.com/questions/60122037/how-can-i-detect-samsung-one-ui
@@ -116,7 +117,7 @@ final class PhoneRomUtils {
     /**
      * 判断当前是否为鸿蒙系统
      */
-    static boolean isHarmonyOs() {
+    public static boolean isHarmonyOs() {
         // 鸿蒙系统没有 Android 10 以下的
         if (!AndroidVersionTools.isAndroid10()) {
             return false;
@@ -138,14 +139,14 @@ final class PhoneRomUtils {
     /**
      * 判断当前是否为 MagicOs 系统（荣耀）
      */
-    static boolean isMagicOs() {
+    public static boolean isMagicOs() {
         return isRightRom(getBrand(), getManufacturer(), ROM_HONOR);
     }
 
     /**
      * 判断当前是否为 SmartisanOS 系统（锤子手机的系统）
      */
-    static boolean isSmartisanOS() {
+    public static boolean isSmartisanOS() {
         return isRightRom(getBrand(), getManufacturer(), ROM_SMARTISAN);
     }
 
@@ -156,7 +157,7 @@ final class PhoneRomUtils {
      * 相关 Github issue 地址：https://github.com/getActivity/XXPermissions/issues/38
      */
     @SuppressLint("PrivateApi")
-    static boolean isMiuiOptimization() {
+    public static boolean isMiuiOptimization() {
         try {
             Class<?> clazz = Class.forName("android.os.SystemProperties");
             Method getMethod = clazz.getMethod("get", String.class, String.class);

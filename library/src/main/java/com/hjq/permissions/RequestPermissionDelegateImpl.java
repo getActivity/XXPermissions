@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.hjq.permissions.permission.base.IPermission;
 import java.util.List;
 
 /**
@@ -81,12 +82,16 @@ abstract class RequestPermissionDelegateImpl implements IFragmentCallback {
     }
 
     @Nullable
-    List<String> getPermissionRequestList() {
+    List<IPermission> getPermissionRequestList() {
         Bundle arguments = mFragmentMethod.getArguments();
         if (arguments == null) {
             return null;
         }
-        return arguments.getStringArrayList(REQUEST_PERMISSIONS);
+        if (AndroidVersionTools.isAndroid13()) {
+            return arguments.getParcelableArrayList(REQUEST_PERMISSIONS, IPermission.class);
+        } else {
+            return arguments.getParcelableArrayList(REQUEST_PERMISSIONS);
+        }
     }
 
     int getPermissionRequestCode() {
@@ -112,7 +117,7 @@ abstract class RequestPermissionDelegateImpl implements IFragmentCallback {
     /**
      * 开启权限请求
      */
-    abstract void startPermissionRequest(@NonNull Activity activity, @NonNull List<String> permissions,
+    abstract void startPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> permissions,
                                          @IntRange(from = 1, to = 65535) int requestCode);
 
     @Override
@@ -139,7 +144,7 @@ abstract class RequestPermissionDelegateImpl implements IFragmentCallback {
         if (requestCode <= 0) {
             return;
         }
-        List<String> permissions = getPermissionRequestList();
+        List<IPermission> permissions = getPermissionRequestList();
         if (permissions == null || permissions.isEmpty()) {
             return;
         }

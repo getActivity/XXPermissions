@@ -1,20 +1,50 @@
-package com.hjq.permissions;
+package com.hjq.permissions.permission;
 
 import android.Manifest;
+import android.app.Service;
+import android.support.annotation.NonNull;
+import com.hjq.permissions.AndroidVersionTools;
+import com.hjq.permissions.permission.base.IPermission;
+import com.hjq.permissions.permission.common.StandardDangerousPermission;
+import com.hjq.permissions.permission.dangerous.AccessBackgroundLocationPermission;
+import com.hjq.permissions.permission.dangerous.BluetoothScanPermission;
+import com.hjq.permissions.permission.dangerous.BodySensorsBackgroundPermission;
+import com.hjq.permissions.permission.dangerous.GetInstalledAppsPermission;
+import com.hjq.permissions.permission.dangerous.MediaLocationPermission;
+import com.hjq.permissions.permission.dangerous.NearbyWifiDevicesPermission;
+import com.hjq.permissions.permission.dangerous.PostNotificationsPermission;
+import com.hjq.permissions.permission.dangerous.ReadExternalStoragePermission;
+import com.hjq.permissions.permission.dangerous.ReadMediaAudioPermission;
+import com.hjq.permissions.permission.dangerous.ReadMediaImagesPermission;
+import com.hjq.permissions.permission.dangerous.ReadMediaVideoPermission;
+import com.hjq.permissions.permission.dangerous.ReadPhoneNumbersPermission;
+import com.hjq.permissions.permission.dangerous.WriteExternalStoragePermission;
+import com.hjq.permissions.permission.special.ManageExternalStoragePermission;
+import com.hjq.permissions.permission.special.NotificationListenerServicePermission;
+import com.hjq.permissions.permission.special.NotificationPolicyPermission;
+import com.hjq.permissions.permission.special.NotificationServicePermission;
+import com.hjq.permissions.permission.special.PackageUsageStatsPermission;
+import com.hjq.permissions.permission.special.PictureInPicturePermission;
+import com.hjq.permissions.permission.special.RequestIgnoreBatteryOptimizationsPermission;
+import com.hjq.permissions.permission.special.RequestInstallPackagesPermission;
+import com.hjq.permissions.permission.special.ScheduleExactAlarmPermission;
+import com.hjq.permissions.permission.special.UseFullScreenIntentPermission;
+import com.hjq.permissions.permission.special.VpnServicePermission;
+import com.hjq.permissions.permission.special.WindowPermission;
+import com.hjq.permissions.permission.special.WriteSettingsPermission;
 
 /**
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
- *    time   : 2018/06/15
- *    desc   : 危险权限和特殊权限常量集，参考 {@link Manifest.permission}
+ *    time   : 2025/06/11
+ *    desc   : 危险权限和特殊权限清单，参考 {@link Manifest.permission}
  *    doc    : https://developer.android.google.cn/reference/android/Manifest.permission?hl=zh_cn
  *             https://developer.android.google.cn/guide/topics/permissions/overview?hl=zh-cn#normal-dangerous
  *             http://www.taf.org.cn/upload/AssociationStandard/TTAF%20004-2017%20Android%E6%9D%83%E9%99%90%E8%B0%83%E7%94%A8%E5%BC%80%E5%8F%91%E8%80%85%E6%8C%87%E5%8D%97.pdf
  */
-@SuppressWarnings("unused")
-public final class Permission {
+public final class PermissionManifest {
 
-    private Permission() {}
+    private PermissionManifest() {}
 
     /**
      * 读取应用列表权限（危险权限，电信终端产业协会联合各大中国手机厂商搞的一个权限）
@@ -32,7 +62,7 @@ public final class Permission {
      *      VIVO：虽然没有申请这个权限的通道，但是读取已安装第三方应用列表是没有问题的，没有任何限制
      *      真我：realme UI 3.0 及以上版本，realme UI 2.0 实测不行
      */
-    public static final String GET_INSTALLED_APPS = "com.android.permission.GET_INSTALLED_APPS";
+    public static final IPermission GET_INSTALLED_APPS = new GetInstalledAppsPermission();
 
     /**
      * 全屏通知权限（特殊权限，Android 14 新增的权限）
@@ -41,7 +71,7 @@ public final class Permission {
      * 1. 了解前台服务和全屏 intent 要求：https://support.google.com/googleplay/android-developer/answer/13392821?hl=zh-Hans
      * 2. Google Play 对 Android 14 全屏 Intent 的要求：https://orangeoma.zendesk.com/hc/en-us/articles/14126775576988-Google-Play-requirements-on-Full-screen-intent-for-Android-14
      */
-    public static final String USE_FULL_SCREEN_INTENT = "android.permission.USE_FULL_SCREEN_INTENT";
+    public static final IPermission USE_FULL_SCREEN_INTENT = new UseFullScreenIntentPermission();
 
     /**
      * 闹钟权限（特殊权限，Android 12 新增的权限）
@@ -49,18 +79,18 @@ public final class Permission {
      * 需要注意的是：这个权限和其他特殊权限不同的是，默认已经是授予状态，用户也可以手动撤销授权
      * 官方文档介绍：https://developer.android.google.cn/about/versions/12/behavior-changes-12?hl=zh_cn#exact-alarm-permission
      */
-    public static final String SCHEDULE_EXACT_ALARM = "android.permission.SCHEDULE_EXACT_ALARM";
+    public static final IPermission SCHEDULE_EXACT_ALARM = new ScheduleExactAlarmPermission();
 
     /**
-     * 文件管理权限（特殊权限，Android 11 新增的权限）
+     * 所有文件访问权限（特殊权限，Android 11 新增的权限）
      *
      * 为了兼容 Android 11 以下版本，需要在清单文件中注册
-     * {@link Permission#READ_EXTERNAL_STORAGE} 和 {@link Permission#WRITE_EXTERNAL_STORAGE} 权限
+     * {@link PermissionConstants#READ_EXTERNAL_STORAGE} 和 {@link PermissionConstants#WRITE_EXTERNAL_STORAGE} 权限
      *
      * 如果你的应用需要上架 GooglePlay，那么需要详细阅读谷歌应用商店的政策：
      * https://support.google.com/googleplay/android-developer/answer/9956427
      */
-    public static final String MANAGE_EXTERNAL_STORAGE = "android.permission.MANAGE_EXTERNAL_STORAGE";
+    public static final IPermission MANAGE_EXTERNAL_STORAGE = new ManageExternalStoragePermission();
 
     /**
      * 安装应用权限（特殊权限，Android 8.0 新增的权限）
@@ -68,14 +98,14 @@ public final class Permission {
      * Android 11 特性调整，安装外部来源应用需要重启 App：https://cloud.tencent.com/developer/news/637591
      * 经过实践，Android 12 已经修复了此问题，授权或者取消授权后应用并不会重启
      */
-    public static final String REQUEST_INSTALL_PACKAGES = "android.permission.REQUEST_INSTALL_PACKAGES";
+    public static final IPermission REQUEST_INSTALL_PACKAGES = new RequestInstallPackagesPermission();
 
     /**
      * 画中画权限（特殊权限，Android 8.0 新增的权限，注意此权限不需要在清单文件中注册也能申请）
      *
      * 需要注意的是：这个权限和其他特殊权限不同的是，默认已经是授予状态，用户也可以手动撤销授权
      */
-    public static final String PICTURE_IN_PICTURE = "android.permission.PICTURE_IN_PICTURE";
+    public static final IPermission PICTURE_IN_PICTURE = new PictureInPicturePermission();
 
     /**
      * 悬浮窗权限（特殊权限，Android 6.0 新增的权限，但是有些国产的厂商在 Android 6.0 之前的设备就兼容了）
@@ -83,42 +113,42 @@ public final class Permission {
      * 在 Android 10 及之前的版本能跳转到应用悬浮窗设置页面，而在 Android 11 及之后的版本只能跳转到系统设置悬浮窗管理列表了
      * 官方解释：https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION
      */
-    public static final String SYSTEM_ALERT_WINDOW = "android.permission.SYSTEM_ALERT_WINDOW";
+    public static final IPermission SYSTEM_ALERT_WINDOW = new WindowPermission();
 
     /** 写入系统设置权限（特殊权限，Android 6.0 新增的权限） */
-    public static final String WRITE_SETTINGS = "android.permission.WRITE_SETTINGS";
+    public static final IPermission WRITE_SETTINGS = new WriteSettingsPermission();
 
     /** 请求忽略电池优化选项权限（特殊权限，Android 6.0 新增的权限）*/
-    public static final String REQUEST_IGNORE_BATTERY_OPTIMIZATIONS = "android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS";
+    public static final IPermission REQUEST_IGNORE_BATTERY_OPTIMIZATIONS = new RequestIgnoreBatteryOptimizationsPermission();
 
     /** 勿扰权限，可控制手机响铃模式【静音，震动】（特殊权限，Android 6.0 新增的权限）*/
-    public static final String ACCESS_NOTIFICATION_POLICY = "android.permission.ACCESS_NOTIFICATION_POLICY";
+    public static final IPermission ACCESS_NOTIFICATION_POLICY = new NotificationPolicyPermission();
 
     /** 查看应用使用情况权限，简称使用统计权限（特殊权限，Android 5.0 新增的权限） */
-    public static final String PACKAGE_USAGE_STATS = "android.permission.PACKAGE_USAGE_STATS";
+    public static final IPermission PACKAGE_USAGE_STATS = new PackageUsageStatsPermission();
 
     /** 通知栏监听权限（特殊权限，Android 4.3 新增的权限，注意此权限不需要在清单文件中注册也能申请） */
-    public static final String BIND_NOTIFICATION_LISTENER_SERVICE = "android.permission.BIND_NOTIFICATION_LISTENER_SERVICE";
+    public static final IPermission BIND_NOTIFICATION_LISTENER_SERVICE = new NotificationListenerServicePermission();
 
     /** VPN 权限（特殊权限，Android 4.0 新增的权限，注意此权限不需要在清单文件中注册也能申请） */
-    public static final String BIND_VPN_SERVICE = "android.permission.BIND_VPN_SERVICE";
+    public static final IPermission BIND_VPN_SERVICE = new VpnServicePermission();
 
     /** 通知栏权限（特殊权限，只有 Android 4.4 及以上设备才能判断到权限状态，注意此权限不需要在清单文件中注册也能申请） */
-    public static final String NOTIFICATION_SERVICE = "android.permission.NOTIFICATION_SERVICE";
+    public static final IPermission NOTIFICATION_SERVICE = new NotificationServicePermission();
 
     /* ------------------------------------ 我是一条华丽的分割线 ------------------------------------ */
 
     /**
      * 授予对照片和视频的部分访问权限（Android 14.0 新增的权限）
      */
-    public static final String READ_MEDIA_VISUAL_USER_SELECTED = "android.permission.READ_MEDIA_VISUAL_USER_SELECTED";
+    public static final IPermission READ_MEDIA_VISUAL_USER_SELECTED = new StandardDangerousPermission(PermissionConstants.READ_MEDIA_VISUAL_USER_SELECTED, AndroidVersionTools.ANDROID_14);
 
     /**
      * 发送通知权限（Android 13.0 新增的权限）
      *
      * 为了兼容 Android 13 以下版本，框架会自动申请 {@link #NOTIFICATION_SERVICE} 权限
      */
-    public static final String POST_NOTIFICATIONS = "android.permission.POST_NOTIFICATIONS";
+    public static final IPermission POST_NOTIFICATIONS = new PostNotificationsPermission();
 
     /**
      * WIFI 权限（Android 13.0 新增的权限）
@@ -130,7 +160,7 @@ public final class Permission {
      * 为了兼容 Android 13 以下版本，需要清单文件中注册 {@link #ACCESS_FINE_LOCATION} 权限
      * 还有 Android 13 以下设备，使用 WIFI 需要 {@link #ACCESS_FINE_LOCATION} 权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
      */
-    public static final String NEARBY_WIFI_DEVICES = "android.permission.NEARBY_WIFI_DEVICES";
+    public static final IPermission NEARBY_WIFI_DEVICES = new NearbyWifiDevicesPermission();
 
     /**
      * 后台传感器权限（Android 13.0 新增的权限）
@@ -139,28 +169,28 @@ public final class Permission {
      * 1. 一旦你申请了该权限，在授权的时候，需要选择《始终允许》，而不能选择《仅在使用中允许》
      * 2. 如果你的 App 只在前台状态下使用传感器功能，请不要申请该权限（后台传感器权限）
      */
-    public static final String BODY_SENSORS_BACKGROUND = "android.permission.BODY_SENSORS_BACKGROUND";
+    public static final IPermission BODY_SENSORS_BACKGROUND = new BodySensorsBackgroundPermission();
 
     /**
      * 读取图片权限（Android 13.0 新增的权限）
      *
      * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} 权限
      */
-    public static final String READ_MEDIA_IMAGES = "android.permission.READ_MEDIA_IMAGES";
+    public static final IPermission READ_MEDIA_IMAGES = new ReadMediaImagesPermission();
 
     /**
      * 读取视频权限（Android 13.0 新增的权限）
      *
      * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} 权限
      */
-    public static final String READ_MEDIA_VIDEO = "android.permission.READ_MEDIA_VIDEO";
+    public static final IPermission READ_MEDIA_VIDEO = new ReadMediaVideoPermission();
 
     /**
      * 读取音频权限（Android 13.0 新增的权限）
      *
      * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} 权限
      */
-    public static final String READ_MEDIA_AUDIO = "android.permission.READ_MEDIA_AUDIO";
+    public static final IPermission READ_MEDIA_AUDIO = new ReadMediaAudioPermission();
 
     /**
      * 蓝牙扫描权限（Android 12.0 新增的权限）
@@ -172,14 +202,14 @@ public final class Permission {
      * 为了兼容 Android 12 以下版本，需要清单文件中注册 {@link Manifest.permission#BLUETOOTH_ADMIN} 权限
      * 还有 Android 12 以下设备，获取蓝牙扫描结果需要 {@link #ACCESS_FINE_LOCATION} 权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
      */
-    public static final String BLUETOOTH_SCAN = "android.permission.BLUETOOTH_SCAN";
+    public static final IPermission BLUETOOTH_SCAN = new BluetoothScanPermission();
 
     /**
      * 蓝牙连接权限（Android 12.0 新增的权限）
      *
      * 为了兼容 Android 12 以下版本，需要在清单文件中注册 {@link Manifest.permission#BLUETOOTH} 权限
      */
-    public static final String BLUETOOTH_CONNECT = "android.permission.BLUETOOTH_CONNECT";
+    public static final IPermission BLUETOOTH_CONNECT = new StandardDangerousPermission(PermissionConstants.BLUETOOTH_CONNECT, AndroidVersionTools.ANDROID_12);
 
     /**
      * 蓝牙广播权限（Android 12.0 新增的权限）
@@ -187,7 +217,7 @@ public final class Permission {
      * 将当前设备的蓝牙进行广播，供其他设备扫描时需要用到该权限
      * 为了兼容 Android 12 以下版本，需要在清单文件中注册 {@link Manifest.permission#BLUETOOTH_ADMIN} 权限
      */
-    public static final String BLUETOOTH_ADVERTISE = "android.permission.BLUETOOTH_ADVERTISE";
+    public static final IPermission BLUETOOTH_ADVERTISE = new StandardDangerousPermission(PermissionConstants.BLUETOOTH_ADVERTISE, AndroidVersionTools.ANDROID_12);
 
     /**
      * 在后台获取位置（Android 10.0 新增的权限）
@@ -196,7 +226,7 @@ public final class Permission {
      * 1. 一旦你申请了该权限，在授权的时候，需要选择《始终允许》，而不能选择《仅在使用中允许》
      * 2. 如果你的 App 只在前台状态下使用定位功能，没有在后台使用的场景，请不要申请该权限
      */
-    public static final String ACCESS_BACKGROUND_LOCATION = "android.permission.ACCESS_BACKGROUND_LOCATION";
+    public static final IPermission ACCESS_BACKGROUND_LOCATION = new AccessBackgroundLocationPermission();
 
     /**
      * 获取活动步数（Android 10.0 新增的权限）
@@ -204,7 +234,7 @@ public final class Permission {
      * 需要注意的是：Android 10 以下不需要传感器（BODY_SENSORS）权限也能获取到步数
      * Github issue 地址：https://github.com/getActivity/XXPermissions/issues/150
      */
-    public static final String ACTIVITY_RECOGNITION = "android.permission.ACTIVITY_RECOGNITION";
+    public static final IPermission ACTIVITY_RECOGNITION = new StandardDangerousPermission(PermissionConstants.ACTIVITY_RECOGNITION, AndroidVersionTools.ANDROID_10);
 
     /**
      * 读取媒体文件的位置位置（Android 10.0 新增的权限）
@@ -212,62 +242,62 @@ public final class Permission {
      * 需要注意的是：如果这个权限申请成功了但是不能正常读取照片的地理信息，那么需要先申请存储权限，具体可分别下面两种情况：
      *
      * 1. 如果适配了分区存储的情况下：
-     *     1) 如果项目 targetSdkVersion <= 32 需要申请 {@link Permission#READ_EXTERNAL_STORAGE}
-     *     2) 如果项目 targetSdkVersion >= 33 需要申请 {@link Permission#READ_MEDIA_IMAGES} 或 {@link Permission#READ_MEDIA_VIDEO}，并且需要全部授予，不能部分授予
+     *     1) 如果项目 targetSdkVersion <= 32 需要申请 {@link PermissionConstants#READ_EXTERNAL_STORAGE}
+     *     2) 如果项目 targetSdkVersion >= 33 需要申请 {@link PermissionConstants#READ_MEDIA_IMAGES} 或 {@link PermissionConstants#READ_MEDIA_VIDEO}，并且需要全部授予，不能部分授予
      *
      * 2. 如果没有适配分区存储的情况下：
-     *     1) 如果项目 targetSdkVersion <= 29 需要申请 {@link Permission#READ_EXTERNAL_STORAGE}
-     *     2) 如果项目 targetSdkVersion >= 30 需要申请 {@link Permission#MANAGE_EXTERNAL_STORAGE}
+     *     1) 如果项目 targetSdkVersion <= 29 需要申请 {@link PermissionConstants#READ_EXTERNAL_STORAGE}
+     *     2) 如果项目 targetSdkVersion >= 30 需要申请 {@link PermissionConstants#MANAGE_EXTERNAL_STORAGE}
      */
-    public static final String ACCESS_MEDIA_LOCATION = "android.permission.ACCESS_MEDIA_LOCATION";
+    public static final IPermission ACCESS_MEDIA_LOCATION = new MediaLocationPermission();
 
     /** 允许呼叫应用继续在另一个应用中启动的呼叫（Android 9.0 新增的权限） */
-    public static final String ACCEPT_HANDOVER = "android.permission.ACCEPT_HANDOVER";
+    public static final IPermission ACCEPT_HANDOVER = new StandardDangerousPermission(PermissionConstants.ACCEPT_HANDOVER, AndroidVersionTools.ANDROID_9);
 
     /**
      * 读取手机号码（Android 8.0 新增的权限）
      *
      * 为了兼容 Android 8.0 以下版本，需要在清单文件中注册 {@link #READ_PHONE_STATE} 权限
      */
-    public static final String READ_PHONE_NUMBERS = "android.permission.READ_PHONE_NUMBERS";
+    public static final IPermission READ_PHONE_NUMBERS = new ReadPhoneNumbersPermission();
 
     /**
      * 接听电话（Android 8.0 新增的权限，Android 8.0 以下可以采用模拟耳机按键事件来实现接听电话，这种方式不需要权限）
      */
-    public static final String ANSWER_PHONE_CALLS = "android.permission.ANSWER_PHONE_CALLS";
+    public static final IPermission ANSWER_PHONE_CALLS = new StandardDangerousPermission(PermissionConstants.ANSWER_PHONE_CALLS, AndroidVersionTools.ANDROID_8);
 
     /** 读取外部存储 */
-    public static final String READ_EXTERNAL_STORAGE = "android.permission.READ_EXTERNAL_STORAGE";
+    public static final IPermission READ_EXTERNAL_STORAGE = new ReadExternalStoragePermission();
 
     /** 写入外部存储（注意：这个权限在 targetSdk >= Android 11 并且 Android 11 及以上的设备上面不起作用，请适配分区存储特性代替权限申请） */
-    public static final String WRITE_EXTERNAL_STORAGE = "android.permission.WRITE_EXTERNAL_STORAGE";
+    public static final IPermission WRITE_EXTERNAL_STORAGE = new WriteExternalStoragePermission();
 
     /** 相机权限 */
-    public static final String CAMERA = "android.permission.CAMERA";
+    public static final IPermission CAMERA = new StandardDangerousPermission(PermissionConstants.CAMERA, AndroidVersionTools.ANDROID_6);
 
     /** 麦克风权限 */
-    public static final String RECORD_AUDIO = "android.permission.RECORD_AUDIO";
+    public static final IPermission RECORD_AUDIO = new StandardDangerousPermission(PermissionConstants.RECORD_AUDIO, AndroidVersionTools.ANDROID_6);
 
     /** 获取精确位置 */
-    public static final String ACCESS_FINE_LOCATION = "android.permission.ACCESS_FINE_LOCATION";
+    public static final IPermission ACCESS_FINE_LOCATION = new StandardDangerousPermission(PermissionConstants.ACCESS_FINE_LOCATION, AndroidVersionTools.ANDROID_6);
 
     /** 获取粗略位置 */
-    public static final String ACCESS_COARSE_LOCATION = "android.permission.ACCESS_COARSE_LOCATION";
+    public static final IPermission ACCESS_COARSE_LOCATION = new StandardDangerousPermission(PermissionConstants.ACCESS_COARSE_LOCATION, AndroidVersionTools.ANDROID_6);
 
     /** 读取联系人 */
-    public static final String READ_CONTACTS = "android.permission.READ_CONTACTS";
+    public static final IPermission READ_CONTACTS = new StandardDangerousPermission(PermissionConstants.READ_CONTACTS, AndroidVersionTools.ANDROID_6);
 
     /** 修改联系人 */
-    public static final String WRITE_CONTACTS = "android.permission.WRITE_CONTACTS";
+    public static final IPermission WRITE_CONTACTS = new StandardDangerousPermission(PermissionConstants.WRITE_CONTACTS, AndroidVersionTools.ANDROID_6);
 
     /** 访问账户列表 */
-    public static final String GET_ACCOUNTS = "android.permission.GET_ACCOUNTS";
+    public static final IPermission GET_ACCOUNTS = new StandardDangerousPermission(PermissionConstants.GET_ACCOUNTS, AndroidVersionTools.ANDROID_6);
 
     /** 读取日历 */
-    public static final String READ_CALENDAR = "android.permission.READ_CALENDAR";
+    public static final IPermission READ_CALENDAR = new StandardDangerousPermission(PermissionConstants.READ_CALENDAR, AndroidVersionTools.ANDROID_6);
 
     /** 修改日历 */
-    public static final String WRITE_CALENDAR = "android.permission.WRITE_CALENDAR";
+    public static final IPermission WRITE_CALENDAR = new StandardDangerousPermission(PermissionConstants.WRITE_CALENDAR, AndroidVersionTools.ANDROID_6);
 
     /**
      * 读取电话状态
@@ -279,45 +309,64 @@ public final class Permission {
      * 后续情况汇报：有人反馈在 iQOO 手机上面获取不到该权限，在清单文件加入下面这个权限就可以了（这里只是做记录，并不代表这种方式就一定有效果）
      *             <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
      */
-    public static final String READ_PHONE_STATE = "android.permission.READ_PHONE_STATE";
+    public static final IPermission READ_PHONE_STATE = new StandardDangerousPermission(
+        PermissionConstants.READ_PHONE_STATE, AndroidVersionTools.ANDROID_6);
 
     /** 拨打电话 */
-    public static final String CALL_PHONE = "android.permission.CALL_PHONE";
+    public static final IPermission CALL_PHONE = new StandardDangerousPermission(PermissionConstants.CALL_PHONE, AndroidVersionTools.ANDROID_6);
 
     /** 读取通话记录 */
-    public static final String READ_CALL_LOG = "android.permission.READ_CALL_LOG";
+    public static final IPermission READ_CALL_LOG = new StandardDangerousPermission(PermissionConstants.READ_CALL_LOG, AndroidVersionTools.ANDROID_6);
 
     /** 修改通话记录 */
-    public static final String WRITE_CALL_LOG = "android.permission.WRITE_CALL_LOG";
+    public static final IPermission WRITE_CALL_LOG = new StandardDangerousPermission(PermissionConstants.WRITE_CALL_LOG, AndroidVersionTools.ANDROID_6);
 
     /** 添加语音邮件 */
-    public static final String ADD_VOICEMAIL = "com.android.voicemail.permission.ADD_VOICEMAIL";
+    public static final IPermission ADD_VOICEMAIL = new StandardDangerousPermission(PermissionConstants.ADD_VOICEMAIL, AndroidVersionTools.ANDROID_6);
 
     /** 使用SIP视频 */
-    public static final String USE_SIP = "android.permission.USE_SIP";
+    public static final IPermission USE_SIP = new StandardDangerousPermission(PermissionConstants.USE_SIP, AndroidVersionTools.ANDROID_6);
 
     /**
      * 处理拨出电话
      *
      * @deprecated         在 Android 10 已经过时，请见：https://developer.android.google.cn/reference/android/Manifest.permission?hl=zh_cn#PROCESS_OUTGOING_CALLS
      */
-    public static final String PROCESS_OUTGOING_CALLS = "android.permission.PROCESS_OUTGOING_CALLS";
+    public static final IPermission PROCESS_OUTGOING_CALLS = new StandardDangerousPermission(PermissionConstants.PROCESS_OUTGOING_CALLS, AndroidVersionTools.ANDROID_6);
 
     /** 使用传感器 */
-    public static final String BODY_SENSORS = "android.permission.BODY_SENSORS";
+    public static final IPermission BODY_SENSORS = new StandardDangerousPermission(PermissionConstants.BODY_SENSORS, AndroidVersionTools.ANDROID_6);
 
     /** 发送短信 */
-    public static final String SEND_SMS = "android.permission.SEND_SMS";
+    public static final IPermission SEND_SMS = new StandardDangerousPermission(PermissionConstants.SEND_SMS, AndroidVersionTools.ANDROID_6);
 
     /** 接收短信 */
-    public static final String RECEIVE_SMS = "android.permission.RECEIVE_SMS";
+    public static final IPermission RECEIVE_SMS = new StandardDangerousPermission(PermissionConstants.RECEIVE_SMS, AndroidVersionTools.ANDROID_6);
 
     /** 读取短信 */
-    public static final String READ_SMS = "android.permission.READ_SMS";
+    public static final IPermission READ_SMS = new StandardDangerousPermission(PermissionConstants.READ_SMS, AndroidVersionTools.ANDROID_6);
 
     /** 接收 WAP 推送消息 */
-    public static final String RECEIVE_WAP_PUSH = "android.permission.RECEIVE_WAP_PUSH";
+    public static final IPermission RECEIVE_WAP_PUSH = new StandardDangerousPermission(PermissionConstants.RECEIVE_WAP_PUSH, AndroidVersionTools.ANDROID_6);
 
     /** 接收彩信 */
-    public static final String RECEIVE_MMS = "android.permission.RECEIVE_MMS";
+    public static final IPermission RECEIVE_MMS = new StandardDangerousPermission(PermissionConstants.RECEIVE_MMS, AndroidVersionTools.ANDROID_6);
+
+    /**
+     * 获取通知权限
+     *
+     * @param channelId         通知渠道 id
+     */
+    public static IPermission getNotificationServicePermission(@NonNull String channelId) {
+        return new NotificationServicePermission(channelId);
+    }
+
+    /**
+     * 获取通知监听权限
+     *
+     * @param clazz             通知监听的 Service 类型
+     */
+    public static IPermission getNotificationListenerServicePermission(@NonNull Class<? extends Service> clazz) {
+        return new NotificationListenerServicePermission(clazz);
+    }
 }

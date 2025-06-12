@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.hjq.permissions.permission.base.IPermission;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,63 +17,23 @@ import java.util.List;
  */
 final class PermissionApi {
 
-    @NonNull
-    private static final IPermissionDelegate DELEGATE = new PermissionDelegateImplV34();
-
-    /**
-     * 判断某个权限是否授予
-     */
-    static boolean isGrantedPermission(@NonNull Context context, @NonNull String permission) {
-        return isGrantedPermission(context, permission, true);
-    }
-
-    /**
-     * 判断某个权限是否授予
-     *
-     * @param skipRequest           是否跳过权限请求，直接判断权限状态
-     */
-    static boolean isGrantedPermission(@NonNull Context context, @NonNull String permission, boolean skipRequest) {
-        return DELEGATE.isGrantedPermission(context, permission, skipRequest);
-    }
-
-    /**
-     * 判断某个权限是否被永久拒绝
-     */
-    static boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
-        return DELEGATE.isDoNotAskAgainPermission(activity, permission);
-    }
-
-    /**
-     * 获取权限设置页的意图
-     */
-    static Intent getPermissionSettingIntent(@NonNull Context context, @NonNull String permission) {
-        return DELEGATE.getPermissionSettingIntent(context, permission);
-    }
-
-    /**
-     * 判断某个权限是否是特殊权限
-     */
-    static boolean isSpecialPermission(@NonNull String permission) {
-        return PermissionHelper.isSpecialPermission(permission);
-    }
-
     /**
      * 判断某个权限是否是后台权限
      */
-    static boolean isBackgroundPermission(@NonNull String permission) {
+    static boolean isBackgroundPermission(@NonNull IPermission permission) {
         return PermissionHelper.isBackgroundPermission(permission);
     }
 
     /**
      * 判断某个权限集合是否包含特殊权限
      */
-    static boolean containsSpecialPermission(@Nullable List<String> permissions) {
+    static boolean containsSpecialPermission(@Nullable List<IPermission> permissions) {
         if (permissions == null || permissions.isEmpty()) {
             return false;
         }
 
-        for (String permission : permissions) {
-            if (isSpecialPermission(permission)) {
+        for (IPermission permission : permissions) {
+            if (permission.getType() == PermissionType.SPECIAL) {
                 return true;
             }
         }
@@ -82,12 +43,12 @@ final class PermissionApi {
     /**
      * 判断某个权限集合是否包含后台权限
      */
-    static boolean containsBackgroundPermission(@Nullable List<String> permissions) {
+    static boolean containsBackgroundPermission(@Nullable List<IPermission> permissions) {
         if (permissions == null || permissions.isEmpty()) {
             return false;
         }
 
-        for (String permission : permissions) {
+        for (IPermission permission : permissions) {
             if (isBackgroundPermission(permission)) {
                 return true;
             }
@@ -98,13 +59,13 @@ final class PermissionApi {
     /**
      * 判断某些权限是否全部被授予
      */
-    static boolean isGrantedPermissions(@NonNull Context context, @NonNull List<String> permissions) {
+    static boolean isGrantedPermissions(@NonNull Context context, @NonNull List<IPermission> permissions) {
         if (permissions.isEmpty()) {
             return false;
         }
 
-        for (String permission : permissions) {
-            if (!isGrantedPermission(context, permission)) {
+        for (IPermission permission : permissions) {
+            if (!permission.isGranted(context)) {
                 return false;
             }
         }
@@ -115,10 +76,10 @@ final class PermissionApi {
     /**
      * 获取已经授予的权限
      */
-    static List<String> getGrantedPermissions(@NonNull Context context, @NonNull List<String> permissions) {
-        List<String> grantedPermissions = new ArrayList<>(permissions.size());
-        for (String permission : permissions) {
-            if (isGrantedPermission(context, permission)) {
+    static List<IPermission> getGrantedPermissions(@NonNull Context context, @NonNull List<IPermission> permissions) {
+        List<IPermission> grantedPermissions = new ArrayList<>(permissions.size());
+        for (IPermission permission : permissions) {
+            if (permission.isGranted(context)) {
                 grantedPermissions.add(permission);
             }
         }
@@ -128,10 +89,10 @@ final class PermissionApi {
     /**
      * 获取已经拒绝的权限
      */
-    static List<String> getDeniedPermissions(@NonNull Context context, @NonNull List<String> permissions) {
-        List<String> deniedPermissions = new ArrayList<>(permissions.size());
-        for (String permission : permissions) {
-            if (!isGrantedPermission(context, permission)) {
+    static List<IPermission> getDeniedPermissions(@NonNull Context context, @NonNull List<IPermission> permissions) {
+        List<IPermission> deniedPermissions = new ArrayList<>(permissions.size());
+        for (IPermission permission : permissions) {
+            if (!permission.isGranted(context)) {
                 deniedPermissions.add(permission);
             }
         }
@@ -144,9 +105,9 @@ final class PermissionApi {
      * @param activity              Activity对象
      * @param permissions            请求的权限
      */
-    static boolean isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull List<String> permissions) {
-        for (String permission : permissions) {
-            if (isDoNotAskAgainPermission(activity, permission)) {
+    static boolean isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull List<IPermission> permissions) {
+        for (IPermission permission : permissions) {
+            if (permission.isDoNotAskAgain(activity)) {
                 return true;
             }
         }
@@ -156,29 +117,28 @@ final class PermissionApi {
     /**
      * 根据传入的权限自动选择最合适的权限设置页的意图
      */
-    static Intent getBestPermissionSettingIntent(@NonNull Context context, @Nullable List<String> permissions) {
+    static Intent getBestPermissionSettingIntent(@NonNull Context context, @Nullable List<IPermission> permissions) {
         // 如果失败的权限里面不包含特殊权限
         if (permissions == null || permissions.isEmpty()) {
             return PermissionIntentManager.getApplicationDetailsIntent(context);
         }
 
         // 创建一个新的集合对象，避免复用对象可能引发外层的冲突
-        List<String> realPermissions = new ArrayList<>(permissions);
-        for (String permission : permissions) {
-            if (PermissionHelper.findAndroidVersionByPermission(permission) >
-                            AndroidVersionTools.getCurrentAndroidVersionCode()) {
+        List<IPermission> realPermissions = new ArrayList<>(permissions);
+        for (IPermission permission : permissions) {
+            if (permission.getFromAndroidVersion() > AndroidVersionTools.getCurrentAndroidVersionCode()) {
                 // 如果当前权限是高版本才出现的权限，则进行剔除
                 realPermissions.remove(permission);
                 continue;
             }
 
-            List<String> oldPermissions = PermissionHelper.queryOldPermissionByNewPermission(permission);
+            List<IPermission> oldPermissions = PermissionHelper.queryOldPermissionByNewPermission(permission);
             // 1. 如果旧版本列表不为空，并且当前权限是特殊权限，就剔除它对应的旧版本权限
             // 例如：MANAGE_EXTERNAL_STORAGE -> READ_EXTERNAL_STORAGE、WRITE_EXTERNAL_STORAGE
             // 2. 如果旧版本列表不为空，并且当前权限对应的旧版本权限包含了特殊权限，就剔除它对应的旧版本权限
             // 例如：POST_NOTIFICATIONS -> NOTIFICATION_SERVICE
             if (oldPermissions != null && !oldPermissions.isEmpty() &&
-                (isSpecialPermission(permission) || containsSpecialPermission(oldPermissions))) {
+                (permission.getType() == PermissionType.SPECIAL || containsSpecialPermission(oldPermissions))) {
                 realPermissions.removeAll(oldPermissions);
             }
         }
@@ -188,29 +148,29 @@ final class PermissionApi {
         }
 
         if (realPermissions.size() == 1) {
-            return PermissionApi.getPermissionSettingIntent(context, realPermissions.get(0));
+            return realPermissions.get(0).getSettingIntent(context);
         }
 
-        return PermissionIntentManager.getApplicationDetailsIntent(context, realPermissions);
+        return PermissionIntentManager.getApplicationDetailsIntent(context, realPermissions.toArray(new IPermission[0]));
     }
 
     /**
      * 根据新权限添加旧权限
      */
-    static void addOldPermissionsByNewPermissions(@NonNull List<String> requestPermissions) {
+    static void addOldPermissionsByNewPermissions(@NonNull List<IPermission> requestPermissions) {
         // 需要补充的权限列表
-        List<String> needSupplementPermissions =  null;
-        for (String permission : requestPermissions) {
+        List<IPermission> needSupplementPermissions =  null;
+        for (IPermission permission : requestPermissions) {
             // 如果当前运行的 Android 版本大于权限出现的 Android 版本，则证明这个权限在当前设备上不用添加旧权限
-            if (AndroidVersionTools.getCurrentAndroidVersionCode() >= PermissionHelper.findAndroidVersionByPermission(permission)) {
+            if (AndroidVersionTools.getCurrentAndroidVersionCode() >= permission.getFromAndroidVersion()) {
                 continue;
             }
             // 通过新权限查询到对应的旧权限
-            List<String> oldPermissions = PermissionHelper.queryOldPermissionByNewPermission(permission);
+            List<IPermission> oldPermissions = PermissionHelper.queryOldPermissionByNewPermission(permission);
             if (oldPermissions == null || oldPermissions.isEmpty()) {
                 continue;
             }
-            for (String oldPermission : oldPermissions) {
+            for (IPermission oldPermission : oldPermissions) {
                 // 如果请求列表已经包含此权限，就不重复添加，直接跳过
                 if (PermissionUtils.containsPermission(requestPermissions, oldPermission)) {
                     continue;
@@ -238,10 +198,10 @@ final class PermissionApi {
     /**
      * 调整权限的请求顺序
      */
-    static void adjustPermissionsSort(@NonNull List<String> requestPermissions) {
+    static void adjustPermissionsSort(@NonNull List<IPermission> requestPermissions) {
         // 获取低等级权限列表
-        List<String> lowLevelPermissions = PermissionHelper.getLowLevelPermissions();
-        for (String lowLevelPermission : lowLevelPermissions) {
+        List<IPermission> lowLevelPermissions = PermissionHelper.getLowLevelPermissions();
+        for (IPermission lowLevelPermission : lowLevelPermissions) {
             if (!PermissionUtils.containsPermission(requestPermissions, lowLevelPermission)) {
                 continue;
             }
@@ -256,19 +216,12 @@ final class PermissionApi {
     /**
      * 判断传入的权限组是不是都是危险权限
      */
-    static boolean areAllDangerousPermission(@NonNull List<String> permissions) {
-        for (String permission : permissions) {
-            if (isSpecialPermission(permission)) {
+    static boolean areAllDangerousPermission(@NonNull List<IPermission> permissions) {
+        for (IPermission permission : permissions) {
+            if (permission.getType() == PermissionType.SPECIAL) {
                 return false;
             }
         }
         return true;
-    }
-
-    /**
-     * 判断某个权限出现的版本是否高于当前的设备的版本
-     */
-    static boolean isHighVersionPermission(@NonNull String permission) {
-        return PermissionHelper.findAndroidVersionByPermission(permission) > AndroidVersionTools.getCurrentAndroidVersionCode();
     }
 }

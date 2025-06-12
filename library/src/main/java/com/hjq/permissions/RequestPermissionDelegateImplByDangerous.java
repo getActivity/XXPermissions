@@ -3,6 +3,7 @@ package com.hjq.permissions;
 import android.app.Activity;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import com.hjq.permissions.permission.base.IPermission;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ final class RequestPermissionDelegateImplByDangerous extends RequestPermissionDe
     }
 
     @Override
-    void startPermissionRequest(@NonNull Activity activity, @NonNull List<String> permissions,
+    void startPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> permissions,
                                 @IntRange(from = 1, to = 65535) int requestCode) {
         if (!AndroidVersionTools.isAndroid6()) {
             // 如果当前系统是 Android 6.0 以下，则没有危险权限的概念，则直接回调权限监听
@@ -31,7 +32,7 @@ final class RequestPermissionDelegateImplByDangerous extends RequestPermissionDe
         }
 
         // 如果不需要的话就直接申请全部的危险权限
-        requestPermissions(PermissionUtils.toStringArray(permissions), requestCode);
+        requestPermissions(PermissionUtils.convertPermissionArray(permissions), requestCode);
     }
 
     @Override
@@ -46,7 +47,7 @@ final class RequestPermissionDelegateImplByDangerous extends RequestPermissionDe
 
         // 延迟处理权限请求的结果
         sendTask(this::dispatchPermissionCallback,
-            PermissionHelper.getMaxWaitTimeByPermissions(PermissionUtils.asArrayList(permissions)));
+            PermissionHelper.getMaxWaitTimeByPermissions(getPermissionRequestList()));
     }
 
     private void dispatchPermissionCallback() {

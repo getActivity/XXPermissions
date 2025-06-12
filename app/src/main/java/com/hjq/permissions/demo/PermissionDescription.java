@@ -22,6 +22,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import com.hjq.permissions.OnPermissionDescription;
 import com.hjq.permissions.XXPermissions;
+import com.hjq.permissions.permission.base.IPermission;
 import java.util.List;
 
 /**
@@ -56,7 +57,7 @@ public final class PermissionDescription implements OnPermissionDescription {
     private Dialog mPermissionDialog;
 
     @Override
-    public void askWhetherRequestPermission(@NonNull Activity activity, @NonNull List<String> requestPermissions,
+    public void askWhetherRequestPermission(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
                                             @NonNull Runnable continueRequestRunnable, @NonNull Runnable breakRequestRunnable) {
         if (XXPermissions.containsSpecialPermission(requestPermissions)) {
             // 如果请求的权限中包含特殊权限，那么就用 Dialog 来展示权限说明弹窗
@@ -89,7 +90,7 @@ public final class PermissionDescription implements OnPermissionDescription {
     }
 
     @Override
-    public void onRequestPermissionStart(@NonNull Activity activity, @NonNull List<String> requestPermissions) {
+    public void onRequestPermissionStart(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
         if (mDescriptionWindowType != DESCRIPTION_WINDOW_TYPE_POPUP) {
             return;
         }
@@ -106,7 +107,7 @@ public final class PermissionDescription implements OnPermissionDescription {
     }
 
     @Override
-    public void onRequestPermissionEnd(@NonNull Activity activity, @NonNull List<String> requestPermissions) {
+    public void onRequestPermissionEnd(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
         // 移除跟这个 Token 有关但是没有还没有执行的消息
         HANDLER.removeCallbacksAndMessages(mHandlerToken);
         // 销毁当前正在显示的弹窗
@@ -117,7 +118,7 @@ public final class PermissionDescription implements OnPermissionDescription {
     /**
      * 生成权限描述文案
      */
-    private String generatePermissionDescription(@NonNull Activity activity, @NonNull List<String> requestPermissions) {
+    private String generatePermissionDescription(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
         return PermissionConverter.getDescriptionsByPermissions(activity, requestPermissions);
     }
 
