@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *    author : Android 轮子哥
@@ -33,7 +35,20 @@ public final class PhoneRomUtils {
 
     private static final String VERSION_PROPERTY_HUAWEI  = "ro.build.version.emui";
     private static final String VERSION_PROPERTY_VIVO    = "ro.vivo.os.build.display.id";
-    private static final String VERSION_PROPERTY_XIAOMI  = "ro.build.version.incremental";
+
+    /**
+     * 小米手机有两种 Os 系统，一种是澎湃，另外一种是 miui
+     *
+     * 系统为了兼容，澎湃有的属性，miui 肯定有，反过来就没有，所以这里要把澎湃的版本号属性放在首位
+     *
+     * [ro.mi.os.version.incremental]: [OS1.0.7.0.UOQCNXM]
+     * [ro.build.version.incremental]: [V13.0.12.0.SLCCNXM]
+     *
+     * 切记不要拿 ro.build.version.incremental 属性来获取澎湃的系统版本，否则有问题，
+     * 1. 澎湃 1.0 会返回 [ro.build.version.incremental]: [V816.0.7.0.UOQCNXM]
+     * 2. 澎湃 2.0 会返回 [ro.build.version.incremental]: [OS2.0.112.0.VNCCNXM]
+     */
+    private static final String[] VERSION_PROPERTY_XIAOMI  = {"ro.mi.os.version.incremental", "ro.build.version.incremental"};
     private static final String[] VERSION_PROPERTY_OPPO  = {"ro.build.version.opporom", "ro.build.version.oplusrom.display"};
     private static final String VERSION_PROPERTY_LEECO   = "ro.letv.release.version";
     private static final String VERSION_PROPERTY_360     = "ro.build.uiversion";
@@ -125,7 +140,7 @@ public final class PhoneRomUtils {
         try {
             Class<?> buildExClass = Class.forName("com.huawei.system.BuildEx");
             Object osBrand = buildExClass.getMethod("getOsBrand").invoke(buildExClass);
-            return "Harmony".equalsIgnoreCase(String.valueOf(osBrand));
+            return "Harmony".equalsIgnoreCase(java.lang.String.valueOf(osBrand));
         } catch (ClassNotFoundException ignore) {
             // 如果是类找不到的问题，就不打印日志，否则会影响看 Logcat 的体验
             // 相关 Github issue 地址：https://github.com/getActivity/XXPermissions/issues/368
@@ -161,9 +176,10 @@ public final class PhoneRomUtils {
         try {
             Class<?> clazz = Class.forName("android.os.SystemProperties");
             Method getMethod = clazz.getMethod("get", String.class, String.class);
-            String ctsValue = String.valueOf(getMethod.invoke(clazz, "ro.miui.cts", ""));
+            String ctsValue = java.lang.String.valueOf(getMethod.invoke(clazz, "ro.miui.cts", ""));
             Method getBooleanMethod = clazz.getMethod("getBoolean", String.class, boolean.class);
-            return Boolean.parseBoolean(String.valueOf(getBooleanMethod.invoke(clazz, "persist.sys.miui_optimization", !"1".equals(ctsValue))));
+            return Boolean.parseBoolean(
+                java.lang.String.valueOf(getBooleanMethod.invoke(clazz, "persist.sys.miui_optimization", !"1".equals(ctsValue))));
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
@@ -177,10 +193,32 @@ public final class PhoneRomUtils {
     }
 
     /**
-     * 返回厂商系统版本号
+     * 返回经过美化的厂商系统版本号
      */
     @Nullable
-    static String getRomVersionName() {
+    public static String getRomVersionName() {
+        String originalRomVersionName = getOriginalRomVersionName();
+
+        if (TextUtils.isEmpty(originalRomVersionName)) {
+            return null;
+        }
+
+        // 使用正则表达式匹配数字和点号组成的版本号
+        Pattern pattern = Pattern.compile("(\\d+(?:\\.\\d+)+)");
+        Matcher matcher = pattern.matcher(originalRomVersionName);
+
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+
+        return null;
+    }
+
+    /**
+     * 返回原始的厂商系统版本号
+     */
+    @Nullable
+    public static String getOriginalRomVersionName() {
         final String brand = getBrand();
         final String manufacturer = getManufacturer();
         if (isRightRom(brand, manufacturer, ROM_HUAWEI)) {
@@ -201,7 +239,14 @@ public final class PhoneRomUtils {
             return PermissionUtils.getSystemPropertyValue(VERSION_PROPERTY_VIVO);
         }
         if (isRightRom(brand, manufacturer, ROM_XIAOMI)) {
-            return PermissionUtils.getSystemPropertyValue(VERSION_PROPERTY_XIAOMI);
+            for (String property : VERSION_PROPERTY_XIAOMI) {
+                String versionName = PermissionUtils.getSystemPropertyValue(property);
+                if (TextUtils.isEmpty(property)) {
+                    continue;
+                }
+                return versionName;
+            }
+            return "";
         }
         if (isRightRom(brand, manufacturer, ROM_OPPO)) {
             for (String property : VERSION_PROPERTY_OPPO) {
