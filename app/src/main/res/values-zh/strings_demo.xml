@@ -39,7 +39,7 @@
     <string name="demo_request_ignore_battery_optimize_permission">申请忽略电池优化权限</string>
     <string name="demo_request_picture_in_picture_permission">申请画中画权限</string>
     <string name="demo_request_vpn_permission">申请 VPN 权限</string>
-    <string name="demo_request_full_screen_notifications">申请全屏通知权限</string>
+    <string name="demo_request_full_screen_notifications_permission">申请全屏通知权限</string>
     <string name="demo_request_get_installed_apps_permission">申请读取应用列表</string>
     <string name="demo_request_multiple_type_permission">申请危险权限和特殊权限</string>
     <string name="demo_start_app_details_activity">跳转到应用详情页</string>

@@ -218,7 +218,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="5dp"
-                    android:text="@string/demo_request_full_screen_notifications" />
+                    android:text="@string/demo_request_full_screen_notifications_permission" />
 
                 <Button
                     android:id="@+id/btn_main_request_get_installed_apps_permission"
