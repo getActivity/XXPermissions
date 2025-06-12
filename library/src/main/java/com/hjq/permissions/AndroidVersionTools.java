@@ -34,6 +34,15 @@ public final class AndroidVersionTools {
     public static final int ANDROID_4_2 = Build.VERSION_CODES.JELLY_BEAN_MR1;
     public static final int ANDROID_4_1 = Build.VERSION_CODES.JELLY_BEAN;
     public static final int ANDROID_4_0 = Build.VERSION_CODES.ICE_CREAM_SANDWICH;
+    public static final int ANDROID_3_2 = Build.VERSION_CODES.HONEYCOMB_MR2;
+    public static final int ANDROID_3_1 = Build.VERSION_CODES.HONEYCOMB_MR1;
+    public static final int ANDROID_3_0 = Build.VERSION_CODES.HONEYCOMB;
+    public static final int ANDROID_2_3_3 = Build.VERSION_CODES.GINGERBREAD_MR1;
+    public static final int ANDROID_2_3 = Build.VERSION_CODES.GINGERBREAD;
+    public static final int ANDROID_2_2 = Build.VERSION_CODES.FROYO;
+    public static final int ANDROID_2_1 = Build.VERSION_CODES.ECLAIR_MR1;
+    public static final int ANDROID_2_0_1 = Build.VERSION_CODES.ECLAIR_0_1;
+    public static final int ANDROID_2_0 = Build.VERSION_CODES.ECLAIR;
 
     /**
      * 获取当前 AndroidSdk 版本码
