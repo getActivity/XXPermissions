@@ -153,29 +153,28 @@ public final class XXPermissions {
     }
 
     /**
-     * 添加权限组
+     * 添加单个权限
      */
     public XXPermissions permission(@Nullable IPermission permission) {
         if (permission == null) {
             return this;
         }
-        if (PermissionUtils.containsPermission(mPermissions, permission)) {
-            return this;
-        }
+        // 这种写法的作用：如果出现重复添加的权限，则以最后添加的权限为主
+        mPermissions.remove(permission);
         mPermissions.add(permission);
         return this;
     }
 
+    /**
+     * 添加多个权限
+     */
     public XXPermissions permission(@Nullable List<IPermission> permissions) {
         if (permissions == null || permissions.isEmpty()) {
             return this;
         }
 
-        for (IPermission permission : permissions) {
-            if (PermissionUtils.containsPermission(mPermissions, permission)) {
-                continue;
-            }
-            mPermissions.add(permission);
+        for (int i = 0; i < permissions.size(); i++) {
+            permission(permissions.get(i));
         }
         return this;
     }
