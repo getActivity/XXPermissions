@@ -44,12 +44,13 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
 
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <!-- 给 SCHEDULE_EXACT_ALARM 权限加上 android:maxSdkVersion="32" 属性的原因和方法介绍：-->
     <!-- https://developer.android.google.cn/reference/android/Manifest.permission#USE_EXACT_ALARM -->
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
+    <!--<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />-->
     <!-- 在清单文件在注册此权限，Android 13 及以上的系统会让闹钟权限（即 SCHEDULE_EXACT_ALARM）默认是授权状态，如果不加则默认是未授权状态 -->
     <!-- 如果你的应用要上架 GooglePlay，那么需要慎重添加此权限，因为不是日历、闹钟、时钟这类应用添加这个权限很难通过 GooglePlay 上架审核 -->
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <!--<uses-permission android:name="android.permission.USE_EXACT_ALARM" />-->
 
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
