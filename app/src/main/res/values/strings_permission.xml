@@ -50,7 +50,7 @@
     <string name="common_permission_allow_notifications">allow notifications permission</string>
     <string name="common_permission_allow_notifications_access">allow notifications access permission</string>
     <string name="common_permission_apps_with_usage_access">apps with usage access permission</string>
-    <string name="common_permission_alarms_reminders">alarms &amp; reminders permission</string>
+    <string name="common_permission_alarms_reminders">alarms and reminders permission</string>
     <string name="common_permission_do_not_disturb_access">do not disturb access permission</string>
     <string name="common_permission_ignore_battery_optimize">ignore battery optimize permission</string>
     <string name="common_permission_picture_in_picture">picture-in-picture permission</string>

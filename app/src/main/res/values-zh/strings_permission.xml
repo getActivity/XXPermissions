@@ -50,7 +50,7 @@
     <string name="common_permission_allow_notifications">通知权限</string>
     <string name="common_permission_allow_notifications_access">通知栏监听权限</string>
     <string name="common_permission_apps_with_usage_access">查看使用情况权限</string>
-    <string name="common_permission_alarms_reminders">查看闹钟提醒权限</string>
+    <string name="common_permission_alarms_reminders">闹钟和提醒权限</string>
     <string name="common_permission_do_not_disturb_access">勿扰权限</string>
     <string name="common_permission_ignore_battery_optimize">忽略电池优化权限</string>
     <string name="common_permission_picture_in_picture">画中画权限</string>
