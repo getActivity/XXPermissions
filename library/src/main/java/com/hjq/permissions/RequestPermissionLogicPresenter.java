@@ -165,66 +165,83 @@ final class RequestPermissionLogicPresenter {
             }
 
             // 如果这个权限有组别，那么就获取这个组别的全部权限
-            List<IPermission> dangerousPermissions = new ArrayList<>(PermissionHelper.getDangerousPermissionGroup(permissionGroupType));
-            // 对这个组别的权限进行逐个遍历
-            Iterator<IPermission> iterator = dangerousPermissions.iterator();
-            while (iterator.hasNext()) {
-                IPermission dangerousPermission = iterator.next();
-                // 如果这个危险权限在前面已经处理过了，就不再处理
-                if (PermissionUtils.containsPermission(alreadyDonePermissions, dangerousPermission)) {
-                    continue;
-                }
-                alreadyDonePermissions.add(dangerousPermission);
+            List<IPermission> dangerousPermissionGroup = PermissionHelper.getDangerousPermissionGroup(permissionGroupType);
+            if (dangerousPermissionGroup == null) {
+                // 如果权限组为空，则证明这个权限被没有被定义权限组，就直接单独做为一次权限申请
+                unauthorizedPermissions.add(PermissionUtils.asArrayList(permission));
+                continue;
+            }
 
-                if (dangerousPermission.isLowVersionRunning()) {
-                    // 如果申请的权限是新系统才出现的，但是当前是旧系统运行，就从权限组中移除
-                    iterator.remove();
+            // 待处理的权限列表
+            List<IPermission> todoDangerousPermissions = null;
+            // 对这个组别的权限进行逐个遍历
+            Iterator<IPermission> iterator = dangerousPermissionGroup.iterator();
+            while (iterator.hasNext()) {
+
+                IPermission dangerousPermissionItem = iterator.next();
+
+                // 判断当前权限是否在低版本（不受支持的版本）上面运行
+                if (dangerousPermissionItem.isLowVersionRunning()) {
+                    // 如果申请的权限是新系统才出现的，但是当前是旧系统运行，就不往下执行
                     continue;
                 }
 
                 // 判断申请的权限列表中是否有包含权限组中的权限
-                if (!PermissionUtils.containsPermission(requestPermissions, dangerousPermission)) {
-                    // 如果不包含的话，就从权限组中移除
-                    iterator.remove();
+                if (!PermissionUtils.containsPermission(requestPermissions, dangerousPermissionItem)) {
+                    // 如果不包含的话，就不往下执行
                     continue;
                 }
 
-                // 判断要申请的权限是否授予
-                if (dangerousPermission.isGranted(activity)) {
-                    // 如果这个权限已经授予，就从权限组中移除
+                // 判断要申请的权限是否授予了
+                if (dangerousPermissionItem.isGranted(activity)) {
+                    // 如果这个权限已经授予，就不往下执行
                     // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/369
-                    iterator.remove();
+                    continue;
                 }
+
+                // 如果待处理的权限列表还没有初始化，就先进行初始化操作
+                if (todoDangerousPermissions == null) {
+                    todoDangerousPermissions = new ArrayList<>();
+                }
+                // 添加到待处理的权限列表中
+                todoDangerousPermissions.add(dangerousPermissionItem);
+
+                // 如果这个危险权限在前面已经处理过了，就不再添加
+                if (PermissionUtils.containsPermission(alreadyDonePermissions, dangerousPermissionItem)) {
+                    continue;
+                }
+                // 添加到已处理的权限列表中
+                alreadyDonePermissions.add(dangerousPermissionItem);
             }
 
-            // 如果这个权限组为空，证明剩余的权限是在高版本系统才会出现，这里无需再次发起申请
-            if (dangerousPermissions.isEmpty()) {
+            // 如果这个待处理的权限列表为空，证明剩余的权限是在高版本系统才会出现，这里无需再次发起申请
+            if (todoDangerousPermissions == null || todoDangerousPermissions.isEmpty()) {
                 continue;
             }
 
-            // 如果这个权限组已经全部授权，就不纳入申请的范围内
-            if (PermissionApi.isGrantedPermissions(activity, dangerousPermissions)) {
+            // 如果这个待处理的权限列表已经全部授权，就不纳入申请的范围内
+            if (PermissionApi.isGrantedPermissions(activity, todoDangerousPermissions)) {
                 continue;
             }
 
             // 判断申请的权限组是否包含后台权限（例如后台定位权限，后台传感器权限），如果有的话，不能在一起申请，需要进行拆分申请
-            IPermission backgroundPermission = PermissionHelper.getBackgroundPermissionByGroup(dangerousPermissions);
-            if (backgroundPermission == null) {
+            IPermission backgroundDangerousPermission = PermissionHelper.getBackgroundPermissionByGroup(todoDangerousPermissions);
+            if (backgroundDangerousPermission == null) {
                 // 如果不包含后台权限，则直接添加到待申请的列表
-                unauthorizedPermissions.add(dangerousPermissions);
+                unauthorizedPermissions.add(todoDangerousPermissions);
                 continue;
             }
 
-            List<IPermission> foregroundPermissions = new ArrayList<>(dangerousPermissions);
-            foregroundPermissions.remove(backgroundPermission);
+            List<IPermission> foregroundDangerousPermissions = new ArrayList<>(todoDangerousPermissions);
+            foregroundDangerousPermissions.remove(backgroundDangerousPermission);
 
             // 添加前台权限（前提得是没有授权）
-            if (!foregroundPermissions.isEmpty() &&
-                !PermissionApi.isGrantedPermissions(activity, foregroundPermissions)) {
-                unauthorizedPermissions.add(foregroundPermissions);
+            if (!foregroundDangerousPermissions.isEmpty() &&
+                !PermissionApi.isGrantedPermissions(activity, foregroundDangerousPermissions)) {
+                unauthorizedPermissions.add(foregroundDangerousPermissions);
             }
             // 添加后台权限
-            unauthorizedPermissions.add(PermissionUtils.asArrayList(backgroundPermission));
+            unauthorizedPermissions.add(PermissionUtils.asArrayList(backgroundDangerousPermission));
         }
 
         return unauthorizedPermissions;
