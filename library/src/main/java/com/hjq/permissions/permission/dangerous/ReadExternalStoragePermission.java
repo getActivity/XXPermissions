@@ -18,6 +18,9 @@ import com.hjq.permissions.permission.common.DangerousPermission;
  */
 public final class ReadExternalStoragePermission extends DangerousPermission {
 
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
+    public static final String PERMISSION_NAME = PermissionConstants.READ_EXTERNAL_STORAGE;
+
     public static final Parcelable.Creator<ReadExternalStoragePermission> CREATOR = new Parcelable.Creator<ReadExternalStoragePermission>() {
 
         @Override
@@ -42,7 +45,7 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
     @NonNull
     @Override
     public String getName() {
-        return PermissionConstants.READ_EXTERNAL_STORAGE;
+        return PERMISSION_NAME;
     }
 
     @Override
@@ -53,9 +56,9 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
     @Override
     protected boolean isGrantedByStandardVersion(@NonNull Context context, boolean skipRequest) {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_13)) {
-            return PermissionManifest.READ_MEDIA_IMAGES.isGranted(context, skipRequest) &&
-                PermissionManifest.READ_MEDIA_VIDEO.isGranted(context, skipRequest) &&
-                PermissionManifest.READ_MEDIA_AUDIO.isGranted(context, skipRequest);
+            return PermissionManifest.getReadMediaImagesPermission().isGranted(context, skipRequest) &&
+                PermissionManifest.getReadMediaVideoPermission().isGranted(context, skipRequest) &&
+                PermissionManifest.getReadMediaAudioPermission().isGranted(context, skipRequest);
         }
         return super.isGrantedByStandardVersion(context, skipRequest);
     }
@@ -63,9 +66,9 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
     @Override
     protected boolean isDoNotAskAgainByStandardVersion(@NonNull Activity activity) {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_13)) {
-            return PermissionManifest.READ_MEDIA_IMAGES.isDoNotAskAgain(activity) &&
-                PermissionManifest.READ_MEDIA_VIDEO.isDoNotAskAgain(activity) &&
-                PermissionManifest.READ_MEDIA_AUDIO.isDoNotAskAgain(activity);
+            return PermissionManifest.getReadMediaImagesPermission().isDoNotAskAgain(activity) &&
+                PermissionManifest.getReadMediaVideoPermission().isDoNotAskAgain(activity) &&
+                PermissionManifest.getReadMediaAudioPermission().isDoNotAskAgain(activity);
         }
         return super.isDoNotAskAgainByStandardVersion(activity);
     }

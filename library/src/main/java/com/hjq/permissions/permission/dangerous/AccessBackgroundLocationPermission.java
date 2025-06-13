@@ -18,6 +18,9 @@ import com.hjq.permissions.permission.common.DangerousPermission;
  */
 public final class AccessBackgroundLocationPermission extends DangerousPermission {
 
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
+    public static final String PERMISSION_NAME = PermissionConstants.ACCESS_BACKGROUND_LOCATION;
+
     public static final Parcelable.Creator<AccessBackgroundLocationPermission> CREATOR = new Parcelable.Creator<AccessBackgroundLocationPermission>() {
 
         @Override
@@ -42,7 +45,7 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
     @NonNull
     @Override
     public String getName() {
-        return PermissionConstants.ACCESS_BACKGROUND_LOCATION;
+        return PERMISSION_NAME;
     }
 
     @Override
@@ -53,7 +56,7 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
     @Override
     protected boolean isGrantedByStandardVersion(@NonNull Context context, boolean skipRequest) {
         // 判断后台定位权限授予之前，需要先判断前台定位权限是否授予，如果前台定位权限没有授予，那么后台定位权限就算授予了也没用
-        if (!PermissionManifest.ACCESS_FINE_LOCATION.isGranted(context, skipRequest)) {
+        if (!PermissionManifest.getAccessFineLocationPermission().isGranted(context, skipRequest)) {
             return false;
         }
         return super.isGrantedByStandardVersion(context, skipRequest);
@@ -61,13 +64,13 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
 
     @Override
     protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.ACCESS_FINE_LOCATION.isGranted(context, skipRequest);
+        return PermissionManifest.getAccessFineLocationPermission().isGranted(context, skipRequest);
     }
 
     @Override
     protected boolean isDoNotAskAgainByStandardVersion(@NonNull Activity activity) {
         // 如果前台定位权限被用户勾选了不再询问选项，那么后台定位权限也要跟着同步
-        if (PermissionManifest.ACCESS_FINE_LOCATION.isDoNotAskAgain(activity)) {
+        if (PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgain(activity)) {
             return true;
         }
         return super.isDoNotAskAgainByStandardVersion(activity);
@@ -75,7 +78,7 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
 
     @Override
     protected boolean isDoNotAskAgainByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.ACCESS_FINE_LOCATION.isDoNotAskAgain(activity);
+        return PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgain(activity);
     }
 
     @Override

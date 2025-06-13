@@ -19,6 +19,9 @@ import com.hjq.permissions.permission.common.DangerousPermission;
  */
 public final class PostNotificationsPermission extends DangerousPermission {
 
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
+    public static final String PERMISSION_NAME = PermissionConstants.POST_NOTIFICATIONS;
+
     public static final Parcelable.Creator<PostNotificationsPermission> CREATOR = new Parcelable.Creator<PostNotificationsPermission>() {
 
         @Override
@@ -43,7 +46,7 @@ public final class PostNotificationsPermission extends DangerousPermission {
     @NonNull
     @Override
     public String getName() {
-        return PermissionConstants.POST_NOTIFICATIONS;
+        return PERMISSION_NAME;
     }
 
     @Override
@@ -53,7 +56,7 @@ public final class PostNotificationsPermission extends DangerousPermission {
 
     @Override
     protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.NOTIFICATION_SERVICE.isGranted(context, skipRequest);
+        return PermissionManifest.getNotificationServicePermission().isGranted(context, skipRequest);
     }
 
     @Override
@@ -69,6 +72,6 @@ public final class PostNotificationsPermission extends DangerousPermission {
     public Intent getSettingIntent(@NonNull Context context) {
         // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/208
         // POST_NOTIFICATIONS 要跳转到权限设置页和 NOTIFICATION_SERVICE 权限是一样的
-        return PermissionManifest.NOTIFICATION_SERVICE.getSettingIntent(context);
+        return PermissionManifest.getNotificationServicePermission().getSettingIntent(context);
     }
 }

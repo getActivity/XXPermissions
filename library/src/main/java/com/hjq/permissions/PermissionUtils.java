@@ -245,8 +245,8 @@ public final class PermissionUtils {
     /**
      * 判断两个权限字符串是否为同一个
      */
-    public static boolean equalsPermission(@NonNull IPermission permission1, @NonNull IPermission permission2) {
-        return equalsPermission(permission1.getName(), permission2.getName());
+    public static boolean equalsPermission(@NonNull IPermission permission1, @NonNull String permission2) {
+        return equalsPermission(permission1.getName(), permission2);
     }
 
     /**
@@ -259,6 +259,22 @@ public final class PermissionUtils {
         for (IPermission item : permissions) {
             // 使用 equalsPermission 来判断可以提升代码执行效率
             if (equalsPermission(item.getName(), permission.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断权限集合中是否包含某个权限
+     */
+    static boolean containsPermission(@NonNull Collection<IPermission> permissions, @NonNull String permission) {
+        if (permissions.isEmpty()) {
+            return false;
+        }
+        for (IPermission item : permissions) {
+            // 使用 equalsPermission 来判断可以提升代码执行效率
+            if (equalsPermission(item.getName(), permission)) {
                 return true;
             }
         }

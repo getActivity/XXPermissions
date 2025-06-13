@@ -3,6 +3,8 @@ package com.hjq.permissions.permission;
 import android.Manifest;
 import android.app.Service;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.util.LruCache;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.StandardDangerousPermission;
@@ -30,7 +32,7 @@ import com.hjq.permissions.permission.special.RequestInstallPackagesPermission;
 import com.hjq.permissions.permission.special.ScheduleExactAlarmPermission;
 import com.hjq.permissions.permission.special.UseFullScreenIntentPermission;
 import com.hjq.permissions.permission.special.VpnServicePermission;
-import com.hjq.permissions.permission.special.WindowPermission;
+import com.hjq.permissions.permission.special.SystemAlertWindowPermission;
 import com.hjq.permissions.permission.special.WriteSettingsPermission;
 
 /**
@@ -45,6 +47,43 @@ import com.hjq.permissions.permission.special.WriteSettingsPermission;
 public final class PermissionManifest {
 
     private PermissionManifest() {}
+
+    /** 权限数量 */
+    private static final int PERMISSION_COUNT = 54;
+
+    /**
+     * 权限对象缓存集合
+     *
+     * 这里解释一下为什么将 IPermission 对象缓存到集合中？而不是定义成静态变量或者常量？有几个原因：
+     *
+     * 1. 如果直接定义成常量或静态变量，会有一个问题，如果项目开启混淆模式（minifyEnabled = true）情况下，
+     *    未使用到的常量或者静态变量仍然会被保留，不知道 Android Studio 为什么要那么做，但是问题终归还是个问题
+     *    目前我能找到的最好的解决方式是定义成静态方法，后续如果静态方法没有被调用，后续代码混淆的时候就会被剔除掉。
+     * 2. 如果直接定义成常量或静态变量，还有另外一个问题，就是一旦有谁第一次访问到本类，就会初始化很多对象，
+     *    不管这个权限有没有用到，都会在第一次访问的时候初始化完，这样对性能其实不太好的，虽然这点性能微不足道，
+     *    但是本着能省一点是一点的原则，所以搞了一个静态集合来存放这些权限对象，调用的时候发现没有再去创建。
+     */
+    private static final LruCache<String, IPermission> PERMISSION_CACHE_MAP = new LruCache<>(PERMISSION_COUNT);
+
+    /**
+     * 获取缓存的权限对象
+     *
+     * @param permissionName            权限名称
+     */
+    @Nullable
+    private static IPermission getCachePermission(@NonNull String permissionName) {
+        return PERMISSION_CACHE_MAP.get(permissionName);
+    }
+
+    /**
+     * 添加权限对象到缓存中
+     *
+     * @param permission                权限对象
+     */
+    private static IPermission putCachePermission(@NonNull IPermission permission) {
+        PERMISSION_CACHE_MAP.put(permission.getName(), permission);
+        return permission;
+    }
 
     /**
      * 读取应用列表权限（危险权限，电信终端产业协会联合各大中国手机厂商搞的一个权限）
@@ -62,7 +101,13 @@ public final class PermissionManifest {
      *      VIVO：虽然没有申请这个权限的通道，但是读取已安装第三方应用列表是没有问题的，没有任何限制
      *      真我：realme UI 3.0 及以上版本，realme UI 2.0 实测不行
      */
-    public static final IPermission GET_INSTALLED_APPS = new GetInstalledAppsPermission();
+    public static IPermission getGetInstalledAppsPermission() {
+        IPermission permission = getCachePermission(GetInstalledAppsPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new GetInstalledAppsPermission());
+    }
 
     /**
      * 全屏通知权限（特殊权限，Android 14 新增的权限）
@@ -71,7 +116,13 @@ public final class PermissionManifest {
      * 1. 了解前台服务和全屏 intent 要求：https://support.google.com/googleplay/android-developer/answer/13392821?hl=zh-Hans
      * 2. Google Play 对 Android 14 全屏 Intent 的要求：https://orangeoma.zendesk.com/hc/en-us/articles/14126775576988-Google-Play-requirements-on-Full-screen-intent-for-Android-14
      */
-    public static final IPermission USE_FULL_SCREEN_INTENT = new UseFullScreenIntentPermission();
+    public static IPermission getUseFullScreenIntentPermission() {
+        IPermission permission = getCachePermission(UseFullScreenIntentPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new UseFullScreenIntentPermission());
+    }
 
     /**
      * 闹钟权限（特殊权限，Android 12 新增的权限）
@@ -79,7 +130,13 @@ public final class PermissionManifest {
      * 需要注意的是：这个权限和其他特殊权限不同的是，默认已经是授予状态，用户也可以手动撤销授权
      * 官方文档介绍：https://developer.android.google.cn/about/versions/12/behavior-changes-12?hl=zh_cn#exact-alarm-permission
      */
-    public static final IPermission SCHEDULE_EXACT_ALARM = new ScheduleExactAlarmPermission();
+    public static IPermission getScheduleExactAlarmPermission() {
+        IPermission permission = getCachePermission(ScheduleExactAlarmPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new ScheduleExactAlarmPermission());
+    }
 
     /**
      * 所有文件访问权限（特殊权限，Android 11 新增的权限）
@@ -90,7 +147,13 @@ public final class PermissionManifest {
      * 如果你的应用需要上架 GooglePlay，那么需要详细阅读谷歌应用商店的政策：
      * https://support.google.com/googleplay/android-developer/answer/9956427
      */
-    public static final IPermission MANAGE_EXTERNAL_STORAGE = new ManageExternalStoragePermission();
+    public static IPermission getManageExternalStoragePermission() {
+        IPermission permission = getCachePermission(ManageExternalStoragePermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new ManageExternalStoragePermission());
+    }
 
     /**
      * 安装应用权限（特殊权限，Android 8.0 新增的权限）
@@ -98,14 +161,26 @@ public final class PermissionManifest {
      * Android 11 特性调整，安装外部来源应用需要重启 App：https://cloud.tencent.com/developer/news/637591
      * 经过实践，Android 12 已经修复了此问题，授权或者取消授权后应用并不会重启
      */
-    public static final IPermission REQUEST_INSTALL_PACKAGES = new RequestInstallPackagesPermission();
+    public static IPermission getRequestInstallPackagesPermission() {
+        IPermission permission = getCachePermission(RequestInstallPackagesPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new RequestInstallPackagesPermission());
+    }
 
     /**
      * 画中画权限（特殊权限，Android 8.0 新增的权限，注意此权限不需要在清单文件中注册也能申请）
      *
      * 需要注意的是：这个权限和其他特殊权限不同的是，默认已经是授予状态，用户也可以手动撤销授权
      */
-    public static final IPermission PICTURE_IN_PICTURE = new PictureInPicturePermission();
+    public static IPermission getPictureInPicturePermission() {
+        IPermission permission = getCachePermission(PictureInPicturePermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new PictureInPicturePermission());
+    }
 
     /**
      * 悬浮窗权限（特殊权限，Android 6.0 新增的权限，但是有些国产的厂商在 Android 6.0 之前的设备就兼容了）
@@ -113,42 +188,132 @@ public final class PermissionManifest {
      * 在 Android 10 及之前的版本能跳转到应用悬浮窗设置页面，而在 Android 11 及之后的版本只能跳转到系统设置悬浮窗管理列表了
      * 官方解释：https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION
      */
-    public static final IPermission SYSTEM_ALERT_WINDOW = new WindowPermission();
+    public static IPermission getSystemAlertWindowPermission() {
+        IPermission permission = getCachePermission(SystemAlertWindowPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new SystemAlertWindowPermission());
+    }
 
-    /** 写入系统设置权限（特殊权限，Android 6.0 新增的权限） */
-    public static final IPermission WRITE_SETTINGS = new WriteSettingsPermission();
+    /**
+     * 写入系统设置权限（特殊权限，Android 6.0 新增的权限）
+     */
+    @SuppressWarnings("unused")
+    public static IPermission getWriteSettingsPermission() {
+        IPermission permission = getCachePermission(WriteSettingsPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new WriteSettingsPermission());
+    }
 
-    /** 请求忽略电池优化选项权限（特殊权限，Android 6.0 新增的权限）*/
-    public static final IPermission REQUEST_IGNORE_BATTERY_OPTIMIZATIONS = new RequestIgnoreBatteryOptimizationsPermission();
+    /**
+     * 请求忽略电池优化选项权限（特殊权限，Android 6.0 新增的权限）
+     */
+    public static IPermission getRequestIgnoreBatteryOptimizationsPermission() {
+        IPermission permission = getCachePermission(RequestIgnoreBatteryOptimizationsPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new RequestIgnoreBatteryOptimizationsPermission());
+    }
 
-    /** 勿扰权限，可控制手机响铃模式【静音，震动】（特殊权限，Android 6.0 新增的权限）*/
-    public static final IPermission ACCESS_NOTIFICATION_POLICY = new NotificationPolicyPermission();
+    /**
+     * 勿扰权限，可控制手机响铃模式【静音，震动】（特殊权限，Android 6.0 新增的权限）
+     */
+    public static IPermission getAccessNotificationPolicyPermission() {
+        IPermission permission = getCachePermission(NotificationPolicyPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new NotificationPolicyPermission());
+    }
 
-    /** 查看应用使用情况权限，简称使用统计权限（特殊权限，Android 5.0 新增的权限） */
-    public static final IPermission PACKAGE_USAGE_STATS = new PackageUsageStatsPermission();
+    /**
+     * 查看应用使用情况权限，简称使用统计权限（特殊权限，Android 5.0 新增的权限）
+     */
+    public static IPermission getPackageUsageStatsPermission() {
+        IPermission permission = getCachePermission(PackageUsageStatsPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new PackageUsageStatsPermission());
+    }
 
-    /** 通知栏监听权限（特殊权限，Android 4.3 新增的权限，注意此权限不需要在清单文件中注册也能申请） */
-    public static final IPermission BIND_NOTIFICATION_LISTENER_SERVICE = new NotificationListenerServicePermission();
+    /**
+     * 通知栏监听权限（特殊权限，Android 4.3 新增的权限，注意此权限不需要在清单文件中注册也能申请）
+     *
+     * @param clazz             通知监听的 Service 类型
+     */
+    public static IPermission getNotificationListenerServicePermission(@Nullable Class<? extends Service> clazz) {
+        // 该对象不会纳入到缓存的集合中，这是它携带了具体的参数，只有无参的才能丢到缓存的集合中
+        return new NotificationListenerServicePermission(clazz);
+    }
 
-    /** VPN 权限（特殊权限，Android 4.0 新增的权限，注意此权限不需要在清单文件中注册也能申请） */
-    public static final IPermission BIND_VPN_SERVICE = new VpnServicePermission();
+    public static IPermission getNotificationListenerServicePermission() {
+        IPermission permission = getCachePermission(NotificationListenerServicePermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new NotificationListenerServicePermission());
+    }
 
-    /** 通知栏权限（特殊权限，只有 Android 4.4 及以上设备才能判断到权限状态，注意此权限不需要在清单文件中注册也能申请） */
-    public static final IPermission NOTIFICATION_SERVICE = new NotificationServicePermission();
+    /**
+     * VPN 权限（特殊权限，Android 4.0 新增的权限，注意此权限不需要在清单文件中注册也能申请）
+     */
+    public static IPermission getVpnServicePermission() {
+        IPermission permission = getCachePermission(VpnServicePermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new VpnServicePermission());
+    }
+
+    /**
+     * 通知栏权限（特殊权限，只有 Android 4.4 及以上设备才能判断到权限状态，注意此权限不需要在清单文件中注册也能申请）
+     *
+     * @param channelId         通知渠道 id
+     */
+    public static IPermission getNotificationServicePermission(@NonNull String channelId) {
+        // 该对象不会纳入到缓存的集合中，这是它携带了具体的参数，只有无参的才能丢到缓存的集合中
+        return new NotificationServicePermission(channelId);
+    }
+
+    public static IPermission getNotificationServicePermission() {
+        IPermission permission = getCachePermission(NotificationServicePermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new NotificationServicePermission());
+    }
 
     /* ------------------------------------ 我是一条华丽的分割线 ------------------------------------ */
 
     /**
      * 授予对照片和视频的部分访问权限（Android 14.0 新增的权限）
      */
-    public static final IPermission READ_MEDIA_VISUAL_USER_SELECTED = new StandardDangerousPermission(PermissionConstants.READ_MEDIA_VISUAL_USER_SELECTED, AndroidVersionTools.ANDROID_14);
+    public static IPermission getReadMediaVisualUserSelectedPermission() {
+        String permissionName = PermissionConstants.READ_MEDIA_VISUAL_USER_SELECTED;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_14));
+    }
 
     /**
      * 发送通知权限（Android 13.0 新增的权限）
      *
-     * 为了兼容 Android 13 以下版本，框架会自动申请 {@link #NOTIFICATION_SERVICE} 权限
+     * 为了兼容 Android 13 以下版本，框架会自动申请 {@link PermissionConstants#NOTIFICATION_SERVICE} 权限
      */
-    public static final IPermission POST_NOTIFICATIONS = new PostNotificationsPermission();
+    public static IPermission getPostNotificationsPermission() {
+        IPermission permission = getCachePermission(PostNotificationsPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new PostNotificationsPermission());
+    }
 
     /**
      * WIFI 权限（Android 13.0 新增的权限）
@@ -157,10 +322,16 @@ public final class PermissionManifest {
      * 否则就会导致在没有定位权限的情况下扫描不到附近的 WIFI 设备，这个是经过测试的，下面是清单权限注册案例，请参考以下进行注册
      * <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
      *
-     * 为了兼容 Android 13 以下版本，需要清单文件中注册 {@link #ACCESS_FINE_LOCATION} 权限
-     * 还有 Android 13 以下设备，使用 WIFI 需要 {@link #ACCESS_FINE_LOCATION} 权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
+     * 为了兼容 Android 13 以下版本，需要清单文件中注册 {@link PermissionConstants#ACCESS_FINE_LOCATION} 权限
+     * 还有 Android 13 以下设备，使用 WIFI 需要 {@link PermissionConstants#ACCESS_FINE_LOCATION} 权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
      */
-    public static final IPermission NEARBY_WIFI_DEVICES = new NearbyWifiDevicesPermission();
+    public static IPermission getNearbyWifiDevicesPermission() {
+        IPermission permission = getCachePermission(NearbyWifiDevicesPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new NearbyWifiDevicesPermission());
+    }
 
     /**
      * 后台传感器权限（Android 13.0 新增的权限）
@@ -169,28 +340,52 @@ public final class PermissionManifest {
      * 1. 一旦你申请了该权限，在授权的时候，需要选择《始终允许》，而不能选择《仅在使用中允许》
      * 2. 如果你的 App 只在前台状态下使用传感器功能，请不要申请该权限（后台传感器权限）
      */
-    public static final IPermission BODY_SENSORS_BACKGROUND = new BodySensorsBackgroundPermission();
+    public static IPermission getBodySensorsBackgroundPermission() {
+        IPermission permission = getCachePermission(BodySensorsBackgroundPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new BodySensorsBackgroundPermission());
+    }
 
     /**
      * 读取图片权限（Android 13.0 新增的权限）
      *
-     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} 权限
+     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link PermissionConstants#READ_EXTERNAL_STORAGE} 权限
      */
-    public static final IPermission READ_MEDIA_IMAGES = new ReadMediaImagesPermission();
+    public static IPermission getReadMediaImagesPermission() {
+        IPermission permission = getCachePermission(ReadMediaImagesPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new ReadMediaImagesPermission());
+    }
 
     /**
      * 读取视频权限（Android 13.0 新增的权限）
      *
-     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} 权限
+     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link PermissionConstants#READ_EXTERNAL_STORAGE} 权限
      */
-    public static final IPermission READ_MEDIA_VIDEO = new ReadMediaVideoPermission();
+    public static IPermission getReadMediaVideoPermission() {
+        IPermission permission = getCachePermission(ReadMediaVideoPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new ReadMediaVideoPermission());
+    }
 
     /**
      * 读取音频权限（Android 13.0 新增的权限）
      *
-     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link #READ_EXTERNAL_STORAGE} 权限
+     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link PermissionConstants#READ_EXTERNAL_STORAGE} 权限
      */
-    public static final IPermission READ_MEDIA_AUDIO = new ReadMediaAudioPermission();
+    public static IPermission getReadMediaAudioPermission() {
+        IPermission permission = getCachePermission(ReadMediaAudioPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new ReadMediaAudioPermission());
+    }
 
     /**
      * 蓝牙扫描权限（Android 12.0 新增的权限）
@@ -200,16 +395,29 @@ public final class PermissionManifest {
      * <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
      *
      * 为了兼容 Android 12 以下版本，需要清单文件中注册 {@link Manifest.permission#BLUETOOTH_ADMIN} 权限
-     * 还有 Android 12 以下设备，获取蓝牙扫描结果需要 {@link #ACCESS_FINE_LOCATION} 权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
+     * 还有 Android 12 以下设备，获取蓝牙扫描结果需要 {@link PermissionConstants#ACCESS_FINE_LOCATION} 权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
      */
-    public static final IPermission BLUETOOTH_SCAN = new BluetoothScanPermission();
+    public static IPermission getBluetoothScanPermission() {
+        IPermission permission = getCachePermission(BluetoothScanPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new BluetoothScanPermission());
+    }
 
     /**
      * 蓝牙连接权限（Android 12.0 新增的权限）
      *
      * 为了兼容 Android 12 以下版本，需要在清单文件中注册 {@link Manifest.permission#BLUETOOTH} 权限
      */
-    public static final IPermission BLUETOOTH_CONNECT = new StandardDangerousPermission(PermissionConstants.BLUETOOTH_CONNECT, AndroidVersionTools.ANDROID_12);
+    public static IPermission getBluetoothConnectPermission() {
+        String permissionName = PermissionConstants.BLUETOOTH_CONNECT;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_12));
+    }
 
     /**
      * 蓝牙广播权限（Android 12.0 新增的权限）
@@ -217,27 +425,47 @@ public final class PermissionManifest {
      * 将当前设备的蓝牙进行广播，供其他设备扫描时需要用到该权限
      * 为了兼容 Android 12 以下版本，需要在清单文件中注册 {@link Manifest.permission#BLUETOOTH_ADMIN} 权限
      */
-    public static final IPermission BLUETOOTH_ADVERTISE = new StandardDangerousPermission(PermissionConstants.BLUETOOTH_ADVERTISE, AndroidVersionTools.ANDROID_12);
+    public static IPermission getBluetoothAdvertisePermission() {
+        String permissionName = PermissionConstants.BLUETOOTH_ADVERTISE;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_12));
+    }
 
     /**
-     * 在后台获取位置（Android 10.0 新增的权限）
+     * 在后台获取位置权限（Android 10.0 新增的权限）
      *
      * 需要注意的是：
      * 1. 一旦你申请了该权限，在授权的时候，需要选择《始终允许》，而不能选择《仅在使用中允许》
      * 2. 如果你的 App 只在前台状态下使用定位功能，没有在后台使用的场景，请不要申请该权限
      */
-    public static final IPermission ACCESS_BACKGROUND_LOCATION = new AccessBackgroundLocationPermission();
+    public static IPermission getAccessBackgroundLocationPermission() {
+        IPermission permission = getCachePermission(AccessBackgroundLocationPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new AccessBackgroundLocationPermission());
+    }
 
     /**
-     * 获取活动步数（Android 10.0 新增的权限）
+     * 获取活动步数权限（Android 10.0 新增的权限）
      *
      * 需要注意的是：Android 10 以下不需要传感器（BODY_SENSORS）权限也能获取到步数
      * Github issue 地址：https://github.com/getActivity/XXPermissions/issues/150
      */
-    public static final IPermission ACTIVITY_RECOGNITION = new StandardDangerousPermission(PermissionConstants.ACTIVITY_RECOGNITION, AndroidVersionTools.ANDROID_10);
+    public static IPermission getActivityRecognitionPermission() {
+        String permissionName = PermissionConstants.ACTIVITY_RECOGNITION;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_10));
+    }
 
     /**
-     * 读取媒体文件的位置位置（Android 10.0 新增的权限）
+     * 读取媒体文件的位置权限（Android 10.0 新增的权限）
      *
      * 需要注意的是：如果这个权限申请成功了但是不能正常读取照片的地理信息，那么需要先申请存储权限，具体可分别下面两种情况：
      *
@@ -249,58 +477,183 @@ public final class PermissionManifest {
      *     1) 如果项目 targetSdkVersion <= 29 需要申请 {@link PermissionConstants#READ_EXTERNAL_STORAGE}
      *     2) 如果项目 targetSdkVersion >= 30 需要申请 {@link PermissionConstants#MANAGE_EXTERNAL_STORAGE}
      */
-    public static final IPermission ACCESS_MEDIA_LOCATION = new MediaLocationPermission();
-
-    /** 允许呼叫应用继续在另一个应用中启动的呼叫（Android 9.0 新增的权限） */
-    public static final IPermission ACCEPT_HANDOVER = new StandardDangerousPermission(PermissionConstants.ACCEPT_HANDOVER, AndroidVersionTools.ANDROID_9);
+    public static IPermission getMediaLocationPermission() {
+        IPermission permission = getCachePermission(MediaLocationPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new MediaLocationPermission());
+    }
 
     /**
-     * 读取手机号码（Android 8.0 新增的权限）
+     * 允许呼叫应用继续在另一个应用中启动的呼叫权限（Android 9.0 新增的权限）
+     */
+    public static IPermission getAcceptHandoverPermission() {
+        String permissionName = PermissionConstants.ACCEPT_HANDOVER;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_9));
+    }
+
+    /**
+     * 读取手机号码权限（Android 8.0 新增的权限）
      *
-     * 为了兼容 Android 8.0 以下版本，需要在清单文件中注册 {@link #READ_PHONE_STATE} 权限
+     * 为了兼容 Android 8.0 以下版本，需要在清单文件中注册 {@link PermissionConstants#READ_PHONE_STATE} 权限
      */
-    public static final IPermission READ_PHONE_NUMBERS = new ReadPhoneNumbersPermission();
+    public static IPermission getReadPhoneNumbersPermission() {
+        IPermission permission = getCachePermission(ReadPhoneNumbersPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new ReadPhoneNumbersPermission());
+    }
 
     /**
-     * 接听电话（Android 8.0 新增的权限，Android 8.0 以下可以采用模拟耳机按键事件来实现接听电话，这种方式不需要权限）
+     * 接听电话权限（Android 8.0 新增的权限，Android 8.0 以下可以采用模拟耳机按键事件来实现接听电话，这种方式不需要权限）
      */
-    public static final IPermission ANSWER_PHONE_CALLS = new StandardDangerousPermission(PermissionConstants.ANSWER_PHONE_CALLS, AndroidVersionTools.ANDROID_8);
-
-    /** 读取外部存储 */
-    public static final IPermission READ_EXTERNAL_STORAGE = new ReadExternalStoragePermission();
-
-    /** 写入外部存储（注意：这个权限在 targetSdk >= Android 11 并且 Android 11 及以上的设备上面不起作用，请适配分区存储特性代替权限申请） */
-    public static final IPermission WRITE_EXTERNAL_STORAGE = new WriteExternalStoragePermission();
-
-    /** 相机权限 */
-    public static final IPermission CAMERA = new StandardDangerousPermission(PermissionConstants.CAMERA, AndroidVersionTools.ANDROID_6);
-
-    /** 麦克风权限 */
-    public static final IPermission RECORD_AUDIO = new StandardDangerousPermission(PermissionConstants.RECORD_AUDIO, AndroidVersionTools.ANDROID_6);
-
-    /** 获取精确位置 */
-    public static final IPermission ACCESS_FINE_LOCATION = new StandardDangerousPermission(PermissionConstants.ACCESS_FINE_LOCATION, AndroidVersionTools.ANDROID_6);
-
-    /** 获取粗略位置 */
-    public static final IPermission ACCESS_COARSE_LOCATION = new StandardDangerousPermission(PermissionConstants.ACCESS_COARSE_LOCATION, AndroidVersionTools.ANDROID_6);
-
-    /** 读取联系人 */
-    public static final IPermission READ_CONTACTS = new StandardDangerousPermission(PermissionConstants.READ_CONTACTS, AndroidVersionTools.ANDROID_6);
-
-    /** 修改联系人 */
-    public static final IPermission WRITE_CONTACTS = new StandardDangerousPermission(PermissionConstants.WRITE_CONTACTS, AndroidVersionTools.ANDROID_6);
-
-    /** 访问账户列表 */
-    public static final IPermission GET_ACCOUNTS = new StandardDangerousPermission(PermissionConstants.GET_ACCOUNTS, AndroidVersionTools.ANDROID_6);
-
-    /** 读取日历 */
-    public static final IPermission READ_CALENDAR = new StandardDangerousPermission(PermissionConstants.READ_CALENDAR, AndroidVersionTools.ANDROID_6);
-
-    /** 修改日历 */
-    public static final IPermission WRITE_CALENDAR = new StandardDangerousPermission(PermissionConstants.WRITE_CALENDAR, AndroidVersionTools.ANDROID_6);
+    public static IPermission getAnswerPhoneCallsPermission() {
+        String permissionName = PermissionConstants.ANSWER_PHONE_CALLS;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_8));
+    }
 
     /**
-     * 读取电话状态
+     * 读取外部存储权限
+     */
+    public static IPermission getReadExternalStoragePermission() {
+        IPermission permission = getCachePermission(ReadExternalStoragePermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new ReadExternalStoragePermission());
+    }
+
+    /**
+     * 写入外部存储权限（注意：这个权限在 targetSdk >= Android 11 并且 Android 11 及以上的设备上面不起作用，请适配分区存储特性代替权限申请）
+     */
+    public static IPermission getWriteExternalStoragePermission() {
+        IPermission permission = getCachePermission(WriteExternalStoragePermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new WriteExternalStoragePermission());
+    }
+
+    /**
+     * 相机权限
+     */
+    public static IPermission getCameraPermission() {
+        String permissionName = PermissionConstants.CAMERA;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 麦克风权限
+     */
+    public static IPermission getRecordAudioPermission() {
+        String permissionName = PermissionConstants.RECORD_AUDIO;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 获取精确位置权限
+     */
+    public static IPermission getAccessFineLocationPermission() {
+        String permissionName = PermissionConstants.ACCESS_FINE_LOCATION;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 获取粗略位置权限
+     */
+    public static IPermission getAccessCoarseLocationPermission() {
+        String permissionName = PermissionConstants.ACCESS_COARSE_LOCATION;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 读取联系人权限
+     */
+    public static IPermission getReadContactsPermission() {
+        String permissionName = PermissionConstants.READ_CONTACTS;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 修改联系人权限
+     */
+    public static IPermission getWriteContactsPermission() {
+        String permissionName = PermissionConstants.WRITE_CONTACTS;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 访问账户列表权限
+     */
+    public static IPermission getGetAccountsPermission() {
+        String permissionName = PermissionConstants.GET_ACCOUNTS;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 读取日历权限
+     */
+    public static IPermission getReadCalendarPermission() {
+        String permissionName = PermissionConstants.READ_CALENDAR;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 修改日历权限
+     */
+    public static IPermission getWriteCalendarPermission() {
+        String permissionName = PermissionConstants.WRITE_CALENDAR;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 读取电话状态权限
      *
      * 需要注意的是：这个权限在某些手机上面是没办法获取到的，因为某些系统禁止应用获得该权限
      *             所以你要是申请了这个权限之后没有弹授权框，而是直接回调授权失败方法
@@ -309,64 +662,158 @@ public final class PermissionManifest {
      * 后续情况汇报：有人反馈在 iQOO 手机上面获取不到该权限，在清单文件加入下面这个权限就可以了（这里只是做记录，并不代表这种方式就一定有效果）
      *             <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
      */
-    public static final IPermission READ_PHONE_STATE = new StandardDangerousPermission(
-        PermissionConstants.READ_PHONE_STATE, AndroidVersionTools.ANDROID_6);
-
-    /** 拨打电话 */
-    public static final IPermission CALL_PHONE = new StandardDangerousPermission(PermissionConstants.CALL_PHONE, AndroidVersionTools.ANDROID_6);
-
-    /** 读取通话记录 */
-    public static final IPermission READ_CALL_LOG = new StandardDangerousPermission(PermissionConstants.READ_CALL_LOG, AndroidVersionTools.ANDROID_6);
-
-    /** 修改通话记录 */
-    public static final IPermission WRITE_CALL_LOG = new StandardDangerousPermission(PermissionConstants.WRITE_CALL_LOG, AndroidVersionTools.ANDROID_6);
-
-    /** 添加语音邮件 */
-    public static final IPermission ADD_VOICEMAIL = new StandardDangerousPermission(PermissionConstants.ADD_VOICEMAIL, AndroidVersionTools.ANDROID_6);
-
-    /** 使用SIP视频 */
-    public static final IPermission USE_SIP = new StandardDangerousPermission(PermissionConstants.USE_SIP, AndroidVersionTools.ANDROID_6);
-
-    /**
-     * 处理拨出电话
-     *
-     * @deprecated         在 Android 10 已经过时，请见：https://developer.android.google.cn/reference/android/Manifest.permission?hl=zh_cn#PROCESS_OUTGOING_CALLS
-     */
-    public static final IPermission PROCESS_OUTGOING_CALLS = new StandardDangerousPermission(PermissionConstants.PROCESS_OUTGOING_CALLS, AndroidVersionTools.ANDROID_6);
-
-    /** 使用传感器 */
-    public static final IPermission BODY_SENSORS = new StandardDangerousPermission(PermissionConstants.BODY_SENSORS, AndroidVersionTools.ANDROID_6);
-
-    /** 发送短信 */
-    public static final IPermission SEND_SMS = new StandardDangerousPermission(PermissionConstants.SEND_SMS, AndroidVersionTools.ANDROID_6);
-
-    /** 接收短信 */
-    public static final IPermission RECEIVE_SMS = new StandardDangerousPermission(PermissionConstants.RECEIVE_SMS, AndroidVersionTools.ANDROID_6);
-
-    /** 读取短信 */
-    public static final IPermission READ_SMS = new StandardDangerousPermission(PermissionConstants.READ_SMS, AndroidVersionTools.ANDROID_6);
-
-    /** 接收 WAP 推送消息 */
-    public static final IPermission RECEIVE_WAP_PUSH = new StandardDangerousPermission(PermissionConstants.RECEIVE_WAP_PUSH, AndroidVersionTools.ANDROID_6);
-
-    /** 接收彩信 */
-    public static final IPermission RECEIVE_MMS = new StandardDangerousPermission(PermissionConstants.RECEIVE_MMS, AndroidVersionTools.ANDROID_6);
-
-    /**
-     * 获取通知权限
-     *
-     * @param channelId         通知渠道 id
-     */
-    public static IPermission getNotificationServicePermission(@NonNull String channelId) {
-        return new NotificationServicePermission(channelId);
+    public static IPermission getReadPhoneStatePermission() {
+        String permissionName = PermissionConstants.READ_PHONE_STATE;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
     }
 
     /**
-     * 获取通知监听权限
-     *
-     * @param clazz             通知监听的 Service 类型
+     * 拨打电话权限
      */
-    public static IPermission getNotificationListenerServicePermission(@NonNull Class<? extends Service> clazz) {
-        return new NotificationListenerServicePermission(clazz);
+    public static IPermission getCallPhonePermission() {
+        String permissionName = PermissionConstants.CALL_PHONE;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 读取通话记录权限
+     */
+    public static IPermission getReadCallLogPermission() {
+        String permissionName = PermissionConstants.READ_CALL_LOG;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 修改通话记录权限
+     */
+    public static IPermission getWriteCallLogPermission() {
+        String permissionName = PermissionConstants.WRITE_CALL_LOG;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 添加语音邮件权限
+     */
+    public static IPermission getAddVoicemailPermission() {
+        String permissionName = PermissionConstants.ADD_VOICEMAIL;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 使用 SIP 视频权限
+     */
+    public static IPermission getUseSipPermission() {
+        String permissionName = PermissionConstants.USE_SIP;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 处理拨出电话权限
+     *
+     * @deprecated         在 Android 10 已经过时，请见：https://developer.android.google.cn/reference/android/Manifest.permission?hl=zh_cn#PROCESS_OUTGOING_CALLS
+     */
+    public static IPermission getProcessOutgoingCallsPermission() {
+        String permissionName = PermissionConstants.PROCESS_OUTGOING_CALLS;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 使用传感器权限
+     */
+    public static IPermission getBodySensorsPermission() {
+        String permissionName = PermissionConstants.BODY_SENSORS;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 发送短信权限
+     */
+    public static IPermission getSendSmsPermission() {
+        String permissionName = PermissionConstants.SEND_SMS;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 接收短信权限
+     */
+    public static IPermission getReceiveSmsPermission() {
+        String permissionName = PermissionConstants.RECEIVE_SMS;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 读取短信权限
+     */
+    public static IPermission getReadSmsPermission() {
+        String permissionName = PermissionConstants.READ_SMS;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 接收 WAP 推送消息权限
+     */
+    public static IPermission getReceiveWapPushPermission() {
+        String permissionName = PermissionConstants.RECEIVE_WAP_PUSH;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+    }
+
+    /**
+     * 接收彩信权限
+     */
+    public static IPermission getReceiveMmsPermission() {
+        String permissionName = PermissionConstants.RECEIVE_MMS;
+        IPermission permission = getCachePermission(permissionName);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
     }
 }

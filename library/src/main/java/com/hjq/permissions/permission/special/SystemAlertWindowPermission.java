@@ -21,36 +21,39 @@ import com.hjq.permissions.permission.common.SpecialPermission;
  *    time   : 2025/06/11
  *    desc   : 悬浮窗权限类
  */
-public final class WindowPermission extends SpecialPermission {
+public final class SystemAlertWindowPermission extends SpecialPermission {
 
-    public static final Parcelable.Creator<WindowPermission> CREATOR = new Parcelable.Creator<WindowPermission>() {
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
+    public static final String PERMISSION_NAME = PermissionConstants.SYSTEM_ALERT_WINDOW;
+
+    public static final Parcelable.Creator<SystemAlertWindowPermission> CREATOR = new Parcelable.Creator<SystemAlertWindowPermission>() {
 
         @Override
-        public WindowPermission createFromParcel(Parcel source) {
-            return new WindowPermission(source);
+        public SystemAlertWindowPermission createFromParcel(Parcel source) {
+            return new SystemAlertWindowPermission(source);
         }
 
         @Override
-        public WindowPermission[] newArray(int size) {
-            return new WindowPermission[size];
+        public SystemAlertWindowPermission[] newArray(int size) {
+            return new SystemAlertWindowPermission[size];
         }
     };
 
     private static final String OP_SYSTEM_ALERT_WINDOW_FIELD_NAME = "OP_SYSTEM_ALERT_WINDOW";
     private static final int OP_SYSTEM_ALERT_WINDOW_DEFAULT_VALUE = 24;
 
-    public WindowPermission() {
+    public SystemAlertWindowPermission() {
         // default implementation ignored
     }
 
-    private WindowPermission(Parcel in) {
+    private SystemAlertWindowPermission(Parcel in) {
         super(in);
     }
 
     @NonNull
     @Override
     public String getName() {
-        return PermissionConstants.SYSTEM_ALERT_WINDOW;
+        return PERMISSION_NAME;
     }
 
     @Override

@@ -81,10 +81,10 @@ android
 ```java
 XXPermissions.with(MainActivity.this)
         // 适配 Android 11 分区存储这样写
-        //.permission(PermissionManifest.READ_EXTERNAL_STORAGE)
-        //.permission(PermissionManifest.WRITE_EXTERNAL_STORAGE)
+        //.permission(PermissionManifest.getReadExternalStoragePermission())
+        //.permission(PermissionManifest.getWriteExternalStoragePermission())
         // 不适配 Android 11 分区存储这样写
-        .permission(PermissionManifest.MANAGE_EXTERNAL_STORAGE)
+        .permission(PermissionManifest.getManageExternalStoragePermission())
         .request(new OnPermissionCallback() {
 
             @Override
@@ -136,7 +136,7 @@ XXPermissions.with(MainActivity.this)
 
 ```java
 XXPermissions.with(this)
-        .permission(PermissionManifest.XXX)
+        .permission(PermissionManifest.getXxx())
         // 设置权限说明（局部设置）
         .description(new PermissionDescription())
         // 设置权限请求拦截器（局部设置）
@@ -176,9 +176,9 @@ public class XxxApplication extends Application {
 
 ```java
 XXPermissions.with(this)
-        .permission(PermissionManifest.RECORD_AUDIO)
-        .permission(PermissionManifest.READ_CALENDAR)
-        .permission(PermissionManifest.WRITE_CALENDAR)
+        .permission(PermissionManifest.getRecordAudioPermission())
+        .permission(PermissionManifest.getReadCalendarPermission())
+        .permission(PermissionManifest.getWriteCalendarPermission())
         .request(new OnPermissionCallback() {
 
             @Override
@@ -190,7 +190,7 @@ XXPermissions.with(this)
 
             @Override
             public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
-                if (doNotAskAgain && permissions.contains(PermissionManifest.RECORD_AUDIO) &&
+                if (doNotAskAgain && permissions.contains(PermissionManifest.getRecordAudioPermission()) &&
                         XXPermissions.isDoNotAskAgainPermissions(MainActivity.this, Permission.RECORD_AUDIO)) {
                     toast("录音权限请求被拒绝了，并且用户勾选了不再询问");
                 }
@@ -230,7 +230,7 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 
     private void requestCameraPermission() {
         XXPermissions.with(this)
-                .permission(PermissionManifest.CAMERA)
+                .permission(PermissionManifest.getCameraPermission())
                 .request(this);
     }
 

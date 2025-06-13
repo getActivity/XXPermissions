@@ -100,8 +100,8 @@ android.enableJetifier = true
 ```java
 XXPermissions.with(this)
         // Request multiple permission
-        .permission(PermissionManifest.RECORD_AUDIO)
-        .permission(PermissionManifest.CAMERA)
+        .permission(PermissionManifest.getRecordAudioPermission())
+        .permission(PermissionManifest.getCameraPermission())
         // Setting does not trigger error detection mechanism (local setting)
         //.unchecked()
         .request(new OnPermissionCallback() {
@@ -133,8 +133,8 @@ XXPermissions.with(this)
 ```kotlin
 XXPermissions.with(this)
     // Request multiple permission
-    .permission(PermissionManifest.RECORD_AUDIO)
-    .permission(PermissionManifest.CAMERA)
+    .permission(PermissionManifest.getRecordAudioPermission())
+    .permission(PermissionManifest.getCameraPermission())
     // Setting does not trigger error detection mechanism (local setting)
     //.unchecked()
     .request(object : OnPermissionCallback {

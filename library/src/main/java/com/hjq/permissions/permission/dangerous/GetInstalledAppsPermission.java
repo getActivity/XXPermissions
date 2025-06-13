@@ -25,6 +25,9 @@ import com.hjq.permissions.permission.common.DangerousPermission;
  */
 public final class GetInstalledAppsPermission extends DangerousPermission {
 
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
+    public static final String PERMISSION_NAME = PermissionConstants.GET_INSTALLED_APPS;
+
     private static final String MIUI_OP_GET_INSTALLED_APPS_FIELD_NAME = "OP_GET_INSTALLED_APPS";
     private static final int MIUI_OP_GET_INSTALLED_APPS_DEFAULT_VALUE = 10022;
 
@@ -52,7 +55,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
     @NonNull
     @Override
     public String getName() {
-        return PermissionConstants.GET_INSTALLED_APPS;
+        return PERMISSION_NAME;
     }
 
     @Override

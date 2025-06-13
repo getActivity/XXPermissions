@@ -46,10 +46,16 @@ public abstract class BasePermission implements IPermission {
 
     @Override
     public boolean equals(@Nullable Object obj) {
+        // 如果要对比的对象和当前对象的内存地址一样，那么就返回 true
+        if (obj == this) {
+            return true;
+        }
         // 重写 equals 方法是为了 List 和 Map 集合有能力辨别不同的权限对象是不是来自同一个权限
+        // 如果这两个权限对象的名称一样，那么就认为它们是同一个权限
         if (obj instanceof IPermission) {
-            // 如果这两个权限的名称一样，那么就认为它们是同一个权限
             return PermissionUtils.equalsPermission(getName(), ((IPermission) obj).getName());
+        } else if (obj instanceof String) {
+            return PermissionUtils.equalsPermission(getName(), ((String) obj));
         }
         return false;
     }

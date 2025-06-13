@@ -19,6 +19,9 @@ import com.hjq.permissions.permission.common.SpecialPermission;
  */
 public final class RequestInstallPackagesPermission extends SpecialPermission {
 
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
+    public static final String PERMISSION_NAME = PermissionConstants.REQUEST_INSTALL_PACKAGES;
+
     public static final Parcelable.Creator<RequestInstallPackagesPermission> CREATOR = new Parcelable.Creator<RequestInstallPackagesPermission>() {
 
         @Override
@@ -43,7 +46,7 @@ public final class RequestInstallPackagesPermission extends SpecialPermission {
     @NonNull
     @Override
     public String getName() {
-        return PermissionConstants.REQUEST_INSTALL_PACKAGES;
+        return PERMISSION_NAME;
     }
 
     @Override

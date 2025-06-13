@@ -106,8 +106,8 @@ android.enableJetifier = true
 ```java
 XXPermissions.with(this)
         // 申请多个权限
-        .permission(PermissionManifest.RECORD_AUDIO)
-        .permission(PermissionManifest.CAMERA)
+        .permission(PermissionManifest.getRecordAudioPermission())
+        .permission(PermissionManifest.getCameraPermission())
         // 设置不触发错误检测机制（局部设置）
         //.unchecked()
         .request(new OnPermissionCallback() {
@@ -139,8 +139,8 @@ XXPermissions.with(this)
 ```kotlin
 XXPermissions.with(this)
     // 申请多个权限
-    .permission(PermissionManifest.RECORD_AUDIO)
-    .permission(PermissionManifest.CAMERA)
+    .permission(PermissionManifest.getRecordAudioPermission())
+    .permission(PermissionManifest.getCameraPermission())
     // 设置不触发错误检测机制（局部设置）
     //.unchecked()
     .request(object : OnPermissionCallback {

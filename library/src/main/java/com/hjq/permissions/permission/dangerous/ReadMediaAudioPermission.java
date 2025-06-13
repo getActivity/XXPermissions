@@ -18,6 +18,9 @@ import com.hjq.permissions.permission.common.DangerousPermission;
  */
 public final class ReadMediaAudioPermission extends DangerousPermission {
 
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
+    public static final String PERMISSION_NAME = PermissionConstants.READ_MEDIA_AUDIO;
+
     public static final Parcelable.Creator<ReadMediaAudioPermission> CREATOR = new Parcelable.Creator<ReadMediaAudioPermission>() {
 
         @Override
@@ -42,7 +45,7 @@ public final class ReadMediaAudioPermission extends DangerousPermission {
     @NonNull
     @Override
     public String getName() {
-        return PermissionConstants.READ_MEDIA_AUDIO;
+        return PERMISSION_NAME;
     }
 
     @Override
@@ -52,11 +55,11 @@ public final class ReadMediaAudioPermission extends DangerousPermission {
 
     @Override
     protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.READ_EXTERNAL_STORAGE.isGranted(context, skipRequest);
+        return PermissionManifest.getReadExternalStoragePermission().isGranted(context, skipRequest);
     }
 
     @Override
     protected boolean isDoNotAskAgainByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.READ_EXTERNAL_STORAGE.isDoNotAskAgain(activity);
+        return PermissionManifest.getReadExternalStoragePermission().isDoNotAskAgain(activity);
     }
 }

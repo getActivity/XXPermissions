@@ -18,6 +18,9 @@ import com.hjq.permissions.permission.common.DangerousPermission;
  */
 public final class BodySensorsBackgroundPermission extends DangerousPermission {
 
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
+    public static final String PERMISSION_NAME = PermissionConstants.BODY_SENSORS_BACKGROUND;
+
     public static final Parcelable.Creator<BodySensorsBackgroundPermission> CREATOR = new Parcelable.Creator<BodySensorsBackgroundPermission>() {
 
         @Override
@@ -42,7 +45,7 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
     @NonNull
     @Override
     public String getName() {
-        return PermissionConstants.BODY_SENSORS_BACKGROUND;
+        return PERMISSION_NAME;
     }
 
     @Override
@@ -53,7 +56,7 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
     @Override
     protected boolean isGrantedByStandardVersion(@NonNull Context context, boolean skipRequest) {
         // 判断后台传感器权限授予之前，需要先判断前台传感器权限是否授予，如果前台传感器权限没有授予，那么后台传感器权限就算授予了也没用
-        if (!PermissionManifest.BODY_SENSORS.isGranted(context, skipRequest)) {
+        if (!PermissionManifest.getBodySensorsPermission().isGranted(context, skipRequest)) {
             return false;
         }
         return super.isGrantedByStandardVersion(context, skipRequest);
@@ -61,13 +64,13 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
 
     @Override
     protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.BODY_SENSORS.isGranted(context, skipRequest);
+        return PermissionManifest.getBodySensorsPermission().isGranted(context, skipRequest);
     }
 
     @Override
     protected boolean isDoNotAskAgainByStandardVersion(@NonNull Activity activity) {
         // 如果前台传感器权限被用户勾选了不再询问选项，那么后台传感器权限也要跟着同步
-        if (PermissionManifest.BODY_SENSORS.isDoNotAskAgain(activity)) {
+        if (PermissionManifest.getBodySensorsPermission().isDoNotAskAgain(activity)) {
             return true;
         }
         return super.isDoNotAskAgainByStandardVersion(activity);
@@ -75,7 +78,7 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
 
     @Override
     protected boolean isDoNotAskAgainByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.BODY_SENSORS.isDoNotAskAgain(activity);
+        return PermissionManifest.getBodySensorsPermission().isDoNotAskAgain(activity);
     }
 
     @Override

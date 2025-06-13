@@ -13,7 +13,7 @@ import com.hjq.permissions.AndroidManifestInfo.ActivityInfo;
 import com.hjq.permissions.AndroidManifestInfo.ApplicationInfo;
 import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidManifestInfo.ServiceInfo;
-import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.PermissionConstants;
 import com.hjq.permissions.permission.base.IPermission;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -176,24 +176,24 @@ final class PermissionChecker {
      */
     static void checkMediaLocationPermission(@NonNull Context context, @NonNull List<IPermission> requestPermissions) {
         // 如果请求的权限中没有包含外部读取媒体位置权限，那么就不符合条件，停止检查
-        if (!PermissionUtils.containsPermission(requestPermissions, PermissionManifest.ACCESS_MEDIA_LOCATION)) {
+        if (!PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_MEDIA_LOCATION)) {
             return;
         }
 
         if (AndroidVersionTools.getTargetSdkVersionCode(context) >= AndroidVersionTools.ANDROID_13) {
-            if (!PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_MEDIA_IMAGES) &&
-                !PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_MEDIA_VIDEO) &&
-                !PermissionUtils.containsPermission(requestPermissions, PermissionManifest.MANAGE_EXTERNAL_STORAGE)) {
+            if (!PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_IMAGES) &&
+                !PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_VIDEO) &&
+                !PermissionUtils.containsPermission(requestPermissions, PermissionConstants.MANAGE_EXTERNAL_STORAGE)) {
                 // 你需要在外层手动添加 READ_MEDIA_IMAGES、READ_MEDIA_VIDEO、MANAGE_EXTERNAL_STORAGE 任一权限才可以申请 ACCESS_MEDIA_LOCATION 权限
-                throw new IllegalArgumentException("You must add " + PermissionManifest.READ_MEDIA_IMAGES + " or " + PermissionManifest.READ_MEDIA_VIDEO + " or " +
-                    PermissionManifest.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + PermissionManifest.ACCESS_MEDIA_LOCATION + " rights");
+                throw new IllegalArgumentException("You must add " + PermissionConstants.READ_MEDIA_IMAGES + " or " + PermissionConstants.READ_MEDIA_VIDEO + " or " +
+                    PermissionConstants.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + PermissionConstants.ACCESS_MEDIA_LOCATION + " rights");
             }
         } else {
-            if (!PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_EXTERNAL_STORAGE) &&
-                !PermissionUtils.containsPermission(requestPermissions, PermissionManifest.MANAGE_EXTERNAL_STORAGE)) {
+            if (!PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_EXTERNAL_STORAGE) &&
+                !PermissionUtils.containsPermission(requestPermissions, PermissionConstants.MANAGE_EXTERNAL_STORAGE)) {
                 // 你需要在外层手动添加 READ_EXTERNAL_STORAGE 或者 MANAGE_EXTERNAL_STORAGE 才可以申请 ACCESS_MEDIA_LOCATION 权限
-                throw new IllegalArgumentException("You must add " + PermissionManifest.READ_EXTERNAL_STORAGE + " or " +
-                    PermissionManifest.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + PermissionManifest.ACCESS_MEDIA_LOCATION + " rights");
+                throw new IllegalArgumentException("You must add " + PermissionConstants.READ_EXTERNAL_STORAGE + " or " +
+                    PermissionConstants.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + PermissionConstants.ACCESS_MEDIA_LOCATION + " rights");
             }
         }
     }
@@ -204,36 +204,36 @@ final class PermissionChecker {
     static void checkStoragePermission(@NonNull Context context, @NonNull List<IPermission> requestPermissions,
                                         @Nullable AndroidManifestInfo androidManifestInfo) {
         // 如果请求的权限中没有包含外部存储相关的权限，那么就不符合条件，停止检查
-        if (!PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_MEDIA_IMAGES) &&
-            !PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_MEDIA_VIDEO) &&
-            !PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_MEDIA_AUDIO) &&
-            !PermissionUtils.containsPermission(requestPermissions, PermissionManifest.MANAGE_EXTERNAL_STORAGE) &&
-            !PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_EXTERNAL_STORAGE) &&
-            !PermissionUtils.containsPermission(requestPermissions, PermissionManifest.WRITE_EXTERNAL_STORAGE)) {
+        if (!PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_IMAGES) &&
+            !PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_VIDEO) &&
+            !PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_AUDIO) &&
+            !PermissionUtils.containsPermission(requestPermissions, PermissionConstants.MANAGE_EXTERNAL_STORAGE) &&
+            !PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_EXTERNAL_STORAGE) &&
+            !PermissionUtils.containsPermission(requestPermissions, PermissionConstants.WRITE_EXTERNAL_STORAGE)) {
             return;
         }
 
         if (AndroidVersionTools.getTargetSdkVersionCode(context) >= AndroidVersionTools.ANDROID_13 &&
-            PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_EXTERNAL_STORAGE)) {
+            PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_EXTERNAL_STORAGE)) {
             // 当 targetSdkVersion >= 33 应该使用 READ_MEDIA_IMAGES、READ_MEDIA_VIDEO、READ_MEDIA_AUDIO 来代替 READ_EXTERNAL_STORAGE
             // 因为经过测试，如果当 targetSdkVersion >= 33 申请 READ_EXTERNAL_STORAGE 或者 WRITE_EXTERNAL_STORAGE 会被系统直接拒绝，不会弹出任何授权框
             throw new IllegalArgumentException("When targetSdkVersion >= 33 should use " +
-                PermissionManifest.READ_MEDIA_IMAGES + ", " + PermissionManifest.READ_MEDIA_VIDEO + ", " + PermissionManifest.READ_MEDIA_AUDIO +
-                ", rather than " + PermissionManifest.READ_EXTERNAL_STORAGE);
+                PermissionConstants.READ_MEDIA_IMAGES + ", " + PermissionConstants.READ_MEDIA_VIDEO + ", " + PermissionConstants.READ_MEDIA_AUDIO +
+                ", rather than " + PermissionConstants.READ_EXTERNAL_STORAGE);
         }
 
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_MEDIA_IMAGES) ||
-            PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_MEDIA_VIDEO) ||
-            PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_MEDIA_AUDIO)) {
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_IMAGES) ||
+            PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_VIDEO) ||
+            PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_AUDIO)) {
 
-            if (PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_EXTERNAL_STORAGE)) {
+            if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_EXTERNAL_STORAGE)) {
                 // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这个权限
                 // 框架会在 Android 13 以下的版本上自动添加并申请这两个权限
                 throw new IllegalArgumentException("If you have applied for media permissions, " +
                     "do not apply for the READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE permissions");
             }
 
-            if (PermissionUtils.containsPermission(requestPermissions, PermissionManifest.MANAGE_EXTERNAL_STORAGE)) {
+            if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.MANAGE_EXTERNAL_STORAGE)) {
                 // 因为 MANAGE_EXTERNAL_STORAGE 权限范围很大，有了它就可以读取媒体文件，不需要再叠加申请媒体权限
                 throw new IllegalArgumentException("Because the MANAGE_EXTERNAL_STORAGE permission range is very large, "
                     + "you can read media files with it, and there is no need to apply for additional media permissions.");
@@ -243,10 +243,10 @@ final class PermissionChecker {
             return;
         }
 
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionManifest.MANAGE_EXTERNAL_STORAGE)) {
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.MANAGE_EXTERNAL_STORAGE)) {
 
-            if (PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_EXTERNAL_STORAGE) ||
-                PermissionUtils.containsPermission(requestPermissions, PermissionManifest.WRITE_EXTERNAL_STORAGE)) {
+            if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_EXTERNAL_STORAGE) ||
+                PermissionUtils.containsPermission(requestPermissions, PermissionConstants.WRITE_EXTERNAL_STORAGE)) {
                 // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这两个权限
                 // 框架会在 Android 10 以下的版本上自动添加并申请这两个权限
                 throw new IllegalArgumentException("If you have applied for MANAGE_EXTERNAL_STORAGE permissions, " +
@@ -255,7 +255,7 @@ final class PermissionChecker {
         }
 
         // 如果申请的是 Android 10 获取媒体位置权限，则绕过本次检查
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionManifest.ACCESS_MEDIA_LOCATION)) {
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_MEDIA_LOCATION)) {
             return;
         }
 
@@ -277,7 +277,7 @@ final class PermissionChecker {
         boolean requestLegacyExternalStorage = applicationInfo.requestLegacyExternalStorage;
         // 如果在已经适配 Android 10 的情况下
         if (targetSdkVersion >= AndroidVersionTools.ANDROID_10 && !requestLegacyExternalStorage &&
-            (PermissionUtils.containsPermission(requestPermissions, PermissionManifest.MANAGE_EXTERNAL_STORAGE) || !scopedStorage)) {
+            (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.MANAGE_EXTERNAL_STORAGE) || !scopedStorage)) {
             // 请在清单文件 Application 节点中注册 android:requestLegacyExternalStorage="true" 属性
             // 否则就算申请了权限，也无法在 Android 10 的设备上正常读写外部存储上的文件
             // 如果你的项目已经全面适配了分区存储，请在清单文件中注册一个 meta-data 属性
@@ -288,7 +288,7 @@ final class PermissionChecker {
 
         // 如果在已经适配 Android 11 的情况下
         if (targetSdkVersion >= AndroidVersionTools.ANDROID_11 &&
-            !PermissionUtils.containsPermission(requestPermissions, PermissionManifest.MANAGE_EXTERNAL_STORAGE) && !scopedStorage) {
+            !PermissionUtils.containsPermission(requestPermissions, PermissionConstants.MANAGE_EXTERNAL_STORAGE) && !scopedStorage) {
             // 1. 适配分区存储的特性，并在清单文件中注册一个 meta-data 属性
             // <meta-data android:name="ScopedStorage" android:value="true" />
             // 2. 如果不想适配分区存储，则需要使用 Permission.MANAGE_EXTERNAL_STORAGE 来申请权限
@@ -296,7 +296,7 @@ final class PermissionChecker {
             // 如果不知道该怎么选择，可以看文档：https://github.com/getActivity/XXPermissions/blob/master/HelpDoc
             throw new IllegalArgumentException("The storage permission application is abnormal. If you have adapted the scope storage, " +
                 "please register the <meta-data android:name=\"ScopedStorage\" android:value=\"true\" /> attribute in the AndroidManifest.xml file. " +
-                "If there is no adaptation scope storage, please use " + PermissionManifest.MANAGE_EXTERNAL_STORAGE + " to apply for permission");
+                "If there is no adaptation scope storage, please use " + PermissionConstants.MANAGE_EXTERNAL_STORAGE + " to apply for permission");
         }
     }
 
@@ -305,14 +305,14 @@ final class PermissionChecker {
      */
     static void checkBodySensorsPermission(@NonNull List<IPermission> requestPermissions) {
         // 判断是否包含后台传感器权限
-        if (!PermissionUtils.containsPermission(requestPermissions, PermissionManifest.BODY_SENSORS_BACKGROUND)) {
+        if (!PermissionUtils.containsPermission(requestPermissions, PermissionConstants.BODY_SENSORS_BACKGROUND)) {
             return;
         }
 
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionManifest.BODY_SENSORS_BACKGROUND) &&
-            !PermissionUtils.containsPermission(requestPermissions, PermissionManifest.BODY_SENSORS)) {
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.BODY_SENSORS_BACKGROUND) &&
+            !PermissionUtils.containsPermission(requestPermissions, PermissionConstants.BODY_SENSORS)) {
             // 必须要申请前台传感器权限才能申请后台传感器权限
-            throw new IllegalArgumentException("Applying for background sensor permissions must contain " + PermissionManifest.BODY_SENSORS);
+            throw new IllegalArgumentException("Applying for background sensor permissions must contain " + PermissionConstants.BODY_SENSORS);
         }
     }
 
@@ -341,17 +341,17 @@ final class PermissionChecker {
         */
 
         // 判断是否包含后台定位权限
-        if (!PermissionUtils.containsPermission(requestPermissions, PermissionManifest.ACCESS_BACKGROUND_LOCATION)) {
+        if (!PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_BACKGROUND_LOCATION)) {
             return;
         }
 
         // 申请后台定位权限可以不包含模糊定位权限，但是一定要包含精确定位权限，否则后台定位权限会无法申请
         // 也就是会导致无法弹出授权弹窗，经过实践，在 Android 12 上这个问题已经被解决了
         // 但是为了兼容 Android 12 以下的设备还是要那么做，否则在 Android 11 及以下设备会出现异常
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionManifest.ACCESS_COARSE_LOCATION) &&
-            !PermissionUtils.containsPermission(requestPermissions, PermissionManifest.ACCESS_FINE_LOCATION)) {
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_COARSE_LOCATION) &&
+            !PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_FINE_LOCATION)) {
             throw new IllegalArgumentException("Applying for background positioning permissions must include " +
-                PermissionManifest.ACCESS_FINE_LOCATION);
+                PermissionConstants.ACCESS_FINE_LOCATION);
         }
     }
 
@@ -362,13 +362,13 @@ final class PermissionChecker {
     static void checkNearbyDevicesPermission(@NonNull List<IPermission> requestPermissions,
                                                 @Nullable AndroidManifestInfo androidManifestInfo) {
         // 如果请求的权限中没有蓝牙权限并且 WIFI 权限，那么就不符合条件，停止检查
-        if (!PermissionUtils.containsPermission(requestPermissions, PermissionManifest.BLUETOOTH_SCAN) &&
-            !PermissionUtils.containsPermission(requestPermissions, PermissionManifest.NEARBY_WIFI_DEVICES)) {
+        if (!PermissionUtils.containsPermission(requestPermissions, PermissionConstants.BLUETOOTH_SCAN) &&
+            !PermissionUtils.containsPermission(requestPermissions, PermissionConstants.NEARBY_WIFI_DEVICES)) {
             return;
         }
 
-        // 如果请求的权限已经包含了精确定位权限，那么就需要检查了
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionManifest.ACCESS_FINE_LOCATION)) {
+        // 如果请求的权限已经包含了精确定位权限，那么就不需要检查了
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_FINE_LOCATION)) {
             return;
         }
 
@@ -380,8 +380,8 @@ final class PermissionChecker {
 
         for (PermissionInfo permissionInfo : permissionInfoList) {
             // 必须是蓝牙扫描权限或者 WIFI 权限才需要走这个检查
-            if (!PermissionUtils.equalsPermission(permissionInfo.name, PermissionManifest.BLUETOOTH_SCAN.getName()) &&
-                !PermissionUtils.equalsPermission(permissionInfo.name, PermissionManifest.NEARBY_WIFI_DEVICES.getName())) {
+            if (!PermissionUtils.equalsPermission(permissionInfo.name, PermissionConstants.BLUETOOTH_SCAN) &&
+                !PermissionUtils.equalsPermission(permissionInfo.name, PermissionConstants.NEARBY_WIFI_DEVICES)) {
                 continue;
             }
 
@@ -405,7 +405,7 @@ final class PermissionChecker {
                     "manifest file to <uses-permission android:name=\"" + permissionInfo.name +
                     "\" android:usesPermissionFlags=\"neverForLocation\" " + maxSdkVersionString + "/> node, " +
                     "if your app need use " + permissionInfo.name + " to get physical location, " +
-                    "also need to add " + PermissionManifest.ACCESS_FINE_LOCATION + " permissions");
+                    "also need to add " + PermissionConstants.ACCESS_FINE_LOCATION + " permissions");
             }
         }
     }
@@ -416,7 +416,7 @@ final class PermissionChecker {
     static void checkNotificationListenerPermission(@NonNull List<IPermission> requestPermissions,
                                                     @Nullable AndroidManifestInfo androidManifestInfo) {
         // 如果请求的权限中没有通知栏监听权限，那么就不符合条件，停止检查
-        if (!PermissionUtils.containsPermission(requestPermissions, PermissionManifest.BIND_NOTIFICATION_LISTENER_SERVICE)) {
+        if (!PermissionUtils.containsPermission(requestPermissions, PermissionConstants.BIND_NOTIFICATION_LISTENER_SERVICE)) {
             return;
         }
 
@@ -427,7 +427,7 @@ final class PermissionChecker {
         List<ServiceInfo> serviceInfoList = androidManifestInfo.serviceInfoList;
         for (int i = 0; i < serviceInfoList.size(); i++) {
             String permission = serviceInfoList.get(i).permission;
-            if (TextUtils.equals(permission, PermissionManifest.BIND_NOTIFICATION_LISTENER_SERVICE.getName())) {
+            if (TextUtils.equals(permission, PermissionConstants.BIND_NOTIFICATION_LISTENER_SERVICE)) {
                 // 终止循环并返回
                 return;
             }
@@ -437,7 +437,7 @@ final class PermissionChecker {
         // 请在 AndroidManifest.xml 中注册 <service android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" >
         throw new IllegalArgumentException("No service registered permission attribute, " +
             "please register <service android:permission=\"" +
-            PermissionManifest.BIND_NOTIFICATION_LISTENER_SERVICE + "\" > in AndroidManifest.xml");
+            PermissionConstants.BIND_NOTIFICATION_LISTENER_SERVICE + "\" > in AndroidManifest.xml");
     }
 
     /**
@@ -446,7 +446,7 @@ final class PermissionChecker {
     static void checkPictureInPicturePermission(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
         @Nullable AndroidManifestInfo androidManifestInfo) {
         // 如果请求的权限中没有画中画权限，那么就不符合条件，停止检查
-        if (!PermissionUtils.containsPermission(requestPermissions, PermissionManifest.PICTURE_IN_PICTURE)) {
+        if (!PermissionUtils.containsPermission(requestPermissions, PermissionConstants.PICTURE_IN_PICTURE)) {
             return;
         }
 
@@ -475,18 +475,18 @@ final class PermissionChecker {
      */
     static void checkReadMediaVisualUserSelectedPermission(@NonNull List<IPermission> requestPermissions) {
         // 如果请求的权限中没有对照片和视频的部分访问权限，那么就不符合条件，停止检查
-        if (!PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_MEDIA_VISUAL_USER_SELECTED)) {
+        if (!PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_VISUAL_USER_SELECTED)) {
             return;
         }
 
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_MEDIA_IMAGES) ||
-            PermissionUtils.containsPermission(requestPermissions, PermissionManifest.READ_MEDIA_VIDEO)) {
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_IMAGES) ||
+            PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_VIDEO)) {
             return;
         }
 
         // 不能单独请求 READ_MEDIA_VISUAL_USER_SELECTED 权限，需要加上 READ_MEDIA_IMAGES 或者 READ_MEDIA_VIDEO 任一权限，又或者两个都有，否则权限申请会被系统直接拒绝
-        throw new IllegalArgumentException("You cannot request the " + PermissionManifest.READ_MEDIA_VISUAL_USER_SELECTED + " permission alone. "
-            + "must add either " + PermissionManifest.READ_MEDIA_IMAGES + " or " + PermissionManifest.READ_MEDIA_VIDEO + " permission, or maybe both");
+        throw new IllegalArgumentException("You cannot request the " + PermissionConstants.READ_MEDIA_VISUAL_USER_SELECTED + " permission alone. "
+            + "must add either " + PermissionConstants.READ_MEDIA_IMAGES + " or " + PermissionConstants.READ_MEDIA_VIDEO + " permission, or maybe both");
     }
 
     /**
@@ -499,7 +499,7 @@ final class PermissionChecker {
         }
 
         // 如果请求的权限中没有读取应用列表权限，那么就不符合条件，否则停止检查
-        if (!PermissionUtils.containsPermission(requestPermissions, PermissionManifest.GET_INSTALLED_APPS)) {
+        if (!PermissionUtils.containsPermission(requestPermissions, PermissionConstants.GET_INSTALLED_APPS)) {
             return;
         }
 
@@ -538,14 +538,14 @@ final class PermissionChecker {
         for (IPermission permission : requestPermissions) {
             // targetSdk 最低版本要求
             int targetSdkMinVersion;
-            if (PermissionUtils.equalsPermission(permission, PermissionManifest.READ_MEDIA_VISUAL_USER_SELECTED)) {
+            if (PermissionUtils.equalsPermission(permission, PermissionConstants.READ_MEDIA_VISUAL_USER_SELECTED)) {
                 // 授予对照片和视频的部分访问权限：https://developer.android.google.cn/about/versions/14/changes/partial-photo-video-access?hl=zh-cn
                 // READ_MEDIA_VISUAL_USER_SELECTED 这个权限比较特殊，不需要调高 targetSdk 的版本才能申请，但是需要和 READ_MEDIA_IMAGES 和 READ_MEDIA_VIDEO 组合使用
                 // 这个权限不能单独申请，只能和 READ_MEDIA_IMAGES、READ_MEDIA_VIDEO 一起申请，否则会有问题，所以这个权限的 targetSdk 最低要求为 33 及以上
                 targetSdkMinVersion = AndroidVersionTools.ANDROID_13;
-            } else if (PermissionUtils.equalsPermission(permission, PermissionManifest.BLUETOOTH_SCAN) ||
-                        PermissionUtils.equalsPermission(permission, PermissionManifest.BLUETOOTH_CONNECT) ||
-                        PermissionUtils.equalsPermission(permission, PermissionManifest.BLUETOOTH_ADVERTISE)) {
+            } else if (PermissionUtils.equalsPermission(permission, PermissionConstants.BLUETOOTH_SCAN) ||
+                        PermissionUtils.equalsPermission(permission, PermissionConstants.BLUETOOTH_CONNECT) ||
+                        PermissionUtils.equalsPermission(permission, PermissionConstants.BLUETOOTH_ADVERTISE)) {
                 // 部分厂商修改了蓝牙权限机制，在 targetSdk 不满足条件的情况下（小于 31），仍需要让应用申请这个权限
                 // 相关的 issue 地址：
                 // 1. https://github.com/getActivity/XXPermissions/issues/123
@@ -598,28 +598,28 @@ final class PermissionChecker {
                 continue;
             }
 
-            if (PermissionUtils.equalsPermission(permission, PermissionManifest.WRITE_EXTERNAL_STORAGE)) {
+            if (PermissionUtils.equalsPermission(permission, PermissionConstants.WRITE_EXTERNAL_STORAGE)) {
                 checkWriteExternalStoragePermission(context, androidManifestInfo.applicationInfo, permissionInfoList);
-            } else if (PermissionUtils.equalsPermission(permission, PermissionManifest.SCHEDULE_EXACT_ALARM)) {
+            } else if (PermissionUtils.equalsPermission(permission, PermissionConstants.SCHEDULE_EXACT_ALARM)) {
                 checkScheduleExactAlarmPermission(context, permissionInfoList);
             } else {
-                checkManifestPermission(permissionInfoList, permission);
+                checkManifestPermission(permissionInfoList, permission.getName());
             }
 
-            if (PermissionUtils.equalsPermission(permission, PermissionManifest.BODY_SENSORS_BACKGROUND)) {
+            if (PermissionUtils.equalsPermission(permission, PermissionConstants.BODY_SENSORS_BACKGROUND)) {
                 // 申请后台的传感器权限必须要先注册前台的传感器权限
-                checkManifestPermission(permissionInfoList, PermissionManifest.BODY_SENSORS);
+                checkManifestPermission(permissionInfoList, PermissionConstants.BODY_SENSORS);
                 continue;
             }
 
-            if (PermissionUtils.equalsPermission(permission, PermissionManifest.ACCESS_BACKGROUND_LOCATION)) {
+            if (PermissionUtils.equalsPermission(permission, PermissionConstants.ACCESS_BACKGROUND_LOCATION)) {
                 // 在 Android 11 及之前的版本，申请后台定位权限需要精确定位权限
                 // 在 Android 12 及之后的版本，申请后台定位权限即可以用精确定位权限也可以用模糊定位权限
                 if (AndroidVersionTools.getTargetSdkVersionCode(context) >= AndroidVersionTools.ANDROID_12) {
-                    checkManifestPermission(permissionInfoList, PermissionManifest.ACCESS_FINE_LOCATION, AndroidVersionTools.ANDROID_11);
-                    checkManifestPermission(permissionInfoList, PermissionManifest.ACCESS_COARSE_LOCATION);
+                    checkManifestPermission(permissionInfoList, PermissionConstants.ACCESS_FINE_LOCATION, AndroidVersionTools.ANDROID_11);
+                    checkManifestPermission(permissionInfoList, PermissionConstants.ACCESS_COARSE_LOCATION);
                 } else {
-                    checkManifestPermission(permissionInfoList, PermissionManifest.ACCESS_FINE_LOCATION);
+                    checkManifestPermission(permissionInfoList, PermissionConstants.ACCESS_FINE_LOCATION);
                 }
                 continue;
             }
@@ -630,55 +630,55 @@ final class PermissionChecker {
             }
 
             // Android 13
-            if (PermissionUtils.equalsPermission(permission, PermissionManifest.READ_MEDIA_IMAGES) ||
-                PermissionUtils.equalsPermission(permission, PermissionManifest.READ_MEDIA_VIDEO) ||
-                PermissionUtils.equalsPermission(permission, PermissionManifest.READ_MEDIA_AUDIO)) {
-                checkManifestPermission(permissionInfoList, PermissionManifest.READ_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_12_L);
+            if (PermissionUtils.equalsPermission(permission, PermissionConstants.READ_MEDIA_IMAGES) ||
+                PermissionUtils.equalsPermission(permission, PermissionConstants.READ_MEDIA_VIDEO) ||
+                PermissionUtils.equalsPermission(permission, PermissionConstants.READ_MEDIA_AUDIO)) {
+                checkManifestPermission(permissionInfoList, PermissionConstants.READ_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_12_L);
                 continue;
             }
 
-            if (PermissionUtils.equalsPermission(permission, PermissionManifest.NEARBY_WIFI_DEVICES)) {
-                checkManifestPermission(permissionInfoList, PermissionManifest.ACCESS_FINE_LOCATION, AndroidVersionTools.ANDROID_12_L);
+            if (PermissionUtils.equalsPermission(permission, PermissionConstants.NEARBY_WIFI_DEVICES)) {
+                checkManifestPermission(permissionInfoList, PermissionConstants.ACCESS_FINE_LOCATION, AndroidVersionTools.ANDROID_12_L);
                 continue;
             }
 
             // Android 12
 
-            if (PermissionUtils.equalsPermission(permission, PermissionManifest.BLUETOOTH_SCAN)) {
+            if (PermissionUtils.equalsPermission(permission, PermissionConstants.BLUETOOTH_SCAN)) {
                 checkManifestPermission(permissionInfoList, Manifest.permission.BLUETOOTH_ADMIN, AndroidVersionTools.ANDROID_11);
                 // 这是 Android 12 之前遗留的问题，获取扫描蓝牙的结果需要精确定位权限
-                checkManifestPermission(permissionInfoList, PermissionManifest.ACCESS_FINE_LOCATION, AndroidVersionTools.ANDROID_11);
+                checkManifestPermission(permissionInfoList, PermissionConstants.ACCESS_FINE_LOCATION, AndroidVersionTools.ANDROID_11);
                 continue;
             }
 
-            if (PermissionUtils.equalsPermission(permission, PermissionManifest.BLUETOOTH_CONNECT)) {
+            if (PermissionUtils.equalsPermission(permission, PermissionConstants.BLUETOOTH_CONNECT)) {
                 checkManifestPermission(permissionInfoList, Manifest.permission.BLUETOOTH, AndroidVersionTools.ANDROID_11);
                 continue;
             }
 
-            if (PermissionUtils.equalsPermission(permission, PermissionManifest.BLUETOOTH_ADVERTISE)) {
+            if (PermissionUtils.equalsPermission(permission, PermissionConstants.BLUETOOTH_ADVERTISE)) {
                 checkManifestPermission(permissionInfoList, Manifest.permission.BLUETOOTH_ADMIN, AndroidVersionTools.ANDROID_11);
                 continue;
             }
 
             // Android 11
 
-            if (PermissionUtils.equalsPermission(permission, PermissionManifest.MANAGE_EXTERNAL_STORAGE)) {
-                checkManifestPermission(permissionInfoList, PermissionManifest.READ_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_10);
-                checkManifestPermission(permissionInfoList, PermissionManifest.WRITE_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_10);
+            if (PermissionUtils.equalsPermission(permission, PermissionConstants.MANAGE_EXTERNAL_STORAGE)) {
+                checkManifestPermission(permissionInfoList, PermissionConstants.READ_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_10);
+                checkManifestPermission(permissionInfoList, PermissionConstants.WRITE_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_10);
                 continue;
             }
 
             // Android 8.0
 
-            if (PermissionUtils.equalsPermission(permission, PermissionManifest.READ_PHONE_NUMBERS)) {
-                checkManifestPermission(permissionInfoList, PermissionManifest.READ_PHONE_STATE, AndroidVersionTools.ANDROID_7_1);
+            if (PermissionUtils.equalsPermission(permission, PermissionConstants.READ_PHONE_NUMBERS)) {
+                checkManifestPermission(permissionInfoList, PermissionConstants.READ_PHONE_STATE, AndroidVersionTools.ANDROID_7_1);
             }
         }
     }
 
     /**
-     * 检查 {@link PermissionManifest#WRITE_EXTERNAL_STORAGE } 权限
+     * 检查 {@link PermissionConstants#WRITE_EXTERNAL_STORAGE } 权限
      */
     static void checkWriteExternalStoragePermission(@NonNull Context context, @Nullable ApplicationInfo applicationInfo,
                                                     @NonNull List<PermissionInfo> permissionInfoList) {
@@ -686,7 +686,7 @@ final class PermissionChecker {
             return;
         }
 
-        IPermission checkPermission = PermissionManifest.WRITE_EXTERNAL_STORAGE;
+        String checkPermission = PermissionConstants.WRITE_EXTERNAL_STORAGE;
 
         if (AndroidVersionTools.getTargetSdkVersionCode(context) < AndroidVersionTools.ANDROID_10) {
             checkManifestPermission(permissionInfoList, checkPermission);
@@ -695,7 +695,7 @@ final class PermissionChecker {
 
         // 判断清单文件中是否注册了 MANAGE_EXTERNAL_STORAGE 权限，如果有的话，那么 maxSdkVersion 就必须是 Android 10 及以上的版本
         if (AndroidVersionTools.getTargetSdkVersionCode(context) >= AndroidVersionTools.ANDROID_11 &&
-                findPermissionInfoByList(permissionInfoList, PermissionManifest.MANAGE_EXTERNAL_STORAGE.getName()) != null) {
+                findPermissionInfoByList(permissionInfoList, PermissionConstants.MANAGE_EXTERNAL_STORAGE) != null) {
             checkManifestPermission(permissionInfoList, checkPermission, AndroidVersionTools.ANDROID_10);
             return;
         }
@@ -711,7 +711,7 @@ final class PermissionChecker {
     }
 
     /**
-     * 检查 {@link PermissionManifest#SCHEDULE_EXACT_ALARM } 权限
+     * 检查 {@link PermissionConstants#SCHEDULE_EXACT_ALARM } 权限
      */
     static void checkScheduleExactAlarmPermission(@NonNull Context context, @NonNull List<PermissionInfo> permissionInfoList) {
         String useExactAlarmPermissionName;
@@ -727,15 +727,15 @@ final class PermissionChecker {
             // <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
             // 相关文档地址：https://developer.android.google.cn/reference/android/Manifest.permission#USE_EXACT_ALARM
             // 如果你的应用要上架 GooglePlay，那么需要慎重添加 USE_EXACT_ALARM 权限，因为不是日历、闹钟、时钟这类应用添加 USE_EXACT_ALARM 权限很难通过 GooglePlay 上架审核
-            checkManifestPermission(permissionInfoList, PermissionManifest.SCHEDULE_EXACT_ALARM, AndroidVersionTools.ANDROID_12_L);
+            checkManifestPermission(permissionInfoList, PermissionConstants.SCHEDULE_EXACT_ALARM, AndroidVersionTools.ANDROID_12_L);
             return;
         }
 
-        checkManifestPermission(permissionInfoList, PermissionManifest.SCHEDULE_EXACT_ALARM);
+        checkManifestPermission(permissionInfoList, PermissionConstants.SCHEDULE_EXACT_ALARM);
     }
 
     static void checkManifestPermission(@NonNull List<PermissionInfo> permissionInfoList,
-                                        @NonNull IPermission checkPermission) {
+                                        @NonNull String checkPermission) {
         checkManifestPermission(permissionInfoList, checkPermission, Integer.MAX_VALUE);
     }
 
@@ -776,11 +776,6 @@ final class PermissionChecker {
                     "the minimum requirement for maxSdkVersion is " + lowestMaxSdkVersion :
                     "please delete the android:maxSdkVersion=\"" + manifestMaxSdkVersion + "\" attribute"));
         }
-    }
-
-    static void checkManifestPermission(@NonNull List<PermissionInfo> permissionInfoList,
-                                        @NonNull IPermission checkPermission, int lowestMaxSdkVersion) {
-        checkManifestPermission(permissionInfoList, checkPermission.getName(), lowestMaxSdkVersion);
     }
 
     /**

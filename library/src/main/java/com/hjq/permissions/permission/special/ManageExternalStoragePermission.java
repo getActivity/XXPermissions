@@ -21,6 +21,9 @@ import com.hjq.permissions.permission.common.SpecialPermission;
  */
 public final class ManageExternalStoragePermission extends SpecialPermission {
 
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
+    public static final String PERMISSION_NAME = PermissionConstants.MANAGE_EXTERNAL_STORAGE;
+
     public static final Parcelable.Creator<ManageExternalStoragePermission> CREATOR = new Parcelable.Creator<ManageExternalStoragePermission>() {
 
         @Override
@@ -45,7 +48,7 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
     @NonNull
     @Override
     public String getName() {
-        return PermissionConstants.MANAGE_EXTERNAL_STORAGE;
+        return PERMISSION_NAME;
     }
 
     @Override
@@ -62,8 +65,8 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
             if (AndroidVersionTools.isAndroid10() && !Environment.isExternalStorageLegacy()) {
                 return false;
             }
-            return PermissionManifest.READ_EXTERNAL_STORAGE.isGranted(context, skipRequest) &&
-                PermissionManifest.WRITE_EXTERNAL_STORAGE.isGranted(context, skipRequest);
+            return PermissionManifest.getReadExternalStoragePermission().isGranted(context, skipRequest) &&
+                PermissionManifest.getWriteExternalStoragePermission().isGranted(context, skipRequest);
         }
         // 是否有所有文件的管理权限
         return Environment.isExternalStorageManager();

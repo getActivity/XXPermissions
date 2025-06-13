@@ -25,6 +25,9 @@ import java.util.List;
  */
 public final class NotificationListenerServicePermission extends SpecialPermission {
 
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
+    public static final String PERMISSION_NAME = PermissionConstants.BIND_NOTIFICATION_LISTENER_SERVICE;
+
     public static final Parcelable.Creator<NotificationListenerServicePermission> CREATOR = new Parcelable.Creator<NotificationListenerServicePermission>() {
 
         @Override
@@ -42,7 +45,7 @@ public final class NotificationListenerServicePermission extends SpecialPermissi
     private static final String SETTING_ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
 
     @Nullable
-    private final String mClazzName;
+    private final String mServiceClassName;
 
     public NotificationListenerServicePermission() {
         this((String) null);
@@ -52,8 +55,8 @@ public final class NotificationListenerServicePermission extends SpecialPermissi
         this(clazz != null ? clazz.getName() : null);
     }
 
-    public NotificationListenerServicePermission(@Nullable String clazzName) {
-        mClazzName = clazzName;
+    public NotificationListenerServicePermission(@Nullable String serviceClassName) {
+        mServiceClassName = serviceClassName;
     }
 
     private NotificationListenerServicePermission(Parcel in) {
@@ -63,13 +66,13 @@ public final class NotificationListenerServicePermission extends SpecialPermissi
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mClazzName);
+        dest.writeString(mServiceClassName);
     }
 
     @NonNull
     @Override
     public String getName() {
-        return PermissionConstants.BIND_NOTIFICATION_LISTENER_SERVICE;
+        return PERMISSION_NAME;
     }
 
     @Override
@@ -110,10 +113,10 @@ public final class NotificationListenerServicePermission extends SpecialPermissi
         }
 
         // 判断是否指定了类名且类存在
-        if (PermissionUtils.isClassExist(mClazzName)) {
+        if (PermissionUtils.isClassExist(mServiceClassName)) {
             // 精准匹配
             for (ComponentName componentName : appComponentNameList) {
-                if (TextUtils.equals(mClazzName, componentName.getClassName())) {
+                if (TextUtils.equals(mServiceClassName, componentName.getClassName())) {
                     return true;
                 }
             }
@@ -133,9 +136,9 @@ public final class NotificationListenerServicePermission extends SpecialPermissi
     @Override
     public Intent getSettingIntent(@NonNull Context context) {
         Intent intent = null;
-        if (AndroidVersionTools.isAndroid11() && PermissionUtils.isClassExist(mClazzName)) {
+        if (AndroidVersionTools.isAndroid11() && PermissionUtils.isClassExist(mServiceClassName)) {
             intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS);
-            intent.putExtra(Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME, new ComponentName(context, mClazzName).flattenToString());
+            intent.putExtra(Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME, new ComponentName(context, mServiceClassName).flattenToString());
             if (!PermissionUtils.areActivityIntent(context, intent)) {
                 intent = null;
             }
@@ -155,5 +158,10 @@ public final class NotificationListenerServicePermission extends SpecialPermissi
         }
 
         return intent;
+    }
+
+    @Nullable
+    public String getServiceClassName() {
+        return mServiceClassName;
     }
 }

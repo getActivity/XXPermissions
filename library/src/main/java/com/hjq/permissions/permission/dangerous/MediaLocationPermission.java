@@ -18,6 +18,9 @@ import com.hjq.permissions.permission.common.DangerousPermission;
  */
 public final class MediaLocationPermission extends DangerousPermission {
 
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
+    public static final String PERMISSION_NAME = PermissionConstants.ACCESS_MEDIA_LOCATION;
+
     public static final Parcelable.Creator<MediaLocationPermission> CREATOR = new Parcelable.Creator<MediaLocationPermission>() {
 
         @Override
@@ -42,7 +45,7 @@ public final class MediaLocationPermission extends DangerousPermission {
     @NonNull
     @Override
     public String getName() {
-        return PermissionConstants.ACCESS_MEDIA_LOCATION;
+        return PERMISSION_NAME;
     }
 
     @Override
@@ -58,7 +61,7 @@ public final class MediaLocationPermission extends DangerousPermission {
 
     @Override
     protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.READ_EXTERNAL_STORAGE.isGranted(context, skipRequest);
+        return PermissionManifest.getReadExternalStoragePermission().isGranted(context, skipRequest);
     }
 
     @Override
@@ -69,7 +72,7 @@ public final class MediaLocationPermission extends DangerousPermission {
 
     @Override
     protected boolean isDoNotAskAgainByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.READ_EXTERNAL_STORAGE.isGranted(activity) &&
+        return PermissionManifest.getReadExternalStoragePermission().isGranted(activity) &&
                 super.isDoNotAskAgainByLowVersion(activity);
     }
 
@@ -80,14 +83,14 @@ public final class MediaLocationPermission extends DangerousPermission {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_13)) {
             // 这里为什么加上 Android 14 和 READ_MEDIA_VISUAL_USER_SELECTED 权限判断？这是因为如果获取部分照片和视频
             // 然后申请 Permission.ACCESS_MEDIA_LOCATION 系统会返回失败，必须要选择获取全部照片和视频才可以申请该权限
-            return PermissionManifest.READ_MEDIA_IMAGES.isGranted(context, skipRequest) ||
-                PermissionManifest.READ_MEDIA_VIDEO.isGranted(context, skipRequest) ||
-                PermissionManifest.MANAGE_EXTERNAL_STORAGE.isGranted(context, skipRequest);
+            return PermissionManifest.getReadMediaImagesPermission().isGranted(context, skipRequest) ||
+                PermissionManifest.getReadMediaVideoPermission().isGranted(context, skipRequest) ||
+                PermissionManifest.getManageExternalStoragePermission().isGranted(context, skipRequest);
         }
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_11)) {
-            return PermissionManifest.READ_EXTERNAL_STORAGE.isGranted(context, skipRequest) ||
-                PermissionManifest.MANAGE_EXTERNAL_STORAGE.isGranted(context, skipRequest);
+            return PermissionManifest.getReadExternalStoragePermission().isGranted(context, skipRequest) ||
+                PermissionManifest.getManageExternalStoragePermission().isGranted(context, skipRequest);
         }
-        return PermissionManifest.READ_EXTERNAL_STORAGE.isGranted(context, skipRequest);
+        return PermissionManifest.getReadExternalStoragePermission().isGranted(context, skipRequest);
     }
 }
