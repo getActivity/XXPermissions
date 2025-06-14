@@ -20,25 +20,25 @@ import java.util.List;
 public interface IPermission extends Parcelable {
 
     /**
-     * 获取权限类型
+     * 获取权限的名称
      */
     @NonNull
-    PermissionType getType();
+    String getPermissionName();
 
     /**
-     * 获取权限组别
+     * 获取权限的类型
      */
     @NonNull
-    default String getGroup() {
+    PermissionType getPermissionType();
+
+    /**
+     * 获取权限的组别
+     */
+    @NonNull
+    default String getPermissionGroup() {
         // 空字符串表示没有组别
         return "";
     }
-
-    /**
-     * 获取权限名称
-     */
-    @NonNull
-    String getName();
 
     /**
      * 获取权限出现的 Android 版本

@@ -49,7 +49,7 @@ public final class BluetoothAdvertisePermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public String getName() {
+    public String getPermissionName() {
         return PERMISSION_NAME;
     }
 
@@ -60,7 +60,7 @@ public final class BluetoothAdvertisePermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public String getGroup() {
+    public String getPermissionGroup() {
         // 注意：在 Android 12 的时候，蓝牙相关的权限已经归到附近设备的权限组了，但是在 Android 12 之前，蓝牙相关的权限归属定位权限组
         return AndroidVersionTools.isAndroid12() ? PermissionGroupConstants.NEARBY_DEVICES : PermissionGroupConstants.LOCATION;
     }

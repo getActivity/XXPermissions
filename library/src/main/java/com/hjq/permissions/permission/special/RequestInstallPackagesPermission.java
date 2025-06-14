@@ -45,7 +45,7 @@ public final class RequestInstallPackagesPermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public String getName() {
+    public String getPermissionName() {
         return PERMISSION_NAME;
     }
 

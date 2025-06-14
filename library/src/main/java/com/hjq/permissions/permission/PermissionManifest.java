@@ -84,7 +84,7 @@ public final class PermissionManifest {
      * @param permission                权限对象
      */
     private static IPermission putCachePermission(@NonNull IPermission permission) {
-        PERMISSION_CACHE_MAP.put(permission.getName(), permission);
+        PERMISSION_CACHE_MAP.put(permission.getPermissionName(), permission);
         return permission;
     }
 

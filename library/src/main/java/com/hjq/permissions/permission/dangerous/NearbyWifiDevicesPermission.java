@@ -51,13 +51,13 @@ public final class NearbyWifiDevicesPermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public String getName() {
+    public String getPermissionName() {
         return PERMISSION_NAME;
     }
 
     @NonNull
     @Override
-    public String getGroup() {
+    public String getPermissionGroup() {
         // 注意：在 Android 13 的时候，WIFI 相关的权限已经归到附近设备的权限组了，但是在 Android 13 之前，WIFI 相关的权限归属定位权限组
         return AndroidVersionTools.isAndroid13() ? PermissionGroupConstants.NEARBY_DEVICES : PermissionGroupConstants.LOCATION;
     }

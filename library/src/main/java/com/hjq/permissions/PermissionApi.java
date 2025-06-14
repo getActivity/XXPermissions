@@ -33,7 +33,7 @@ final class PermissionApi {
         }
 
         for (IPermission permission : permissions) {
-            if (permission.getType() == PermissionType.SPECIAL) {
+            if (permission.getPermissionType() == PermissionType.SPECIAL) {
                 return true;
             }
         }
@@ -138,7 +138,7 @@ final class PermissionApi {
             // 2. 如果旧版本列表不为空，并且当前权限对应的旧版本权限包含了特殊权限，就剔除它对应的旧版本权限
             // 例如：POST_NOTIFICATIONS -> NOTIFICATION_SERVICE
             if (oldPermissions != null && !oldPermissions.isEmpty() &&
-                (permission.getType() == PermissionType.SPECIAL || containsSpecialPermission(oldPermissions))) {
+                (permission.getPermissionType() == PermissionType.SPECIAL || containsSpecialPermission(oldPermissions))) {
                 realPermissions.removeAll(oldPermissions);
             }
         }
@@ -220,7 +220,7 @@ final class PermissionApi {
      */
     static boolean areAllDangerousPermission(@NonNull List<IPermission> permissions) {
         for (IPermission permission : permissions) {
-            if (permission.getType() == PermissionType.SPECIAL) {
+            if (permission.getPermissionType() == PermissionType.SPECIAL) {
                 return false;
             }
         }

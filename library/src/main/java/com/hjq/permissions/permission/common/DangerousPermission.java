@@ -30,7 +30,7 @@ public abstract class DangerousPermission extends BasePermission {
 
     @NonNull
     @Override
-    public PermissionType getType() {
+    public PermissionType getPermissionType() {
         return PermissionType.DANGEROUS;
     }
 
@@ -43,7 +43,7 @@ public abstract class DangerousPermission extends BasePermission {
     }
 
     protected boolean isGrantedByStandardVersion(@NonNull Context context, boolean skipRequest) {
-        return checkSelfPermission(context, getName());
+        return checkSelfPermission(context, getPermissionName());
     }
 
     protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
@@ -59,7 +59,7 @@ public abstract class DangerousPermission extends BasePermission {
     }
 
     protected boolean isDoNotAskAgainByStandardVersion(@NonNull Activity activity) {
-        return checkDoNotAskAgainPermission(activity, getName());
+        return checkDoNotAskAgainPermission(activity, getPermissionName());
     }
 
     protected boolean isDoNotAskAgainByLowVersion(@NonNull Activity activity) {

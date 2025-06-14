@@ -36,7 +36,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
         }
 
         if (doNotAskAgain) {
-            if (deniedPermissions.size() == 1 && PermissionConstants.ACCESS_MEDIA_LOCATION.equals(deniedPermissions.get(0).getName())) {
+            if (deniedPermissions.size() == 1 && PermissionConstants.ACCESS_MEDIA_LOCATION.equals(deniedPermissions.get(0).getPermissionName())) {
                 Toaster.show(R.string.common_permission_media_location_hint_fail);
                 return;
             }
@@ -51,12 +51,12 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
 
             String backgroundPermissionOptionLabel = getBackgroundPermissionOptionLabel(activity);
 
-            if (PermissionConstants.ACCESS_BACKGROUND_LOCATION.equals(deniedPermission.getName())) {
+            if (PermissionConstants.ACCESS_BACKGROUND_LOCATION.equals(deniedPermission.getPermissionName())) {
                 Toaster.show(activity.getString(R.string.common_permission_background_location_fail_hint, backgroundPermissionOptionLabel));
                 return;
             }
 
-            if (PermissionConstants.BODY_SENSORS_BACKGROUND.equals(deniedPermission.getName())) {
+            if (PermissionConstants.BODY_SENSORS_BACKGROUND.equals(deniedPermission.getPermissionName())) {
                 Toaster.show(activity.getString(R.string.common_permission_background_sensors_fail_hint, backgroundPermissionOptionLabel));
                 return;
             }
@@ -85,9 +85,9 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
             if (deniedPermissions.size() == 1) {
                 IPermission deniedPermission = deniedPermissions.get(0);
 
-                if (PermissionConstants.ACCESS_BACKGROUND_LOCATION.equals(deniedPermission.getName())) {
+                if (PermissionConstants.ACCESS_BACKGROUND_LOCATION.equals(deniedPermission.getPermissionName())) {
                     message = activity.getString(R.string.common_permission_manual_assign_fail_background_location_hint, getBackgroundPermissionOptionLabel(activity));
-                } else if (PermissionConstants.BODY_SENSORS_BACKGROUND.equals(deniedPermission.getName())) {
+                } else if (PermissionConstants.BODY_SENSORS_BACKGROUND.equals(deniedPermission.getPermissionName())) {
                     message = activity.getString(R.string.common_permission_manual_assign_fail_background_sensors_hint, getBackgroundPermissionOptionLabel(activity));
                 }
             }

@@ -53,13 +53,13 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public String getName() {
+    public String getPermissionName() {
         return PERMISSION_NAME;
     }
 
     @NonNull
     @Override
-    public String getGroup() {
+    public String getPermissionGroup() {
         return PermissionGroupConstants.STORAGE;
     }
 
@@ -118,7 +118,7 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
 
         // 如果当前 targetSdk 版本比较低，甚至还没有到分区存储的版本，就直接跳过后面的检查，只检查当前权限有没有在清单文件中静态注册
         if (AndroidVersionTools.getTargetSdkVersionCode(activity) < AndroidVersionTools.ANDROID_10) {
-            checkPermissionRegistrationStatus(permissionInfoList, getName());
+            checkPermissionRegistrationStatus(permissionInfoList, getPermissionName());
             return;
         }
 
@@ -126,12 +126,12 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
         if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_11 &&
             findPermissionInfoByList(permissionInfoList, PermissionConstants.MANAGE_EXTERNAL_STORAGE) != null) {
             // 如果有的话，那么 maxSdkVersion 就必须是 Android 10 及以上的版本
-            checkPermissionRegistrationStatus(permissionInfoList, getName(), AndroidVersionTools.ANDROID_10);
+            checkPermissionRegistrationStatus(permissionInfoList, getPermissionName(), AndroidVersionTools.ANDROID_10);
         } else {
             // 检查这个权限有没有在清单文件中注册，WRITE_EXTERNAL_STORAGE 权限比较特殊，要单独拎出来判断
             // 如果在清单文件中注册了 android:requestLegacyExternalStorage="true" 属性，即可延长一个 Android 版本适配
             // 所以 requestLegacyExternalStorage 属性在开启的状态下，对 maxSdkVersion 属性的要求延长一个版本
-            checkPermissionRegistrationStatus(permissionInfoList, getName(), applicationInfo.requestLegacyExternalStorage ?
+            checkPermissionRegistrationStatus(permissionInfoList, getPermissionName(), applicationInfo.requestLegacyExternalStorage ?
                                                         AndroidVersionTools.ANDROID_10 : AndroidVersionTools.ANDROID_9);
         }
 

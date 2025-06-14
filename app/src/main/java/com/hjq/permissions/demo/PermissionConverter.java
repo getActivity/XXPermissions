@@ -221,7 +221,7 @@ final class PermissionConverter {
     }
 
     public static String getNickNameByPermission(@NonNull Context context, @NonNull IPermission permission) {
-        Integer permissionNameStringId = PERMISSION_NAME_MAP.get(permission.getName());
+        Integer permissionNameStringId = PERMISSION_NAME_MAP.get(permission.getPermissionName());
         if (permissionNameStringId == null || permissionNameStringId == 0) {
             return "";
         }
@@ -271,7 +271,7 @@ final class PermissionConverter {
      */
     @NonNull
     public static String getDescriptionByPermission(@NonNull Context context, @NonNull IPermission permission) {
-        String permissionName = permission.getName();
+        String permissionName = permission.getPermissionName();
         Integer permissionNameStringId = PERMISSION_NAME_MAP.get(permissionName);
         if (permissionNameStringId == null || permissionNameStringId == 0) {
             return "";

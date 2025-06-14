@@ -52,7 +52,7 @@ public final class PictureInPicturePermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public String getName() {
+    public String getPermissionName() {
         return PERMISSION_NAME;
     }
 

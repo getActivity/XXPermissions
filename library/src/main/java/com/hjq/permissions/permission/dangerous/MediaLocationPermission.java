@@ -47,7 +47,7 @@ public final class MediaLocationPermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public String getName() {
+    public String getPermissionName() {
         return PERMISSION_NAME;
     }
 
@@ -112,7 +112,7 @@ public final class MediaLocationPermission extends DangerousPermission {
 
             // 如果不包含，你需要在外层手动添加 READ_MEDIA_IMAGES、READ_MEDIA_VIDEO、MANAGE_EXTERNAL_STORAGE 任一权限才可以申请 ACCESS_MEDIA_LOCATION 权限
             throw new IllegalArgumentException("You must add " + PermissionConstants.READ_MEDIA_IMAGES + " or " + PermissionConstants.READ_MEDIA_VIDEO + " or " +
-                PermissionConstants.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + getName() + " rights");
+                PermissionConstants.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + getPermissionName() + " rights");
         }
 
         // 如果当前项目还没有适配 Android 13，就判断请求的权限中是否包含了某些特定权限
@@ -124,6 +124,6 @@ public final class MediaLocationPermission extends DangerousPermission {
 
         // 如果不包含，你需要在外层手动添加 READ_EXTERNAL_STORAGE 或者 MANAGE_EXTERNAL_STORAGE 才可以申请 ACCESS_MEDIA_LOCATION 权限
         throw new IllegalArgumentException("You must add " + PermissionConstants.READ_EXTERNAL_STORAGE + " or " +
-            PermissionConstants.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + getName() + " rights");
+            PermissionConstants.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + getPermissionName() + " rights");
     }
 }

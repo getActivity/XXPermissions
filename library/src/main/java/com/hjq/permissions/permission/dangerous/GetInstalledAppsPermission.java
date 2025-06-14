@@ -59,7 +59,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public String getName() {
+    public String getPermissionName() {
         return PERMISSION_NAME;
     }
 
@@ -71,7 +71,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
     @Override
     public boolean isGranted(@NonNull Context context, boolean skipRequest) {
         if (isSupportGetInstalledAppsPermission(context)) {
-            return checkSelfPermission(context, getName());
+            return checkSelfPermission(context, getPermissionName());
         }
 
         if (PhoneRomUtils.isMiui() && isMiuiSupportGetInstalledAppsPermission()) {
@@ -93,7 +93,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
     public boolean isDoNotAskAgain(@NonNull Activity activity) {
         if (isSupportGetInstalledAppsPermission(activity)) {
             // 如果支持申请，那么再去判断权限是否永久拒绝
-            return checkDoNotAskAgainPermission(activity, getName());
+            return checkDoNotAskAgainPermission(activity, getPermissionName());
         }
 
         if (PhoneRomUtils.isMiui() && isMiuiSupportGetInstalledAppsPermission()) {
@@ -169,7 +169,8 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
             return false;
         }
         try {
-            android.content.pm.PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(getName(), 0);
+            android.content.pm.PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(
+                getPermissionName(), 0);
             if (permissionInfo != null) {
                 if (AndroidVersionTools.isAndroid9()) {
                     return permissionInfo.getProtection() == android.content.pm.PermissionInfo.PROTECTION_DANGEROUS;

@@ -47,7 +47,7 @@ public final class NotificationPolicyPermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public String getName() {
+    public String getPermissionName() {
         return PERMISSION_NAME;
     }
 

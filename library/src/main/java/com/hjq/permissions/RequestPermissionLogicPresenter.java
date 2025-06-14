@@ -182,7 +182,7 @@ final class RequestPermissionLogicPresenter {
 
             // ---------------------------------- 下面处理特殊权限的逻辑 ------------------------------------------ //
 
-            if (permission.getType() == PermissionType.SPECIAL) {
+            if (permission.getPermissionType() == PermissionType.SPECIAL) {
                 // 如果这是一个特殊权限，那么就作为单独的一次权限进行处理
                 unauthorizedPermissions.add(PermissionUtils.asArrayList(permission));
                 continue;
@@ -191,7 +191,7 @@ final class RequestPermissionLogicPresenter {
             // ---------------------------------- 下面处理危险权限的逻辑 ------------------------------------------ //
 
             // 查询危险权限所在的权限组类型
-            String permissionGroup = permission.getGroup();
+            String permissionGroup = permission.getPermissionGroup();
             if (TextUtils.isEmpty(permissionGroup)) {
                 // 如果权限组为空，则证明这个权限被没有被定义权限组，就直接单独做为一次权限申请
                 unauthorizedPermissions.add(PermissionUtils.asArrayList(permission));
@@ -202,7 +202,7 @@ final class RequestPermissionLogicPresenter {
             for (int j = i; j < requestPermissions.size(); j++) {
                 IPermission todoPermission = requestPermissions.get(j);
                 // 如果遍历到的权限对象不是同一个组别的，就继续找
-                if (!TextUtils.equals(todoPermission.getGroup(), permissionGroup)) {
+                if (!TextUtils.equals(todoPermission.getPermissionGroup(), permissionGroup)) {
                     continue;
                 }
 

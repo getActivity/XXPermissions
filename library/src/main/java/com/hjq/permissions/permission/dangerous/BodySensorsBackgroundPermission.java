@@ -51,13 +51,13 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public String getName() {
+    public String getPermissionName() {
         return PERMISSION_NAME;
     }
 
     @NonNull
     @Override
-    public String getGroup() {
+    public String getPermissionGroup() {
         return PermissionGroupConstants.SENSORS;
     }
 

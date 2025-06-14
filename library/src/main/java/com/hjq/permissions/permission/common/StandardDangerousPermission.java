@@ -58,13 +58,13 @@ public final class StandardDangerousPermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public String getName() {
+    public String getPermissionName() {
         return mPermissionName;
     }
 
     @NonNull
     @Override
-    public String getGroup() {
+    public String getPermissionGroup() {
         return mPermissionGroup;
     }
 

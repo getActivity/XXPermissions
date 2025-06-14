@@ -248,7 +248,7 @@ public final class PermissionUtils {
      * 判断两个权限字符串是否为同一个
      */
     public static boolean equalsPermission(@NonNull IPermission permission1, @NonNull String permission2) {
-        return equalsPermission(permission1.getName(), permission2);
+        return equalsPermission(permission1.getPermissionName(), permission2);
     }
 
     /**
@@ -260,7 +260,7 @@ public final class PermissionUtils {
         }
         for (IPermission item : permissions) {
             // 使用 equalsPermission 来判断可以提升代码执行效率
-            if (equalsPermission(item.getName(), permission.getName())) {
+            if (equalsPermission(item.getPermissionName(), permission.getPermissionName())) {
                 return true;
             }
         }
@@ -276,7 +276,7 @@ public final class PermissionUtils {
         }
         for (IPermission item : permissions) {
             // 使用 equalsPermission 来判断可以提升代码执行效率
-            if (equalsPermission(item.getName(), permission)) {
+            if (equalsPermission(item.getPermissionName(), permission)) {
                 return true;
             }
         }
@@ -293,7 +293,7 @@ public final class PermissionUtils {
             return list;
         }
         for (IPermission permission : permissions) {
-            list.add(permission.getName());
+            list.add(permission.getPermissionName());
         }
         return list;
     }
@@ -305,7 +305,7 @@ public final class PermissionUtils {
             return list;
         }
         for (IPermission permission : permissions) {
-            list.add(permission.getName());
+            list.add(permission.getPermissionName());
         }
         return list;
     }
@@ -320,7 +320,7 @@ public final class PermissionUtils {
         }
         String[] list = new String[permissions.size()];
         for (int i = 0; i < permissions.size(); i++) {
-            list[i] = permissions.get(i).getName();
+            list[i] = permissions.get(i).getPermissionName();
         }
         return list;
     }

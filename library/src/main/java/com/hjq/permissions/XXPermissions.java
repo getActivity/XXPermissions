@@ -307,7 +307,7 @@ public final class XXPermissions {
         try {
             if (permissions.size() == 1) {
                 // API 文档：https://developer.android.google.cn/reference/android/content/Context#revokeSelfPermissionOnKill(java.lang.String)
-                context.revokeSelfPermissionOnKill(permissions.get(0).getName());
+                context.revokeSelfPermissionOnKill(permissions.get(0).getPermissionName());
             } else {
                 // API 文档：https://developer.android.google.cn/reference/android/content/Context#revokeSelfPermissionsOnKill(java.util.Collection%3Cjava.lang.String%3E)
                 context.revokeSelfPermissionsOnKill(PermissionUtils.convertPermissionList(permissions));
@@ -376,7 +376,7 @@ public final class XXPermissions {
      * 判断某个权限是否为特殊权限
      */
     public static boolean isSpecialPermission(@NonNull IPermission permission) {
-        return permission.getType() == PermissionType.SPECIAL;
+        return permission.getPermissionType() == PermissionType.SPECIAL;
     }
 
     /**

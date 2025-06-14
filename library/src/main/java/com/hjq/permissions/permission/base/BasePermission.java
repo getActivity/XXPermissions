@@ -45,7 +45,7 @@ public abstract class BasePermission implements IPermission {
     @NonNull
     @Override
     public String toString() {
-        return getName();
+        return getPermissionName();
     }
 
     @Override
@@ -57,9 +57,9 @@ public abstract class BasePermission implements IPermission {
         // 重写 equals 方法是为了 List 和 Map 集合有能力辨别不同的权限对象是不是来自同一个权限
         // 如果这两个权限对象的名称一样，那么就认为它们是同一个权限
         if (obj instanceof IPermission) {
-            return PermissionUtils.equalsPermission(getName(), ((IPermission) obj).getName());
+            return PermissionUtils.equalsPermission(getPermissionName(), ((IPermission) obj).getPermissionName());
         } else if (obj instanceof String) {
-            return PermissionUtils.equalsPermission(getName(), ((String) obj));
+            return PermissionUtils.equalsPermission(getPermissionName(), ((String) obj));
         }
         return false;
     }
@@ -76,7 +76,7 @@ public abstract class BasePermission implements IPermission {
         // 检查 AndroidManifest.xml 是否符合要求
         if (androidManifestInfo != null) {
             List<PermissionInfo> permissionInfoList = androidManifestInfo.permissionInfoList;
-            PermissionInfo currentPermissionInfo = findPermissionInfoByList(permissionInfoList, getName());
+            PermissionInfo currentPermissionInfo = findPermissionInfoByList(permissionInfoList, getPermissionName());
             checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
         }
         // 检查请求的权限列表是否符合要求
@@ -93,7 +93,7 @@ public abstract class BasePermission implements IPermission {
             return;
         }
 
-        throw new IllegalStateException("Request " + getName() + " permission, " +
+        throw new IllegalStateException("Request " + getPermissionName() + " permission, " +
             "The targetSdkVersion SDK must be " + minTargetSdkVersion +
             " or more, if you do not want to upgrade targetSdkVersion, " +
             "please apply with the old permission");
@@ -108,7 +108,7 @@ public abstract class BasePermission implements IPermission {
                                            @NonNull List<PermissionInfo> permissionInfoList,
                                            @Nullable PermissionInfo currentPermissionInfo) {
         // 检查当前权限有没有在清单文件中静态注册，如果有注册，还要检查注册 maxSdkVersion 属性有没有问题
-        checkPermissionRegistrationStatus(currentPermissionInfo, getName());
+        checkPermissionRegistrationStatus(currentPermissionInfo, getPermissionName());
     }
 
     /**

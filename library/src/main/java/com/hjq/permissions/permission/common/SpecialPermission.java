@@ -26,7 +26,7 @@ public abstract class SpecialPermission extends BasePermission {
 
     @NonNull
     @Override
-    public PermissionType getType() {
+    public PermissionType getPermissionType() {
         return PermissionType.SPECIAL;
     }
 

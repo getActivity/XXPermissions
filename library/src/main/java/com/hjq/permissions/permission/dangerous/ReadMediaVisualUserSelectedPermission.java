@@ -46,13 +46,13 @@ public final class ReadMediaVisualUserSelectedPermission extends DangerousPermis
 
     @NonNull
     @Override
-    public String getName() {
+    public String getPermissionName() {
         return PERMISSION_NAME;
     }
 
     @NonNull
     @Override
-    public String getGroup() {
+    public String getPermissionGroup() {
         return PermissionGroupConstants.IMAGE_AND_VIDEO_MEDIA;
     }
 
@@ -78,7 +78,7 @@ public final class ReadMediaVisualUserSelectedPermission extends DangerousPermis
             return;
         }
         // 不能单独请求 READ_MEDIA_VISUAL_USER_SELECTED 权限，需要加上 READ_MEDIA_IMAGES 或者 READ_MEDIA_VIDEO 任一权限，又或者两个都有，否则权限申请会被系统直接拒绝
-        throw new IllegalArgumentException("You cannot request the " + getName() + " permission alone. "
+        throw new IllegalArgumentException("You cannot request the " + getPermissionName() + " permission alone. "
             + "must add either " + PermissionConstants.READ_MEDIA_IMAGES + " or " + PermissionConstants.READ_MEDIA_VIDEO + " permission, or maybe both");
     }
 }

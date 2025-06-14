@@ -76,7 +76,7 @@ public final class NotificationListenerServicePermission extends SpecialPermissi
 
     @NonNull
     @Override
-    public String getName() {
+    public String getPermissionName() {
         return PERMISSION_NAME;
     }
 
@@ -174,7 +174,7 @@ public final class NotificationListenerServicePermission extends SpecialPermissi
             if (permission == null) {
                 continue;
             }
-            if (PermissionUtils.equalsPermission(getName(), permission)) {
+            if (PermissionUtils.equalsPermission(getPermissionName(), permission)) {
                 // 发现有 Service 注册过，终止循环并返回，避免走到抛异常的情况
                 return;
             }
@@ -184,7 +184,7 @@ public final class NotificationListenerServicePermission extends SpecialPermissi
          没有找到有任何 Service 注册过 android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" 属性，
          请注册该属性给 NotificationListenerService 的子类到 AndroidManifest.xml 文件中，否则会导致无法申请该权限
          */
-        throw new IllegalArgumentException("No Service was found to have registered the android:permission=\"" + getName() +
+        throw new IllegalArgumentException("No Service was found to have registered the android:permission=\"" + getPermissionName() +
             "\" property, Please register this property to NotificationListenerService subclass by AndroidManifest.xml file, "
             + "otherwise it will lead to can't apply for the permission");
     }

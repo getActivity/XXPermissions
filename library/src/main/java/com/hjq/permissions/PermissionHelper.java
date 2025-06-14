@@ -69,14 +69,14 @@ final class PermissionHelper {
      */
     @Nullable
     static List<IPermission> queryOldPermissionByNewPermission(@NonNull IPermission permission) {
-        return NEW_AND_OLD_PERMISSION_MAP.get(permission.getName());
+        return NEW_AND_OLD_PERMISSION_MAP.get(permission.getPermissionName());
     }
 
     /**
      * 判断某个权限是否为后台权限
      */
     static boolean isBackgroundPermission(@NonNull IPermission permission) {
-        return BACKGROUND_PERMISSION_MAP.containsKey(permission.getName());
+        return BACKGROUND_PERMISSION_MAP.containsKey(permission.getPermissionName());
     }
 
     /**
@@ -84,7 +84,7 @@ final class PermissionHelper {
      */
     @Nullable
     static List<IPermission> queryForegroundPermissionByBackgroundPermission(@NonNull IPermission permission) {
-        return BACKGROUND_PERMISSION_MAP.get(permission.getName());
+        return BACKGROUND_PERMISSION_MAP.get(permission.getPermissionName());
     }
 
     /**

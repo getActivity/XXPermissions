@@ -53,7 +53,7 @@ public final class ScheduleExactAlarmPermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public String getName() {
+    public String getPermissionName() {
         return PERMISSION_NAME;
     }
 
@@ -108,10 +108,10 @@ public final class ScheduleExactAlarmPermission extends SpecialPermission {
             // <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
             // 相关文档地址：https://developer.android.google.cn/reference/android/Manifest.permission#USE_EXACT_ALARM
             // 如果你的应用要上架 GooglePlay，那么需要慎重添加 USE_EXACT_ALARM 权限，因为不是日历、闹钟、时钟这类应用添加 USE_EXACT_ALARM 权限很难通过 GooglePlay 上架审核
-            checkPermissionRegistrationStatus(permissionInfoList, getName(), AndroidVersionTools.ANDROID_12_L);
+            checkPermissionRegistrationStatus(permissionInfoList, getPermissionName(), AndroidVersionTools.ANDROID_12_L);
             return;
         }
 
-        checkPermissionRegistrationStatus(permissionInfoList, getName());
+        checkPermissionRegistrationStatus(permissionInfoList, getPermissionName());
     }
 }
