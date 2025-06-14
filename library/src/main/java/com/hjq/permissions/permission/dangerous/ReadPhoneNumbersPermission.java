@@ -10,6 +10,7 @@ import com.hjq.permissions.AndroidManifestInfo;
 import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.PermissionGroupConstants;
 import com.hjq.permissions.permission.PermissionManifest;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
@@ -51,6 +52,12 @@ public final class ReadPhoneNumbersPermission extends DangerousPermission {
     @Override
     public String getName() {
         return PERMISSION_NAME;
+    }
+
+    @NonNull
+    @Override
+    public String getGroup() {
+        return PermissionGroupConstants.PHONE;
     }
 
     @Override

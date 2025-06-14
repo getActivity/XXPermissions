@@ -3,6 +3,7 @@ package com.hjq.permissions;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import com.hjq.permissions.permission.base.IPermission;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -157,8 +158,10 @@ final class RequestPermissionLogicPresenter {
         List<List<IPermission>> unauthorizedPermissions = new ArrayList<>(requestPermissions.size());
         // 已处理的权限列表
         List<IPermission> alreadyDonePermissions = new ArrayList<>(requestPermissions.size());
+
         // 遍历需要请求的权限列表
-        for (IPermission permission : requestPermissions) {
+        for (int i = 0; i < requestPermissions.size(); i++) {
+            IPermission permission = requestPermissions.get(i);
 
             // 如果这个权限在前面已经处理过了，就不再处理
             if (PermissionUtils.containsPermission(alreadyDonePermissions, permission)) {
@@ -188,43 +191,29 @@ final class RequestPermissionLogicPresenter {
             // ---------------------------------- 下面处理危险权限的逻辑 ------------------------------------------ //
 
             // 查询危险权限所在的权限组类型
-            PermissionGroupType permissionGroupType = PermissionHelper.queryDangerousPermissionGroupType(permission);
-            if (permissionGroupType == null) {
-                // 如果这个权限没有组别，就直接单独做为一次权限申请
-                unauthorizedPermissions.add(PermissionUtils.asArrayList(permission));
-                continue;
-            }
-
-            // 如果这个权限有组别，那么就获取这个组别的全部权限
-            List<IPermission> dangerousPermissionGroup = PermissionHelper.getDangerousPermissionGroup(permissionGroupType);
-            if (dangerousPermissionGroup == null) {
+            String permissionGroup = permission.getGroup();
+            if (TextUtils.isEmpty(permissionGroup)) {
                 // 如果权限组为空，则证明这个权限被没有被定义权限组，就直接单独做为一次权限申请
                 unauthorizedPermissions.add(PermissionUtils.asArrayList(permission));
                 continue;
             }
 
-            // 待处理的权限列表
             List<IPermission> todoDangerousPermissions = null;
-            // 对这个组别的权限进行逐个遍历
-            Iterator<IPermission> iterator = dangerousPermissionGroup.iterator();
-            while (iterator.hasNext()) {
-
-                IPermission dangerousPermissionItem = iterator.next();
+            for (int j = i; j < requestPermissions.size(); j++) {
+                IPermission todoPermission = requestPermissions.get(j);
+                // 如果遍历到的权限对象不是同一个组别的，就继续找
+                if (!TextUtils.equals(todoPermission.getGroup(), permissionGroup)) {
+                    continue;
+                }
 
                 // 判断当前权限是否在低版本（不受支持的版本）上面运行
-                if (dangerousPermissionItem.isLowVersionRunning()) {
+                if (todoPermission.isLowVersionRunning()) {
                     // 如果申请的权限是新系统才出现的，但是当前是旧系统运行，就不往下执行
                     continue;
                 }
 
-                // 判断申请的权限列表中是否有包含权限组中的权限
-                if (!PermissionUtils.containsPermission(requestPermissions, dangerousPermissionItem)) {
-                    // 如果不包含的话，就不往下执行
-                    continue;
-                }
-
                 // 判断要申请的权限是否授予了
-                if (dangerousPermissionItem.isGranted(activity)) {
+                if (todoPermission.isGranted(activity)) {
                     // 如果这个权限已经授予，就不往下执行
                     // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/369
                     continue;
@@ -235,14 +224,14 @@ final class RequestPermissionLogicPresenter {
                     todoDangerousPermissions = new ArrayList<>();
                 }
                 // 添加到待处理的权限列表中
-                todoDangerousPermissions.add(dangerousPermissionItem);
+                todoDangerousPermissions.add(todoPermission);
 
                 // 如果这个危险权限在前面已经处理过了，就不再添加
-                if (PermissionUtils.containsPermission(alreadyDonePermissions, dangerousPermissionItem)) {
+                if (PermissionUtils.containsPermission(alreadyDonePermissions, todoPermission)) {
                     continue;
                 }
                 // 添加到已处理的权限列表中
-                alreadyDonePermissions.add(dangerousPermissionItem);
+                alreadyDonePermissions.add(todoPermission);
             }
 
             // 如果这个待处理的权限列表为空，证明剩余的权限是在高版本系统才会出现，这里无需再次发起申请

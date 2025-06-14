@@ -28,15 +28,23 @@ public final class StandardDangerousPermission extends DangerousPermission {
     /** 权限名称 */
     @NonNull
     private final String mPermissionName;
+    /** 权限组别 */
+    @NonNull
+    private final String mPermissionGroup;
     /** 权限出现的 Android 版本 */
     private final int mFromAndroidVersion;
 
     private StandardDangerousPermission(Parcel in) {
-        this(in.readString(), in.readInt());
+        this(in.readString(), in.readString(), in.readInt());
     }
 
     public StandardDangerousPermission(@NonNull String permissionName, int fromAndroidVersion) {
+        this(permissionName, "", fromAndroidVersion);
+    }
+
+    public StandardDangerousPermission(@NonNull String permissionName, @NonNull String permissionGroup, int fromAndroidVersion) {
         mPermissionName = permissionName;
+        mPermissionGroup = permissionGroup;
         mFromAndroidVersion = fromAndroidVersion;
     }
 
@@ -44,6 +52,7 @@ public final class StandardDangerousPermission extends DangerousPermission {
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
         dest.writeString(mPermissionName);
+        dest.writeString(mPermissionGroup);
         dest.writeInt(mFromAndroidVersion);
     }
 
@@ -51,6 +60,12 @@ public final class StandardDangerousPermission extends DangerousPermission {
     @Override
     public String getName() {
         return mPermissionName;
+    }
+
+    @NonNull
+    @Override
+    public String getGroup() {
+        return mPermissionGroup;
     }
 
     @Override

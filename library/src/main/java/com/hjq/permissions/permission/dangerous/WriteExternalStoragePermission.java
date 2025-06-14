@@ -14,6 +14,7 @@ import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.PermissionGroupConstants;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import java.util.List;
@@ -54,6 +55,12 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
     @Override
     public String getName() {
         return PERMISSION_NAME;
+    }
+
+    @NonNull
+    @Override
+    public String getGroup() {
+        return PermissionGroupConstants.STORAGE;
     }
 
     @Override

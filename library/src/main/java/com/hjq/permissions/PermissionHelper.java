@@ -6,7 +6,6 @@ import com.hjq.permissions.permission.PermissionConstants;
 import com.hjq.permissions.permission.PermissionManifest;
 import com.hjq.permissions.permission.base.IPermission;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,12 +23,6 @@ final class PermissionHelper {
 
     /** 后台权限列表 */
     private static final Map<String, List<IPermission>> BACKGROUND_PERMISSION_MAP = new HashMap<>(2);
-
-    /** 危险权限组集合 */
-    private static final Map<PermissionGroupType, List<IPermission>> DANGEROUS_PERMISSION_GROUP_MAP = new EnumMap<>(PermissionGroupType.class);
-
-    /** 危险权限对应的类型集合 */
-    private static final Map<IPermission, PermissionGroupType> DANGEROUS_PERMISSION_GROUP_TYPE_MAP = new HashMap<>(25);
 
     /** 低等级权限列表（排序时放最后） */
     private static final List<String> LOW_LEVEL_PERMISSION_LIST = new ArrayList<>(1);
@@ -67,134 +60,6 @@ final class PermissionHelper {
 
         /* ---------------------------------------------------------------------------------------------------- */
 
-        // 存储权限组
-        List<IPermission> storagePermissionGroup = PermissionUtils.asArrayList(PermissionManifest.getReadExternalStoragePermission(),
-                                                                    PermissionManifest.getWriteExternalStoragePermission());
-        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.STORAGE, storagePermissionGroup);
-        for (IPermission permission : storagePermissionGroup) {
-            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.STORAGE);
-        }
-        // 日历权限组
-        List<IPermission> calendarPermissionGroup = PermissionUtils.asArrayList(PermissionManifest.getReadCalendarPermission(),
-                                                                            PermissionManifest.getWriteCalendarPermission());
-        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.CALENDAR, calendarPermissionGroup);
-        for (IPermission permission : calendarPermissionGroup) {
-            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.CALENDAR);
-        }
-        // 联系人权限组
-        List<IPermission> contactsPermissionGroup = PermissionUtils.asArrayList(PermissionManifest.getReadContactsPermission(),
-                                                                            PermissionManifest.getWriteContactsPermission());
-        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.CONTACTS, contactsPermissionGroup);
-        for (IPermission permission : contactsPermissionGroup) {
-            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.CONTACTS);
-        }
-        // 短信权限组
-        List<IPermission> smsPermissionGroup = PermissionUtils.asArrayList(PermissionManifest.getSendSmsPermission(),
-                                                                    PermissionManifest.getReadSmsPermission(),
-                                                                    PermissionManifest.getReceiveSmsPermission(),
-                                                                    PermissionManifest.getReceiveWapPushPermission(),
-                                                                    PermissionManifest.getReceiveMmsPermission());
-        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.SMS, smsPermissionGroup);
-        for (IPermission permission : smsPermissionGroup) {
-            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.SMS);
-        }
-        // 定位权限组
-        List<IPermission> locationPermissionGroup = PermissionUtils.asArrayList(PermissionManifest.getAccessCoarseLocationPermission(),
-                                                                        PermissionManifest.getAccessFineLocationPermission(),
-                                                                        PermissionManifest.getAccessBackgroundLocationPermission());
-        // 蓝牙相关的权限组
-        List<IPermission> bluetoothPermissions = PermissionUtils.asArrayList(PermissionManifest.getBluetoothScanPermission(),
-                                                                            PermissionManifest.getBluetoothConnectPermission(),
-                                                                            PermissionManifest.getBluetoothAdvertisePermission());
-
-        // WIFI 相关的权限组
-        IPermission wifiPermission = PermissionManifest.getNearbyWifiDevicesPermission();
-
-        // 附近设备权限
-        List<IPermission> nearbyDevicesPermissionGroup;
-        if (AndroidVersionTools.isAndroid13())  {
-            nearbyDevicesPermissionGroup = new ArrayList<>(bluetoothPermissions.size() + 1);
-        } else {
-            nearbyDevicesPermissionGroup = new ArrayList<>(bluetoothPermissions.size());
-        }
-
-        // 注意：在 Android 12 的时候，蓝牙相关的权限已经归到附近设备的权限组了，但是在 Android 12 之前，蓝牙相关的权限归属定位权限组
-        if (AndroidVersionTools.isAndroid12())  {
-            nearbyDevicesPermissionGroup.addAll(bluetoothPermissions);
-        } else {
-            locationPermissionGroup.addAll(bluetoothPermissions);
-        }
-
-        // 注意：在 Android 13 的时候，WIFI 相关的权限已经归到附近设备的权限组了，但是在 Android 13 之前，WIFI 相关的权限归属定位权限组
-        if (AndroidVersionTools.isAndroid13())  {
-            nearbyDevicesPermissionGroup.add(wifiPermission);
-        } else {
-            locationPermissionGroup.add(wifiPermission);
-        }
-
-        if (!nearbyDevicesPermissionGroup.isEmpty()) {
-            DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.NEARBY_DEVICES, nearbyDevicesPermissionGroup);
-            for (IPermission permission : nearbyDevicesPermissionGroup) {
-                DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.NEARBY_DEVICES);
-            }
-        }
-
-        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.LOCATION, locationPermissionGroup);
-        for (IPermission permission : locationPermissionGroup) {
-            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.LOCATION);
-        }
-
-        // 传感器权限组
-        List<IPermission> sensorsPermissionGroup = PermissionUtils.asArrayList(PermissionManifest.getBodySensorsPermission(),
-                                                                    PermissionManifest.getBodySensorsBackgroundPermission());
-        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.SENSORS, sensorsPermissionGroup);
-        for (IPermission permission : sensorsPermissionGroup) {
-            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.SENSORS);
-        }
-        // 电话权限组和通话记录权限组
-        List<IPermission> phonePermissionGroup = PermissionUtils.asArrayList(PermissionManifest.getReadPhoneStatePermission(),
-                                                                            PermissionManifest.getCallPhonePermission(),
-                                                                            PermissionManifest.getAddVoicemailPermission(),
-                                                                            PermissionManifest.getUseSipPermission(),
-                                                                            PermissionManifest.getReadPhoneNumbersPermission(),
-                                                                            PermissionManifest.getAnswerPhoneCallsPermission(),
-                                                                            PermissionManifest.getAcceptHandoverPermission());
-        List<IPermission> callLogPermissionGroup = PermissionUtils.asArrayList(PermissionManifest.getReadCallLogPermission(),
-                                                                                PermissionManifest.getWriteCallLogPermission(),
-                                                                                PermissionManifest.getProcessOutgoingCallsPermission());
-
-        // 注意：在 Android 9.0 的时候，读写通话记录权限已经归到一个单独的权限组了，但是在 Android 9.0 之前，读写通话记录权限归属电话权限组
-        if (AndroidVersionTools.isAndroid9()) {
-            DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.PHONE, phonePermissionGroup);
-            for (IPermission permission : phonePermissionGroup) {
-                DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.PHONE);
-            }
-            DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.CALL_LOG, callLogPermissionGroup);
-            for (IPermission permission : callLogPermissionGroup) {
-                DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.CALL_LOG);
-            }
-        } else {
-            List<IPermission> oldPhonePermissionGroup = new ArrayList<>();
-            oldPhonePermissionGroup.addAll(phonePermissionGroup);
-            oldPhonePermissionGroup.addAll(callLogPermissionGroup);
-            DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.PHONE, oldPhonePermissionGroup);
-
-            for (IPermission permission : oldPhonePermissionGroup) {
-                DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.PHONE);
-            }
-        }
-
-        // 读取照片和视频媒体文件权限组
-        List<IPermission> imageAndVideoPermissionGroup = PermissionUtils.asArrayList(PermissionManifest.getReadMediaImagesPermission(),
-                                                                                    PermissionManifest.getReadMediaVideoPermission(),
-                                                                                    PermissionManifest.getReadMediaVisualUserSelectedPermission());
-        DANGEROUS_PERMISSION_GROUP_MAP.put(PermissionGroupType.IMAGE_AND_VIDEO_MEDIA, imageAndVideoPermissionGroup);
-        for (IPermission permission : imageAndVideoPermissionGroup) {
-            DANGEROUS_PERMISSION_GROUP_TYPE_MAP.put(permission, PermissionGroupType.IMAGE_AND_VIDEO_MEDIA);
-        }
-
-        /* ---------------------------------------------------------------------------------------------------- */
-
         // 将读取图片位置权限定义为低等级权限
         LOW_LEVEL_PERMISSION_LIST.add(PermissionConstants.ACCESS_MEDIA_LOCATION);
     }
@@ -205,22 +70,6 @@ final class PermissionHelper {
     @Nullable
     static List<IPermission> queryOldPermissionByNewPermission(@NonNull IPermission permission) {
         return NEW_AND_OLD_PERMISSION_MAP.get(permission.getName());
-    }
-
-    /**
-     * 查询危险权限所在的权限组类型
-     */
-    @Nullable
-    static PermissionGroupType queryDangerousPermissionGroupType(@NonNull IPermission permission) {
-        return DANGEROUS_PERMISSION_GROUP_TYPE_MAP.get(permission);
-    }
-
-    /**
-     * 查询危险权限所在的权限组
-     */
-    @Nullable
-    static List<IPermission> getDangerousPermissionGroup(@NonNull PermissionGroupType permissionsGroupType) {
-        return DANGEROUS_PERMISSION_GROUP_MAP.get(permissionsGroupType);
     }
 
     /**

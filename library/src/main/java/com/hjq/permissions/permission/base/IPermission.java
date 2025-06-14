@@ -26,6 +26,15 @@ public interface IPermission extends Parcelable {
     PermissionType getType();
 
     /**
+     * 获取权限组别
+     */
+    @NonNull
+    default String getGroup() {
+        // 空字符串表示没有组别
+        return "";
+    }
+
+    /**
      * 获取权限名称
      */
     @NonNull
