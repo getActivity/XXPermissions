@@ -21,9 +21,6 @@ final class PermissionHelper {
     /** 新旧权限映射集合 */
     private static final Map<String, List<IPermission>> NEW_AND_OLD_PERMISSION_MAP = new HashMap<>(10);
 
-    /** 后台权限列表 */
-    private static final Map<String, List<IPermission>> BACKGROUND_PERMISSION_MAP = new HashMap<>(2);
-
     /** 低等级权限列表（排序时放最后） */
     private static final List<String> LOW_LEVEL_PERMISSION_LIST = new ArrayList<>(1);
 
@@ -50,16 +47,6 @@ final class PermissionHelper {
 
         /* ---------------------------------------------------------------------------------------------------- */
 
-        /* ---------------------------------------------------------------------------------------------------- */
-
-        // 后台定位权限
-        BACKGROUND_PERMISSION_MAP.put(PermissionConstants.ACCESS_BACKGROUND_LOCATION, PermissionUtils.asArrayList(PermissionManifest.getAccessFineLocationPermission(),
-                                                                                                                PermissionManifest.getAccessCoarseLocationPermission()));
-        // 后台传感器权限
-        BACKGROUND_PERMISSION_MAP.put(PermissionConstants.BODY_SENSORS_BACKGROUND, PermissionUtils.asArrayList(PermissionManifest.getBodySensorsPermission()));
-
-        /* ---------------------------------------------------------------------------------------------------- */
-
         // 将读取图片位置权限定义为低等级权限
         LOW_LEVEL_PERMISSION_LIST.add(PermissionConstants.ACCESS_MEDIA_LOCATION);
     }
@@ -70,34 +57,6 @@ final class PermissionHelper {
     @Nullable
     static List<IPermission> queryOldPermissionByNewPermission(@NonNull IPermission permission) {
         return NEW_AND_OLD_PERMISSION_MAP.get(permission.getPermissionName());
-    }
-
-    /**
-     * 判断某个权限是否为后台权限
-     */
-    static boolean isBackgroundPermission(@NonNull IPermission permission) {
-        return BACKGROUND_PERMISSION_MAP.containsKey(permission.getPermissionName());
-    }
-
-    /**
-     * 根据后台权限获得前台权限
-     */
-    @Nullable
-    static List<IPermission> queryForegroundPermissionByBackgroundPermission(@NonNull IPermission permission) {
-        return BACKGROUND_PERMISSION_MAP.get(permission.getPermissionName());
-    }
-
-    /**
-     * 从权限组中获取到后台权限
-     */
-    @Nullable
-    static IPermission getBackgroundPermissionByGroup(List<IPermission> permissions) {
-        for (IPermission permission : permissions) {
-            if (isBackgroundPermission(permission)) {
-                return permission;
-            }
-        }
-        return null;
     }
 
     /**

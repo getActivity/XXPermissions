@@ -18,13 +18,6 @@ import java.util.List;
 final class PermissionApi {
 
     /**
-     * 判断某个权限是否是后台权限
-     */
-    static boolean isBackgroundPermission(@NonNull IPermission permission) {
-        return PermissionHelper.isBackgroundPermission(permission);
-    }
-
-    /**
      * 判断某个权限集合是否包含特殊权限
      */
     static boolean containsSpecialPermission(@Nullable List<IPermission> permissions) {
@@ -49,7 +42,7 @@ final class PermissionApi {
         }
 
         for (IPermission permission : permissions) {
-            if (isBackgroundPermission(permission)) {
+            if (permission.isBackgroundPermission()) {
                 return true;
             }
         }

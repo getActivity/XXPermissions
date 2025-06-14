@@ -66,6 +66,12 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
         return AndroidVersionTools.ANDROID_10;
     }
 
+    @NonNull
+    @Override
+    public List<IPermission> getForegroundPermission() {
+        return PermissionUtils.asArrayList(PermissionManifest.getAccessFineLocationPermission(), PermissionManifest.getAccessCoarseLocationPermission());
+    }
+
     @Override
     protected boolean isGrantedByStandardVersion(@NonNull Context context, boolean skipRequest) {
         // 判断后台定位权限授予之前，需要先判断前台定位权限是否授予，如果前台定位权限没有授予，那么后台定位权限就算授予了也没用

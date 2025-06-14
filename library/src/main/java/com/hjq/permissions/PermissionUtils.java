@@ -78,7 +78,7 @@ public final class PermissionUtils {
      */
     @SuppressWarnings("all")
     @NonNull
-    static <T> ArrayList<T> asArrayList(@Nullable T... array) {
+    public static <T> ArrayList<T> asArrayList(@Nullable T... array) {
         int initialCapacity = 0;
         if (array != null) {
             initialCapacity = array.length;

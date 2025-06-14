@@ -127,8 +127,8 @@ final class RequestPermissionLogicPresenter {
                 }
 
                 // 如果下一个请求的权限是后台权限
-                if (nextPermissions.size() == 1 && PermissionApi.isBackgroundPermission(nextPermissions.get(0))) {
-                    List<IPermission> foregroundPermissions = PermissionHelper.queryForegroundPermissionByBackgroundPermission(nextPermissions.get(0));
+                if (nextPermissions.size() == 1 && nextPermissions.get(0).isBackgroundPermission()) {
+                    List<IPermission> foregroundPermissions = nextPermissions.get(0).getForegroundPermission();
                     // 如果这个后台权限对应的前台权限没有申请成功，则不要去申请后台权限，因为申请了也没有用，系统肯定不会给通过的
                     // 如果这种情况下还硬要去申请，等下还可能会触发权限说明弹窗，但是没有实际去申请权限的情况
                     if (foregroundPermissions != null && !foregroundPermissions.isEmpty() && !PermissionApi.isGrantedPermissions(activity, foregroundPermissions)) {
@@ -198,7 +198,7 @@ final class RequestPermissionLogicPresenter {
                 continue;
             }
 
-            List<IPermission> todoDangerousPermissions = null;
+            List<IPermission> todoPermissions = null;
             for (int j = i; j < requestPermissions.size(); j++) {
                 IPermission todoPermission = requestPermissions.get(j);
                 // 如果遍历到的权限对象不是同一个组别的，就继续找
@@ -220,11 +220,11 @@ final class RequestPermissionLogicPresenter {
                 }
 
                 // 如果待处理的权限列表还没有初始化，就先进行初始化操作
-                if (todoDangerousPermissions == null) {
-                    todoDangerousPermissions = new ArrayList<>();
+                if (todoPermissions == null) {
+                    todoPermissions = new ArrayList<>();
                 }
                 // 添加到待处理的权限列表中
-                todoDangerousPermissions.add(todoPermission);
+                todoPermissions.add(todoPermission);
 
                 // 如果这个危险权限在前面已经处理过了，就不再添加
                 if (PermissionUtils.containsPermission(alreadyDonePermissions, todoPermission)) {
@@ -235,33 +235,42 @@ final class RequestPermissionLogicPresenter {
             }
 
             // 如果这个待处理的权限列表为空，证明剩余的权限是在高版本系统才会出现，这里无需再次发起申请
-            if (todoDangerousPermissions == null || todoDangerousPermissions.isEmpty()) {
+            if (todoPermissions == null || todoPermissions.isEmpty()) {
                 continue;
             }
 
             // 如果这个待处理的权限列表已经全部授权，就不纳入申请的范围内
-            if (PermissionApi.isGrantedPermissions(activity, todoDangerousPermissions)) {
+            if (PermissionApi.isGrantedPermissions(activity, todoPermissions)) {
                 continue;
             }
 
             // 判断申请的权限组是否包含后台权限（例如后台定位权限，后台传感器权限），如果有的话，不能在一起申请，需要进行拆分申请
-            IPermission backgroundDangerousPermission = PermissionHelper.getBackgroundPermissionByGroup(todoDangerousPermissions);
-            if (backgroundDangerousPermission == null) {
-                // 如果不包含后台权限，则直接添加到待申请的列表
-                unauthorizedPermissions.add(todoDangerousPermissions);
-                continue;
+            List<IPermission> backgroundPermissions = null;
+            Iterator<IPermission> iterator = todoPermissions.iterator();
+            while (iterator.hasNext()) {
+                IPermission todoPermission = iterator.next();
+                // 先判断这个权限是不是后台权限，如果不是就继续找
+                if (!todoPermission.isBackgroundPermission()) {
+                    continue;
+                }
+                // 将后台权限单独领出来放到另外一个集合中
+                iterator.remove();
+                backgroundPermissions = new ArrayList<>();
+                backgroundPermissions.add(todoPermission);
+                // 任务完成，跳过循环
+                break;
             }
 
-            List<IPermission> foregroundDangerousPermissions = new ArrayList<>(todoDangerousPermissions);
-            foregroundDangerousPermissions.remove(backgroundDangerousPermission);
+            List<IPermission> foregroundPermissions = todoPermissions;
 
             // 添加前台权限（前提得是没有授权）
-            if (!foregroundDangerousPermissions.isEmpty() &&
-                !PermissionApi.isGrantedPermissions(activity, foregroundDangerousPermissions)) {
-                unauthorizedPermissions.add(foregroundDangerousPermissions);
+            if (!foregroundPermissions.isEmpty()) {
+                unauthorizedPermissions.add(foregroundPermissions);
             }
-            // 添加后台权限
-            unauthorizedPermissions.add(PermissionUtils.asArrayList(backgroundDangerousPermission));
+            // 添加后台权限（前提得是没有授权）
+            if (backgroundPermissions != null && !backgroundPermissions.isEmpty()) {
+                unauthorizedPermissions.add(backgroundPermissions);
+            }
         }
 
         return unauthorizedPermissions;

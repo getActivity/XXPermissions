@@ -394,7 +394,7 @@ public final class XXPermissions {
      * 判断某个权限是否为后台权限
      */
     public static boolean isBackgroundPermission(@NonNull IPermission permission) {
-        return PermissionApi.isBackgroundPermission(permission);
+        return permission.isBackgroundPermission();
     }
 
     /**

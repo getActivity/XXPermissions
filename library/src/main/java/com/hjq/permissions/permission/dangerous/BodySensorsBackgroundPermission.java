@@ -66,6 +66,12 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
         return AndroidVersionTools.ANDROID_13;
     }
 
+    @NonNull
+    @Override
+    public List<IPermission> getForegroundPermission() {
+        return PermissionUtils.asArrayList(PermissionManifest.getBodySensorsPermission());
+    }
+
     @Override
     protected boolean isGrantedByStandardVersion(@NonNull Context context, boolean skipRequest) {
         // 判断后台传感器权限授予之前，需要先判断前台传感器权限是否授予，如果前台传感器权限没有授予，那么后台传感器权限就算授予了也没用

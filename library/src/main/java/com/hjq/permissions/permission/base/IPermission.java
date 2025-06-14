@@ -53,6 +53,26 @@ public interface IPermission extends Parcelable {
     }
 
     /**
+     * 获取当前权限对应的前台权限
+     */
+    @Nullable
+    default List<IPermission> getForegroundPermission() {
+        // 表示没有前台权限
+        return null;
+    }
+
+    /**
+     * 当前权限是否为后台权限
+     */
+    default boolean isBackgroundPermission() {
+        List<IPermission> foregroundPermission = getForegroundPermission();
+        if (foregroundPermission == null) {
+            return false;
+        }
+        return !foregroundPermission.isEmpty();
+    }
+
+    /**
      * 判断当前权限是否授予
      */
     default boolean isGranted(@NonNull Context context) {
