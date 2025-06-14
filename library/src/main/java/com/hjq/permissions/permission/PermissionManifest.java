@@ -9,6 +9,8 @@ import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.StandardDangerousPermission;
 import com.hjq.permissions.permission.dangerous.AccessBackgroundLocationPermission;
+import com.hjq.permissions.permission.dangerous.BluetoothAdvertisePermission;
+import com.hjq.permissions.permission.dangerous.BluetoothConnectPermission;
 import com.hjq.permissions.permission.dangerous.BluetoothScanPermission;
 import com.hjq.permissions.permission.dangerous.BodySensorsBackgroundPermission;
 import com.hjq.permissions.permission.dangerous.GetInstalledAppsPermission;
@@ -19,6 +21,7 @@ import com.hjq.permissions.permission.dangerous.ReadExternalStoragePermission;
 import com.hjq.permissions.permission.dangerous.ReadMediaAudioPermission;
 import com.hjq.permissions.permission.dangerous.ReadMediaImagesPermission;
 import com.hjq.permissions.permission.dangerous.ReadMediaVideoPermission;
+import com.hjq.permissions.permission.dangerous.ReadMediaVisualUserSelectedPermission;
 import com.hjq.permissions.permission.dangerous.ReadPhoneNumbersPermission;
 import com.hjq.permissions.permission.dangerous.WriteExternalStoragePermission;
 import com.hjq.permissions.permission.special.ManageExternalStoragePermission;
@@ -30,9 +33,9 @@ import com.hjq.permissions.permission.special.PictureInPicturePermission;
 import com.hjq.permissions.permission.special.RequestIgnoreBatteryOptimizationsPermission;
 import com.hjq.permissions.permission.special.RequestInstallPackagesPermission;
 import com.hjq.permissions.permission.special.ScheduleExactAlarmPermission;
+import com.hjq.permissions.permission.special.SystemAlertWindowPermission;
 import com.hjq.permissions.permission.special.UseFullScreenIntentPermission;
 import com.hjq.permissions.permission.special.VpnServicePermission;
-import com.hjq.permissions.permission.special.SystemAlertWindowPermission;
 import com.hjq.permissions.permission.special.WriteSettingsPermission;
 
 /**
@@ -294,12 +297,11 @@ public final class PermissionManifest {
      * 授予对照片和视频的部分访问权限（Android 14.0 新增的权限）
      */
     public static IPermission getReadMediaVisualUserSelectedPermission() {
-        String permissionName = PermissionConstants.READ_MEDIA_VISUAL_USER_SELECTED;
-        IPermission permission = getCachePermission(permissionName);
+        IPermission permission = getCachePermission(ReadMediaVisualUserSelectedPermission.PERMISSION_NAME);
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_14));
+        return putCachePermission(new ReadMediaVisualUserSelectedPermission());
     }
 
     /**
@@ -411,12 +413,11 @@ public final class PermissionManifest {
      * 为了兼容 Android 12 以下版本，需要在清单文件中注册 {@link Manifest.permission#BLUETOOTH} 权限
      */
     public static IPermission getBluetoothConnectPermission() {
-        String permissionName = PermissionConstants.BLUETOOTH_CONNECT;
-        IPermission permission = getCachePermission(permissionName);
+        IPermission permission = getCachePermission(BluetoothConnectPermission.PERMISSION_NAME);
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_12));
+        return putCachePermission(new BluetoothConnectPermission());
     }
 
     /**
@@ -426,12 +427,11 @@ public final class PermissionManifest {
      * 为了兼容 Android 12 以下版本，需要在清单文件中注册 {@link Manifest.permission#BLUETOOTH_ADMIN} 权限
      */
     public static IPermission getBluetoothAdvertisePermission() {
-        String permissionName = PermissionConstants.BLUETOOTH_ADVERTISE;
-        IPermission permission = getCachePermission(permissionName);
+        IPermission permission = getCachePermission(BluetoothAdvertisePermission.PERMISSION_NAME);
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_12));
+        return putCachePermission(new BluetoothAdvertisePermission());
     }
 
     /**

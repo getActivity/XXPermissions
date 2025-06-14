@@ -189,11 +189,13 @@ public final class PermissionUtils {
     }
 
     /**
-     * 判断是否适配了分区存储
+     * 通过 MetaData 获得布尔值
+     *
+     * @param metaKey               Meta Key 值
+     * @param defaultValue          当获取不到时返回的默认值
      */
-    static boolean isScopedStorage(@NonNull Context context) {
+    public static boolean getBooleanByMetaData(@NonNull Context context, @NonNull String metaKey, boolean defaultValue) {
         try {
-            String metaKey = "ScopedStorage";
             Bundle metaData = context.getPackageManager().getApplicationInfo(
                 context.getPackageName(), PackageManager.GET_META_DATA).metaData;
             if (metaData != null && metaData.containsKey(metaKey)) {
@@ -202,7 +204,7 @@ public final class PermissionUtils {
         } catch (NameNotFoundException e) {
             e.printStackTrace();
         }
-        return false;
+        return defaultValue;
     }
 
     /**
@@ -252,7 +254,7 @@ public final class PermissionUtils {
     /**
      * 判断权限集合中是否包含某个权限
      */
-    static boolean containsPermission(@NonNull Collection<IPermission> permissions, @NonNull IPermission permission) {
+    public static boolean containsPermission(@NonNull Collection<IPermission> permissions, @NonNull IPermission permission) {
         if (permissions.isEmpty()) {
             return false;
         }
@@ -268,7 +270,7 @@ public final class PermissionUtils {
     /**
      * 判断权限集合中是否包含某个权限
      */
-    static boolean containsPermission(@NonNull Collection<IPermission> permissions, @NonNull String permission) {
+    public static boolean containsPermission(@NonNull Collection<IPermission> permissions, @NonNull String permission) {
         if (permissions.isEmpty()) {
             return false;
         }

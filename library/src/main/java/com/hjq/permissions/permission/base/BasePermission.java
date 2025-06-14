@@ -1,5 +1,6 @@
 package com.hjq.permissions.permission.base;
 
+import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
@@ -7,12 +8,15 @@ import android.content.pm.ApplicationInfo;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.hjq.permissions.AndroidManifestInfo;
+import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionIntentManager;
 import com.hjq.permissions.PermissionUtils;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -63,6 +67,133 @@ public abstract class BasePermission implements IPermission {
     @NonNull
     public Intent getApplicationDetailsIntent(@NonNull Context context) {
         return PermissionIntentManager.getApplicationDetailsIntent(context, this);
+    }
+
+    @Override
+    public void checkSelf(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions, @Nullable AndroidManifestInfo androidManifestInfo) {
+        // 检查 targetSdkVersion 是否符合要求
+        checkSelfByTargetSdkVersion(activity);
+        // 检查 AndroidManifest.xml 是否符合要求
+        if (androidManifestInfo != null) {
+            List<PermissionInfo> permissionInfoList = androidManifestInfo.permissionInfoList;
+            PermissionInfo currentPermissionInfo = findPermissionInfoByList(permissionInfoList, getName());
+            checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        }
+        // 检查请求的权限列表是否符合要求
+        checkSelfByRequestPermissions(activity, requestPermissions);
+    }
+
+    /**
+     * 检查 targetSdkVersion 是否符合要求，如果不合规则会抛出异常
+     */
+    protected void checkSelfByTargetSdkVersion(@NonNull Context context) {
+        int minTargetSdkVersion = getMinTargetSdkVersion();
+        // 必须设置正确的 targetSdkVersion 才能正常检测权限
+        if (AndroidVersionTools.getTargetSdkVersionCode(context) >= minTargetSdkVersion) {
+            return;
+        }
+
+        throw new IllegalStateException("Request " + getName() + " permission, " +
+            "The targetSdkVersion SDK must be " + minTargetSdkVersion +
+            " or more, if you do not want to upgrade targetSdkVersion, " +
+            "please apply with the old permission");
+    }
+
+    /**
+     * 检查 AndroidManifest.xml 是否符合要求，如果不合规则会抛出异常
+     */
+    protected void checkSelfByManifestFile(@NonNull Activity activity,
+                                           @NonNull List<IPermission> requestPermissions,
+                                           @NonNull AndroidManifestInfo androidManifestInfo,
+                                           @NonNull List<PermissionInfo> permissionInfoList,
+                                           @Nullable PermissionInfo currentPermissionInfo) {
+        // 检查当前权限有没有在清单文件中静态注册，如果有注册，还要检查注册 maxSdkVersion 属性有没有问题
+        checkPermissionRegistrationStatus(currentPermissionInfo, getName());
+    }
+
+    /**
+     * 检查请求的权限列表是否符合要求，如果不合规则会抛出异常
+     */
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
+        // default implementation ignored
+        // 默认无任何实现，交由子类自己去实现
+    }
+
+    /**
+     * 检查权限的注册状态，如果是则会抛出异常
+     */
+    protected static void checkPermissionRegistrationStatus(@Nullable PermissionInfo permissionInfo, @NonNull String checkPermission) {
+        checkPermissionRegistrationStatus(permissionInfo, checkPermission, Integer.MAX_VALUE);
+    }
+
+    protected static void checkPermissionRegistrationStatus(@Nullable List<PermissionInfo> permissionInfoList, @NonNull String checkPermission) {
+        checkPermissionRegistrationStatus(permissionInfoList, checkPermission, Integer.MAX_VALUE);
+    }
+
+    protected static void checkPermissionRegistrationStatus(@Nullable List<PermissionInfo> permissionInfoList, @NonNull String checkPermission, int lowestMaxSdkVersion) {
+        PermissionInfo permissionInfo = null;
+        if (permissionInfoList != null) {
+            permissionInfo = findPermissionInfoByList(permissionInfoList, checkPermission);
+        }
+        checkPermissionRegistrationStatus(permissionInfo, checkPermission, lowestMaxSdkVersion);
+    }
+
+    protected static void checkPermissionRegistrationStatus(@Nullable PermissionInfo permissionInfo, @NonNull String checkPermission, int lowestMaxSdkVersion) {
+        if (permissionInfo == null) {
+            // 动态申请的权限没有在清单文件中注册，分为以下两种情况：
+            // 1. 如果你的项目没有在清单文件中注册这个权限，请直接在清单文件中注册一下即可
+            // 2. 如果你的项目明明已注册这个权限，可以检查一下编译完成的 apk 包中是否包含该权限，如果里面没有，证明框架的判断是没有问题的
+            //    一般是第三方 sdk 或者框架在清单文件中注册了 <uses-permission android:name="xxx" tools:node="remove"/> 导致的
+            //    解决方式也很简单，通过在项目中注册 <uses-permission android:name="xxx" tools:node="replace"/> 即可替换掉原先的配置
+            // 具体案例：https://github.com/getActivity/XXPermissions/issues/98
+            throw new IllegalStateException("Please register permissions in the AndroidManifest.xml file " +
+                "<uses-permission android:name=\"" + checkPermission + "\" />");
+        }
+
+        int manifestMaxSdkVersion = permissionInfo.maxSdkVersion;
+        if (manifestMaxSdkVersion < lowestMaxSdkVersion) {
+            // 清单文件中所注册的权限 maxSdkVersion 大小不符合最低要求，分为以下两种情况：
+            // 1. 如果你的项目中注册了该属性，请根据报错提示修改 maxSdkVersion 属性值或者删除 maxSdkVersion 属性
+            // 2. 如果你明明没有注册过 maxSdkVersion 属性，可以检查一下编译完成的 apk 包中是否有该属性，如果里面存在，证明框架的判断是没有问题的
+            //    一般是第三方 sdk 或者框架在清单文件中注册了 <uses-permission android:name="xxx" android:maxSdkVersion="xx"/> 导致的
+            //    解决方式也很简单，通过在项目中注册 <uses-permission android:name="xxx" tools:node="replace"/> 即可替换掉原先的配置
+            throw new IllegalArgumentException("The AndroidManifest.xml file " +
+                "<uses-permission android:name=\"" + checkPermission +
+                "\" android:maxSdkVersion=\"" + manifestMaxSdkVersion +
+                "\" /> does not meet the requirements, " +
+                (lowestMaxSdkVersion != Integer.MAX_VALUE ?
+                    "the minimum requirement for maxSdkVersion is " + lowestMaxSdkVersion :
+                    "please delete the android:maxSdkVersion=\"" + manifestMaxSdkVersion + "\" attribute"));
+        }
+    }
+
+    /**
+     * 获得当前项目的 minSdkVersion
+     */
+    protected static int getMinSdkVersion(@NonNull Context context, @Nullable AndroidManifestInfo androidManifestInfo) {
+        if (AndroidVersionTools.isAndroid7()) {
+            return context.getApplicationInfo().minSdkVersion;
+        }
+
+        if (androidManifestInfo == null || androidManifestInfo.usesSdkInfo == null) {
+            return AndroidVersionTools.ANDROID_4_2;
+        }
+        return androidManifestInfo.usesSdkInfo.minSdkVersion;
+    }
+
+    /**
+     * 从权限列表中获取指定的权限信息
+     */
+    @Nullable
+    public static PermissionInfo findPermissionInfoByList(@NonNull List<PermissionInfo> permissionInfoList, @NonNull String permissionName) {
+        PermissionInfo permissionInfo = null;
+        for (PermissionInfo info : permissionInfoList) {
+            if (PermissionUtils.equalsPermission(info.name, permissionName)) {
+                permissionInfo = info;
+                break;
+            }
+        }
+        return permissionInfo;
     }
 
     /**

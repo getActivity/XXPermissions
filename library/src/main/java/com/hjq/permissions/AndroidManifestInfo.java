@@ -12,43 +12,43 @@ import java.util.List;
  *    time   : 2022/11/11
  *    desc   : 清单文件解析 Bean 类
  */
-final class AndroidManifestInfo {
+public final class AndroidManifestInfo {
 
     /** 应用包名 */
     @NonNull
-    String packageName = "";
+    public String packageName = "";
 
     /** 使用 sdk 信息 */
     @Nullable
-    UsesSdkInfo usesSdkInfo;
+    public UsesSdkInfo usesSdkInfo;
 
     /** 权限节点信息 */
     @NonNull
-    final List<PermissionInfo> permissionInfoList = new ArrayList<>();
+    public final List<PermissionInfo> permissionInfoList = new ArrayList<>();
 
     /** 查询包名列表 */
     @NonNull
-    final List<String> queriesPackageList = new ArrayList<>();
+    public final List<String> queriesPackageList = new ArrayList<>();
 
     /** Application 节点信息 */
     @Nullable
-    ApplicationInfo applicationInfo;
+    public ApplicationInfo applicationInfo;
 
     /** Activity 节点信息 */
     @NonNull
-    final List<ActivityInfo> activityInfoList = new ArrayList<>();
+    public final List<ActivityInfo> activityInfoList = new ArrayList<>();
 
     /** Service 节点信息 */
     @NonNull
-    final List<ServiceInfo> serviceInfoList = new ArrayList<>();
+    public final List<ServiceInfo> serviceInfoList = new ArrayList<>();
 
-    static final class UsesSdkInfo {
+    public static final class UsesSdkInfo {
 
         /** 最小安装版本要求 **/
-        int minSdkVersion;
+        public int minSdkVersion;
     }
 
-    static final class PermissionInfo {
+    public static final class PermissionInfo {
 
         /** 不需要请求地理位置标志 */
         private static final int REQUESTED_PERMISSION_NEVER_FOR_LOCATION;
@@ -62,49 +62,48 @@ final class AndroidManifestInfo {
         }
 
         /** 权限名称 */
-        String name;
+        public String name;
         /** 最大生效 sdk 版本 */
-        int maxSdkVersion;
+        public int maxSdkVersion;
         /** 权限使用标志 */
-        int usesPermissionFlags;
+        public int usesPermissionFlags;
 
         /**
          * 是否不会用当前权限需要推导地理位置
          */
-        boolean neverForLocation() {
+        public boolean neverForLocation() {
             return (usesPermissionFlags & REQUESTED_PERMISSION_NEVER_FOR_LOCATION) != 0;
         }
     }
 
-    static final class ApplicationInfo {
+    public static final class ApplicationInfo {
 
         /** 应用的类名 */
         @NonNull
-        String name = "";
+        public String name = "";
 
         /** 是否忽略分区存储特性 */
-        boolean requestLegacyExternalStorage;
+        public boolean requestLegacyExternalStorage;
     }
 
-    static final class ActivityInfo {
+    public static final class ActivityInfo {
 
         /** 活动的类名 */
         @NonNull
-        String name = "";
+        public String name = "";
 
         /** 窗口是否支持画中画 */
-        boolean supportsPictureInPicture;
+        public boolean supportsPictureInPicture;
     }
 
-    static final class ServiceInfo {
+    public static final class ServiceInfo {
 
         /** 服务的类名 */
         @NonNull
-        String name = "";
+        public String name = "";
 
         /** 服务所使用到的权限 */
         @Nullable
-        String
-        permission;
+        public String permission;
     }
 }

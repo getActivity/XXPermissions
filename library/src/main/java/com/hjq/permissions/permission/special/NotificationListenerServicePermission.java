@@ -1,5 +1,6 @@
 package com.hjq.permissions.permission.special;
 
+import android.app.Activity;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -10,9 +11,13 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import com.hjq.permissions.AndroidManifestInfo;
+import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
+import com.hjq.permissions.AndroidManifestInfo.ServiceInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,12 +83,6 @@ public final class NotificationListenerServicePermission extends SpecialPermissi
     @Override
     public int getFromAndroidVersion() {
         return AndroidVersionTools.ANDROID_4_3;
-    }
-
-    @Override
-    public boolean isMandatoryStaticRegister() {
-        // 表示该权限不需要在清单文件中静态注册
-        return false;
     }
 
     @Override
@@ -158,6 +157,36 @@ public final class NotificationListenerServicePermission extends SpecialPermissi
         }
 
         return intent;
+    }
+
+    @Override
+    protected void checkSelfByManifestFile(@NonNull Activity activity,
+                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull List<PermissionInfo> permissionInfoList,
+                                            @Nullable PermissionInfo currentPermissionInfo) {
+        // 该权限不需要在清单文件中静态注册，所以注释掉父类的调用
+        // super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        // 判断有没有 Service 类注册了 android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" 属性
+        List<ServiceInfo> serviceInfoList = androidManifestInfo.serviceInfoList;
+        for (int i = 0; i < serviceInfoList.size(); i++) {
+            String permission = serviceInfoList.get(i).permission;
+            if (permission == null) {
+                continue;
+            }
+            if (PermissionUtils.equalsPermission(getName(), permission)) {
+                // 发现有 Service 注册过，终止循环并返回，避免走到抛异常的情况
+                return;
+            }
+        }
+
+        /*
+         没有找到有任何 Service 注册过 android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" 属性，
+         请注册该属性给 NotificationListenerService 的子类到 AndroidManifest.xml 文件中，否则会导致无法申请该权限
+         */
+        throw new IllegalArgumentException("No Service was found to have registered the android:permission=\"" + getName() +
+            "\" property, Please register this property to NotificationListenerService subclass by AndroidManifest.xml file, "
+            + "otherwise it will lead to can't apply for the permission");
     }
 
     @Nullable

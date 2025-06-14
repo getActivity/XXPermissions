@@ -7,9 +7,16 @@ import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import com.hjq.permissions.AndroidManifestInfo;
+import com.hjq.permissions.AndroidManifestInfo.ApplicationInfo;
+import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
+import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -87,5 +94,68 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
             return false;
         }
         return super.isDoNotAskAgainByStandardVersion(activity);
+    }
+
+    @Override
+    protected void checkSelfByManifestFile(@NonNull Activity activity,
+                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull List<PermissionInfo> permissionInfoList,
+                                            @Nullable PermissionInfo currentPermissionInfo) {
+        // 不使用父类的方式来检查清单权限有没有注册，但是不代表不检查，这个权限比较复杂，需要自定义检查
+        // super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        ApplicationInfo applicationInfo = androidManifestInfo.applicationInfo;
+        if (applicationInfo == null) {
+            return;
+        }
+
+        // 如果当前 targetSdk 版本比较低，甚至还没有到分区存储的版本，就直接跳过后面的检查，只检查当前权限有没有在清单文件中静态注册
+        if (AndroidVersionTools.getTargetSdkVersionCode(activity) < AndroidVersionTools.ANDROID_10) {
+            checkPermissionRegistrationStatus(permissionInfoList, getName());
+            return;
+        }
+
+        // 判断：当前项目是否适配了Android 11，并且还在清单文件中是否注册了 MANAGE_EXTERNAL_STORAGE 权限
+        if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_11 &&
+            findPermissionInfoByList(permissionInfoList, PermissionConstants.MANAGE_EXTERNAL_STORAGE) != null) {
+            // 如果有的话，那么 maxSdkVersion 就必须是 Android 10 及以上的版本
+            checkPermissionRegistrationStatus(permissionInfoList, getName(), AndroidVersionTools.ANDROID_10);
+        } else {
+            // 检查这个权限有没有在清单文件中注册，WRITE_EXTERNAL_STORAGE 权限比较特殊，要单独拎出来判断
+            // 如果在清单文件中注册了 android:requestLegacyExternalStorage="true" 属性，即可延长一个 Android 版本适配
+            // 所以 requestLegacyExternalStorage 属性在开启的状态下，对 maxSdkVersion 属性的要求延长一个版本
+            checkPermissionRegistrationStatus(permissionInfoList, getName(), applicationInfo.requestLegacyExternalStorage ?
+                                                        AndroidVersionTools.ANDROID_10 : AndroidVersionTools.ANDROID_9);
+        }
+
+        // 如果申请的是 Android 10 获取媒体位置权限，则跳过后面的检查
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_MEDIA_LOCATION)) {
+            return;
+        }
+
+        int targetSdkVersion = AndroidVersionTools.getTargetSdkVersionCode(activity);
+        // 是否适配了分区存储
+        boolean scopedStorage = PermissionUtils.getBooleanByMetaData(activity, ReadExternalStoragePermission.META_DATA_KEY_SCOPED_STORAGE, false);
+        // 如果在已经适配 Android 10 的情况下
+        if (targetSdkVersion >= AndroidVersionTools.ANDROID_10 && !applicationInfo.requestLegacyExternalStorage && !scopedStorage) {
+            // 请在清单文件 Application 节点中注册 android:requestLegacyExternalStorage="true" 属性
+            // 否则就算申请了权限，也无法在 Android 10 的设备上正常读写外部存储上的文件
+            // 如果你的项目已经全面适配了分区存储，请在清单文件中注册一个 meta-data 属性
+            // <meta-data android:name="ScopedStorage" android:value="true" /> 来跳过该检查
+            throw new IllegalStateException("Please register the android:requestLegacyExternalStorage=\"true\" " +
+                "attribute in the AndroidManifest.xml file, otherwise it will cause incompatibility with the old version");
+        }
+
+        // 如果在已经适配 Android 11 的情况下
+        if (targetSdkVersion >= AndroidVersionTools.ANDROID_11 && !scopedStorage) {
+            // 1. 适配分区存储的特性，并在清单文件中注册一个 meta-data 属性
+            // <meta-data android:name="ScopedStorage" android:value="true" />
+            // 2. 如果不想适配分区存储，则需要使用 Permission.MANAGE_EXTERNAL_STORAGE 来申请权限
+            // 上面两种方式需要二选一，否则无法在 Android 11 的设备上正常读写外部存储上的文件
+            // 如果不知道该怎么选择，可以看文档：https://github.com/getActivity/XXPermissions/blob/master/HelpDoc
+            throw new IllegalArgumentException("The storage permission application is abnormal. If you have adapted the scope storage, " +
+                "please register the <meta-data android:name=\"ScopedStorage\" android:value=\"true\" /> attribute in the AndroidManifest.xml file. " +
+                "If there is no adaptation scope storage, please use " + PermissionConstants.MANAGE_EXTERNAL_STORAGE + " to apply for permission");
+        }
     }
 }

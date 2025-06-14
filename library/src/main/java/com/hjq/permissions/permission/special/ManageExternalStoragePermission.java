@@ -1,5 +1,6 @@
 package com.hjq.permissions.permission.special;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
@@ -7,11 +8,17 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import com.hjq.permissions.AndroidManifestInfo;
+import com.hjq.permissions.AndroidManifestInfo.ApplicationInfo;
+import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.permission.PermissionConstants;
 import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -91,5 +98,60 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
         }
 
         return intent;
+    }
+
+    @Override
+    protected void checkSelfByManifestFile(@NonNull Activity activity,
+                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull List<PermissionInfo> permissionInfoList,
+                                            @Nullable PermissionInfo currentPermissionInfo) {
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
+        if (getFromAndroidVersion() > getMinSdkVersion(activity, androidManifestInfo)) {
+            checkPermissionRegistrationStatus(permissionInfoList, PermissionConstants.READ_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_10);
+            checkPermissionRegistrationStatus(permissionInfoList, PermissionConstants.WRITE_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_10);
+        }
+
+        // 如果申请的是 Android 10 获取媒体位置权限，则绕过本次检查
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_MEDIA_LOCATION)) {
+            return;
+        }
+
+        ApplicationInfo applicationInfo = androidManifestInfo.applicationInfo;
+        if (applicationInfo == null) {
+            return;
+        }
+
+        // 如果在已经适配 Android 10 的情况下，但是 android:requestLegacyExternalStorage 的属性为 false（假设没有注册该属性的情况下则获取到的值为 false）
+        if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_10 && !applicationInfo.requestLegacyExternalStorage) {
+            // 请在清单文件 Application 节点中注册 android:requestLegacyExternalStorage="true" 属性
+            // 否则就算申请了权限，也无法在 Android 10 的设备上正常读写外部存储上的文件
+            // 如果你的项目已经全面适配了分区存储，请在清单文件中注册一个 meta-data 属性
+            // <meta-data android:name="ScopedStorage" android:value="true" /> 来跳过该检查
+            throw new IllegalStateException("Please register the android:requestLegacyExternalStorage=\"true\" " +
+                "attribute in the AndroidManifest.xml file, otherwise it will cause incompatibility with the old version");
+        }
+    }
+
+    @Override
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
+        super.checkSelfByRequestPermissions(activity, requestPermissions);
+        // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这两个权限
+        // 框架会在 Android 10 以下的版本上自动添加并申请这两个权限
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_EXTERNAL_STORAGE) ||
+            PermissionUtils.containsPermission(requestPermissions, PermissionConstants.WRITE_EXTERNAL_STORAGE)) {
+            throw new IllegalArgumentException("If you have applied for MANAGE_EXTERNAL_STORAGE permissions, " +
+                "do not apply for the " + PermissionConstants.READ_EXTERNAL_STORAGE +
+                " or " + PermissionConstants.WRITE_EXTERNAL_STORAGE + " permissions");
+        }
+
+        // 因为 MANAGE_EXTERNAL_STORAGE 权限范围很大，有了它就可以读取媒体文件，不需要再叠加申请媒体权限
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_IMAGES) ||
+            PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_VIDEO) ||
+            PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_AUDIO)) {
+            throw new IllegalArgumentException("Because the MANAGE_EXTERNAL_STORAGE permission range is very large, "
+                + "you can read media files with it, and there is no need to apply for additional media permissions.");
+        }
     }
 }

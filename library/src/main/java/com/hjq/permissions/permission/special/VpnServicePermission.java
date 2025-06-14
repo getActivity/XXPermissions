@@ -1,15 +1,21 @@
 package com.hjq.permissions.permission.special;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.VpnService;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import com.hjq.permissions.AndroidManifestInfo;
+import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -55,12 +61,6 @@ public final class VpnServicePermission extends SpecialPermission {
     }
 
     @Override
-    public boolean isMandatoryStaticRegister() {
-        // 表示该权限不需要在清单文件中静态注册
-        return false;
-    }
-
-    @Override
     public boolean isGranted(@NonNull Context context, boolean skipRequest) {
         return VpnService.prepare(context) == null;
     }
@@ -74,5 +74,15 @@ public final class VpnServicePermission extends SpecialPermission {
             intent = getApplicationDetailsIntent(context);
         }
         return intent;
+    }
+
+    @Override
+    protected void checkSelfByManifestFile(@NonNull Activity activity,
+                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull List<PermissionInfo> permissionInfoList,
+                                            @Nullable PermissionInfo currentPermissionInfo) {
+        // 该权限不需要在清单文件中静态注册，所以注释掉父类的调用
+        // super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
     }
 }

@@ -5,10 +5,16 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import com.hjq.permissions.AndroidManifestInfo;
+import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
+import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.permission.PermissionConstants;
 import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -90,5 +96,25 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
         // 这里为了避免这种情况出现，所以加了一点延迟，这样就没有什么问题了
         // 为什么延迟时间是 150 毫秒？ 经过实践得出 100 还是有概率会出现失败，但是换成 150 试了很多次就都没有问题了
         return 150;
+    }
+
+    @Override
+    protected void checkSelfByManifestFile(@NonNull Activity activity,
+                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull List<PermissionInfo> permissionInfoList,
+                                            @Nullable PermissionInfo currentPermissionInfo) {
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        // 申请后台的传感器权限必须要先注册前台的传感器权限
+        checkPermissionRegistrationStatus(permissionInfoList, PermissionConstants.BODY_SENSORS);
+    }
+
+    @Override
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
+        super.checkSelfByRequestPermissions(activity, requestPermissions);
+        // 必须要申请前台传感器权限才能申请后台传感器权限
+        if (!PermissionUtils.containsPermission(requestPermissions, PermissionConstants.BODY_SENSORS)) {
+            throw new IllegalArgumentException("Applying for background sensor permissions must contain " + PermissionConstants.BODY_SENSORS);
+        }
     }
 }

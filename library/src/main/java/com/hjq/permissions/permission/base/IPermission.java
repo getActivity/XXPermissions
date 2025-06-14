@@ -5,8 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import com.hjq.permissions.AndroidManifestInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionType;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -34,10 +37,10 @@ public interface IPermission extends Parcelable {
     int getFromAndroidVersion();
 
     /**
-     * 当前权限是否强制在清单文件中静态注册
+     * 获取使用这个权限最低要求的 targetSdk 版本
      */
-    default boolean isMandatoryStaticRegister() {
-        return true;
+    default int getMinTargetSdkVersion() {
+        return getFromAndroidVersion();
     }
 
     /**
@@ -85,4 +88,11 @@ public interface IPermission extends Parcelable {
     default int getResultWaitTime() {
         return 0;
     }
+
+    /**
+     * 权限自我检查
+     */
+    default void checkSelf(@NonNull Activity activity,
+                            @NonNull List<IPermission> requestPermissions,
+                            @Nullable AndroidManifestInfo androidManifestInfo) {}
 }

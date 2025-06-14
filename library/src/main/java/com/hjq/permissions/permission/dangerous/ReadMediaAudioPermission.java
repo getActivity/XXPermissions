@@ -5,10 +5,16 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import com.hjq.permissions.AndroidManifestInfo;
+import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
+import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.permission.PermissionConstants;
 import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -61,5 +67,29 @@ public final class ReadMediaAudioPermission extends DangerousPermission {
     @Override
     protected boolean isDoNotAskAgainByLowVersion(@NonNull Activity activity) {
         return PermissionManifest.getReadExternalStoragePermission().isDoNotAskAgain(activity);
+    }
+
+    @Override
+    protected void checkSelfByManifestFile(@NonNull Activity activity,
+                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull List<PermissionInfo> permissionInfoList,
+                                            @Nullable PermissionInfo currentPermissionInfo) {
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
+        if (getFromAndroidVersion() > getMinSdkVersion(activity, androidManifestInfo)) {
+            checkPermissionRegistrationStatus(permissionInfoList, PermissionConstants.READ_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_12_L);
+        }
+    }
+
+    @Override
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
+        super.checkSelfByRequestPermissions(activity, requestPermissions);
+        // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这个权限
+        // 框架会在 Android 13 以下的版本上自动添加并申请这两个权限
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_EXTERNAL_STORAGE)) {
+            throw new IllegalArgumentException("If you have applied for media permissions, " +
+                "do not apply for the READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE permissions");
+        }
     }
 }

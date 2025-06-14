@@ -5,10 +5,16 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import com.hjq.permissions.AndroidManifestInfo;
+import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
+import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.permission.PermissionConstants;
 import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -90,5 +96,46 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
         // 这里为了避免这种情况出现，所以加了一点延迟，这样就没有什么问题了
         // 为什么延迟时间是 150 毫秒？ 经过实践得出 100 还是有概率会出现失败，但是换成 150 试了很多次就都没有问题了
         return 150;
+    }
+
+    @Override
+    protected void checkSelfByManifestFile(@NonNull Activity activity,
+                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull List<PermissionInfo> permissionInfoList,
+                                            @Nullable PermissionInfo currentPermissionInfo) {
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        // 如果您的应用以 Android 12 为目标平台并且您请求 ACCESS_FINE_LOCATION 权限
+        // 则还必须请求 ACCESS_COARSE_LOCATION 权限。您必须在单个运行时请求中包含这两项权限
+        // 如果您尝试仅请求 ACCESS_FINE_LOCATION，则系统会忽略该请求并在 Logcat 中记录以下错误消息：
+        // ACCESS_FINE_LOCATION must be requested with ACCESS_COARSE_LOCATION
+        // 官方适配文档：https://developer.android.google.cn/develop/sensors-and-location/location/permissions/runtime?hl=zh-cn#approximate-request
+        if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_12) {
+            checkPermissionRegistrationStatus(permissionInfoList, PermissionConstants.ACCESS_COARSE_LOCATION);
+            checkPermissionRegistrationStatus(permissionInfoList, PermissionConstants.ACCESS_FINE_LOCATION);
+        } else {
+            checkPermissionRegistrationStatus(permissionInfoList, PermissionConstants.ACCESS_FINE_LOCATION);
+        }
+    }
+
+    @Override
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
+        super.checkSelfByRequestPermissions(activity, requestPermissions);
+        // 注释上面代码的原因是：框架不知道外层传的到底是精确定位权限还是模糊定位权限
+        // 如果您的应用以 Android 12 为目标平台并且您请求 ACCESS_FINE_LOCATION 权限
+        // 则还必须请求 ACCESS_COARSE_LOCATION 权限。您必须在单个运行时请求中包含这两项权限
+        // 如果您尝试仅请求 ACCESS_FINE_LOCATION，则系统会忽略该请求并在 Logcat 中记录以下错误消息：
+        // ACCESS_FINE_LOCATION must be requested with ACCESS_COARSE_LOCATION
+        // 官方适配文档：https://developer.android.google.cn/develop/sensors-and-location/location/permissions/runtime?hl=zh-cn#approximate-request
+        if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_12 &&
+            PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_COARSE_LOCATION) &&
+            !PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_FINE_LOCATION)) {
+            // 申请后台定位权限可以不包含模糊定位权限，但是一定要包含精确定位权限，否则后台定位权限会无法申请
+            // 也就是会导致无法弹出授权弹窗，经过实践，在 Android 12 上这个问题已经被解决了，所以不再
+            // 但是为了兼容 Android 12 以下的设备还是要那么做，否则在 Android 11 及以下设备会出现异常
+            // 另外这里解释一下为什么不直接判断有没有包含精确定位权限，而是要判断有模糊定位权限的情况下但是没有精确定位权限的情况
+            // 这是因为框架考虑到外部的调用者会将前台定位权限（包含精确定位和模糊定位权限）和后台定位权限拆成独立的两次权限申请
+            throw new IllegalArgumentException("Applying for background positioning permissions must include " + PermissionConstants.ACCESS_FINE_LOCATION);
+        }
     }
 }

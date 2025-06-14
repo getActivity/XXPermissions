@@ -244,31 +244,7 @@ public final class XXPermissions {
                 PermissionChecker.checkSupportFragmentStatus(supportFragment);
             }
             // 检查传入的权限是否正常
-            PermissionChecker.checkPermissionList(permissions);
-            // 获取清单文件信息
-            AndroidManifestInfo androidManifestInfo = PermissionUtils.getAndroidManifestInfo(context);
-            // 检查申请的读取媒体位置权限是否符合规范
-            PermissionChecker.checkMediaLocationPermission(context, permissions);
-            // 检查申请的存储权限是否符合规范
-            PermissionChecker.checkStoragePermission(context, permissions, androidManifestInfo);
-            // 检查申请的传感器权限是否符合规范
-            PermissionChecker.checkBodySensorsPermission(permissions);
-            // 检查申请的定位权限是否符合规范
-            PermissionChecker.checkLocationPermission(permissions);
-            // 检查申请的画中画权限是否符合规范
-            PermissionChecker.checkPictureInPicturePermission(activity, permissions, androidManifestInfo);
-            // 检查申请的通知栏监听权限是否符合规范
-            PermissionChecker.checkNotificationListenerPermission(permissions, androidManifestInfo);
-            // 检查蓝牙和 WIFI 权限申请是否符合规范
-            PermissionChecker.checkNearbyDevicesPermission(permissions, androidManifestInfo);
-            // 检查对照片和视频的部分访问权限申请是否符合规范
-            PermissionChecker.checkReadMediaVisualUserSelectedPermission(permissions);
-            // 检查读取应用列表权限是否符合规范
-            PermissionChecker.checkGetInstallAppsPermission(context, permissions, androidManifestInfo);
-            // 检查申请的权限和 targetSdk 版本是否能吻合
-            PermissionChecker.checkTargetSdkVersion(context, permissions);
-            // 检测权限有没有在清单文件中注册
-            PermissionChecker.checkManifestPermissions(context, permissions, androidManifestInfo);
+            PermissionChecker.checkPermissionList(activity, permissions, PermissionUtils.getAndroidManifestInfo(context));
         }
 
         // 优化所申请的权限列表

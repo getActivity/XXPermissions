@@ -1,21 +1,26 @@
 package com.hjq.permissions.permission.dangerous;
 
+import android.Manifest.permission;
 import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.PermissionInfo;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import com.hjq.permissions.AndroidManifestInfo;
+import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionActivityIntentHandler;
 import com.hjq.permissions.PermissionIntentManager;
 import com.hjq.permissions.PhoneRomUtils;
 import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -119,6 +124,41 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         return getApplicationDetailsIntent(context);
     }
 
+    @Override
+    protected void checkSelfByManifestFile(@NonNull Activity activity,
+                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull List<PermissionInfo> permissionInfoList,
+                                            @Nullable PermissionInfo currentPermissionInfo) {
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        // 当前 targetSdk 必须大于 Android 11，否则停止检查
+        if (AndroidVersionTools.getTargetSdkVersionCode(activity) < AndroidVersionTools.ANDROID_11) {
+            return;
+        }
+
+        String queryAllPackagesPermissionName;
+        if (AndroidVersionTools.isAndroid11()) {
+            queryAllPackagesPermissionName = permission.QUERY_ALL_PACKAGES;
+        } else {
+            queryAllPackagesPermissionName = "android.permission.QUERY_ALL_PACKAGES";
+        }
+
+        PermissionInfo permissionInfo = findPermissionInfoByList(permissionInfoList, queryAllPackagesPermissionName);
+        if (permissionInfo != null || !androidManifestInfo.queriesPackageList.isEmpty()) {
+            return;
+        }
+
+        // 在 targetSdk >= 30 的时候，申请读取应用列表权限需要做一下处理
+        // 1. 读取所有的应用：在清单文件中注册 QUERY_ALL_PACKAGES 权限
+        // 2. 读取部分特定的应用：添加需要读取应用的包名到 <queries> 标签中
+        // 以上两种解决方案需要二选一，否则就算申请 GET_INSTALLED_APPS 权限成功也是白搭，也是获取不到第三方安装列表信息的
+        // 一般情况选择第一种解决方案，但是如果你要兼顾 GooglePlay 商店，直接注册 QUERY_ALL_PACKAGES 权限可能没办法上架，那么就需要用到第二种办法
+        // Github issue：https://github.com/getActivity/XXPermissions/issues/359
+        throw new IllegalStateException("Please register permissions in the AndroidManifest.xml file " +
+            "<uses-permission android:name=\"" + queryAllPackagesPermissionName + "\" />, "
+            + "or add the app package name to the <queries> tag in the AndroidManifest.xml file");
+    }
+
     /**
      * 判断是否支持获取应用列表权限
      */
@@ -129,12 +169,12 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
             return false;
         }
         try {
-            PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(getName(), 0);
+            android.content.pm.PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(getName(), 0);
             if (permissionInfo != null) {
                 if (AndroidVersionTools.isAndroid9()) {
-                    return permissionInfo.getProtection() == PermissionInfo.PROTECTION_DANGEROUS;
+                    return permissionInfo.getProtection() == android.content.pm.PermissionInfo.PROTECTION_DANGEROUS;
                 } else {
-                    return (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_MASK_BASE) == PermissionInfo.PROTECTION_DANGEROUS;
+                    return (permissionInfo.protectionLevel & android.content.pm.PermissionInfo.PROTECTION_MASK_BASE) == android.content.pm.PermissionInfo.PROTECTION_DANGEROUS;
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {

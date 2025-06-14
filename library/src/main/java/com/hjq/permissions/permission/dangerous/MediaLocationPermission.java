@@ -6,9 +6,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.AndroidVersionTools;
+import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.permission.PermissionConstants;
 import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -92,5 +95,35 @@ public final class MediaLocationPermission extends DangerousPermission {
                 PermissionManifest.getManageExternalStoragePermission().isGranted(context, skipRequest);
         }
         return PermissionManifest.getReadExternalStoragePermission().isGranted(context, skipRequest);
+    }
+
+    @Override
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
+        super.checkSelfByRequestPermissions(activity, requestPermissions);
+        // 判断当前项目是否适配了 Android 13
+        if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_13) {
+            // 判断请求的权限中是否包含了某些特定权限
+            if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_IMAGES) ||
+                PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_VIDEO) ||
+                PermissionUtils.containsPermission(requestPermissions, PermissionConstants.MANAGE_EXTERNAL_STORAGE)) {
+                // 如果请求的权限中，包含了上面这些权限，就不往下执行
+                return;
+            }
+
+            // 如果不包含，你需要在外层手动添加 READ_MEDIA_IMAGES、READ_MEDIA_VIDEO、MANAGE_EXTERNAL_STORAGE 任一权限才可以申请 ACCESS_MEDIA_LOCATION 权限
+            throw new IllegalArgumentException("You must add " + PermissionConstants.READ_MEDIA_IMAGES + " or " + PermissionConstants.READ_MEDIA_VIDEO + " or " +
+                PermissionConstants.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + getName() + " rights");
+        }
+
+        // 如果当前项目还没有适配 Android 13，就判断请求的权限中是否包含了某些特定权限
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_EXTERNAL_STORAGE) ||
+            PermissionUtils.containsPermission(requestPermissions, PermissionConstants.MANAGE_EXTERNAL_STORAGE)) {
+            // 如果请求的权限中，包含了上面这些权限，就不往下执行
+            return;
+        }
+
+        // 如果不包含，你需要在外层手动添加 READ_EXTERNAL_STORAGE 或者 MANAGE_EXTERNAL_STORAGE 才可以申请 ACCESS_MEDIA_LOCATION 权限
+        throw new IllegalArgumentException("You must add " + PermissionConstants.READ_EXTERNAL_STORAGE + " or " +
+            PermissionConstants.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + getName() + " rights");
     }
 }
