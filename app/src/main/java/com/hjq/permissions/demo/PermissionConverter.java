@@ -2,9 +2,12 @@ package com.hjq.permissions.demo;
 
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.hjq.permissions.XXPermissions;
+import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import java.util.ArrayList;
@@ -27,13 +30,10 @@ public final class PermissionConverter {
     private static final Map<Integer, Integer> PERMISSION_DESCRIPTION_MAP = new HashMap<>();
 
     static {
-        PERMISSION_NAME_MAP.put(PermissionNames.READ_EXTERNAL_STORAGE, R.string.common_permission_storage);
-        PERMISSION_NAME_MAP.put(PermissionNames.WRITE_EXTERNAL_STORAGE, R.string.common_permission_storage);
+        PERMISSION_NAME_MAP.put(PermissionGroups.STORAGE, R.string.common_permission_storage);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_storage, R.string.common_permission_description_demo);
 
-        PERMISSION_NAME_MAP.put(PermissionNames.READ_MEDIA_IMAGES, R.string.common_permission_image_and_video);
-        PERMISSION_NAME_MAP.put(PermissionNames.READ_MEDIA_VIDEO, R.string.common_permission_image_and_video);
-        PERMISSION_NAME_MAP.put(PermissionNames.READ_MEDIA_VISUAL_USER_SELECTED, R.string.common_permission_image_and_video);
+        PERMISSION_NAME_MAP.put(PermissionGroups.IMAGE_AND_VIDEO_MEDIA, R.string.common_permission_image_and_video);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_image_and_video, R.string.common_permission_description_demo);
 
         PERMISSION_NAME_MAP.put(PermissionNames.READ_MEDIA_AUDIO, R.string.common_permission_music_and_audio);
@@ -45,70 +45,58 @@ public final class PermissionConverter {
         PERMISSION_NAME_MAP.put(PermissionNames.RECORD_AUDIO, R.string.common_permission_microphone);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_microphone, R.string.common_permission_description_demo);
 
-        PERMISSION_NAME_MAP.put(PermissionNames.ACCESS_FINE_LOCATION, R.string.common_permission_location);
-        PERMISSION_NAME_MAP.put(PermissionNames.ACCESS_COARSE_LOCATION, R.string.common_permission_location);
-
-        // 注意：在 Android 12 的时候，蓝牙相关的权限已经归到附近设备的权限组了，但是在 Android 12 之前，蓝牙相关的权限归属定位权限组
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)  {
-            PERMISSION_NAME_MAP.put(PermissionNames.BLUETOOTH_SCAN, R.string.common_permission_nearby_devices);
-            PERMISSION_NAME_MAP.put(PermissionNames.BLUETOOTH_CONNECT, R.string.common_permission_nearby_devices);
-            PERMISSION_NAME_MAP.put(PermissionNames.BLUETOOTH_ADVERTISE, R.string.common_permission_nearby_devices);
-            // 注意：在 Android 13 的时候，WIFI 相关的权限已经归到附近设备的权限组了，但是在 Android 13 之前，WIFI 相关的权限归属定位权限组
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)  {
-                PERMISSION_NAME_MAP.put(PermissionNames.NEARBY_WIFI_DEVICES, R.string.common_permission_nearby_devices);
-                PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_nearby_devices, R.string.common_permission_description_demo);
-                PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_location, R.string.common_permission_description_demo);
-            } else {
-                PERMISSION_NAME_MAP.put(PermissionNames.NEARBY_WIFI_DEVICES, R.string.common_permission_location);
-                PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_nearby_devices, R.string.common_permission_description_demo);
-                PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_location, R.string.common_permission_description_demo);
-            }
+        PERMISSION_NAME_MAP.put(PermissionGroups.NEARBY_DEVICES, R.string.common_permission_nearby_devices);
+        // 注意：在 Android 13 的时候，WIFI 相关的权限已经归到附近设备的权限组了，但是在 Android 13 之前，WIFI 相关的权限归属定位权限组
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)  {
+            // 需要填充文案：蓝牙权限描述 + WIFI 权限描述
+            PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_nearby_devices, R.string.common_permission_description_demo);
         } else {
-            PERMISSION_NAME_MAP.put(PermissionNames.BLUETOOTH_SCAN, R.string.common_permission_location);
-            PERMISSION_NAME_MAP.put(PermissionNames.BLUETOOTH_CONNECT, R.string.common_permission_location);
-            PERMISSION_NAME_MAP.put(PermissionNames.BLUETOOTH_ADVERTISE, R.string.common_permission_location);
-            PERMISSION_NAME_MAP.put(PermissionNames.NEARBY_WIFI_DEVICES, R.string.common_permission_location);
+            // 需要填充文案：蓝牙权限描述
+            PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_nearby_devices, R.string.common_permission_description_demo);
+        }
+
+        PERMISSION_NAME_MAP.put(PermissionGroups.LOCATION, R.string.common_permission_location);
+        // 注意：在 Android 12 的时候，蓝牙相关的权限已经归到附近设备的权限组了，但是在 Android 12 之前，蓝牙相关的权限归属定位权限组
+        // 注意：在 Android 13 的时候，WIFI 相关的权限已经归到附近设备的权限组了，但是在 Android 13 之前，WIFI 相关的权限归属定位权限组
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)  {
+            // 需要填充文案：前台定位权限描述
+            PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_location, R.string.common_permission_description_demo);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)  {
+            // 需要填充文案：前台定位权限描述 + WIFI 权限描述
+            PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_location, R.string.common_permission_description_demo);
+        } else {
+            // 需要填充文案：前台定位权限描述 + 蓝牙权限描述 + WIFI 权限描述
             PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_location, R.string.common_permission_description_demo);
         }
 
+        // 后台定位权限虽然属于定位权限组，但是只要是属于后台权限，都有独属于自己的一套规则
         PERMISSION_NAME_MAP.put(PermissionNames.ACCESS_BACKGROUND_LOCATION, R.string.common_permission_location_background);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_location_background, R.string.common_permission_description_demo);
 
-        PERMISSION_NAME_MAP.put(PermissionNames.BODY_SENSORS, R.string.common_permission_body_sensors);
+        PERMISSION_NAME_MAP.put(PermissionGroups.SENSORS, R.string.common_permission_body_sensors);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_body_sensors, R.string.common_permission_description_demo);
 
+        // 后台传感器权限虽然属于传感器权限组，但是只要是属于后台权限，都有独属于自己的一套规则
         PERMISSION_NAME_MAP.put(PermissionNames.BODY_SENSORS_BACKGROUND, R.string.common_permission_body_sensors_background);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_body_sensors_background, R.string.common_permission_description_demo);
 
-        PERMISSION_NAME_MAP.put(PermissionNames.READ_PHONE_STATE, R.string.common_permission_phone);
-        PERMISSION_NAME_MAP.put(PermissionNames.CALL_PHONE, R.string.common_permission_phone);
-        PERMISSION_NAME_MAP.put(PermissionNames.ADD_VOICEMAIL, R.string.common_permission_phone);
-        PERMISSION_NAME_MAP.put(PermissionNames.USE_SIP, R.string.common_permission_phone);
-        PERMISSION_NAME_MAP.put(PermissionNames.READ_PHONE_NUMBERS, R.string.common_permission_phone);
-        PERMISSION_NAME_MAP.put(PermissionNames.ANSWER_PHONE_CALLS, R.string.common_permission_phone);
-        PERMISSION_NAME_MAP.put(PermissionNames.ACCEPT_HANDOVER, R.string.common_permission_phone);
+        PERMISSION_NAME_MAP.put(PermissionGroups.CONTACTS, R.string.common_permission_call_logs);
+        PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_call_logs, R.string.common_permission_description_demo);
+
+        PERMISSION_NAME_MAP.put(PermissionGroups.PHONE, R.string.common_permission_phone);
         // 注意：在 Android 9.0 的时候，读写通话记录权限已经归到一个单独的权限组了，但是在 Android 9.0 之前，读写通话记录权限归属电话权限组
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)  {
-            PERMISSION_NAME_MAP.put(PermissionNames.READ_CALL_LOG, R.string.common_permission_call_logs);
-            PERMISSION_NAME_MAP.put(PermissionNames.WRITE_CALL_LOG, R.string.common_permission_call_logs);
-            PERMISSION_NAME_MAP.put(PermissionNames.PROCESS_OUTGOING_CALLS, R.string.common_permission_call_logs);
-            PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_call_logs, R.string.common_permission_description_demo);
+            // 需要填充文案：电话权限描述
             PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_phone, R.string.common_permission_description_demo);
         } else {
-            PERMISSION_NAME_MAP.put(PermissionNames.READ_CALL_LOG, R.string.common_permission_phone);
-            PERMISSION_NAME_MAP.put(PermissionNames.WRITE_CALL_LOG, R.string.common_permission_phone);
-            PERMISSION_NAME_MAP.put(PermissionNames.PROCESS_OUTGOING_CALLS, R.string.common_permission_phone);
-            // 需要注意：这里的电话权限需要补充一下前面三个通话记录权限的用途
+            // 需要填充文案：电话权限描述 + 通话记录权限描述
             PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_phone, R.string.common_permission_description_demo);
         }
 
-        PERMISSION_NAME_MAP.put(PermissionNames.GET_ACCOUNTS, R.string.common_permission_contacts);
-        PERMISSION_NAME_MAP.put(PermissionNames.READ_CONTACTS, R.string.common_permission_contacts);
-        PERMISSION_NAME_MAP.put(PermissionNames.WRITE_CONTACTS, R.string.common_permission_contacts);
+        PERMISSION_NAME_MAP.put(PermissionGroups.CONTACTS, R.string.common_permission_contacts);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_contacts, R.string.common_permission_description_demo);
 
-        PERMISSION_NAME_MAP.put(PermissionNames.READ_CALENDAR, R.string.common_permission_calendar);
-        PERMISSION_NAME_MAP.put(PermissionNames.WRITE_CALENDAR, R.string.common_permission_calendar);
+        PERMISSION_NAME_MAP.put(PermissionGroups.CALENDAR, R.string.common_permission_calendar);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_calendar, R.string.common_permission_description_demo);
 
         // 注意：在 Android 10 的版本，这个权限的名称为《健身运动权限》，但是到了 Android 11 的时候，这个权限的名称被修改成了《身体活动权限》
@@ -120,11 +108,7 @@ public final class PermissionConverter {
         PERMISSION_NAME_MAP.put(PermissionNames.ACCESS_MEDIA_LOCATION, R.string.common_permission_access_media_location);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_access_media_location, R.string.common_permission_description_demo);
 
-        PERMISSION_NAME_MAP.put(PermissionNames.SEND_SMS, R.string.common_permission_sms);
-        PERMISSION_NAME_MAP.put(PermissionNames.RECEIVE_SMS, R.string.common_permission_sms);
-        PERMISSION_NAME_MAP.put(PermissionNames.READ_SMS, R.string.common_permission_sms);
-        PERMISSION_NAME_MAP.put(PermissionNames.RECEIVE_WAP_PUSH, R.string.common_permission_sms);
-        PERMISSION_NAME_MAP.put(PermissionNames.RECEIVE_MMS, R.string.common_permission_sms);
+        PERMISSION_NAME_MAP.put(PermissionGroups.SMS, R.string.common_permission_sms);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_sms, R.string.common_permission_description_demo);
 
         PERMISSION_NAME_MAP.put(PermissionNames.GET_INSTALLED_APPS, R.string.common_permission_get_installed_apps);
@@ -221,7 +205,7 @@ public final class PermissionConverter {
     }
 
     public static String getNickNameByPermission(@NonNull Context context, @NonNull IPermission permission) {
-        Integer permissionNameStringId = PERMISSION_NAME_MAP.get(permission.getPermissionName());
+        Integer permissionNameStringId = getPermissionNickNameStringId(context, permission);
         if (permissionNameStringId == null || permissionNameStringId == 0) {
             return "";
         }
@@ -271,13 +255,12 @@ public final class PermissionConverter {
      */
     @NonNull
     public static String getDescriptionByPermission(@NonNull Context context, @NonNull IPermission permission) {
-        String permissionName = permission.getPermissionName();
-        Integer permissionNameStringId = PERMISSION_NAME_MAP.get(permissionName);
+        Integer permissionNameStringId = getPermissionNickNameStringId(context, permission);
         if (permissionNameStringId == null || permissionNameStringId == 0) {
             return "";
         }
         String permissionNickName = context.getString(permissionNameStringId);
-        Integer permissionDescriptionStringId = PERMISSION_DESCRIPTION_MAP.get(permissionNameStringId);
+        Integer permissionDescriptionStringId = getPermissionDescriptionStringId(permissionNameStringId);
         String permissionDescription;
         if (permissionDescriptionStringId == null || permissionDescriptionStringId == 0) {
             permissionDescription = "";
@@ -285,5 +268,30 @@ public final class PermissionConverter {
             permissionDescription = context.getString(permissionDescriptionStringId);
         }
         return permissionNickName + context.getString(R.string.common_permission_colon) + permissionDescription;
+    }
+
+    /**
+     * 获取这个权限对应的别名 StringId
+     */
+    @Nullable
+    public static Integer getPermissionNickNameStringId(@NonNull Context context, @NonNull IPermission permission) {
+        String permissionName = permission.getPermissionName();
+        String permissionGroup = permission.getPermissionGroup();
+        Integer permissionNameStringId;
+        if (!permission.isBackgroundPermission(context) && !TextUtils.isEmpty(permissionGroup)) {
+            // 这个权限必须有组别，并且不是后台权限，才能用组别来获取
+            permissionNameStringId = PERMISSION_NAME_MAP.get(permissionGroup);
+        } else {
+            permissionNameStringId = PERMISSION_NAME_MAP.get(permissionName);
+        }
+        return permissionNameStringId;
+    }
+
+    /**
+     * 获取这个权限对应的描述 StringId
+     */
+    @Nullable
+    public static Integer getPermissionDescriptionStringId(@IdRes int permissionNickNameStringId) {
+        return PERMISSION_DESCRIPTION_MAP.get(permissionNickNameStringId);
     }
 }
