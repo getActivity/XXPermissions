@@ -18,7 +18,7 @@ import java.util.Map;
  *    time   : 2025/05/30
  *    desc   : 权限转换器（根据权限获取对应的名称和说明）
  */
-final class PermissionConverter {
+public final class PermissionConverter {
 
     /** 权限名称映射（为了适配多语种，这里存储的是 StringId，而不是 String） */
     private static final Map<String, Integer> PERMISSION_NAME_MAP = new HashMap<>();
