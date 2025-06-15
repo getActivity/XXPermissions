@@ -110,7 +110,7 @@ public final class XXPermissions {
 
     /** Context 对象 */
     @Nullable
-    private Context mContext;
+    private final Context mContext;
 
     /** App 包下的 Fragment 对象 */
     @Nullable
@@ -132,33 +132,24 @@ public final class XXPermissions {
     @Nullable
     private Boolean mCheckMode;
 
-    private XXPermissions(@Nullable Context context) {
+    private XXPermissions(@NonNull Context context) {
         mContext = context;
     }
 
-    private XXPermissions(@Nullable Fragment appFragment) {
+    private XXPermissions(@NonNull Fragment appFragment) {
         mAppFragment = appFragment;
-        if (appFragment == null) {
-            return;
-        }
         mContext = appFragment.getActivity();
     }
 
-    private XXPermissions(@Nullable android.support.v4.app.Fragment supportFragment) {
+    private XXPermissions(@NonNull android.support.v4.app.Fragment supportFragment) {
         mSupportFragment = supportFragment;
-        if (supportFragment == null) {
-            return;
-        }
         mContext = supportFragment.getActivity();
     }
 
     /**
      * 添加单个权限
      */
-    public XXPermissions permission(@Nullable IPermission permission) {
-        if (permission == null) {
-            return this;
-        }
+    public XXPermissions permission(@NonNull IPermission permission) {
         // 这种写法的作用：如果出现重复添加的权限，则以最后添加的权限为主
         mPermissions.remove(permission);
         mPermissions.add(permission);
@@ -168,8 +159,8 @@ public final class XXPermissions {
     /**
      * 添加多个权限
      */
-    public XXPermissions permission(@Nullable List<IPermission> permissions) {
-        if (permissions == null || permissions.isEmpty()) {
+    public XXPermissions permissions(@NonNull List<IPermission> permissions) {
+        if (permissions.isEmpty()) {
             return this;
         }
 
