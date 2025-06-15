@@ -145,7 +145,7 @@ public final class PermissionManifest {
      * 所有文件访问权限（特殊权限，Android 11 新增的权限）
      *
      * 为了兼容 Android 11 以下版本，需要在清单文件中注册
-     * {@link PermissionConstants#READ_EXTERNAL_STORAGE} 和 {@link PermissionConstants#WRITE_EXTERNAL_STORAGE} 权限
+     * {@link PermissionNames#READ_EXTERNAL_STORAGE} 和 {@link PermissionNames#WRITE_EXTERNAL_STORAGE} 权限
      *
      * 如果你的应用需要上架 GooglePlay，那么需要详细阅读谷歌应用商店的政策：
      * https://support.google.com/googleplay/android-developer/answer/9956427
@@ -307,7 +307,7 @@ public final class PermissionManifest {
     /**
      * 发送通知权限（Android 13.0 新增的权限）
      *
-     * 为了兼容 Android 13 以下版本，框架会自动申请 {@link PermissionConstants#NOTIFICATION_SERVICE} 权限
+     * 为了兼容 Android 13 以下版本，框架会自动申请 {@link PermissionNames#NOTIFICATION_SERVICE} 权限
      */
     public static IPermission getPostNotificationsPermission() {
         IPermission permission = getCachePermission(PostNotificationsPermission.PERMISSION_NAME);
@@ -324,8 +324,8 @@ public final class PermissionManifest {
      * 否则就会导致在没有定位权限的情况下扫描不到附近的 WIFI 设备，这个是经过测试的，下面是清单权限注册案例，请参考以下进行注册
      * <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
      *
-     * 为了兼容 Android 13 以下版本，需要清单文件中注册 {@link PermissionConstants#ACCESS_FINE_LOCATION} 权限
-     * 还有 Android 13 以下设备，使用 WIFI 需要 {@link PermissionConstants#ACCESS_FINE_LOCATION} 权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
+     * 为了兼容 Android 13 以下版本，需要清单文件中注册 {@link PermissionNames#ACCESS_FINE_LOCATION} 权限
+     * 还有 Android 13 以下设备，使用 WIFI 需要 {@link PermissionNames#ACCESS_FINE_LOCATION} 权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
      */
     public static IPermission getNearbyWifiDevicesPermission() {
         IPermission permission = getCachePermission(NearbyWifiDevicesPermission.PERMISSION_NAME);
@@ -353,7 +353,7 @@ public final class PermissionManifest {
     /**
      * 读取图片权限（Android 13.0 新增的权限）
      *
-     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link PermissionConstants#READ_EXTERNAL_STORAGE} 权限
+     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link PermissionNames#READ_EXTERNAL_STORAGE} 权限
      */
     public static IPermission getReadMediaImagesPermission() {
         IPermission permission = getCachePermission(ReadMediaImagesPermission.PERMISSION_NAME);
@@ -366,7 +366,7 @@ public final class PermissionManifest {
     /**
      * 读取视频权限（Android 13.0 新增的权限）
      *
-     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link PermissionConstants#READ_EXTERNAL_STORAGE} 权限
+     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link PermissionNames#READ_EXTERNAL_STORAGE} 权限
      */
     public static IPermission getReadMediaVideoPermission() {
         IPermission permission = getCachePermission(ReadMediaVideoPermission.PERMISSION_NAME);
@@ -379,7 +379,7 @@ public final class PermissionManifest {
     /**
      * 读取音频权限（Android 13.0 新增的权限）
      *
-     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link PermissionConstants#READ_EXTERNAL_STORAGE} 权限
+     * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link PermissionNames#READ_EXTERNAL_STORAGE} 权限
      */
     public static IPermission getReadMediaAudioPermission() {
         IPermission permission = getCachePermission(ReadMediaAudioPermission.PERMISSION_NAME);
@@ -397,7 +397,7 @@ public final class PermissionManifest {
      * <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
      *
      * 为了兼容 Android 12 以下版本，需要清单文件中注册 {@link Manifest.permission#BLUETOOTH_ADMIN} 权限
-     * 还有 Android 12 以下设备，获取蓝牙扫描结果需要 {@link PermissionConstants#ACCESS_FINE_LOCATION} 权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
+     * 还有 Android 12 以下设备，获取蓝牙扫描结果需要 {@link PermissionNames#ACCESS_FINE_LOCATION} 权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
      */
     public static IPermission getBluetoothScanPermission() {
         IPermission permission = getCachePermission(BluetoothScanPermission.PERMISSION_NAME);
@@ -456,7 +456,7 @@ public final class PermissionManifest {
      * Github issue 地址：https://github.com/getActivity/XXPermissions/issues/150
      */
     public static IPermission getActivityRecognitionPermission() {
-        String permissionName = PermissionConstants.ACTIVITY_RECOGNITION;
+        String permissionName = PermissionNames.ACTIVITY_RECOGNITION;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -470,12 +470,12 @@ public final class PermissionManifest {
      * 需要注意的是：如果这个权限申请成功了但是不能正常读取照片的地理信息，那么需要先申请存储权限，具体可分别下面两种情况：
      *
      * 1. 如果适配了分区存储的情况下：
-     *     1) 如果项目 targetSdkVersion <= 32 需要申请 {@link PermissionConstants#READ_EXTERNAL_STORAGE}
-     *     2) 如果项目 targetSdkVersion >= 33 需要申请 {@link PermissionConstants#READ_MEDIA_IMAGES} 或 {@link PermissionConstants#READ_MEDIA_VIDEO}，并且需要全部授予，不能部分授予
+     *     1) 如果项目 targetSdkVersion <= 32 需要申请 {@link PermissionNames#READ_EXTERNAL_STORAGE}
+     *     2) 如果项目 targetSdkVersion >= 33 需要申请 {@link PermissionNames#READ_MEDIA_IMAGES} 或 {@link PermissionNames#READ_MEDIA_VIDEO}，并且需要全部授予，不能部分授予
      *
      * 2. 如果没有适配分区存储的情况下：
-     *     1) 如果项目 targetSdkVersion <= 29 需要申请 {@link PermissionConstants#READ_EXTERNAL_STORAGE}
-     *     2) 如果项目 targetSdkVersion >= 30 需要申请 {@link PermissionConstants#MANAGE_EXTERNAL_STORAGE}
+     *     1) 如果项目 targetSdkVersion <= 29 需要申请 {@link PermissionNames#READ_EXTERNAL_STORAGE}
+     *     2) 如果项目 targetSdkVersion >= 30 需要申请 {@link PermissionNames#MANAGE_EXTERNAL_STORAGE}
      */
     public static IPermission getMediaLocationPermission() {
         IPermission permission = getCachePermission(MediaLocationPermission.PERMISSION_NAME);
@@ -489,7 +489,7 @@ public final class PermissionManifest {
      * 允许呼叫应用继续在另一个应用中启动的呼叫权限（Android 9.0 新增的权限）
      */
     public static IPermission getAcceptHandoverPermission() {
-        String permissionName = PermissionConstants.ACCEPT_HANDOVER;
+        String permissionName = PermissionNames.ACCEPT_HANDOVER;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -500,7 +500,7 @@ public final class PermissionManifest {
     /**
      * 读取手机号码权限（Android 8.0 新增的权限）
      *
-     * 为了兼容 Android 8.0 以下版本，需要在清单文件中注册 {@link PermissionConstants#READ_PHONE_STATE} 权限
+     * 为了兼容 Android 8.0 以下版本，需要在清单文件中注册 {@link PermissionNames#READ_PHONE_STATE} 权限
      */
     public static IPermission getReadPhoneNumbersPermission() {
         IPermission permission = getCachePermission(ReadPhoneNumbersPermission.PERMISSION_NAME);
@@ -514,7 +514,7 @@ public final class PermissionManifest {
      * 接听电话权限（Android 8.0 新增的权限，Android 8.0 以下可以采用模拟耳机按键事件来实现接听电话，这种方式不需要权限）
      */
     public static IPermission getAnswerPhoneCallsPermission() {
-        String permissionName = PermissionConstants.ANSWER_PHONE_CALLS;
+        String permissionName = PermissionNames.ANSWER_PHONE_CALLS;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -548,7 +548,7 @@ public final class PermissionManifest {
      * 相机权限
      */
     public static IPermission getCameraPermission() {
-        String permissionName = PermissionConstants.CAMERA;
+        String permissionName = PermissionNames.CAMERA;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -560,7 +560,7 @@ public final class PermissionManifest {
      * 麦克风权限
      */
     public static IPermission getRecordAudioPermission() {
-        String permissionName = PermissionConstants.RECORD_AUDIO;
+        String permissionName = PermissionNames.RECORD_AUDIO;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -572,7 +572,7 @@ public final class PermissionManifest {
      * 获取精确位置权限
      */
     public static IPermission getAccessFineLocationPermission() {
-        String permissionName = PermissionConstants.ACCESS_FINE_LOCATION;
+        String permissionName = PermissionNames.ACCESS_FINE_LOCATION;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -584,7 +584,7 @@ public final class PermissionManifest {
      * 获取粗略位置权限
      */
     public static IPermission getAccessCoarseLocationPermission() {
-        String permissionName = PermissionConstants.ACCESS_COARSE_LOCATION;
+        String permissionName = PermissionNames.ACCESS_COARSE_LOCATION;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -596,7 +596,7 @@ public final class PermissionManifest {
      * 读取联系人权限
      */
     public static IPermission getReadContactsPermission() {
-        String permissionName = PermissionConstants.READ_CONTACTS;
+        String permissionName = PermissionNames.READ_CONTACTS;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -608,7 +608,7 @@ public final class PermissionManifest {
      * 修改联系人权限
      */
     public static IPermission getWriteContactsPermission() {
-        String permissionName = PermissionConstants.WRITE_CONTACTS;
+        String permissionName = PermissionNames.WRITE_CONTACTS;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -620,7 +620,7 @@ public final class PermissionManifest {
      * 访问账户列表权限
      */
     public static IPermission getGetAccountsPermission() {
-        String permissionName = PermissionConstants.GET_ACCOUNTS;
+        String permissionName = PermissionNames.GET_ACCOUNTS;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -632,7 +632,7 @@ public final class PermissionManifest {
      * 读取日历权限
      */
     public static IPermission getReadCalendarPermission() {
-        String permissionName = PermissionConstants.READ_CALENDAR;
+        String permissionName = PermissionNames.READ_CALENDAR;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -644,7 +644,7 @@ public final class PermissionManifest {
      * 修改日历权限
      */
     public static IPermission getWriteCalendarPermission() {
-        String permissionName = PermissionConstants.WRITE_CALENDAR;
+        String permissionName = PermissionNames.WRITE_CALENDAR;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -663,7 +663,7 @@ public final class PermissionManifest {
      *             <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
      */
     public static IPermission getReadPhoneStatePermission() {
-        String permissionName = PermissionConstants.READ_PHONE_STATE;
+        String permissionName = PermissionNames.READ_PHONE_STATE;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -675,7 +675,7 @@ public final class PermissionManifest {
      * 拨打电话权限
      */
     public static IPermission getCallPhonePermission() {
-        String permissionName = PermissionConstants.CALL_PHONE;
+        String permissionName = PermissionNames.CALL_PHONE;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -687,7 +687,7 @@ public final class PermissionManifest {
      * 读取通话记录权限
      */
     public static IPermission getReadCallLogPermission() {
-        String permissionName = PermissionConstants.READ_CALL_LOG;
+        String permissionName = PermissionNames.READ_CALL_LOG;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -701,7 +701,7 @@ public final class PermissionManifest {
      * 修改通话记录权限
      */
     public static IPermission getWriteCallLogPermission() {
-        String permissionName = PermissionConstants.WRITE_CALL_LOG;
+        String permissionName = PermissionNames.WRITE_CALL_LOG;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -715,7 +715,7 @@ public final class PermissionManifest {
      * 添加语音邮件权限
      */
     public static IPermission getAddVoicemailPermission() {
-        String permissionName = PermissionConstants.ADD_VOICEMAIL;
+        String permissionName = PermissionNames.ADD_VOICEMAIL;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -727,7 +727,7 @@ public final class PermissionManifest {
      * 使用 SIP 视频权限
      */
     public static IPermission getUseSipPermission() {
-        String permissionName = PermissionConstants.USE_SIP;
+        String permissionName = PermissionNames.USE_SIP;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -741,7 +741,7 @@ public final class PermissionManifest {
      * @deprecated         在 Android 10 已经过时，请见：https://developer.android.google.cn/reference/android/Manifest.permission?hl=zh_cn#PROCESS_OUTGOING_CALLS
      */
     public static IPermission getProcessOutgoingCallsPermission() {
-        String permissionName = PermissionConstants.PROCESS_OUTGOING_CALLS;
+        String permissionName = PermissionNames.PROCESS_OUTGOING_CALLS;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -755,7 +755,7 @@ public final class PermissionManifest {
      * 使用传感器权限
      */
     public static IPermission getBodySensorsPermission() {
-        String permissionName = PermissionConstants.BODY_SENSORS;
+        String permissionName = PermissionNames.BODY_SENSORS;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -767,7 +767,7 @@ public final class PermissionManifest {
      * 发送短信权限
      */
     public static IPermission getSendSmsPermission() {
-        String permissionName = PermissionConstants.SEND_SMS;
+        String permissionName = PermissionNames.SEND_SMS;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -779,7 +779,7 @@ public final class PermissionManifest {
      * 接收短信权限
      */
     public static IPermission getReceiveSmsPermission() {
-        String permissionName = PermissionConstants.RECEIVE_SMS;
+        String permissionName = PermissionNames.RECEIVE_SMS;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -791,7 +791,7 @@ public final class PermissionManifest {
      * 读取短信权限
      */
     public static IPermission getReadSmsPermission() {
-        String permissionName = PermissionConstants.READ_SMS;
+        String permissionName = PermissionNames.READ_SMS;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -803,7 +803,7 @@ public final class PermissionManifest {
      * 接收 WAP 推送消息权限
      */
     public static IPermission getReceiveWapPushPermission() {
-        String permissionName = PermissionConstants.RECEIVE_WAP_PUSH;
+        String permissionName = PermissionNames.RECEIVE_WAP_PUSH;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;
@@ -815,7 +815,7 @@ public final class PermissionManifest {
      * 接收彩信权限
      */
     public static IPermission getReceiveMmsPermission() {
-        String permissionName = PermissionConstants.RECEIVE_MMS;
+        String permissionName = PermissionNames.RECEIVE_MMS;
         IPermission permission = getCachePermission(permissionName);
         if (permission != null) {
             return permission;

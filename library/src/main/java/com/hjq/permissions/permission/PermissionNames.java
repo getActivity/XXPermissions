@@ -4,12 +4,12 @@ package com.hjq.permissions.permission;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/06/11
- *    desc   : 危险权限和特殊权限常量集
+ *    desc   : 危险权限和特殊权限的名称常量集
  */
 @SuppressWarnings("unused")
-public final class PermissionConstants {
+public final class PermissionNames {
 
-    private PermissionConstants() {}
+    private PermissionNames() {}
 
     /**
      * 读取应用列表权限字符串常量，如需权限对象请调用 {@link PermissionManifest#getGetInstalledAppsPermission()} 获取

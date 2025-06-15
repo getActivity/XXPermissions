@@ -10,7 +10,7 @@ import com.hjq.permissions.AndroidManifestInfo;
 import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionUtils;
-import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionGroupConstants;
 import com.hjq.permissions.permission.PermissionManifest;
 import com.hjq.permissions.permission.base.IPermission;
@@ -25,8 +25,8 @@ import java.util.List;
  */
 public final class AccessBackgroundLocationPermission extends DangerousPermission {
 
-    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
-    public static final String PERMISSION_NAME = PermissionConstants.ACCESS_BACKGROUND_LOCATION;
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
+    public static final String PERMISSION_NAME = PermissionNames.ACCESS_BACKGROUND_LOCATION;
 
     public static final Parcelable.Creator<AccessBackgroundLocationPermission> CREATOR = new Parcelable.Creator<AccessBackgroundLocationPermission>() {
 
@@ -149,10 +149,10 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
         // ACCESS_FINE_LOCATION must be requested with ACCESS_COARSE_LOCATION
         // 官方适配文档：https://developer.android.google.cn/develop/sensors-and-location/location/permissions/runtime?hl=zh-cn#approximate-request
         if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_12) {
-            checkPermissionRegistrationStatus(permissionInfoList, PermissionConstants.ACCESS_COARSE_LOCATION);
-            checkPermissionRegistrationStatus(permissionInfoList, PermissionConstants.ACCESS_FINE_LOCATION);
+            checkPermissionRegistrationStatus(permissionInfoList, PermissionNames.ACCESS_COARSE_LOCATION);
+            checkPermissionRegistrationStatus(permissionInfoList, PermissionNames.ACCESS_FINE_LOCATION);
         } else {
-            checkPermissionRegistrationStatus(permissionInfoList, PermissionConstants.ACCESS_FINE_LOCATION);
+            checkPermissionRegistrationStatus(permissionInfoList, PermissionNames.ACCESS_FINE_LOCATION);
         }
     }
 
@@ -165,15 +165,15 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
         // ACCESS_FINE_LOCATION must be requested with ACCESS_COARSE_LOCATION
         // 官方适配文档：https://developer.android.google.cn/develop/sensors-and-location/location/permissions/runtime?hl=zh-cn#approximate-request
         if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_12 &&
-            PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_COARSE_LOCATION) &&
-            !PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_FINE_LOCATION)) {
+            PermissionUtils.containsPermission(requestPermissions, PermissionNames.ACCESS_COARSE_LOCATION) &&
+            !PermissionUtils.containsPermission(requestPermissions, PermissionNames.ACCESS_FINE_LOCATION)) {
             // 申请后台定位权限可以不包含模糊定位权限，但是一定要包含精确定位权限，否则后台定位权限会无法申请
             // 也就是会导致无法弹出授权弹窗，经过实践，在 Android 12 上这个问题已经被解决了
             // 在 Android 12 及之后的版本，申请后台定位权限既可以用精确定位权限也可以用模糊定位权限作为前台定位权限
             // 但是为了兼容 Android 12 以下的设备还是要那么做，否则在 Android 11 及以下设备会出现异常
             // 另外这里解释一下为什么不直接判断有没有包含精确定位权限，而是要判断有模糊定位权限的情况下但是没有精确定位权限的情况
             // 这是因为框架考虑到外部的调用者会将前台定位权限（包含精确定位和模糊定位权限）和后台定位权限拆成独立的两次权限申请
-            throw new IllegalArgumentException("Applying for background positioning permissions must include " + PermissionConstants.ACCESS_FINE_LOCATION);
+            throw new IllegalArgumentException("Applying for background positioning permissions must include " + PermissionNames.ACCESS_FINE_LOCATION);
         }
     }
 }

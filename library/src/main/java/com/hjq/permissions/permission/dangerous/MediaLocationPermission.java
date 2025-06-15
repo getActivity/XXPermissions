@@ -7,7 +7,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionUtils;
-import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionManifest;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
@@ -21,8 +21,8 @@ import java.util.List;
  */
 public final class MediaLocationPermission extends DangerousPermission {
 
-    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
-    public static final String PERMISSION_NAME = PermissionConstants.ACCESS_MEDIA_LOCATION;
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
+    public static final String PERMISSION_NAME = PermissionNames.ACCESS_MEDIA_LOCATION;
 
     public static final Parcelable.Creator<MediaLocationPermission> CREATOR = new Parcelable.Creator<MediaLocationPermission>() {
 
@@ -103,27 +103,27 @@ public final class MediaLocationPermission extends DangerousPermission {
         // 判断当前项目是否适配了 Android 13
         if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_13) {
             // 判断请求的权限中是否包含了某些特定权限
-            if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_IMAGES) ||
-                PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_VIDEO) ||
-                PermissionUtils.containsPermission(requestPermissions, PermissionConstants.MANAGE_EXTERNAL_STORAGE)) {
+            if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_MEDIA_IMAGES) ||
+                PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_MEDIA_VIDEO) ||
+                PermissionUtils.containsPermission(requestPermissions, PermissionNames.MANAGE_EXTERNAL_STORAGE)) {
                 // 如果请求的权限中，包含了上面这些权限，就不往下执行
                 return;
             }
 
             // 如果不包含，你需要在外层手动添加 READ_MEDIA_IMAGES、READ_MEDIA_VIDEO、MANAGE_EXTERNAL_STORAGE 任一权限才可以申请 ACCESS_MEDIA_LOCATION 权限
-            throw new IllegalArgumentException("You must add " + PermissionConstants.READ_MEDIA_IMAGES + " or " + PermissionConstants.READ_MEDIA_VIDEO + " or " +
-                PermissionConstants.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + getPermissionName() + " rights");
+            throw new IllegalArgumentException("You must add " + PermissionNames.READ_MEDIA_IMAGES + " or " + PermissionNames.READ_MEDIA_VIDEO + " or " +
+                PermissionNames.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + getPermissionName() + " rights");
         }
 
         // 如果当前项目还没有适配 Android 13，就判断请求的权限中是否包含了某些特定权限
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_EXTERNAL_STORAGE) ||
-            PermissionUtils.containsPermission(requestPermissions, PermissionConstants.MANAGE_EXTERNAL_STORAGE)) {
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_EXTERNAL_STORAGE) ||
+            PermissionUtils.containsPermission(requestPermissions, PermissionNames.MANAGE_EXTERNAL_STORAGE)) {
             // 如果请求的权限中，包含了上面这些权限，就不往下执行
             return;
         }
 
         // 如果不包含，你需要在外层手动添加 READ_EXTERNAL_STORAGE 或者 MANAGE_EXTERNAL_STORAGE 才可以申请 ACCESS_MEDIA_LOCATION 权限
-        throw new IllegalArgumentException("You must add " + PermissionConstants.READ_EXTERNAL_STORAGE + " or " +
-            PermissionConstants.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + getPermissionName() + " rights");
+        throw new IllegalArgumentException("You must add " + PermissionNames.READ_EXTERNAL_STORAGE + " or " +
+            PermissionNames.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + getPermissionName() + " rights");
     }
 }

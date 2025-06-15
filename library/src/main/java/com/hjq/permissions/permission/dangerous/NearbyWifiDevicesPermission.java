@@ -10,7 +10,7 @@ import com.hjq.permissions.AndroidManifestInfo;
 import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionUtils;
-import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionGroupConstants;
 import com.hjq.permissions.permission.PermissionManifest;
 import com.hjq.permissions.permission.base.IPermission;
@@ -25,8 +25,8 @@ import java.util.List;
  */
 public final class NearbyWifiDevicesPermission extends DangerousPermission {
 
-    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
-    public static final String PERMISSION_NAME = PermissionConstants.NEARBY_WIFI_DEVICES;
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
+    public static final String PERMISSION_NAME = PermissionNames.NEARBY_WIFI_DEVICES;
 
     public static final Parcelable.Creator<NearbyWifiDevicesPermission> CREATOR = new Parcelable.Creator<NearbyWifiDevicesPermission>() {
 
@@ -93,11 +93,11 @@ public final class NearbyWifiDevicesPermission extends DangerousPermission {
         super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
         if (getFromAndroidVersion() > getMinSdkVersion(activity, androidManifestInfo)) {
-            checkPermissionRegistrationStatus(permissionInfoList, PermissionConstants.ACCESS_FINE_LOCATION, AndroidVersionTools.ANDROID_12_L);
+            checkPermissionRegistrationStatus(permissionInfoList, PermissionNames.ACCESS_FINE_LOCATION, AndroidVersionTools.ANDROID_12_L);
         }
 
         // 如果请求的权限已经包含了精确定位权限，就跳过检查
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_FINE_LOCATION)) {
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.ACCESS_FINE_LOCATION)) {
             return;
         }
         // 如果当前权限没有在清单文件中注册，就跳过检查
@@ -124,6 +124,6 @@ public final class NearbyWifiDevicesPermission extends DangerousPermission {
             "manifest file to <uses-permission android:name=\"" + currentPermissionInfo.name +
             "\" android:usesPermissionFlags=\"neverForLocation\" " + maxSdkVersionString + "/> node, " +
             "if your app need use " + currentPermissionInfo.name + " to get physical location, " +
-            "also need to add " + PermissionConstants.ACCESS_FINE_LOCATION + " permissions");
+            "also need to add " + PermissionNames.ACCESS_FINE_LOCATION + " permissions");
     }
 }

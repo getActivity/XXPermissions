@@ -10,7 +10,7 @@ import com.hjq.permissions.AndroidManifestInfo;
 import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionUtils;
-import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionGroupConstants;
 import com.hjq.permissions.permission.PermissionManifest;
 import com.hjq.permissions.permission.base.IPermission;
@@ -25,8 +25,8 @@ import java.util.List;
  */
 public final class BodySensorsBackgroundPermission extends DangerousPermission {
 
-    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
-    public static final String PERMISSION_NAME = PermissionConstants.BODY_SENSORS_BACKGROUND;
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
+    public static final String PERMISSION_NAME = PermissionNames.BODY_SENSORS_BACKGROUND;
 
     public static final Parcelable.Creator<BodySensorsBackgroundPermission> CREATOR = new Parcelable.Creator<BodySensorsBackgroundPermission>() {
 
@@ -119,15 +119,15 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
                                             @Nullable PermissionInfo currentPermissionInfo) {
         super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
         // 申请后台的传感器权限必须要先注册前台的传感器权限
-        checkPermissionRegistrationStatus(permissionInfoList, PermissionConstants.BODY_SENSORS);
+        checkPermissionRegistrationStatus(permissionInfoList, PermissionNames.BODY_SENSORS);
     }
 
     @Override
     protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
         super.checkSelfByRequestPermissions(activity, requestPermissions);
         // 必须要申请前台传感器权限才能申请后台传感器权限
-        if (!PermissionUtils.containsPermission(requestPermissions, PermissionConstants.BODY_SENSORS)) {
-            throw new IllegalArgumentException("Applying for background sensor permissions must contain " + PermissionConstants.BODY_SENSORS);
+        if (!PermissionUtils.containsPermission(requestPermissions, PermissionNames.BODY_SENSORS)) {
+            throw new IllegalArgumentException("Applying for background sensor permissions must contain " + PermissionNames.BODY_SENSORS);
         }
     }
 }

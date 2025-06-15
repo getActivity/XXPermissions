@@ -14,7 +14,7 @@ import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.OnPermissionInterceptor;
 import com.hjq.permissions.OnPermissionPageCallback;
 import com.hjq.permissions.XXPermissions;
-import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.toast.Toaster;
 import java.util.List;
@@ -36,7 +36,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
         }
 
         if (doNotAskAgain) {
-            if (deniedPermissions.size() == 1 && XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionConstants.ACCESS_MEDIA_LOCATION)) {
+            if (deniedPermissions.size() == 1 && XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.ACCESS_MEDIA_LOCATION)) {
                 Toaster.show(R.string.common_permission_media_location_hint_fail);
                 return;
             }
@@ -51,14 +51,14 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
 
             String backgroundPermissionOptionLabel = getBackgroundPermissionOptionLabel(activity);
 
-            if (XXPermissions.equalsPermission(deniedPermission, PermissionConstants.ACCESS_BACKGROUND_LOCATION)) {
+            if (XXPermissions.equalsPermission(deniedPermission, PermissionNames.ACCESS_BACKGROUND_LOCATION)) {
                 Toaster.show(activity.getString(R.string.common_permission_background_location_fail_hint, backgroundPermissionOptionLabel));
                 return;
-            } else if (XXPermissions.equalsPermission(deniedPermission, PermissionConstants.BODY_SENSORS_BACKGROUND)) {
+            } else if (XXPermissions.equalsPermission(deniedPermission, PermissionNames.BODY_SENSORS_BACKGROUND)) {
                 Toaster.show(activity.getString(R.string.common_permission_background_sensors_fail_hint, backgroundPermissionOptionLabel));
                 return;
-            } else if (XXPermissions.equalsPermission(deniedPermission, PermissionConstants.ACCESS_FINE_LOCATION) &&
-                        XXPermissions.containsPermission(requestPermissions, PermissionConstants.ACCESS_COARSE_LOCATION)) {
+            } else if (XXPermissions.equalsPermission(deniedPermission, PermissionNames.ACCESS_FINE_LOCATION) &&
+                        XXPermissions.containsPermission(requestPermissions, PermissionNames.ACCESS_COARSE_LOCATION)) {
                 // 如果请求的权限中，既包含了精确定位权限，又包含了模糊定位权限，但是用户只同意了模糊定位权限的情况
                 Toaster.show(activity.getString(R.string.common_permission_fine_location_fail_hint));
                 return;
@@ -88,12 +88,12 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
             if (deniedPermissions.size() == 1) {
                 IPermission deniedPermission = deniedPermissions.get(0);
 
-                if (XXPermissions.equalsPermission(deniedPermission, PermissionConstants.ACCESS_BACKGROUND_LOCATION)) {
+                if (XXPermissions.equalsPermission(deniedPermission, PermissionNames.ACCESS_BACKGROUND_LOCATION)) {
                     message = activity.getString(R.string.common_permission_manual_assign_fail_background_location_hint, getBackgroundPermissionOptionLabel(activity));
-                } else if (XXPermissions.equalsPermission(deniedPermission, PermissionConstants.BODY_SENSORS_BACKGROUND)) {
+                } else if (XXPermissions.equalsPermission(deniedPermission, PermissionNames.BODY_SENSORS_BACKGROUND)) {
                     message = activity.getString(R.string.common_permission_manual_assign_fail_background_sensors_hint, getBackgroundPermissionOptionLabel(activity));
-                } else if (XXPermissions.equalsPermission(deniedPermission, PermissionConstants.ACCESS_FINE_LOCATION) &&
-                            XXPermissions.containsPermission(requestPermissions, PermissionConstants.ACCESS_COARSE_LOCATION)) {
+                } else if (XXPermissions.equalsPermission(deniedPermission, PermissionNames.ACCESS_FINE_LOCATION) &&
+                            XXPermissions.containsPermission(requestPermissions, PermissionNames.ACCESS_COARSE_LOCATION)) {
                     // 如果请求的权限中，既包含了精确定位权限，又包含了模糊定位权限，但是用户只同意了模糊定位权限的情况
                     message = activity.getString(R.string.common_permission_manual_assign_fail_fine_location_hint);
                 }

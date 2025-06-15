@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionUtils;
-import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionGroupConstants;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
@@ -20,8 +20,8 @@ import java.util.List;
  */
 public final class ReadMediaVisualUserSelectedPermission extends DangerousPermission {
 
-    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
-    public static final String PERMISSION_NAME = PermissionConstants.READ_MEDIA_VISUAL_USER_SELECTED;
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
+    public static final String PERMISSION_NAME = PermissionNames.READ_MEDIA_VISUAL_USER_SELECTED;
 
     public static final Parcelable.Creator<ReadMediaVisualUserSelectedPermission> CREATOR = new Parcelable.Creator<ReadMediaVisualUserSelectedPermission>() {
 
@@ -73,12 +73,12 @@ public final class ReadMediaVisualUserSelectedPermission extends DangerousPermis
     protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
         super.checkSelfByRequestPermissions(activity, requestPermissions);
 
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_IMAGES) ||
-            PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_MEDIA_VIDEO)) {
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_MEDIA_IMAGES) ||
+            PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_MEDIA_VIDEO)) {
             return;
         }
         // 不能单独请求 READ_MEDIA_VISUAL_USER_SELECTED 权限，需要加上 READ_MEDIA_IMAGES 或者 READ_MEDIA_VIDEO 任一权限，又或者两个都有，否则权限申请会被系统直接拒绝
         throw new IllegalArgumentException("You cannot request the " + getPermissionName() + " permission alone. "
-            + "must add either " + PermissionConstants.READ_MEDIA_IMAGES + " or " + PermissionConstants.READ_MEDIA_VIDEO + " permission, or maybe both");
+            + "must add either " + PermissionNames.READ_MEDIA_IMAGES + " or " + PermissionNames.READ_MEDIA_VIDEO + " permission, or maybe both");
     }
 }

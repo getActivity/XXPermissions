@@ -13,7 +13,7 @@ import com.hjq.permissions.AndroidManifestInfo.ApplicationInfo;
 import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionUtils;
-import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionGroupConstants;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
@@ -27,8 +27,8 @@ import java.util.List;
  */
 public final class WriteExternalStoragePermission extends DangerousPermission {
 
-    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
-    public static final String PERMISSION_NAME = PermissionConstants.WRITE_EXTERNAL_STORAGE;
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
+    public static final String PERMISSION_NAME = PermissionNames.WRITE_EXTERNAL_STORAGE;
 
     public static final Parcelable.Creator<WriteExternalStoragePermission> CREATOR = new Parcelable.Creator<WriteExternalStoragePermission>() {
 
@@ -124,7 +124,7 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
 
         // 判断：当前项目是否适配了Android 11，并且还在清单文件中是否注册了 MANAGE_EXTERNAL_STORAGE 权限
         if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_11 &&
-            findPermissionInfoByList(permissionInfoList, PermissionConstants.MANAGE_EXTERNAL_STORAGE) != null) {
+            findPermissionInfoByList(permissionInfoList, PermissionNames.MANAGE_EXTERNAL_STORAGE) != null) {
             // 如果有的话，那么 maxSdkVersion 就必须是 Android 10 及以上的版本
             checkPermissionRegistrationStatus(permissionInfoList, getPermissionName(), AndroidVersionTools.ANDROID_10);
         } else {
@@ -136,7 +136,7 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
         }
 
         // 如果申请的是 Android 10 获取媒体位置权限，则跳过后面的检查
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_MEDIA_LOCATION)) {
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.ACCESS_MEDIA_LOCATION)) {
             return;
         }
 
@@ -162,7 +162,7 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
             // 如果不知道该怎么选择，可以看文档：https://github.com/getActivity/XXPermissions/blob/master/HelpDoc
             throw new IllegalArgumentException("The storage permission application is abnormal. If you have adapted the scope storage, " +
                 "please register the <meta-data android:name=\"ScopedStorage\" android:value=\"true\" /> attribute in the AndroidManifest.xml file. " +
-                "If there is no adaptation scope storage, please use " + PermissionConstants.MANAGE_EXTERNAL_STORAGE + " to apply for permission");
+                "If there is no adaptation scope storage, please use " + PermissionNames.MANAGE_EXTERNAL_STORAGE + " to apply for permission");
         }
     }
 }

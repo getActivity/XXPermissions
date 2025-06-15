@@ -9,7 +9,7 @@ import android.support.annotation.Nullable;
 import com.hjq.permissions.AndroidManifestInfo;
 import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
-import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionGroupConstants;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
@@ -23,8 +23,8 @@ import java.util.List;
  */
 public final class BluetoothAdvertisePermission extends DangerousPermission {
 
-    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
-    public static final String PERMISSION_NAME = PermissionConstants.BLUETOOTH_ADVERTISE;
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
+    public static final String PERMISSION_NAME = PermissionNames.BLUETOOTH_ADVERTISE;
 
     public static final Parcelable.Creator<BluetoothAdvertisePermission> CREATOR = new Parcelable.Creator<BluetoothAdvertisePermission>() {
 

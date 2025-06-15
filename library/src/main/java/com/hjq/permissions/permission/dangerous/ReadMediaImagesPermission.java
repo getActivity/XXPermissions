@@ -10,7 +10,7 @@ import com.hjq.permissions.AndroidManifestInfo;
 import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionUtils;
-import com.hjq.permissions.permission.PermissionConstants;
+import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionGroupConstants;
 import com.hjq.permissions.permission.PermissionManifest;
 import com.hjq.permissions.permission.base.IPermission;
@@ -25,8 +25,8 @@ import java.util.List;
  */
 public final class ReadMediaImagesPermission extends DangerousPermission {
 
-    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionConstants} 类获取 */
-    public static final String PERMISSION_NAME = PermissionConstants.READ_MEDIA_IMAGES;
+    /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
+    public static final String PERMISSION_NAME = PermissionNames.READ_MEDIA_IMAGES;
 
     public static final Parcelable.Creator<ReadMediaImagesPermission> CREATOR = new Parcelable.Creator<ReadMediaImagesPermission>() {
 
@@ -104,7 +104,7 @@ public final class ReadMediaImagesPermission extends DangerousPermission {
         super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
         if (getFromAndroidVersion() > getMinSdkVersion(activity, androidManifestInfo)) {
-            checkPermissionRegistrationStatus(permissionInfoList, PermissionConstants.READ_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_12_L);
+            checkPermissionRegistrationStatus(permissionInfoList, PermissionNames.READ_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_12_L);
         }
     }
 
@@ -113,7 +113,7 @@ public final class ReadMediaImagesPermission extends DangerousPermission {
         super.checkSelfByRequestPermissions(activity, requestPermissions);
         // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这个权限
         // 框架会在 Android 13 以下的版本上自动添加并申请这两个权限
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionConstants.READ_EXTERNAL_STORAGE)) {
+        if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_EXTERNAL_STORAGE)) {
             throw new IllegalArgumentException("If you have applied for media permissions, " +
                 "do not apply for the READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE permissions");
         }
