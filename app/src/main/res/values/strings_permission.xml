@@ -56,7 +56,7 @@
     <string name="common_permission_do_not_disturb_access">do not disturb access permission</string>
     <string name="common_permission_ignore_battery_optimize">ignore battery optimize permission</string>
     <string name="common_permission_picture_in_picture">picture-in-picture permission</string>
-    <string name="common_permission_full_screen_notifications">full screen notifications</string>
+    <string name="common_permission_full_screen_notifications">full screen notifications permission</string>
     <string name="common_permission_vpn">\tVPN\tpermission</string>
 
     <string name="common_permission_description_demo">Used for xx business</string>
