@@ -170,6 +170,10 @@ public final class XXPermissions {
         return this;
     }
 
+    public XXPermissions permissions(@NonNull IPermission[] permissions) {
+        return permissions(PermissionUtils.asArrayList(permissions));
+    }
+
     /**
      * 设置权限请求拦截器
      */
