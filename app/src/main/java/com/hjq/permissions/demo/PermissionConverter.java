@@ -80,7 +80,7 @@ public final class PermissionConverter {
         PERMISSION_NAME_MAP.put(PermissionNames.BODY_SENSORS_BACKGROUND, R.string.common_permission_body_sensors_background);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_body_sensors_background, R.string.common_permission_description_demo);
 
-        PERMISSION_NAME_MAP.put(PermissionGroups.CONTACTS, R.string.common_permission_call_logs);
+        PERMISSION_NAME_MAP.put(PermissionGroups.CALL_LOG, R.string.common_permission_call_logs);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_call_logs, R.string.common_permission_description_demo);
 
         PERMISSION_NAME_MAP.put(PermissionGroups.PHONE, R.string.common_permission_phone);
