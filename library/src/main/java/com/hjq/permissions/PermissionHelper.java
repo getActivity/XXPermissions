@@ -1,9 +1,7 @@
 package com.hjq.permissions;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import com.hjq.permissions.permission.PermissionConstants;
-import com.hjq.permissions.permission.base.IPermission;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,41 +30,5 @@ final class PermissionHelper {
     @NonNull
     static List<String> getLowLevelPermissions() {
         return LOW_LEVEL_PERMISSION_LIST;
-    }
-
-    /**
-     * 通过权限请求间隔时间
-     */
-    static int getMaxIntervalTimeByPermissions(@Nullable List<IPermission> permissions) {
-        if (permissions == null) {
-            return 0;
-        }
-        int maxWaitTime = 0;
-        for (IPermission permission : permissions) {
-            int time = permission.getRequestIntervalTime();
-            if (time == 0) {
-                continue;
-            }
-            maxWaitTime = Math.max(maxWaitTime, time);
-        }
-        return maxWaitTime;
-    }
-
-    /**
-     * 通过权限集合获取最大的回调等待时间
-     */
-    static int getMaxWaitTimeByPermissions(@Nullable List<IPermission> permissions) {
-        if (permissions == null) {
-            return 0;
-        }
-        int maxWaitTime = 0;
-        for (IPermission permission : permissions) {
-            int time = permission.getResultWaitTime();
-            if (time == 0) {
-                continue;
-            }
-            maxWaitTime = Math.max(maxWaitTime, time);
-        }
-        return maxWaitTime;
     }
 }

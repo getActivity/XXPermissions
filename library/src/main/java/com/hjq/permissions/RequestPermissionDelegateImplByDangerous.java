@@ -47,7 +47,7 @@ final class RequestPermissionDelegateImplByDangerous extends RequestPermissionDe
 
         // 延迟处理权限请求的结果
         sendTask(this::dispatchPermissionCallback,
-            PermissionHelper.getMaxWaitTimeByPermissions(getPermissionRequestList()));
+            PermissionApi.getMaxWaitTimeByPermissions(getPermissionRequestList()));
     }
 
     private void dispatchPermissionCallback() {

@@ -219,4 +219,40 @@ final class PermissionApi {
         }
         return true;
     }
+
+    /**
+     * 通过权限集合获取最大的间隔时间
+     */
+    static int getMaxIntervalTimeByPermissions(@Nullable List<IPermission> permissions) {
+        if (permissions == null) {
+            return 0;
+        }
+        int maxWaitTime = 0;
+        for (IPermission permission : permissions) {
+            int time = permission.getRequestIntervalTime();
+            if (time == 0) {
+                continue;
+            }
+            maxWaitTime = Math.max(maxWaitTime, time);
+        }
+        return maxWaitTime;
+    }
+
+    /**
+     * 通过权限集合获取最大的回调等待时间
+     */
+    static int getMaxWaitTimeByPermissions(@Nullable List<IPermission> permissions) {
+        if (permissions == null) {
+            return 0;
+        }
+        int maxWaitTime = 0;
+        for (IPermission permission : permissions) {
+            int time = permission.getResultWaitTime();
+            if (time == 0) {
+                continue;
+            }
+            maxWaitTime = Math.max(maxWaitTime, time);
+        }
+        return maxWaitTime;
+    }
 }

@@ -152,7 +152,7 @@ final class RequestPermissionLogicPresenter {
                 }
 
                 final List<IPermission> finalPermissions = nextPermissions;
-                int maxWaitTimeByPermissions = PermissionHelper.getMaxIntervalTimeByPermissions(nextPermissions);
+                int maxWaitTimeByPermissions = PermissionApi.getMaxIntervalTimeByPermissions(nextPermissions);
                 if (maxWaitTimeByPermissions == 0) {
                     requestPermissions(activity, finalPermissions, fragmentFactory, permissionDescription, this);
                 } else {
