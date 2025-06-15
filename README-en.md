@@ -182,10 +182,19 @@ XXPermissions.containsSpecialPermission(@NonNull IPermission[] permissions);
 XXPermissions.containsSpecialPermission(@NonNull List<IPermission> permissions);
 
 // Check if a permission is a background permission
-XXPermissions.isBackgroundPermission(@NonNull IPermission permission);
+XXPermissions.isBackgroundPermission(@NonNull Context context, @NonNull IPermission permission);
 // Check if a permission list contains any background permissions
-XXPermissions.containsBackgroundPermission(@NonNull IPermission[] permissions);
-XXPermissions.containsBackgroundPermission(@NonNull List<IPermission> permissions);
+XXPermissions.containsBackgroundPermission(@NonNull Context context, @NonNull IPermission[] permissions);
+XXPermissions.containsBackgroundPermission(@NonNull Context context, @NonNull List<IPermission> permissions);
+
+// Determine whether the two permissions are equal
+XXPermissions.equalsPermission(@NonNull IPermission permission, @NonNull IPermission permission2);
+XXPermissions.equalsPermission(@NonNull IPermission permission, @NonNull String permissionName);
+XXPermissions.equalsPermission(@NonNull String permissionName1, @NonNull String permissionName2);
+
+// Determine whether a certain permission is included in the permission list
+XXPermissions.containsPermission(@NonNull List<IPermission> permissions, @NonNull IPermission permission);
+XXPermissions.containsPermission(@NonNull List<IPermission> permissions, @NonNull String permissionName);
 
 // Check if a permission has been denied with the "Never ask again" option selected 
 // (Must be called within the permission request callback to be effective)

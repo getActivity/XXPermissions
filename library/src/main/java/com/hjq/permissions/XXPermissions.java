@@ -393,19 +393,45 @@ public final class XXPermissions {
     /**
      * 判断某个权限是否为后台权限
      */
-    public static boolean isBackgroundPermission(@NonNull IPermission permission) {
-        return permission.isBackgroundPermission();
+    public static boolean isBackgroundPermission(@NonNull Context context, @NonNull IPermission permission) {
+        return permission.isBackgroundPermission(context);
     }
 
     /**
      * 判断权限列表中是否包含后台权限
      */
-    public static boolean containsBackgroundPermission(@NonNull IPermission[] permissions) {
-        return containsBackgroundPermission(PermissionUtils.asArrayList(permissions));
+    public static boolean containsBackgroundPermission(@NonNull Context context, @NonNull IPermission[] permissions) {
+        return containsBackgroundPermission(context, PermissionUtils.asArrayList(permissions));
     }
 
-    public static boolean containsBackgroundPermission(@NonNull List<IPermission> permissions) {
-        return PermissionApi.containsBackgroundPermission(permissions);
+    public static boolean containsBackgroundPermission(@NonNull Context context, @NonNull List<IPermission> permissions) {
+        return PermissionApi.containsBackgroundPermission(context, permissions);
+    }
+
+    /**
+     * 判断两个权限是否相等
+     */
+    public static boolean equalsPermission(@NonNull IPermission permission, @NonNull IPermission permission2) {
+        return PermissionUtils.equalsPermission(permission.getPermissionName(), permission2.getPermissionName());
+    }
+
+    public static boolean equalsPermission(@NonNull IPermission permission, @NonNull String permissionName) {
+        return PermissionUtils.equalsPermission(permission.getPermissionName(), permissionName);
+    }
+
+    public static boolean equalsPermission(@NonNull String permissionName1, @NonNull String permissionName2) {
+        return PermissionUtils.equalsPermission(permissionName1, permissionName2);
+    }
+
+    /**
+     * 判断权限列表中是否包含某个权限
+     */
+    public static boolean containsPermission(@NonNull List<IPermission> permissions, @NonNull IPermission permission) {
+        return PermissionUtils.containsPermission(permissions, permission);
+    }
+
+    public static boolean containsPermission(@NonNull List<IPermission> permissions, @NonNull String permissionName) {
+        return PermissionUtils.containsPermission(permissions, permissionName);
     }
 
     /**

@@ -228,16 +228,20 @@ public final class PermissionUtils {
     /**
      * 判断两个权限字符串是否为同一个
      */
-    public static boolean equalsPermission(@NonNull String permission1, @NonNull String permission2) {
-        int length = permission1.length();
-        if (length != permission2.length()) {
+    public static boolean equalsPermission(@NonNull String permissionName1, @NonNull String permissionName2) {
+        // 如果这两个对象的哈希值一样，那么就证明它们是同一个对象
+        if (permissionName1.hashCode() == permissionName2.hashCode()) {
+            return true;
+        }
+        int length = permissionName1.length();
+        if (length != permissionName2.length()) {
             return false;
         }
 
-        // 因为权限字符串都是 android.permission 开头
+        // 因为权限字符串大多数都是以 android.permission 开头
         // 所以从最后一个字符开始判断，可以提升 equals 的判断效率
         for (int i = length - 1; i >= 0; i--) {
-            if (permission1.charAt(i) != permission2.charAt(i)) {
+            if (permissionName1.charAt(i) != permissionName2.charAt(i)) {
                 return false;
             }
         }
@@ -247,8 +251,8 @@ public final class PermissionUtils {
     /**
      * 判断两个权限字符串是否为同一个
      */
-    public static boolean equalsPermission(@NonNull IPermission permission1, @NonNull String permission2) {
-        return equalsPermission(permission1.getPermissionName(), permission2);
+    public static boolean equalsPermission(@NonNull IPermission permission, @NonNull String permissionName) {
+        return equalsPermission(permission.getPermissionName(), permissionName);
     }
 
     /**
@@ -260,7 +264,7 @@ public final class PermissionUtils {
         }
         for (IPermission item : permissions) {
             // 使用 equalsPermission 来判断可以提升代码执行效率
-            if (equalsPermission(item.getPermissionName(), permission.getPermissionName())) {
+            if (equalsPermission(permission, item.getPermissionName())) {
                 return true;
             }
         }
@@ -270,13 +274,13 @@ public final class PermissionUtils {
     /**
      * 判断权限集合中是否包含某个权限
      */
-    public static boolean containsPermission(@NonNull Collection<IPermission> permissions, @NonNull String permission) {
+    public static boolean containsPermission(@NonNull Collection<IPermission> permissions, @NonNull String permissionName) {
         if (permissions.isEmpty()) {
             return false;
         }
         for (IPermission item : permissions) {
             // 使用 equalsPermission 来判断可以提升代码执行效率
-            if (equalsPermission(item.getPermissionName(), permission)) {
+            if (equalsPermission(item.getPermissionName(), permissionName)) {
                 return true;
             }
         }

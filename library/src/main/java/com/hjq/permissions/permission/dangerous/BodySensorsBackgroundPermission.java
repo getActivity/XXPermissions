@@ -68,7 +68,7 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public List<IPermission> getForegroundPermission() {
+    public List<IPermission> getForegroundPermission(@NonNull Context context) {
         return PermissionUtils.asArrayList(PermissionManifest.getBodySensorsPermission());
     }
 

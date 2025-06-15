@@ -68,7 +68,7 @@ public final class PermissionDescription implements OnPermissionDescription {
             mDescriptionWindowType = activityOrientation == Configuration.ORIENTATION_PORTRAIT ?
                 DESCRIPTION_WINDOW_TYPE_POPUP : DESCRIPTION_WINDOW_TYPE_DIALOG;
             // 如果本次申请的权限中带有后台权限（例如后台定位权限、后台传感器权限等），则改用 Dialog 来展示权限说明弹窗
-            if (XXPermissions.containsBackgroundPermission(requestPermissions)) {
+            if (XXPermissions.containsBackgroundPermission(activity, requestPermissions)) {
                 mDescriptionWindowType = DESCRIPTION_WINDOW_TYPE_DIALOG;
             }
         }

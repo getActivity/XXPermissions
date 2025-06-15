@@ -126,13 +126,26 @@ final class RequestPermissionLogicPresenter {
                     return;
                 }
 
+                // 获取第下一次要申请权限列表中的首个权限
+                IPermission firstNextPermission = nextPermissions.get(0);
                 // 如果下一个请求的权限是后台权限
-                if (nextPermissions.size() == 1 && nextPermissions.get(0).isBackgroundPermission()) {
-                    List<IPermission> foregroundPermissions = nextPermissions.get(0).getForegroundPermission();
+                if (firstNextPermission.isBackgroundPermission(activity)) {
+                    List<IPermission> foregroundPermissions = firstNextPermission.getForegroundPermission(activity);
+                    boolean grantedForegroundPermission = false;
                     // 如果这个后台权限对应的前台权限没有申请成功，则不要去申请后台权限，因为申请了也没有用，系统肯定不会给通过的
                     // 如果这种情况下还硬要去申请，等下还可能会触发权限说明弹窗，但是没有实际去申请权限的情况
-                    if (foregroundPermissions != null && !foregroundPermissions.isEmpty() && !PermissionApi.isGrantedPermissions(activity, foregroundPermissions)) {
-                        // 直接进行下一轮申请
+                    if (foregroundPermissions != null && !foregroundPermissions.isEmpty()) {
+                        for (IPermission foregroundPermission : foregroundPermissions) {
+                            if (!foregroundPermission.isGranted(activity)) {
+                                continue;
+                            }
+                            // 所有的前台权限中，只要有任一一个授权了，就算它是前台权限是申请通过的
+                            grantedForegroundPermission = true;
+                        }
+                    }
+
+                    if (!grantedForegroundPermission) {
+                        // 如果前台权限没有授予，就不去申请后台权限，直接进行下一轮申请
                         this.run();
                         return;
                     }
@@ -250,7 +263,7 @@ final class RequestPermissionLogicPresenter {
             while (iterator.hasNext()) {
                 IPermission todoPermission = iterator.next();
                 // 先判断这个权限是不是后台权限，如果不是就继续找
-                if (!todoPermission.isBackgroundPermission()) {
+                if (!todoPermission.isBackgroundPermission(activity)) {
                     continue;
                 }
                 // 将后台权限单独领出来放到另外一个集合中

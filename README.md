@@ -188,10 +188,19 @@ XXPermissions.containsSpecialPermission(@NonNull IPermission[] permissions);
 XXPermissions.containsSpecialPermission(@NonNull List<IPermission> permissions);
 
 // 判断某个权限是否为后台权限
-XXPermissions.isBackgroundPermission(@NonNull IPermission permission);
+XXPermissions.isBackgroundPermission(@NonNull Context context, @NonNull IPermission permission);
 // 判断权限列表中是否包含后台权限
-XXPermissions.containsBackgroundPermission(@NonNull IPermission[] permissions);
-XXPermissions.containsBackgroundPermission(@NonNull List<IPermission> permissions);
+XXPermissions.containsBackgroundPermission(@NonNull Context context, @NonNull IPermission[] permissions);
+XXPermissions.containsBackgroundPermission(@NonNull Context context, @NonNull List<IPermission> permissions);
+
+// 判断两个权限是否相等
+XXPermissions.equalsPermission(@NonNull IPermission permission, @NonNull IPermission permission2);
+XXPermissions.equalsPermission(@NonNull IPermission permission, @NonNull String permissionName);
+XXPermissions.equalsPermission(@NonNull String permissionName1, @NonNull String permissionName2);
+
+// 判断权限列表中是否包含某个权限
+XXPermissions.containsPermission(@NonNull List<IPermission> permissions, @NonNull IPermission permission);
+XXPermissions.containsPermission(@NonNull List<IPermission> permissions, @NonNull String permissionName);
 
 // 判断一个或多个权限是否被勾选了《不再询问》的选项（一定要在权限申请的回调方法中调用才有效果）
 XXPermissions.isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull IPermission permission);

@@ -68,15 +68,31 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
 
     @NonNull
     @Override
-    public List<IPermission> getForegroundPermission() {
-        return PermissionUtils.asArrayList(PermissionManifest.getAccessFineLocationPermission(), PermissionManifest.getAccessCoarseLocationPermission());
+    public List<IPermission> getForegroundPermission(@NonNull Context context) {
+        // 判断当前应用适配且运行在 Android 12 及以上
+        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_12)) {
+            // 如果是的话，那么这个前台定位权限可以是精确定位权限，也可以是模糊定位权限
+            return PermissionUtils.asArrayList(PermissionManifest.getAccessFineLocationPermission(), PermissionManifest.getAccessCoarseLocationPermission());
+        } else {
+            // 如果不是的话，那么这个前台定位权限只能是精确定位权限
+            return PermissionUtils.asArrayList(PermissionManifest.getAccessFineLocationPermission());
+        }
     }
 
     @Override
     protected boolean isGrantedByStandardVersion(@NonNull Context context, boolean skipRequest) {
         // 判断后台定位权限授予之前，需要先判断前台定位权限是否授予，如果前台定位权限没有授予，那么后台定位权限就算授予了也没用
-        if (!PermissionManifest.getAccessFineLocationPermission().isGranted(context, skipRequest)) {
-            return false;
+        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_12)) {
+            // 在 Android 12 及之后的版本，申请后台定位权限既可以用精确定位权限也可以用模糊定位权限
+            if (!PermissionManifest.getAccessFineLocationPermission().isGranted(context, skipRequest) &&
+                !PermissionManifest.getAccessCoarseLocationPermission().isGranted(context, skipRequest)) {
+                return false;
+            }
+        } else {
+            // 在 Android 11 及之前的版本，申请后台定位权限需要精确定位权限
+            if (!PermissionManifest.getAccessFineLocationPermission().isGranted(context, skipRequest)) {
+                return false;
+            }
         }
         return super.isGrantedByStandardVersion(context, skipRequest);
     }
@@ -89,8 +105,17 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
     @Override
     protected boolean isDoNotAskAgainByStandardVersion(@NonNull Activity activity) {
         // 如果前台定位权限被用户勾选了不再询问选项，那么后台定位权限也要跟着同步
-        if (PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgain(activity)) {
-            return true;
+        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_12)) {
+            // 在 Android 12 及之后的版本，申请后台定位权限既可以用精确定位权限也可以用模糊定位权限
+            if (PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgain(activity) &&
+                PermissionManifest.getAccessCoarseLocationPermission().isDoNotAskAgain(activity)) {
+                return true;
+            }
+        } else {
+            // 在 Android 11 及之前的版本，申请后台定位权限需要精确定位权限
+            if (PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgain(activity)) {
+                return true;
+            }
         }
         return super.isDoNotAskAgainByStandardVersion(activity);
     }
@@ -134,7 +159,6 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
     @Override
     protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
         super.checkSelfByRequestPermissions(activity, requestPermissions);
-        // 注释上面代码的原因是：框架不知道外层传的到底是精确定位权限还是模糊定位权限
         // 如果您的应用以 Android 12 为目标平台并且您请求 ACCESS_FINE_LOCATION 权限
         // 则还必须请求 ACCESS_COARSE_LOCATION 权限。您必须在单个运行时请求中包含这两项权限
         // 如果您尝试仅请求 ACCESS_FINE_LOCATION，则系统会忽略该请求并在 Logcat 中记录以下错误消息：
@@ -144,7 +168,8 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
             PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_COARSE_LOCATION) &&
             !PermissionUtils.containsPermission(requestPermissions, PermissionConstants.ACCESS_FINE_LOCATION)) {
             // 申请后台定位权限可以不包含模糊定位权限，但是一定要包含精确定位权限，否则后台定位权限会无法申请
-            // 也就是会导致无法弹出授权弹窗，经过实践，在 Android 12 上这个问题已经被解决了，所以不再
+            // 也就是会导致无法弹出授权弹窗，经过实践，在 Android 12 上这个问题已经被解决了
+            // 在 Android 12 及之后的版本，申请后台定位权限既可以用精确定位权限也可以用模糊定位权限作为前台定位权限
             // 但是为了兼容 Android 12 以下的设备还是要那么做，否则在 Android 11 及以下设备会出现异常
             // 另外这里解释一下为什么不直接判断有没有包含精确定位权限，而是要判断有模糊定位权限的情况下但是没有精确定位权限的情况
             // 这是因为框架考虑到外部的调用者会将前台定位权限（包含精确定位和模糊定位权限）和后台定位权限拆成独立的两次权限申请

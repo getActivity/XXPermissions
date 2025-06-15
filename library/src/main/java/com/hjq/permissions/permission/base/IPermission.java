@@ -56,7 +56,7 @@ public interface IPermission extends Parcelable {
      * 获取当前权限对应的前台权限
      */
     @Nullable
-    default List<IPermission> getForegroundPermission() {
+    default List<IPermission> getForegroundPermission(@NonNull Context context) {
         // 表示没有前台权限
         return null;
     }
@@ -64,8 +64,8 @@ public interface IPermission extends Parcelable {
     /**
      * 当前权限是否为后台权限
      */
-    default boolean isBackgroundPermission() {
-        List<IPermission> foregroundPermission = getForegroundPermission();
+    default boolean isBackgroundPermission(@NonNull Context context) {
+        List<IPermission> foregroundPermission = getForegroundPermission(context);
         if (foregroundPermission == null) {
             return false;
         }
