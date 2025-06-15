@@ -112,7 +112,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         if (viewId == R.id.btn_main_request_single_permission) {
 
             XXPermissions.with(this)
-                .permission(PermissionManifest.getCameraPermission())
+                .permission(PermissionManifest.getReceiveWapPushPermission())
                 .interceptor(new PermissionInterceptor())
                 .description(new PermissionDescription())
                 .request(new OnPermissionCallback() {
@@ -670,7 +670,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_multiple_type_permission) {
 
             XXPermissions.with(this)
-                .permission(PermissionManifest.getCameraPermission())
+                .permission(PermissionManifest.getReadCallLogPermission())
+                .permission(PermissionManifest.getWriteCallLogPermission())
                 .permission(PermissionManifest.getSystemAlertWindowPermission())
                 .interceptor(new PermissionInterceptor())
                 .description(new PermissionDescription())
