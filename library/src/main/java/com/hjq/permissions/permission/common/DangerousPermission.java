@@ -36,32 +36,46 @@ public abstract class DangerousPermission extends BasePermission {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
+        // 判断权限是不是在旧系统上面运行（权限出现的版本 > 当前系统的版本）
         if (isLowVersionRunning()) {
             return isGrantedPermissionByLowVersion(context, skipRequest);
         }
         return isGrantedPermissionByStandardVersion(context, skipRequest);
     }
 
+    /**
+     * 在标准版本的系统上面判断权限是否授予
+     */
     protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
         return checkSelfPermission(context, getPermissionName());
     }
 
+    /**
+     * 在低版本的系统上面判断权限是否授予
+     */
     protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
         return true;
     }
 
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
+        // 判断权限是不是在旧系统上面运行（权限出现的版本 > 当前系统的版本）
         if (isLowVersionRunning()) {
             return isDoNotAskAgainPermissionByLowVersion(activity);
         }
         return isDoNotAskAgainPermissionByStandardVersion(activity);
     }
 
+    /**
+     * 在标准版本的系统上面判断权限是否被用户勾选了《不再询问的选项》
+     */
     protected boolean isDoNotAskAgainPermissionByStandardVersion(@NonNull Activity activity) {
         return checkDoNotAskAgainPermission(activity, getPermissionName());
     }
 
+    /**
+     * 在低版本的系统上面判断权限是否被用户勾选了《不再询问的选项》
+     */
     protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
         return false;
     }
