@@ -145,7 +145,7 @@ public final class PhoneRomUtils {
         try {
             Class<?> buildExClass = Class.forName("com.huawei.system.BuildEx");
             Object osBrand = buildExClass.getMethod("getOsBrand").invoke(buildExClass);
-            return "Harmony".equalsIgnoreCase(java.lang.String.valueOf(osBrand));
+            return "Harmony".equalsIgnoreCase(String.valueOf(osBrand));
         } catch (ClassNotFoundException ignore) {
             // 如果是类找不到的问题，就不打印日志，否则会影响看 Logcat 的体验
             // 相关 Github issue 地址：https://github.com/getActivity/XXPermissions/issues/368
@@ -181,10 +181,10 @@ public final class PhoneRomUtils {
         try {
             Class<?> clazz = Class.forName("android.os.SystemProperties");
             Method getMethod = clazz.getMethod("get", String.class, String.class);
-            String ctsValue = java.lang.String.valueOf(getMethod.invoke(clazz, "ro.miui.cts", ""));
+            String ctsValue = String.valueOf(getMethod.invoke(clazz, "ro.miui.cts", ""));
             Method getBooleanMethod = clazz.getMethod("getBoolean", String.class, boolean.class);
             return Boolean.parseBoolean(
-                java.lang.String.valueOf(getBooleanMethod.invoke(clazz, "persist.sys.miui_optimization", !"1".equals(ctsValue))));
+                String.valueOf(getBooleanMethod.invoke(clazz, "persist.sys.miui_optimization", !"1".equals(ctsValue))));
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
