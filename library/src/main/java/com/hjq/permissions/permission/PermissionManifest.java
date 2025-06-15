@@ -625,7 +625,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.CONTACTS, AndroidVersionTools.ANDROID_6));
     }
 
     /**
