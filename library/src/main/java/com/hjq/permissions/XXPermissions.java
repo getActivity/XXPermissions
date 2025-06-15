@@ -254,8 +254,6 @@ public final class XXPermissions {
 
         // 优化所申请的权限列表
         PermissionApi.addOldPermissionsByNewPermissions(activity, permissions);
-        // 优化申请的权限顺序
-        PermissionApi.adjustPermissionsSort(permissions);
 
         // 判断要申请的权限是否都授予了
         if (PermissionApi.isGrantedPermissions(context, permissions)) {
