@@ -7,9 +7,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.AndroidVersionTools;
+import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.permission.PermissionConstants;
 import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -52,6 +55,13 @@ public final class PostNotificationsPermission extends DangerousPermission {
     @Override
     public int getFromAndroidVersion() {
         return AndroidVersionTools.ANDROID_13;
+    }
+
+    @NonNull
+    @Override
+    public List<IPermission> getOldPermissions(Context context) {
+        // Android 13 以下开启通知栏服务，需要用到旧的通知栏权限（框架自己虚拟出来的）
+        return PermissionUtils.asArrayList(PermissionManifest.getNotificationServicePermission());
     }
 
     @Override

@@ -53,6 +53,15 @@ public interface IPermission extends Parcelable {
     }
 
     /**
+     * 获取当前权限对应的旧权限
+     */
+    @Nullable
+    default List<IPermission> getOldPermissions(Context context) {
+        // 表示没有旧权限
+        return null;
+    }
+
+    /**
      * 获取当前权限对应的前台权限
      */
     @Nullable

@@ -125,7 +125,7 @@ final class PermissionApi {
                 continue;
             }
 
-            List<IPermission> oldPermissions = PermissionHelper.queryOldPermissionByNewPermission(permission);
+            List<IPermission> oldPermissions = permission.getOldPermissions(context);
             // 1. 如果旧版本列表不为空，并且当前权限是特殊权限，就剔除它对应的旧版本权限
             // 例如：MANAGE_EXTERNAL_STORAGE -> READ_EXTERNAL_STORAGE、WRITE_EXTERNAL_STORAGE
             // 2. 如果旧版本列表不为空，并且当前权限对应的旧版本权限包含了特殊权限，就剔除它对应的旧版本权限
@@ -150,7 +150,7 @@ final class PermissionApi {
     /**
      * 根据新权限添加旧权限
      */
-    static void addOldPermissionsByNewPermissions(@NonNull List<IPermission> requestPermissions) {
+    static void addOldPermissionsByNewPermissions(@NonNull Context context, @NonNull List<IPermission> requestPermissions) {
         // 需要补充的权限列表
         List<IPermission> needSupplementPermissions =  null;
         for (IPermission permission : requestPermissions) {
@@ -159,7 +159,7 @@ final class PermissionApi {
                 continue;
             }
             // 通过新权限查询到对应的旧权限
-            List<IPermission> oldPermissions = PermissionHelper.queryOldPermissionByNewPermission(permission);
+            List<IPermission> oldPermissions = permission.getOldPermissions(context);
             if (oldPermissions == null || oldPermissions.isEmpty()) {
                 continue;
             }

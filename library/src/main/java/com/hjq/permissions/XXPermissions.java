@@ -247,15 +247,15 @@ public final class XXPermissions {
             PermissionChecker.checkPermissionList(activity, permissions, PermissionUtils.getAndroidManifestInfo(context));
         }
 
-        // 优化所申请的权限列表
-        PermissionApi.addOldPermissionsByNewPermissions(permissions);
-        // 优化申请的权限顺序
-        PermissionApi.adjustPermissionsSort(permissions);
-
         // 检查 Activity 是不是不可用
         if (PermissionUtils.isActivityUnavailable(activity)) {
             return;
         }
+
+        // 优化所申请的权限列表
+        PermissionApi.addOldPermissionsByNewPermissions(activity, permissions);
+        // 优化申请的权限顺序
+        PermissionApi.adjustPermissionsSort(permissions);
 
         // 判断要申请的权限是否都授予了
         if (PermissionApi.isGrantedPermissions(context, permissions)) {

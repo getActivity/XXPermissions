@@ -67,6 +67,13 @@ public final class NearbyWifiDevicesPermission extends DangerousPermission {
         return AndroidVersionTools.ANDROID_13;
     }
 
+    @NonNull
+    @Override
+    public List<IPermission> getOldPermissions(Context context) {
+        // Android 13 以下使用 WIFI 功能需要用到精确定位的权限
+        return PermissionUtils.asArrayList(PermissionManifest.getAccessFineLocationPermission());
+    }
+
     @Override
     protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
         return PermissionManifest.getAccessFineLocationPermission().isGranted(context, skipRequest);

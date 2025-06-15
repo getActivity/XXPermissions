@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import com.hjq.permissions.AndroidManifestInfo;
 import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
+import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.permission.PermissionConstants;
 import com.hjq.permissions.permission.PermissionGroupConstants;
 import com.hjq.permissions.permission.PermissionManifest;
@@ -63,6 +64,13 @@ public final class ReadPhoneNumbersPermission extends DangerousPermission {
     @Override
     public int getFromAndroidVersion() {
         return AndroidVersionTools.ANDROID_8;
+    }
+
+    @NonNull
+    @Override
+    public List<IPermission> getOldPermissions(Context context) {
+        // Android 8.0 以下读取电话号码需要用到读取电话状态的权限
+        return PermissionUtils.asArrayList(PermissionManifest.getReadPhoneStatePermission());
     }
 
     @Override

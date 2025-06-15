@@ -76,6 +76,13 @@ public final class BluetoothScanPermission extends DangerousPermission {
         return AndroidVersionTools.ANDROID_6;
     }
 
+    @NonNull
+    @Override
+    public List<IPermission> getOldPermissions(Context context) {
+        // Android 12 以下扫描蓝牙需要精确定位权限
+        return PermissionUtils.asArrayList(PermissionManifest.getAccessFineLocationPermission());
+    }
+
     @Override
     protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
         return PermissionManifest.getAccessFineLocationPermission().isGranted(context, skipRequest);
