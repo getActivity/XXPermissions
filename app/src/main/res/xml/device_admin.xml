@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<device-admin>
+    <uses-policies>
+        <!-- 限制密码类型 -->
+        <limit-password />
+        <!-- 监控登录尝试 -->
+        <watch-login />
+        <!-- 重置密码 -->
+        <reset-password />
+        <!--锁屏 -->
+        <force-lock />
+        <!-- 恢复出厂设置 -->
+        <wipe-data />
+    </uses-policies>
+</device-admin>

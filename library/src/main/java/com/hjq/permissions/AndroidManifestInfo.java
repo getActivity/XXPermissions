@@ -42,6 +42,10 @@ public final class AndroidManifestInfo {
     @NonNull
     public final List<ServiceInfo> serviceInfoList = new ArrayList<>();
 
+    /** BroadcastReceiver 节点信息 */
+    @NonNull
+    public final List<BroadcastReceiverInfo> broadcastReceiverInfoList = new ArrayList<>();
+
     public static final class UsesSdkInfo {
 
         /** 最小安装版本要求 **/
@@ -103,6 +107,17 @@ public final class AndroidManifestInfo {
         public String name = "";
 
         /** 服务所使用到的权限 */
+        @Nullable
+        public String permission;
+    }
+
+    public static final class BroadcastReceiverInfo {
+
+        /** 广播的类名 */
+        @NonNull
+        public String name = "";
+
+        /** 广播所使用到的权限 */
         @Nullable
         public String permission;
     }

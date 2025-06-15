@@ -34,6 +34,7 @@ final class AndroidManifestParser {
     private static final String TAG_ACTIVITY = "activity";
     private static final String TAG_ACTIVITY_ALIAS = "activity-alias";
     private static final String TAG_SERVICE = "service";
+    private static final String TAG_RECEIVER = "receiver";
 
     private static final String ATTR_PACKAGE = "package";
     private static final String ATTR_NAME = "name";
@@ -98,6 +99,10 @@ final class AndroidManifestParser {
                     manifestInfo.serviceInfoList.add(parseServerFromXml(parser));
                 }
 
+                if (TextUtils.equals(TAG_RECEIVER, tagName)) {
+                    manifestInfo.broadcastReceiverInfoList.add(parseBroadcastReceiverFromXml(parser));
+                }
+
             } while (parser.next() != XmlResourceParser.END_DOCUMENT);
         }
 
@@ -156,5 +161,14 @@ final class AndroidManifestParser {
         serviceInfo.name = serviceClassName != null ? serviceClassName : "";
         serviceInfo.permission = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_PERMISSION);
         return serviceInfo;
+    }
+
+    @NonNull
+    private static AndroidManifestInfo.BroadcastReceiverInfo parseBroadcastReceiverFromXml(@NonNull XmlResourceParser parser) {
+        AndroidManifestInfo.BroadcastReceiverInfo broadcastReceiverInfo = new AndroidManifestInfo.BroadcastReceiverInfo();
+        String broadcastReceiverClassName = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
+        broadcastReceiverInfo.name = broadcastReceiverClassName != null ? broadcastReceiverClassName : "";
+        broadcastReceiverInfo.permission = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_PERMISSION);
+        return broadcastReceiverInfo;
     }
 }

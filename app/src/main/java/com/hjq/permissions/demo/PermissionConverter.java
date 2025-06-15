@@ -155,6 +155,9 @@ public final class PermissionConverter {
 
         PERMISSION_NAME_MAP.put(PermissionNames.USE_FULL_SCREEN_INTENT, R.string.common_permission_full_screen_notifications);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_full_screen_notifications, R.string.common_permission_description_demo);
+
+        PERMISSION_NAME_MAP.put(PermissionNames.BIND_DEVICE_ADMIN, R.string.common_permission_device_admin);
+        PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_device_admin, R.string.common_permission_description_demo);
     }
 
     /**

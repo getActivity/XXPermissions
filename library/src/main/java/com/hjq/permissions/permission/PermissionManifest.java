@@ -2,6 +2,7 @@ package com.hjq.permissions.permission;
 
 import android.Manifest;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LruCache;
@@ -24,9 +25,11 @@ import com.hjq.permissions.permission.dangerous.ReadMediaVideoPermission;
 import com.hjq.permissions.permission.dangerous.ReadMediaVisualUserSelectedPermission;
 import com.hjq.permissions.permission.dangerous.ReadPhoneNumbersPermission;
 import com.hjq.permissions.permission.dangerous.WriteExternalStoragePermission;
-import com.hjq.permissions.permission.special.ManageExternalStoragePermission;
-import com.hjq.permissions.permission.special.BindNotificationListenerServicePermission;
 import com.hjq.permissions.permission.special.AccessNotificationPolicyPermission;
+import com.hjq.permissions.permission.special.BindDeviceAdminPermission;
+import com.hjq.permissions.permission.special.BindNotificationListenerServicePermission;
+import com.hjq.permissions.permission.special.BindVpnServicePermission;
+import com.hjq.permissions.permission.special.ManageExternalStoragePermission;
 import com.hjq.permissions.permission.special.NotificationServicePermission;
 import com.hjq.permissions.permission.special.PackageUsageStatsPermission;
 import com.hjq.permissions.permission.special.PictureInPicturePermission;
@@ -35,7 +38,6 @@ import com.hjq.permissions.permission.special.RequestInstallPackagesPermission;
 import com.hjq.permissions.permission.special.ScheduleExactAlarmPermission;
 import com.hjq.permissions.permission.special.SystemAlertWindowPermission;
 import com.hjq.permissions.permission.special.UseFullScreenIntentPermission;
-import com.hjq.permissions.permission.special.BindVpnServicePermission;
 import com.hjq.permissions.permission.special.WriteSettingsPermission;
 
 /**
@@ -289,6 +291,20 @@ public final class PermissionManifest {
             return permission;
         }
         return putCachePermission(new NotificationServicePermission());
+    }
+
+    /**
+     * 获取设备管理权限（特殊权限，Android 2.2 新增的权限，注意此权限不需要在清单文件中注册也能申请）
+     *
+     * @param clazz                                 设备管理器的 BroadcastReceiver 类
+     * @param extraAddExplanation                   申请设备管理器权限的附加说明
+     */
+    public static IPermission getBindDeviceAdminPermission(@NonNull Class<? extends BroadcastReceiver> clazz, @Nullable String extraAddExplanation) {
+        return new BindDeviceAdminPermission(clazz, extraAddExplanation);
+    }
+
+    public static IPermission getBindDeviceAdminPermission(@NonNull Class<? extends BroadcastReceiver> clazz) {
+        return new BindDeviceAdminPermission(clazz, null);
     }
 
     /* ------------------------------------ 我是一条华丽的分割线 ------------------------------------ */

@@ -200,6 +200,22 @@
             </intent-filter>
         </service>
 
+        <!-- 设备管理器广播接收器 -->
+        <receiver
+            android:name=".DemoDeviceAdminReceiver"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN" >
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin" />
+
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <!--<action android:name="android.intent.action.BOOT_COMPLETED" />-->
+                <category android:name="android.intent.category.HOME" />
+            </intent-filter>
+        </receiver>
+
         <!-- 告知 XXPermissions 当前项目已经适配了分区存储特性 -->
         <meta-data
             android:name="ScopedStorage"
