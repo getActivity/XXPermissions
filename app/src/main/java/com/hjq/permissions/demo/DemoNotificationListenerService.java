@@ -11,9 +11,9 @@ import android.util.Log;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2022/01/22
- *    desc   : 通知消息监控服务
+ *    desc   : 通知消息监控服务实现类
  */
-public final class NotificationMonitorService extends NotificationListenerService {
+public final class DemoNotificationListenerService extends NotificationListenerService {
 
     /**
      * 当系统收到新的通知后出发回调

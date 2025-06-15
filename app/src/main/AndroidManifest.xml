@@ -192,7 +192,7 @@
 
         <!-- 通知监听服务 -->
         <service
-            android:name=".NotificationMonitorService"
+            android:name=".DemoNotificationListenerService"
             android:exported="false"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" >
             <intent-filter>

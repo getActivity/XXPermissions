@@ -506,7 +506,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     // 不需要指定通知监听类（不推荐，两种写法只能二选一，不可以两种都写）
                     //.permission(PermissionManifest.getNotificationListenerServicePermission())
                     // 需要指定通知监听类（推荐，两种写法只能二选一，不可以两种都写）
-                    .permission(PermissionManifest.getBindNotificationListenerServicePermission(NotificationMonitorService.class))
+                    .permission(PermissionManifest.getBindNotificationListenerServicePermission(
+                        DemoNotificationListenerService.class))
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -730,11 +731,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
     private void toggleNotificationListenerService() {
         PackageManager packageManager = getPackageManager();
         packageManager.setComponentEnabledSetting(
-                new ComponentName(this, NotificationMonitorService.class),
+                new ComponentName(this, DemoNotificationListenerService.class),
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 
         packageManager.setComponentEnabledSetting(
-                new ComponentName(this, NotificationMonitorService.class),
+                new ComponentName(this, DemoNotificationListenerService.class),
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
     }
 
