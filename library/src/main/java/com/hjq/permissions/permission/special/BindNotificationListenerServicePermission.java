@@ -1,6 +1,7 @@
 package com.hjq.permissions.permission.special;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -90,6 +91,10 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
         // 经过实践得出，通知监听权限是在 Android 4.3 才出现的，所以前面的版本统一返回 true
         if (!AndroidVersionTools.isAndroid4_3()) {
             return true;
+        }
+        if (AndroidVersionTools.isAndroid8_1() && PermissionUtils.isClassExist(mServiceClassName)) {
+            return context.getSystemService(NotificationManager.class)
+                    .isNotificationListenerAccessGranted(new ComponentName(context, mServiceClassName));
         }
         final String enabledNotificationListeners = Settings.Secure.getString(context.getContentResolver(), SETTING_ENABLED_NOTIFICATION_LISTENERS);
         if (TextUtils.isEmpty(enabledNotificationListeners)) {

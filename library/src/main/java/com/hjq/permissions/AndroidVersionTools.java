@@ -117,6 +117,13 @@ public final class AndroidVersionTools {
     }
 
     /**
+     * 是否是 Android 8.1 及以上版本
+     */
+    public static boolean isAndroid8_1() {
+        return Build.VERSION.SDK_INT >= ANDROID_8_1;
+    }
+
+    /**
      * 是否是 Android 8.0 及以上版本
      */
     public static boolean isAndroid8() {
