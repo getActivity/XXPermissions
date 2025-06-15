@@ -494,7 +494,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.PHONE, AndroidVersionTools.ANDROID_9));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.PHONE, AndroidVersionTools.ANDROID_9));
     }
 
     /**
@@ -519,7 +519,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.PHONE, AndroidVersionTools.ANDROID_8));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.PHONE, AndroidVersionTools.ANDROID_8));
     }
 
     /**
@@ -577,7 +577,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.LOCATION, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.LOCATION, AndroidVersionTools.ANDROID_6));
     }
 
     /**
@@ -589,7 +589,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.LOCATION, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.LOCATION, AndroidVersionTools.ANDROID_6));
     }
 
     /**
@@ -601,7 +601,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.CONTACTS, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.CONTACTS, AndroidVersionTools.ANDROID_6));
     }
 
     /**
@@ -613,7 +613,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.CONTACTS, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.CONTACTS, AndroidVersionTools.ANDROID_6));
     }
 
     /**
@@ -637,7 +637,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.CALENDAR, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.CALENDAR, AndroidVersionTools.ANDROID_6));
     }
 
     /**
@@ -649,7 +649,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.CALENDAR, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.CALENDAR, AndroidVersionTools.ANDROID_6));
     }
 
     /**
@@ -668,7 +668,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.PHONE, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.PHONE, AndroidVersionTools.ANDROID_6));
     }
 
     /**
@@ -680,7 +680,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.PHONE, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.PHONE, AndroidVersionTools.ANDROID_6));
     }
 
     /**
@@ -693,7 +693,7 @@ public final class PermissionManifest {
             return permission;
         }
         // 注意：在 Android 9.0 的时候，通话记录相关的权限已经归到一个单独的权限组了，但是在 Android 9.0 之前，读写通话记录权限归属电话权限组
-        String permissionGroup = AndroidVersionTools.isAndroid9() ? PermissionGroupConstants.CALL_LOG : PermissionGroupConstants.PHONE;
+        String permissionGroup = AndroidVersionTools.isAndroid9() ? PermissionGroups.CALL_LOG : PermissionGroups.PHONE;
         return putCachePermission(new StandardDangerousPermission(permissionName, permissionGroup, AndroidVersionTools.ANDROID_6));
     }
 
@@ -707,7 +707,7 @@ public final class PermissionManifest {
             return permission;
         }
         // 注意：在 Android 9.0 的时候，通话记录相关的权限已经归到一个单独的权限组了，但是在 Android 9.0 之前，读写通话记录权限归属电话权限组
-        String permissionGroup = AndroidVersionTools.isAndroid9() ? PermissionGroupConstants.CALL_LOG : PermissionGroupConstants.PHONE;
+        String permissionGroup = AndroidVersionTools.isAndroid9() ? PermissionGroups.CALL_LOG : PermissionGroups.PHONE;
         return putCachePermission(new StandardDangerousPermission(permissionName, permissionGroup, AndroidVersionTools.ANDROID_6));
     }
 
@@ -720,7 +720,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.PHONE, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.PHONE, AndroidVersionTools.ANDROID_6));
     }
 
     /**
@@ -732,7 +732,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.PHONE, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.PHONE, AndroidVersionTools.ANDROID_6));
     }
 
     /**
@@ -747,7 +747,7 @@ public final class PermissionManifest {
             return permission;
         }
         // 注意：在 Android 9.0 的时候，通话记录相关的权限已经归到一个单独的权限组了，但是在 Android 9.0 之前，读写通话记录权限归属电话权限组
-        String permissionGroup = AndroidVersionTools.isAndroid9() ? PermissionGroupConstants.CALL_LOG : PermissionGroupConstants.PHONE;
+        String permissionGroup = AndroidVersionTools.isAndroid9() ? PermissionGroups.CALL_LOG : PermissionGroups.PHONE;
         return putCachePermission(new StandardDangerousPermission(permissionName, permissionGroup, AndroidVersionTools.ANDROID_6));
     }
 
@@ -760,7 +760,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.SENSORS, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.SENSORS, AndroidVersionTools.ANDROID_6));
     }
 
     /**
@@ -772,7 +772,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.SMS, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.SMS, AndroidVersionTools.ANDROID_6));
     }
 
     /**
@@ -784,7 +784,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.SMS, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.SMS, AndroidVersionTools.ANDROID_6));
     }
 
     /**
@@ -796,7 +796,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.SMS, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.SMS, AndroidVersionTools.ANDROID_6));
     }
 
     /**
@@ -808,7 +808,7 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.SMS, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.SMS, AndroidVersionTools.ANDROID_6));
     }
 
     /**
@@ -820,6 +820,6 @@ public final class PermissionManifest {
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroupConstants.SMS, AndroidVersionTools.ANDROID_6));
+        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.SMS, AndroidVersionTools.ANDROID_6));
     }
 }

@@ -12,7 +12,7 @@ import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
-import com.hjq.permissions.permission.PermissionGroupConstants;
+import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.PermissionManifest;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
@@ -61,7 +61,7 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
     @NonNull
     @Override
     public String getPermissionGroup() {
-        return PermissionGroupConstants.STORAGE;
+        return PermissionGroups.STORAGE;
     }
 
     @Override

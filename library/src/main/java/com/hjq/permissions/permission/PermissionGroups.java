@@ -4,9 +4,9 @@ package com.hjq.permissions.permission;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/06/14
- *    desc   : 权限组字符串常量
+ *    desc   : 权限组的名称常量集
  */
-public final class PermissionGroupConstants {
+public final class PermissionGroups {
 
     /** 存储权限组 */
     public static final String STORAGE = "storage";

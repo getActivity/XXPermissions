@@ -10,7 +10,7 @@ import com.hjq.permissions.AndroidManifestInfo;
 import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.permission.PermissionNames;
-import com.hjq.permissions.permission.PermissionGroupConstants;
+import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import java.util.List;
@@ -62,7 +62,7 @@ public final class BluetoothAdvertisePermission extends DangerousPermission {
     @Override
     public String getPermissionGroup() {
         // 注意：在 Android 12 的时候，蓝牙相关的权限已经归到附近设备的权限组了，但是在 Android 12 之前，蓝牙相关的权限归属定位权限组
-        return AndroidVersionTools.isAndroid12() ? PermissionGroupConstants.NEARBY_DEVICES : PermissionGroupConstants.LOCATION;
+        return AndroidVersionTools.isAndroid12() ? PermissionGroups.NEARBY_DEVICES : PermissionGroups.LOCATION;
     }
 
     @Override

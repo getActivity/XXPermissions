@@ -11,7 +11,7 @@ import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
-import com.hjq.permissions.permission.PermissionGroupConstants;
+import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.PermissionManifest;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
@@ -59,7 +59,7 @@ public final class NearbyWifiDevicesPermission extends DangerousPermission {
     @Override
     public String getPermissionGroup() {
         // 注意：在 Android 13 的时候，WIFI 相关的权限已经归到附近设备的权限组了，但是在 Android 13 之前，WIFI 相关的权限归属定位权限组
-        return AndroidVersionTools.isAndroid13() ? PermissionGroupConstants.NEARBY_DEVICES : PermissionGroupConstants.LOCATION;
+        return AndroidVersionTools.isAndroid13() ? PermissionGroups.NEARBY_DEVICES : PermissionGroups.LOCATION;
     }
 
     @Override
