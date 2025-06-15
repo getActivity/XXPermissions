@@ -79,12 +79,10 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
     @Override
     public Intent getPermissionSettingIntent(@NonNull Context context) {
         if (AndroidVersionTools.isAndroid6()) {
-            // 如果当前系统是 HyperOs，那么就不要跳转到 miui 权限设置页了，因为还要点一下《其他权限》入口才能找到悬浮窗权限设置选项
-            // 这样的效果还不如直接跳转到所有应用的悬浮窗权限设置列表，然后再点进去来得更直观
-            // 需要注意的是：该逻辑需要在判断 miui 系统之前判断，因为在 HyperOs 系统上面判断当前系统是否为 miui 系统也会返回 true
-            // 这是因为 HyperOs 系统本身就是从 miui 系统演变而来，有这个问题也很正常，主要是厂商为了系统兼容性而保留的
-            // 相关 Github issue 地址：https://github.com/getActivity/XXPermissions/issues/342
             if (PhoneRomUtils.isHyperOs()) {
+                // 如果当前系统是 HyperOs，那么就不要跳转到 miui 权限设置页了，因为还要点一下《其他权限》入口才能找到悬浮窗权限设置选项
+                // 这样的效果还不如直接跳转到所有应用的悬浮窗权限设置列表，然后再点进去来得更直观
+                // 相关 Github issue 地址：https://github.com/getActivity/XXPermissions/issues/342
                 Intent intent = getManageOverlayPermissionIntent(context);
                 if (PermissionUtils.areActivityIntent(context, intent)) {
                     return intent;

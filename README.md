@@ -303,7 +303,7 @@ XXPermissions.setCheckMode(false);
 | :--------: | :------------------------------: | :--------: |
 |     华为   |       Harmony 3.0.0 及以上版本     |      否     |
 |     荣耀   |       Magic UI 6.0 及以上版本      |      否     |
-|     小米   |         Miui 13 及以上版本         |      是     |
+|     小米   |  Miui 13 或 HyperOs 1.0.0 及以上版本  |      是     |
 |     红米   |             和小米雷同             |   和小米雷同  |
 |     OPPO  |       (ColorOs 12 及以上版本 && Android 11+) 或者 </br> (ColorOs 11.1 及以上版本 && Android 12+)        |      否     |
 |     一加   |      和 OPPO 雷同  |    和 OPPO 雷同   |

@@ -73,17 +73,22 @@ public final class PhoneRomUtils {
     }
 
     /**
-     * 判断当前厂商系统是否为 miui
-     */
-    public static boolean isMiui() {
-        return !TextUtils.isEmpty(PermissionUtils.getSystemPropertyValue(ROM_NAME_MIUI));
-    }
-
-    /**
      * 判断当前厂商系统是否为澎湃系统
      */
     public static boolean isHyperOs() {
         return !TextUtils.isEmpty(PermissionUtils.getSystemPropertyValue(ROM_NAME_HYPER_OS));
+    }
+
+    /**
+     * 判断当前厂商系统是否为 miui
+     */
+    public static boolean isMiui() {
+        if (isHyperOs()) {
+            // 需要注意的是：该逻辑需要在判断 miui 系统之前判断，因为在 HyperOs 系统上面判断当前系统是否为 miui 系统也会返回 true
+            // 这是因为 HyperOs 系统本身就是从 miui 系统演变而来，有这个问题也很正常，主要是厂商为了系统兼容性而保留的
+            return false;
+        }
+        return !TextUtils.isEmpty(PermissionUtils.getSystemPropertyValue(ROM_NAME_MIUI));
     }
 
     /**
