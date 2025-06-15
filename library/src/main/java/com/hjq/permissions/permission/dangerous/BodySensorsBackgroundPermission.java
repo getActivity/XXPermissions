@@ -68,36 +68,36 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public List<IPermission> getForegroundPermission(@NonNull Context context) {
+    public List<IPermission> getForegroundPermissions(@NonNull Context context) {
         return PermissionUtils.asArrayList(PermissionManifest.getBodySensorsPermission());
     }
 
     @Override
-    protected boolean isGrantedByStandardVersion(@NonNull Context context, boolean skipRequest) {
+    protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
         // 判断后台传感器权限授予之前，需要先判断前台传感器权限是否授予，如果前台传感器权限没有授予，那么后台传感器权限就算授予了也没用
-        if (!PermissionManifest.getBodySensorsPermission().isGranted(context, skipRequest)) {
+        if (!PermissionManifest.getBodySensorsPermission().isGrantedPermission(context, skipRequest)) {
             return false;
         }
-        return super.isGrantedByStandardVersion(context, skipRequest);
+        return super.isGrantedPermissionByStandardVersion(context, skipRequest);
     }
 
     @Override
-    protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.getBodySensorsPermission().isGranted(context, skipRequest);
+    protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
+        return PermissionManifest.getBodySensorsPermission().isGrantedPermission(context, skipRequest);
     }
 
     @Override
-    protected boolean isDoNotAskAgainByStandardVersion(@NonNull Activity activity) {
+    protected boolean isDoNotAskAgainPermissionByStandardVersion(@NonNull Activity activity) {
         // 如果前台传感器权限被用户勾选了不再询问选项，那么后台传感器权限也要跟着同步
-        if (PermissionManifest.getBodySensorsPermission().isDoNotAskAgain(activity)) {
+        if (PermissionManifest.getBodySensorsPermission().isDoNotAskAgainPermission(activity)) {
             return true;
         }
-        return super.isDoNotAskAgainByStandardVersion(activity);
+        return super.isDoNotAskAgainPermissionByStandardVersion(activity);
     }
 
     @Override
-    protected boolean isDoNotAskAgainByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.getBodySensorsPermission().isDoNotAskAgain(activity);
+    protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
+        return PermissionManifest.getBodySensorsPermission().isDoNotAskAgainPermission(activity);
     }
 
     @Override

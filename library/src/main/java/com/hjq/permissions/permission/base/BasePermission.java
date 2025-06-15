@@ -70,7 +70,7 @@ public abstract class BasePermission implements IPermission {
     }
 
     @Override
-    public void checkSelf(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions, @Nullable AndroidManifestInfo androidManifestInfo) {
+    public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions, @Nullable AndroidManifestInfo androidManifestInfo) {
         // 检查 targetSdkVersion 是否符合要求
         checkSelfByTargetSdkVersion(activity);
         // 检查 AndroidManifest.xml 是否符合要求

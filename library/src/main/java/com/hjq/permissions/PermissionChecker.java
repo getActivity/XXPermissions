@@ -92,7 +92,7 @@ final class PermissionChecker {
             // 检查权限序列化实现是否有问题
             checkPermissionParcelable(permission);
             // 让权限自己检查一下自己
-            permission.checkSelf(activity, requestPermissions, androidManifestInfo);
+            permission.checkCompliance(activity, requestPermissions, androidManifestInfo);
         }
     }
 

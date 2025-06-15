@@ -64,7 +64,7 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
     }
 
     @Override
-    public boolean isGranted(@NonNull Context context, boolean skipRequest) {
+    public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         if (AndroidVersionTools.isAndroid6()) {
             return Settings.canDrawOverlays(context);
         }
@@ -77,7 +77,7 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public Intent getSettingIntent(@NonNull Context context) {
+    public Intent getPermissionSettingIntent(@NonNull Context context) {
         if (AndroidVersionTools.isAndroid6()) {
             // 如果当前系统是 HyperOs，那么就不要跳转到 miui 权限设置页了，因为还要点一下《其他权限》入口才能找到悬浮窗权限设置选项
             // 这样的效果还不如直接跳转到所有应用的悬浮窗权限设置列表，然后再点进去来得更直观

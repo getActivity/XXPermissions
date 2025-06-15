@@ -65,7 +65,7 @@ public interface IPermission extends Parcelable {
      * 获取当前权限对应的前台权限
      */
     @Nullable
-    default List<IPermission> getForegroundPermission(@NonNull Context context) {
+    default List<IPermission> getForegroundPermissions(@NonNull Context context) {
         // 表示没有前台权限
         return null;
     }
@@ -74,7 +74,7 @@ public interface IPermission extends Parcelable {
      * 当前权限是否为后台权限
      */
     default boolean isBackgroundPermission(@NonNull Context context) {
-        List<IPermission> foregroundPermission = getForegroundPermission(context);
+        List<IPermission> foregroundPermission = getForegroundPermissions(context);
         if (foregroundPermission == null) {
             return false;
         }
@@ -84,8 +84,8 @@ public interface IPermission extends Parcelable {
     /**
      * 判断当前权限是否授予
      */
-    default boolean isGranted(@NonNull Context context) {
-        return isGranted(context, true);
+    default boolean isGrantedPermission(@NonNull Context context) {
+        return isGrantedPermission(context, true);
     }
 
     /**
@@ -93,18 +93,18 @@ public interface IPermission extends Parcelable {
      *
      * @param skipRequest       是否跳过申请直接判断的？
      */
-    boolean isGranted(@NonNull Context context, boolean skipRequest);
+    boolean isGrantedPermission(@NonNull Context context, boolean skipRequest);
 
     /**
      * 判断当前权限是否被用户勾选了《不再询问的选项》
      */
-    boolean isDoNotAskAgain(@NonNull Activity activity);
+    boolean isDoNotAskAgainPermission(@NonNull Activity activity);
 
     /**
      * 获取权限设置页的意图
      */
     @NonNull
-    Intent getSettingIntent(@NonNull Context context);
+    Intent getPermissionSettingIntent(@NonNull Context context);
 
     /**
      * 判断当前权限是否在低版本（不受支持的版本）上面运行
@@ -128,9 +128,9 @@ public interface IPermission extends Parcelable {
     }
 
     /**
-     * 权限自我检查
+     * 检查权限请求是否合规
      */
-    default void checkSelf(@NonNull Activity activity,
+    default void checkCompliance(@NonNull Activity activity,
                             @NonNull List<IPermission> requestPermissions,
                             @Nullable AndroidManifestInfo androidManifestInfo) {}
 }

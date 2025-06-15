@@ -61,13 +61,13 @@ public final class VpnServicePermission extends SpecialPermission {
     }
 
     @Override
-    public boolean isGranted(@NonNull Context context, boolean skipRequest) {
+    public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         return VpnService.prepare(context) == null;
     }
 
     @NonNull
     @Override
-    public Intent getSettingIntent(@NonNull Context context) {
+    public Intent getPermissionSettingIntent(@NonNull Context context) {
         Intent intent = VpnService.prepare(context);
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {

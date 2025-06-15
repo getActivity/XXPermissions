@@ -332,7 +332,7 @@ public final class XXPermissions {
      * 判断一个或多个权限是否全部授予了
      */
     public static boolean isGrantedPermission(@NonNull Context context, @NonNull IPermission permission) {
-        return permission.isGranted(context);
+        return permission.isGrantedPermission(context);
     }
 
     public static boolean isGrantedPermissions(@NonNull Context context, @NonNull IPermission[] permissions) {
@@ -435,7 +435,7 @@ public final class XXPermissions {
      * 但是实际上还能继续申请，系统只是不想让你知道权限是否勾选了不再询问的选项，你必须要申请过这个权限，才能去判断这个权限是否勾选了不再询问的选项
      */
     public static boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull IPermission permission) {
-        return permission.isDoNotAskAgain(activity);
+        return permission.isDoNotAskAgainPermission(activity);
     }
 
     public static boolean isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull IPermission[] permissions) {

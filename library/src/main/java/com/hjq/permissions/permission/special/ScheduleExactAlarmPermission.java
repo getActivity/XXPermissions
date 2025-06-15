@@ -63,7 +63,7 @@ public final class ScheduleExactAlarmPermission extends SpecialPermission {
     }
 
     @Override
-    public boolean isGranted(@NonNull Context context, boolean skipRequest) {
+    public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         if (!AndroidVersionTools.isAndroid12()) {
             return true;
         }
@@ -72,7 +72,7 @@ public final class ScheduleExactAlarmPermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public Intent getSettingIntent(@NonNull Context context) {
+    public Intent getPermissionSettingIntent(@NonNull Context context) {
         if (!AndroidVersionTools.isAndroid12()) {
             return getApplicationDetailsIntent(context);
         }

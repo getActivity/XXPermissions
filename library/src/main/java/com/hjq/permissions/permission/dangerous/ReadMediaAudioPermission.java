@@ -67,13 +67,13 @@ public final class ReadMediaAudioPermission extends DangerousPermission {
     }
 
     @Override
-    protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.getReadExternalStoragePermission().isGranted(context, skipRequest);
+    protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
+        return PermissionManifest.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest);
     }
 
     @Override
-    protected boolean isDoNotAskAgainByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.getReadExternalStoragePermission().isDoNotAskAgain(activity);
+    protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
+        return PermissionManifest.getReadExternalStoragePermission().isDoNotAskAgainPermission(activity);
     }
 
     @Override

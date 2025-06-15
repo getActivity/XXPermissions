@@ -86,7 +86,7 @@ public final class NotificationListenerServicePermission extends SpecialPermissi
     }
 
     @Override
-    public boolean isGranted(@NonNull Context context, boolean skipRequest) {
+    public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         // 经过实践得出，通知监听权限是在 Android 4.3 才出现的，所以前面的版本统一返回 true
         if (!AndroidVersionTools.isAndroid4_3()) {
             return true;
@@ -133,7 +133,7 @@ public final class NotificationListenerServicePermission extends SpecialPermissi
 
     @NonNull
     @Override
-    public Intent getSettingIntent(@NonNull Context context) {
+    public Intent getPermissionSettingIntent(@NonNull Context context) {
         Intent intent = null;
         if (AndroidVersionTools.isAndroid11() && PermissionUtils.isClassExist(mServiceClassName)) {
             intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS);

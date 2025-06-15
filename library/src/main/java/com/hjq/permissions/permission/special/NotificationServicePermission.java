@@ -80,7 +80,7 @@ public final class NotificationServicePermission extends SpecialPermission {
     }
 
     @Override
-    public boolean isGranted(@NonNull Context context, boolean skipRequest) {
+    public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         if (AndroidVersionTools.isAndroid7()) {
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             if (!notificationManager.areNotificationsEnabled()) {
@@ -97,7 +97,7 @@ public final class NotificationServicePermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public Intent getSettingIntent(@NonNull Context context) {
+    public Intent getPermissionSettingIntent(@NonNull Context context) {
         Intent intent = new Intent();
         if (AndroidVersionTools.isAndroid8()) {
             // 添加应用的包名参数

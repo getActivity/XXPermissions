@@ -84,13 +84,13 @@ public final class BluetoothScanPermission extends DangerousPermission {
     }
 
     @Override
-    protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.getAccessFineLocationPermission().isGranted(context, skipRequest);
+    protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
+        return PermissionManifest.getAccessFineLocationPermission().isGrantedPermission(context, skipRequest);
     }
 
     @Override
-    protected boolean isDoNotAskAgainByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgain(activity);
+    protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
+        return PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity);
     }
 
     @Override

@@ -57,7 +57,7 @@ public final class NotificationPolicyPermission extends SpecialPermission {
     }
 
     @Override
-    public boolean isGranted(@NonNull Context context, boolean skipRequest) {
+    public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         if (!AndroidVersionTools.isAndroid6()) {
             return true;
         }
@@ -66,7 +66,7 @@ public final class NotificationPolicyPermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public Intent getSettingIntent(@NonNull Context context) {
+    public Intent getPermissionSettingIntent(@NonNull Context context) {
         if (!AndroidVersionTools.isAndroid6()) {
             return getApplicationDetailsIntent(context);
         }

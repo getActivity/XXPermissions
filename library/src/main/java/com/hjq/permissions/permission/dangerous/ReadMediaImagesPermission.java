@@ -74,25 +74,25 @@ public final class ReadMediaImagesPermission extends DangerousPermission {
     }
 
     @Override
-    protected boolean isGrantedByStandardVersion(@NonNull Context context, boolean skipRequest) {
+    protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
         if (AndroidVersionTools.isAndroid14() && !skipRequest) {
             // 如果是在 Android 14 上面，并且是图片权限或者视频权限，则需要重新检查权限的状态
             // 这是因为用户授权部分图片或者视频的时候，READ_MEDIA_VISUAL_USER_SELECTED 权限状态是授予的
             // 但是 READ_MEDIA_IMAGES 和 READ_MEDIA_VIDEO 的权限状态是拒绝的
             // 为了权限回调不出现失败，这里只能返回 true，这样告诉外层请求其实是成功的
-            return PermissionManifest.getReadMediaVisualUserSelectedPermission().isGranted(context, false);
+            return PermissionManifest.getReadMediaVisualUserSelectedPermission().isGrantedPermission(context, false);
         }
-        return super.isGrantedByStandardVersion(context, skipRequest);
+        return super.isGrantedPermissionByStandardVersion(context, skipRequest);
     }
 
     @Override
-    protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.getReadExternalStoragePermission().isGranted(context, skipRequest);
+    protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
+        return PermissionManifest.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest);
     }
 
     @Override
-    protected boolean isDoNotAskAgainByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.getReadExternalStoragePermission().isDoNotAskAgain(activity);
+    protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
+        return PermissionManifest.getReadExternalStoragePermission().isDoNotAskAgainPermission(activity);
     }
 
     @Override

@@ -58,7 +58,7 @@ final class PermissionApi {
         }
 
         for (IPermission permission : permissions) {
-            if (!permission.isGranted(context)) {
+            if (!permission.isGrantedPermission(context)) {
                 return false;
             }
         }
@@ -72,7 +72,7 @@ final class PermissionApi {
     static List<IPermission> getGrantedPermissions(@NonNull Context context, @NonNull List<IPermission> permissions) {
         List<IPermission> grantedPermissions = new ArrayList<>(permissions.size());
         for (IPermission permission : permissions) {
-            if (permission.isGranted(context)) {
+            if (permission.isGrantedPermission(context)) {
                 grantedPermissions.add(permission);
             }
         }
@@ -85,7 +85,7 @@ final class PermissionApi {
     static List<IPermission> getDeniedPermissions(@NonNull Context context, @NonNull List<IPermission> permissions) {
         List<IPermission> deniedPermissions = new ArrayList<>(permissions.size());
         for (IPermission permission : permissions) {
-            if (!permission.isGranted(context)) {
+            if (!permission.isGrantedPermission(context)) {
                 deniedPermissions.add(permission);
             }
         }
@@ -100,7 +100,7 @@ final class PermissionApi {
      */
     static boolean isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull List<IPermission> permissions) {
         for (IPermission permission : permissions) {
-            if (permission.isDoNotAskAgain(activity)) {
+            if (permission.isDoNotAskAgainPermission(activity)) {
                 return true;
             }
         }
@@ -141,7 +141,7 @@ final class PermissionApi {
         }
 
         if (realPermissions.size() == 1) {
-            return realPermissions.get(0).getSettingIntent(context);
+            return realPermissions.get(0).getPermissionSettingIntent(context);
         }
 
         return PermissionIntentManager.getApplicationDetailsIntent(context, realPermissions.toArray(new IPermission[0]));

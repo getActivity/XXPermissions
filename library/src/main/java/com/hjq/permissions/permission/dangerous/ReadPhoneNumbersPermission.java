@@ -74,13 +74,13 @@ public final class ReadPhoneNumbersPermission extends DangerousPermission {
     }
 
     @Override
-    protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.getReadPhoneStatePermission().isGranted(context, skipRequest);
+    protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
+        return PermissionManifest.getReadPhoneStatePermission().isGrantedPermission(context, skipRequest);
     }
 
     @Override
-    protected boolean isDoNotAskAgainByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.getReadPhoneStatePermission().isDoNotAskAgain(activity);
+    protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
+        return PermissionManifest.getReadPhoneStatePermission().isDoNotAskAgainPermission(activity);
     }
 
     @Override

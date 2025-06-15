@@ -65,23 +65,23 @@ public final class PostNotificationsPermission extends DangerousPermission {
     }
 
     @Override
-    protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.getNotificationServicePermission().isGranted(context, skipRequest);
+    protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
+        return PermissionManifest.getNotificationServicePermission().isGrantedPermission(context, skipRequest);
     }
 
     @Override
-    public boolean isDoNotAskAgain(@NonNull Activity activity) {
+    public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
         if (isLowVersionRunning()) {
             return false;
         }
-        return super.isDoNotAskAgain(activity);
+        return super.isDoNotAskAgainPermission(activity);
     }
 
     @NonNull
     @Override
-    public Intent getSettingIntent(@NonNull Context context) {
+    public Intent getPermissionSettingIntent(@NonNull Context context) {
         // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/208
         // POST_NOTIFICATIONS 要跳转到权限设置页和 NOTIFICATION_SERVICE 权限是一样的
-        return PermissionManifest.getNotificationServicePermission().getSettingIntent(context);
+        return PermissionManifest.getNotificationServicePermission().getPermissionSettingIntent(context);
     }
 }

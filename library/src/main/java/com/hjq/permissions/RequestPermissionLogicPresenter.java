@@ -130,13 +130,13 @@ final class RequestPermissionLogicPresenter {
                 IPermission firstNextPermission = nextPermissions.get(0);
                 // 如果下一个请求的权限是后台权限
                 if (firstNextPermission.isBackgroundPermission(activity)) {
-                    List<IPermission> foregroundPermissions = firstNextPermission.getForegroundPermission(activity);
+                    List<IPermission> foregroundPermissions = firstNextPermission.getForegroundPermissions(activity);
                     boolean grantedForegroundPermission = false;
                     // 如果这个后台权限对应的前台权限没有申请成功，则不要去申请后台权限，因为申请了也没有用，系统肯定不会给通过的
                     // 如果这种情况下还硬要去申请，等下还可能会触发权限说明弹窗，但是没有实际去申请权限的情况
                     if (foregroundPermissions != null && !foregroundPermissions.isEmpty()) {
                         for (IPermission foregroundPermission : foregroundPermissions) {
-                            if (!foregroundPermission.isGranted(activity)) {
+                            if (!foregroundPermission.isGrantedPermission(activity)) {
                                 continue;
                             }
                             // 所有的前台权限中，只要有任一一个授权了，就算它是前台权限是申请通过的
@@ -183,7 +183,7 @@ final class RequestPermissionLogicPresenter {
             alreadyDonePermissions.add(permission);
 
             // 如果这个权限已授权，就不纳入申请的范围内
-            if (permission.isGranted(activity)) {
+            if (permission.isGrantedPermission(activity)) {
                 continue;
             }
 
@@ -226,7 +226,7 @@ final class RequestPermissionLogicPresenter {
                 }
 
                 // 判断要申请的权限是否授予了
-                if (todoPermission.isGranted(activity)) {
+                if (todoPermission.isGrantedPermission(activity)) {
                     // 如果这个权限已经授予，就不往下执行
                     // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/369
                     continue;
@@ -367,7 +367,7 @@ final class RequestPermissionLogicPresenter {
         List<IPermission> deniedPermissions = new ArrayList<>(requestPermissions.size());
         // 遍历请求的权限，并且根据权限的授权状态进行分类
         for (IPermission permission : requestPermissions) {
-            if (permission.isGranted(activity, false)) {
+            if (permission.isGrantedPermission(activity, false)) {
                 grantedPermissions.add(permission);
             } else {
                 deniedPermissions.add(permission);

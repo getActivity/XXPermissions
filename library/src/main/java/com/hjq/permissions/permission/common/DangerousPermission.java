@@ -35,40 +35,40 @@ public abstract class DangerousPermission extends BasePermission {
     }
 
     @Override
-    public boolean isGranted(@NonNull Context context, boolean skipRequest) {
+    public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         if (isLowVersionRunning()) {
-            return isGrantedByLowVersion(context, skipRequest);
+            return isGrantedPermissionByLowVersion(context, skipRequest);
         }
-        return isGrantedByStandardVersion(context, skipRequest);
+        return isGrantedPermissionByStandardVersion(context, skipRequest);
     }
 
-    protected boolean isGrantedByStandardVersion(@NonNull Context context, boolean skipRequest) {
+    protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
         return checkSelfPermission(context, getPermissionName());
     }
 
-    protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
+    protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
         return true;
     }
 
     @Override
-    public boolean isDoNotAskAgain(@NonNull Activity activity) {
+    public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
         if (isLowVersionRunning()) {
-            return isDoNotAskAgainByLowVersion(activity);
+            return isDoNotAskAgainPermissionByLowVersion(activity);
         }
-        return isDoNotAskAgainByStandardVersion(activity);
+        return isDoNotAskAgainPermissionByStandardVersion(activity);
     }
 
-    protected boolean isDoNotAskAgainByStandardVersion(@NonNull Activity activity) {
+    protected boolean isDoNotAskAgainPermissionByStandardVersion(@NonNull Activity activity) {
         return checkDoNotAskAgainPermission(activity, getPermissionName());
     }
 
-    protected boolean isDoNotAskAgainByLowVersion(@NonNull Activity activity) {
+    protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
         return false;
     }
 
     @NonNull
     @Override
-    public Intent getSettingIntent(@NonNull Context context) {
+    public Intent getPermissionSettingIntent(@NonNull Context context) {
         return getApplicationDetailsIntent(context);
     }
 

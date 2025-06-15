@@ -69,7 +69,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
     }
 
     @Override
-    public boolean isGranted(@NonNull Context context, boolean skipRequest) {
+    public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         if (isSupportGetInstalledAppsPermission(context)) {
             return checkSelfPermission(context, getPermissionName());
         }
@@ -90,7 +90,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
     }
 
     @Override
-    public boolean isDoNotAskAgain(@NonNull Activity activity) {
+    public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
         if (isSupportGetInstalledAppsPermission(activity)) {
             // 如果支持申请，那么再去判断权限是否永久拒绝
             return checkDoNotAskAgainPermission(activity, getPermissionName());
@@ -101,7 +101,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
                 return false;
             }
             // 如果在没有授权的情况下返回 true 表示永久拒绝，这样就能走后面的判断，让外层调用者跳转到小米定制的权限设置页面
-            return !isGranted(activity);
+            return !isGrantedPermission(activity);
         }
 
         // 如果不支持申请，则直接返回 false（代表没有永久拒绝）
@@ -110,7 +110,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public Intent getSettingIntent(@NonNull Context context) {
+    public Intent getPermissionSettingIntent(@NonNull Context context) {
         if (PhoneRomUtils.isMiui()) {
             Intent intent = null;
             if (PhoneRomUtils.isMiuiOptimization()) {

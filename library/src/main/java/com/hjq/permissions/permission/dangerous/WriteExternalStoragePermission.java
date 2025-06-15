@@ -70,7 +70,7 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
 
     @SuppressLint("NewApi")
     @Override
-    protected boolean isGrantedByStandardVersion(@NonNull Context context, boolean skipRequest) {
+    protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_11)) {
             // 这里补充一下这样写的具体原因：
             // 1. 当 targetSdk >= Android 11 并且在此版本及之上申请 WRITE_EXTERNAL_STORAGE，虽然可以弹出授权框，但是没有什么实际作用
@@ -87,12 +87,12 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
             // Environment.isExternalStorageLegacy API 解释：是否采用的是非分区存储的模式
             return Environment.isExternalStorageLegacy();
         }
-        return super.isGrantedByStandardVersion(context, skipRequest);
+        return super.isGrantedPermissionByStandardVersion(context, skipRequest);
     }
 
     @SuppressLint("NewApi")
     @Override
-    protected boolean isDoNotAskAgainByStandardVersion(@NonNull Activity activity) {
+    protected boolean isDoNotAskAgainPermissionByStandardVersion(@NonNull Activity activity) {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_11)) {
             return false;
         }
@@ -100,7 +100,7 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_10) && Environment.isExternalStorageLegacy()) {
             return false;
         }
-        return super.isDoNotAskAgainByStandardVersion(activity);
+        return super.isDoNotAskAgainPermissionByStandardVersion(activity);
     }
 
     @Override

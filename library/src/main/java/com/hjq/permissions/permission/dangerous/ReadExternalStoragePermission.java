@@ -70,23 +70,23 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
     }
 
     @Override
-    protected boolean isGrantedByStandardVersion(@NonNull Context context, boolean skipRequest) {
+    protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_13)) {
-            return PermissionManifest.getReadMediaImagesPermission().isGranted(context, skipRequest) &&
-                PermissionManifest.getReadMediaVideoPermission().isGranted(context, skipRequest) &&
-                PermissionManifest.getReadMediaAudioPermission().isGranted(context, skipRequest);
+            return PermissionManifest.getReadMediaImagesPermission().isGrantedPermission(context, skipRequest) &&
+                PermissionManifest.getReadMediaVideoPermission().isGrantedPermission(context, skipRequest) &&
+                PermissionManifest.getReadMediaAudioPermission().isGrantedPermission(context, skipRequest);
         }
-        return super.isGrantedByStandardVersion(context, skipRequest);
+        return super.isGrantedPermissionByStandardVersion(context, skipRequest);
     }
 
     @Override
-    protected boolean isDoNotAskAgainByStandardVersion(@NonNull Activity activity) {
+    protected boolean isDoNotAskAgainPermissionByStandardVersion(@NonNull Activity activity) {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_13)) {
-            return PermissionManifest.getReadMediaImagesPermission().isDoNotAskAgain(activity) &&
-                PermissionManifest.getReadMediaVideoPermission().isDoNotAskAgain(activity) &&
-                PermissionManifest.getReadMediaAudioPermission().isDoNotAskAgain(activity);
+            return PermissionManifest.getReadMediaImagesPermission().isDoNotAskAgainPermission(activity) &&
+                PermissionManifest.getReadMediaVideoPermission().isDoNotAskAgainPermission(activity) &&
+                PermissionManifest.getReadMediaAudioPermission().isDoNotAskAgainPermission(activity);
         }
-        return super.isDoNotAskAgainByStandardVersion(activity);
+        return super.isDoNotAskAgainPermissionByStandardVersion(activity);
     }
 
     @Override

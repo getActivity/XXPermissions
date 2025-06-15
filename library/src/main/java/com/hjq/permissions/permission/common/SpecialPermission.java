@@ -31,7 +31,7 @@ public abstract class SpecialPermission extends BasePermission {
     }
 
     @Override
-    public boolean isDoNotAskAgain(@NonNull Activity activity) {
+    public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
         return false;
     }
 

@@ -72,7 +72,7 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
     }
 
     @Override
-    public boolean isGranted(@NonNull Context context, boolean skipRequest) {
+    public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         if (!AndroidVersionTools.isAndroid11()) {
             // 这个是 Android 10 上面的历史遗留问题，假设申请的是 MANAGE_EXTERNAL_STORAGE 权限
             // 必须要在 AndroidManifest.xml 中注册 android:requestLegacyExternalStorage="true"
@@ -80,8 +80,8 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
             if (AndroidVersionTools.isAndroid10() && !Environment.isExternalStorageLegacy()) {
                 return false;
             }
-            return PermissionManifest.getReadExternalStoragePermission().isGranted(context, skipRequest) &&
-                PermissionManifest.getWriteExternalStoragePermission().isGranted(context, skipRequest);
+            return PermissionManifest.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest) &&
+                PermissionManifest.getWriteExternalStoragePermission().isGrantedPermission(context, skipRequest);
         }
         // 是否有所有文件的管理权限
         return Environment.isExternalStorageManager();
@@ -89,7 +89,7 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public Intent getSettingIntent(@NonNull Context context) {
+    public Intent getPermissionSettingIntent(@NonNull Context context) {
         if (!AndroidVersionTools.isAndroid11()) {
             return getApplicationDetailsIntent(context);
         }

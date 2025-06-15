@@ -68,7 +68,7 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
 
     @NonNull
     @Override
-    public List<IPermission> getForegroundPermission(@NonNull Context context) {
+    public List<IPermission> getForegroundPermissions(@NonNull Context context) {
         // 判断当前应用适配且运行在 Android 12 及以上
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_12)) {
             // 如果是的话，那么这个前台定位权限可以是精确定位权限，也可以是模糊定位权限
@@ -80,49 +80,49 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
     }
 
     @Override
-    protected boolean isGrantedByStandardVersion(@NonNull Context context, boolean skipRequest) {
+    protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
         // 判断后台定位权限授予之前，需要先判断前台定位权限是否授予，如果前台定位权限没有授予，那么后台定位权限就算授予了也没用
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_12)) {
             // 在 Android 12 及之后的版本，申请后台定位权限既可以用精确定位权限也可以用模糊定位权限
-            if (!PermissionManifest.getAccessFineLocationPermission().isGranted(context, skipRequest) &&
-                !PermissionManifest.getAccessCoarseLocationPermission().isGranted(context, skipRequest)) {
+            if (!PermissionManifest.getAccessFineLocationPermission().isGrantedPermission(context, skipRequest) &&
+                !PermissionManifest.getAccessCoarseLocationPermission().isGrantedPermission(context, skipRequest)) {
                 return false;
             }
         } else {
             // 在 Android 11 及之前的版本，申请后台定位权限需要精确定位权限
-            if (!PermissionManifest.getAccessFineLocationPermission().isGranted(context, skipRequest)) {
+            if (!PermissionManifest.getAccessFineLocationPermission().isGrantedPermission(context, skipRequest)) {
                 return false;
             }
         }
-        return super.isGrantedByStandardVersion(context, skipRequest);
+        return super.isGrantedPermissionByStandardVersion(context, skipRequest);
     }
 
     @Override
-    protected boolean isGrantedByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.getAccessFineLocationPermission().isGranted(context, skipRequest);
+    protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
+        return PermissionManifest.getAccessFineLocationPermission().isGrantedPermission(context, skipRequest);
     }
 
     @Override
-    protected boolean isDoNotAskAgainByStandardVersion(@NonNull Activity activity) {
+    protected boolean isDoNotAskAgainPermissionByStandardVersion(@NonNull Activity activity) {
         // 如果前台定位权限被用户勾选了不再询问选项，那么后台定位权限也要跟着同步
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_12)) {
             // 在 Android 12 及之后的版本，申请后台定位权限既可以用精确定位权限也可以用模糊定位权限
-            if (PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgain(activity) &&
-                PermissionManifest.getAccessCoarseLocationPermission().isDoNotAskAgain(activity)) {
+            if (PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity) &&
+                PermissionManifest.getAccessCoarseLocationPermission().isDoNotAskAgainPermission(activity)) {
                 return true;
             }
         } else {
             // 在 Android 11 及之前的版本，申请后台定位权限需要精确定位权限
-            if (PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgain(activity)) {
+            if (PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity)) {
                 return true;
             }
         }
-        return super.isDoNotAskAgainByStandardVersion(activity);
+        return super.isDoNotAskAgainPermissionByStandardVersion(activity);
     }
 
     @Override
-    protected boolean isDoNotAskAgainByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgain(activity);
+    protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
+        return PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity);
     }
 
     @Override
