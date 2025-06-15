@@ -3,47 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.hjq.permissions.demo">
 
-    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- 读取应用列表权限（危险权限，电信终端产业协会联合各大中国手机厂商搞的一个权限） -->
+    <uses-permission android:name="com.android.permission.GET_INSTALLED_APPS" />
 
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- 查询所有包信息权限，此权限不需要动态申请 -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />
 
-    <uses-permission android:name="android.permission.READ_CALENDAR" />
-    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <!-- 全屏通知权限（特殊权限，Android 14 新增的权限）-->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
-    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
-    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
-
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
-
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions" />
-
-    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
-
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-
-    <uses-permission android:name="android.permission.BODY_SENSORS" />
-    <uses-permission android:name="android.permission.BODY_SENSORS_BACKGROUND" />
-
-    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
-
-    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
-
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-
+    <!-- 闹钟权限（特殊权限，Android 12 新增的权限） -->
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <!-- 给 SCHEDULE_EXACT_ALARM 权限加上 android:maxSdkVersion="32" 属性的原因和方法介绍：-->
     <!-- https://developer.android.google.cn/reference/android/Manifest.permission#USE_EXACT_ALARM -->
@@ -52,28 +21,152 @@
     <!-- 如果你的应用要上架 GooglePlay，那么需要慎重添加此权限，因为不是日历、闹钟、时钟这类应用添加这个权限很难通过 GooglePlay 上架审核 -->
     <!--<uses-permission android:name="android.permission.USE_EXACT_ALARM" />-->
 
-    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <!-- 文件管理权限（特殊权限，Android 11 新增的权限）-->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
+    <!-- 安装应用权限（特殊权限，Android 8.0 新增的权限）-->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <!-- 悬浮窗权限（特殊权限，Android 6.0 新增的权限，但是有些国产的厂商在 Android 6.0 之前的设备就兼容了） -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <!-- 写入系统设置权限（特殊权限，Android 6.0 新增的权限）-->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions" />
+
+    <!-- 请求忽略电池优化选项权限（特殊权限，Android 6.0 新增的权限）-->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 勿扰权限，可控制手机响铃模式【静音，震动】（特殊权限，Android 6.0 新增的权限）-->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
-    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
+    <!-- 查看应用使用情况权限，简称使用统计权限（特殊权限，Android 5.0 新增的权限）-->
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
 
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <!--                                              我是一条华丽的分割线                                              -->
 
+    <!-- 授予对照片和视频的部分访问权限（Android 14.0 新增的权限）-->
     <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
 
+    <!-- 发送通知权限（Android 13.0 新增的权限）-->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- WIFI 权限（Android 13.0 新增的权限）-->
+    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
+
+    <!-- 后台传感器权限（Android 13.0 新增的权限）-->
+    <uses-permission android:name="android.permission.BODY_SENSORS_BACKGROUND" />
+
+    <!-- 读取图片权限（Android 13.0 新增的权限）-->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- 读取视频权限（Android 13.0 新增的权限）-->
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+
+    <!-- 读取音频权限（Android 13.0 新增的权限）-->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+
+    <!-- 蓝牙扫描权限（Android 12.0 新增的权限） -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
+
+    <!-- 蓝牙连接权限（Android 12.0 新增的权限）-->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <!-- 蓝牙广播权限（Android 12.0 新增的权限）-->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+
+    <!-- 旧版的蓝牙权限，只要静态注册即可 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+
+    <!-- 在后台获取位置（Android 10.0 新增的权限）-->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
+    <!-- 获取活动步数权限（Android 10.0 新增的权限）-->
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+
+    <!-- 读取媒体文件的位置位置（Android 10.0 新增的权限）-->
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+
+    <!-- 允许呼叫应用继续在另一个应用中启动的呼叫权限（Android 9.0 新增的权限）-->
+    <uses-permission android:name="android.permission.ACCEPT_HANDOVER" />
+
+    <!-- 读取手机号码权限（Android 8.0 新增的权限）-->
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" />
+
+    <!-- 接听电话权限（Android 8.0 新增的权限，Android 8.0 以下可以采用模拟耳机按键事件来实现接听电话，这种方式不需要权限）-->
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+
+    <!-- 读取外部存储权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- 写入外部存储权限（注意：这个权限在 targetSdk >= Android 11 并且 Android 11 及以上的设备上面不起作用，请适配分区存储特性代替权限申请）-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
+
+    <!-- 相机权限 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- 麦克风权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- 获取精确位置权限 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- 获取粗略位置权限 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- 读取联系人权限 -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <!-- 修改联系人权限 -->
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+
+    <!-- 访问账户列表权限 -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+
+    <!-- 读取日历权限 -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+
+    <!-- 修改日历权限 -->
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+
+    <!-- 读取电话状态权限 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <!-- 拨打电话权限 -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+
+    <!-- 读取通话记录权限 -->
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
+
+    <!-- 修改通话记录权限 -->
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
 
-    <uses-permission android:name="com.android.permission.GET_INSTALLED_APPS" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
-        tools:ignore="QueryAllPackagesPermission" />
+    <!-- 添加语音邮件权限 -->
+    <uses-permission android:name="com.android.voicemail.permission.ADD_VOICEMAIL" />
 
-    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <!-- 使用 SIP 视频权限 -->
+    <uses-permission android:name="android.permission.USE_SIP" />
+
+    <!-- 处理拨出电话 -->
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
+
+    <!-- 使用传感器权限 -->
+    <uses-permission android:name="android.permission.BODY_SENSORS" />
+
+    <!-- 发送短信 -->
+    <uses-permission android:name="android.permission.SEND_SMS" />
+
+    <!-- 接收短信 -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+
+    <!-- 读取短信 -->
+    <uses-permission android:name="android.permission.READ_SMS" />
+
+    <!-- 接收 WAP 推送消息 -->
+    <uses-permission android:name="android.permission.RECEIVE_WAP_PUSH" />
+
+    <!-- 接收彩信 -->
+    <uses-permission android:name="android.permission.RECEIVE_MMS" />
 
     <application
         android:name=".AppApplication"
