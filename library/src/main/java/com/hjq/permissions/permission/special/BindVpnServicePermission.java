@@ -23,29 +23,29 @@ import java.util.List;
  *    time   : 2025/06/11
  *    desc   : VPN 权限
  */
-public final class VpnServicePermission extends SpecialPermission {
+public final class BindVpnServicePermission extends SpecialPermission {
 
     /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
     public static final String PERMISSION_NAME = PermissionNames.BIND_VPN_SERVICE;
 
-    public static final Parcelable.Creator<VpnServicePermission> CREATOR = new Parcelable.Creator<VpnServicePermission>() {
+    public static final Parcelable.Creator<BindVpnServicePermission> CREATOR = new Parcelable.Creator<BindVpnServicePermission>() {
 
         @Override
-        public VpnServicePermission createFromParcel(Parcel source) {
-            return new VpnServicePermission(source);
+        public BindVpnServicePermission createFromParcel(Parcel source) {
+            return new BindVpnServicePermission(source);
         }
 
         @Override
-        public VpnServicePermission[] newArray(int size) {
-            return new VpnServicePermission[size];
+        public BindVpnServicePermission[] newArray(int size) {
+            return new BindVpnServicePermission[size];
         }
     };
 
-    public VpnServicePermission() {
+    public BindVpnServicePermission() {
         // default implementation ignored
     }
 
-    private VpnServicePermission(Parcel in) {
+    private BindVpnServicePermission(Parcel in) {
         super(in);
     }
 

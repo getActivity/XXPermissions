@@ -67,12 +67,12 @@ public final class PermissionNames {
     public static final String PACKAGE_USAGE_STATS = "android.permission.PACKAGE_USAGE_STATS";
 
     /**
-     * 通知栏监听权限字符串常量，如需权限对象请调用 {@link PermissionManifest#getNotificationListenerServicePermission(Class)} 获取
+     * 通知栏监听权限字符串常量，如需权限对象请调用 {@link PermissionManifest#getBindNotificationListenerServicePermission(Class)} 获取
      */
     public static final String BIND_NOTIFICATION_LISTENER_SERVICE = "android.permission.BIND_NOTIFICATION_LISTENER_SERVICE";
 
     /**
-     * VPN 权限字符串常量，如需权限对象请调用 {@link PermissionManifest#getVpnServicePermission()} 获取
+     * VPN 权限字符串常量，如需权限对象请调用 {@link PermissionManifest#getBindVpnServicePermission()} 获取
      */
     public static final String BIND_VPN_SERVICE = "android.permission.BIND_VPN_SERVICE";
 

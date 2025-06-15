@@ -28,21 +28,21 @@ import java.util.List;
  *    time   : 2025/06/11
  *    desc   : 通知栏监听权限类
  */
-public final class NotificationListenerServicePermission extends SpecialPermission {
+public final class BindNotificationListenerServicePermission extends SpecialPermission {
 
     /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
     public static final String PERMISSION_NAME = PermissionNames.BIND_NOTIFICATION_LISTENER_SERVICE;
 
-    public static final Parcelable.Creator<NotificationListenerServicePermission> CREATOR = new Parcelable.Creator<NotificationListenerServicePermission>() {
+    public static final Parcelable.Creator<BindNotificationListenerServicePermission> CREATOR = new Parcelable.Creator<BindNotificationListenerServicePermission>() {
 
         @Override
-        public NotificationListenerServicePermission createFromParcel(Parcel source) {
-            return new NotificationListenerServicePermission(source);
+        public BindNotificationListenerServicePermission createFromParcel(Parcel source) {
+            return new BindNotificationListenerServicePermission(source);
         }
 
         @Override
-        public NotificationListenerServicePermission[] newArray(int size) {
-            return new NotificationListenerServicePermission[size];
+        public BindNotificationListenerServicePermission[] newArray(int size) {
+            return new BindNotificationListenerServicePermission[size];
         }
     };
 
@@ -52,19 +52,19 @@ public final class NotificationListenerServicePermission extends SpecialPermissi
     @Nullable
     private final String mServiceClassName;
 
-    public NotificationListenerServicePermission() {
+    public BindNotificationListenerServicePermission() {
         this((String) null);
     }
 
-    public NotificationListenerServicePermission(@Nullable Class<? extends Service> clazz) {
+    public BindNotificationListenerServicePermission(@Nullable Class<? extends Service> clazz) {
         this(clazz != null ? clazz.getName() : null);
     }
 
-    public NotificationListenerServicePermission(@Nullable String serviceClassName) {
+    public BindNotificationListenerServicePermission(@Nullable String serviceClassName) {
         mServiceClassName = serviceClassName;
     }
 
-    private NotificationListenerServicePermission(Parcel in) {
+    private BindNotificationListenerServicePermission(Parcel in) {
         this(in.readString());
     }
 

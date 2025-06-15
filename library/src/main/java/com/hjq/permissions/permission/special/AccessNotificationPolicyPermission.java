@@ -19,29 +19,29 @@ import com.hjq.permissions.permission.common.SpecialPermission;
  *    time   : 2025/06/11
  *    desc   : 勿扰权限类
  */
-public final class NotificationPolicyPermission extends SpecialPermission {
+public final class AccessNotificationPolicyPermission extends SpecialPermission {
 
     /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
     public static final String PERMISSION_NAME = PermissionNames.ACCESS_NOTIFICATION_POLICY;
 
-    public static final Parcelable.Creator<NotificationPolicyPermission> CREATOR = new Parcelable.Creator<NotificationPolicyPermission>() {
+    public static final Parcelable.Creator<AccessNotificationPolicyPermission> CREATOR = new Parcelable.Creator<AccessNotificationPolicyPermission>() {
 
         @Override
-        public NotificationPolicyPermission createFromParcel(Parcel source) {
-            return new NotificationPolicyPermission(source);
+        public AccessNotificationPolicyPermission createFromParcel(Parcel source) {
+            return new AccessNotificationPolicyPermission(source);
         }
 
         @Override
-        public NotificationPolicyPermission[] newArray(int size) {
-            return new NotificationPolicyPermission[size];
+        public AccessNotificationPolicyPermission[] newArray(int size) {
+            return new AccessNotificationPolicyPermission[size];
         }
     };
 
-    public NotificationPolicyPermission() {
+    public AccessNotificationPolicyPermission() {
         // default implementation ignored
     }
 
-    private NotificationPolicyPermission(Parcel in) {
+    private AccessNotificationPolicyPermission(Parcel in) {
         super(in);
     }
 

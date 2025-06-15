@@ -25,8 +25,8 @@ import com.hjq.permissions.permission.dangerous.ReadMediaVisualUserSelectedPermi
 import com.hjq.permissions.permission.dangerous.ReadPhoneNumbersPermission;
 import com.hjq.permissions.permission.dangerous.WriteExternalStoragePermission;
 import com.hjq.permissions.permission.special.ManageExternalStoragePermission;
-import com.hjq.permissions.permission.special.NotificationListenerServicePermission;
-import com.hjq.permissions.permission.special.NotificationPolicyPermission;
+import com.hjq.permissions.permission.special.BindNotificationListenerServicePermission;
+import com.hjq.permissions.permission.special.AccessNotificationPolicyPermission;
 import com.hjq.permissions.permission.special.NotificationServicePermission;
 import com.hjq.permissions.permission.special.PackageUsageStatsPermission;
 import com.hjq.permissions.permission.special.PictureInPicturePermission;
@@ -35,7 +35,7 @@ import com.hjq.permissions.permission.special.RequestInstallPackagesPermission;
 import com.hjq.permissions.permission.special.ScheduleExactAlarmPermission;
 import com.hjq.permissions.permission.special.SystemAlertWindowPermission;
 import com.hjq.permissions.permission.special.UseFullScreenIntentPermission;
-import com.hjq.permissions.permission.special.VpnServicePermission;
+import com.hjq.permissions.permission.special.BindVpnServicePermission;
 import com.hjq.permissions.permission.special.WriteSettingsPermission;
 
 /**
@@ -226,11 +226,11 @@ public final class PermissionManifest {
      * 勿扰权限，可控制手机响铃模式【静音，震动】（特殊权限，Android 6.0 新增的权限）
      */
     public static IPermission getAccessNotificationPolicyPermission() {
-        IPermission permission = getCachePermission(NotificationPolicyPermission.PERMISSION_NAME);
+        IPermission permission = getCachePermission(AccessNotificationPolicyPermission.PERMISSION_NAME);
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new NotificationPolicyPermission());
+        return putCachePermission(new AccessNotificationPolicyPermission());
     }
 
     /**
@@ -249,28 +249,28 @@ public final class PermissionManifest {
      *
      * @param clazz             通知监听的 Service 类型
      */
-    public static IPermission getNotificationListenerServicePermission(@Nullable Class<? extends Service> clazz) {
+    public static IPermission getBindNotificationListenerServicePermission(@Nullable Class<? extends Service> clazz) {
         // 该对象不会纳入到缓存的集合中，这是它携带了具体的参数，只有无参的才能丢到缓存的集合中
-        return new NotificationListenerServicePermission(clazz);
+        return new BindNotificationListenerServicePermission(clazz);
     }
 
-    public static IPermission getNotificationListenerServicePermission() {
-        IPermission permission = getCachePermission(NotificationListenerServicePermission.PERMISSION_NAME);
+    public static IPermission getBindNotificationListenerServicePermission() {
+        IPermission permission = getCachePermission(BindNotificationListenerServicePermission.PERMISSION_NAME);
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new NotificationListenerServicePermission());
+        return putCachePermission(new BindNotificationListenerServicePermission());
     }
 
     /**
      * VPN 权限（特殊权限，Android 4.0 新增的权限，注意此权限不需要在清单文件中注册也能申请）
      */
-    public static IPermission getVpnServicePermission() {
-        IPermission permission = getCachePermission(VpnServicePermission.PERMISSION_NAME);
+    public static IPermission getBindVpnServicePermission() {
+        IPermission permission = getCachePermission(BindVpnServicePermission.PERMISSION_NAME);
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new VpnServicePermission());
+        return putCachePermission(new BindVpnServicePermission());
     }
 
     /**
