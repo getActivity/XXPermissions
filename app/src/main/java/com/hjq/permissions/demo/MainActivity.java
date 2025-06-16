@@ -114,7 +114,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         if (viewId == R.id.btn_main_request_single_permission) {
 
             XXPermissions.with(this)
-                .permission(PermissionManifest.getReceiveWapPushPermission())
+                .permission(PermissionManifest.getCameraPermission())
                 .interceptor(new PermissionInterceptor())
                 .description(new PermissionDescription())
                 .request(new OnPermissionCallback() {
