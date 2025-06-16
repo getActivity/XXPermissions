@@ -150,10 +150,13 @@ final class PermissionApi {
     /**
      * 根据新权限添加旧权限
      */
-    static void addOldPermissionsByNewPermissions(@NonNull Context context, @NonNull List<IPermission> requestPermissions) {
-        // 需要补充的权限列表
-        List<IPermission> needSupplementPermissions =  null;
-        for (IPermission permission : requestPermissions) {
+    static synchronized void addOldPermissionsByNewPermissions(@NonNull Context context, @NonNull List<IPermission> requestPermissions) {
+        // 这里需要将 index 设置成 -1，这样走到下面循环的时候，++i 第一次循环 index 就是 0 了
+        int index = -1;
+        // ++index 是前置递增（先将 index 的值加 1，再返回增加后的值）
+        // index++ 是后置递增（先返回 i 的当前值，再将 i 的值加 1）
+        while (++index < requestPermissions.size()) {
+            IPermission permission = requestPermissions.get(index);
             // 如果当前运行的 Android 版本大于权限出现的 Android 版本，则证明这个权限在当前设备上不用添加旧权限
             if (AndroidVersionTools.getCurrentAndroidVersionCode() >= permission.getFromAndroidVersion()) {
                 continue;
@@ -168,24 +171,10 @@ final class PermissionApi {
                 if (PermissionUtils.containsPermission(requestPermissions, oldPermission)) {
                     continue;
                 }
-                if (needSupplementPermissions == null) {
-                    needSupplementPermissions = new ArrayList<>();
-                }
-                // 先检查一下有没有添加过，避免重复添加
-                if (PermissionUtils.containsPermission(needSupplementPermissions, oldPermission)) {
-                    continue;
-                }
-                // 添加旧版的权限到需要补充的权限列表中
-                // 这里解释一下为什么直接添加到 requestPermissions 对象？而是重新弄一个新的集合来存放
-                // 这是当前 for 循环正在遍历 requestPermissions 对象，如果在此时添加新的元素，会导致异常
-                needSupplementPermissions.add(oldPermission);
+                // index + 1 是将旧版本的权限添加到新版本的权限后面，这样才能确保不打乱申请的传入顺序
+                requestPermissions.add(++index, oldPermission);
             }
         }
-
-        if (needSupplementPermissions == null || needSupplementPermissions.isEmpty()) {
-            return;
-        }
-        requestPermissions.addAll(needSupplementPermissions);
     }
 
     /**
