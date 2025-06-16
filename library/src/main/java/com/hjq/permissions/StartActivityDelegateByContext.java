@@ -12,7 +12,7 @@ import android.support.annotation.NonNull;
  *    time   : 2025/05/20
  *    desc   : startActivity 委托 Context 实现
  */
-final class StartActivityDelegateByContext implements IStartActivityDelegate {
+class StartActivityDelegateByContext implements IStartActivityDelegate {
 
     @NonNull
     private final Context mContext;
