@@ -20,47 +20,113 @@
     <string name="common_permission_media_location_hint_fail">Failed to get media location permission\nPlease clear app data and try again</string>
     <string name="common_permission_goto_setting_page">Go to authorization</string>
 
-    <string name="common_permission_unknown">permission</string>
     <string name="common_permission_comma">, </string>
     <string name="common_permission_colon">: </string>
 
+    <string name="common_permission_unknown">permission</string>
+    <string name="common_permission_unknown_description">you need to apply for this permission first before you can continue to use this service</string>
+
     <string name="common_permission_calendar">calendar permission</string>
+    <string name="common_permission_calendar_description">allows creating, viewing, and managing schedules, such as syncing meeting reminders or automatically importing event times to keep your schedule updated.</string>
+
     <string name="common_permission_camera">camera permission</string>
+    <string name="common_permission_camera_description">allows taking photos, recording videos, or scanning qr codes, such as uploading profile pictures, capturing moments, or quickly identifying information.</string>
+
     <string name="common_permission_contacts">contacts permission</string>
+    <string name="common_permission_contacts_description">allows accessing contact information to quickly find friends, sync contacts to the app, or share content with contacts.</string>
+
     <string name="common_permission_location">location permission</string>
+    <string name="common_permission_location_description">allows accessing real-time location to display nearby services, plan navigation routes, or recommend location-based content.</string>
+
     <string name="common_permission_location_background">background location permission</string>
+    <string name="common_permission_location_background_description">allows continuous location access in the background for real-time track recording, background navigation, or emergency location sharing.</string>
+
     <string name="common_permission_nearby_devices">nearby devices permission</string>
+    <string name="common_permission_nearby_devices_description">allows discovering and connecting to nearby devices (e.g., bluetooth, wi-fi) for wireless file transfer, smart device connection, or network sharing.</string>
+
     <string name="common_permission_microphone">microphone permission</string>
+    <string name="common_permission_microphone_description">allows recording audio for voice chats, audio recordings, voice input, or voice recognition features.</string>
+
     <string name="common_permission_phone">phone permission</string>
+    <string name="common_permission_phone_description">allows reading call status and phone numbers for caller id, quick dialing, or call statistics.</string>
+
     <string name="common_permission_call_logs">call logs permission</string>
+    <string name="common_permission_call_logs_description">allows accessing call history for quick redialing, call duration tracking, or marking spam calls.</string>
+
     <string name="common_permission_body_sensors">body sensors permission</string>
+    <string name="common_permission_body_sensors_description">allows accessing physiological data (e.g., heart rate, steps) for health monitoring, fitness tracking, or personalized health advice.</string>
+
     <string name="common_permission_body_sensors_background">background body sensors permission</string>
+    <string name="common_permission_body_sensors_background_description">allows continuous physiological data access in the background for sleep monitoring, 24/7 health tracking, or emergency health alerts.</string>
+
     <string name="common_permission_activity_recognition_api29">physical activity permission</string>
     <string name="common_permission_activity_recognition_api30">physical activity permission</string>
+    <string name="common_permission_activity_recognition_description">allows recognizing activities (e.g., walking, running) for automatic exercise mode switching, activity data statistics, or fitness plan creation.</string>
+
     <string name="common_permission_access_media_location">read media file location permission</string>
+    <string name="common_permission_access_media_location_description">allows accessing the location metadata of photos and videos for organizing albums by location, displaying photo maps, or sharing media with location info.</string>
+
     <string name="common_permission_sms">sms permission</string>
+    <string name="common_permission_sms_description">allows reading sms (e.g., verification codes), sending messages, or backing up sms records for automatic otp filling, bulk messaging, or sms archiving.</string>
+
     <string name="common_permission_storage">storage permission</string>
+    <string name="common_permission_storage_description">allows reading and writing to device storage for saving images, downloading files, caching data, or backing up app settings.</string>
+
     <string name="common_permission_post_notifications">send notification permission</string>
+    <string name="common_permission_post_notifications_description">allows sending message notifications (e.g., new messages, event alerts, important updates), with customizable notification types in settings.</string>
+
     <string name="common_permission_image_and_video">image and video permission</string>
+    <string name="common_permission_image_and_video_description">allows accessing photos and videos in the gallery for uploading images, editing videos, or sharing media files within the app.</string>
+
     <string name="common_permission_music_and_audio">music and audio permission</string>
+    <string name="common_permission_music_and_audio_description">allows accessing music and audio files on the device for playing local music, setting ringtones, or editing audio content.</string>
+
     <string name="common_permission_get_installed_apps">get info about installed apps permission</string>
+    <string name="common_permission_get_installed_apps_description">allows accessing your installed apps to provide personalized recommendations. For example, suggesting related tools based on your installed apps or tailoring content to your app usage habits (your app list data is used anonymously and will not be shared with third parties).</string>
 
     <string name="common_permission_all_file_access">all file access permission</string>
-    <string name="common_permission_install_unknown_apps">install unknown apps permission</string>
-    <string name="common_permission_display_over_other_apps">display over other apps permission</string>
-    <string name="common_permission_modify_system_settings">modify system settings permission</string>
-    <string name="common_permission_allow_notifications">allow notifications permission</string>
-    <string name="common_permission_allow_notifications_access">allow notifications access permission</string>
-    <string name="common_permission_apps_with_usage_access">apps with usage access permission</string>
-    <string name="common_permission_alarms_reminders">alarms and reminders permission</string>
-    <string name="common_permission_do_not_disturb_access">do not disturb access permission</string>
-    <string name="common_permission_ignore_battery_optimize">ignore battery optimize permission</string>
-    <string name="common_permission_picture_in_picture">picture-in-picture permission</string>
-    <string name="common_permission_full_screen_notifications">full screen notifications permission</string>
-    <string name="common_permission_device_admin">device admin permission</string>
-    <string name="common_permission_accessibility_service">accessibility service permission</string>
-    <string name="common_permission_vpn">\tVPN\tpermission</string>
+    <string name="common_permission_all_file_access_description">@string/common_permission_storage_description</string>
 
-    <string name="common_permission_description_demo">Used for xx business</string>
+    <string name="common_permission_install_unknown_apps">install unknown apps permission</string>
+    <string name="common_permission_install_unknown_apps_description">allows the app to update itself automatically. When a new version is available, you can install it directly within the app without manually downloading from a browser or app store.</string>
+
+    <string name="common_permission_display_over_other_apps">display over other apps permission</string>
+    <string name="common_permission_display_over_other_apps_description">allows displaying content over other apps. Even when the app is in the background, it can show floating windows.</string>
+
+    <string name="common_permission_modify_system_settings">modify system settings permission</string>
+    <string name="common_permission_modify_system_settings_description">allows modifying system-level settings (e.g., volume, network mode, display settings).</string>
+
+    <string name="common_permission_allow_notifications">allow notifications permission</string>
+    <string name="common_permission_allow_notifications_description">@string/common_permission_post_notifications_description</string>
+
+    <string name="common_permission_allow_notifications_access">allow notifications access permission</string>
+    <string name="common_permission_allow_notifications_access_description">allows reading notification panel content for automatic otp recognition, notification summarization, or intelligent notification management.</string>
+
+    <string name="common_permission_apps_with_usage_access">apps with usage access permission</string>
+    <string name="common_permission_apps_with_usage_access_description">allows accessing app usage data (time and frequency) for screen time management, app usage statistics, or personalized recommendations.</string>
+
+    <string name="common_permission_alarms_reminders">alarms and reminders permission</string>
+    <string name="common_permission_alarms_reminders_description">allows creating and managing alarms and reminders for schedule alerts, task notifications, or recurring event reminders.</string>
+
+    <string name="common_permission_do_not_disturb_access">do not disturb access permission</string>
+    <string name="common_permission_do_not_disturb_access_description">allows managing do not disturb mode for automatic time switching, setting exception notifications, or temporarily blocking interruptions.</string>
+
+    <string name="common_permission_ignore_battery_optimize">ignore battery optimize permission</string>
+    <string name="common_permission_ignore_battery_optimize_description">allows keeping the app running in the background for real-time messaging, continuous location tracking, or background data sync.</string>
+
+    <string name="common_permission_picture_in_picture">picture-in-picture permission</string>
+    <string name="common_permission_picture_in_picture_description">allows enabling picture-in-picture mode for watching videos while using other apps, floating video windows, or multitasking.</string>
+
+    <string name="common_permission_full_screen_notifications">full screen notifications permission</string>
+    <string name="common_permission_full_screen_notifications_description">allows displaying important notifications (e.g., calls, emergency messages) in full-screen mode to prevent missing critical information.</string>
+
+    <string name="common_permission_device_admin">device admin permission</string>
+    <string name="common_permission_device_admin_description">allows device-level management functions (e.g., remote lock, data wipe, password policies).</string>
+
+    <string name="common_permission_accessibility_service">accessibility service permission</string>
+    <string name="common_permission_accessibility_service_description">allows assisting users with disabilities through features like voice announcements, gesture assistance, or automatic tapping.</string>
+
+    <string name="common_permission_vpn">\tvpn\tpermission</string>
+    <string name="common_permission_vpn_description">allows creating and managing vpn connections for accessing internal networks, network proxy, or encrypted data transmission.</string>
 
 </resources>
