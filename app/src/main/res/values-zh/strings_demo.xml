@@ -17,6 +17,7 @@
     <string name="test_notification_channel_id">test</string>
     <string name="test_notification_channel_name">用于测试的通知渠道名称</string>
 
+    <string name="test_device_admin_extra_add_explanation">用于设备管理器权限的测试附加说明</string>
     <string name="test_accessibility_service_description">用于无障碍服务的测试描述</string>
 
     <string name="demo_request_single_dangerous_permission">申请单个危险权限</string>

@@ -654,7 +654,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_device_admin_permission) {
 
             XXPermissions.with(this)
-                .permission(PermissionManifest.getBindDeviceAdminPermission(DemoDeviceAdminReceiver.class, "Test Message"))
+                .permission(PermissionManifest.getBindDeviceAdminPermission(
+                                                DemoDeviceAdminReceiver.class,
+                                                getString(R.string.test_device_admin_extra_add_explanation)))
                 .interceptor(new PermissionInterceptor())
                 .description(new PermissionDescription())
                 .request(new OnPermissionCallback() {

@@ -17,6 +17,7 @@
     <string name="test_notification_channel_id">test</string>
     <string name="test_notification_channel_name">test notification channel name</string>
 
+    <string name="test_device_admin_extra_add_explanation">Additional instructions for testing device management permissions</string>
     <string name="test_accessibility_service_description">test description for accessibility services</string>
 
     <string name="demo_request_single_dangerous_permission">Request single dangerous permission</string>
