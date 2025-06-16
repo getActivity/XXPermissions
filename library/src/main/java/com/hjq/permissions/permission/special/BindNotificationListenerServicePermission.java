@@ -20,7 +20,6 @@ import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -92,9 +91,15 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
         if (!AndroidVersionTools.isAndroid4_3()) {
             return true;
         }
-        if (AndroidVersionTools.isAndroid8_1() && PermissionUtils.isClassExist(mServiceClassName)) {
-            return context.getSystemService(NotificationManager.class)
-                    .isNotificationListenerAccessGranted(new ComponentName(context, mServiceClassName));
+        NotificationManager notificationManager;
+        if (AndroidVersionTools.isAndroid6()) {
+            notificationManager = context.getSystemService(NotificationManager.class);
+        } else {
+            notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+        String serviceClassName = PermissionUtils.isClassExist(mServiceClassName) ? mServiceClassName : null;
+        if (AndroidVersionTools.isAndroid8_1() && notificationManager != null && serviceClassName != null) {
+            return notificationManager.isNotificationListenerAccessGranted(new ComponentName(context, serviceClassName));
         }
         final String enabledNotificationListeners = Settings.Secure.getString(context.getContentResolver(), SETTING_ENABLED_NOTIFICATION_LISTENERS);
         if (TextUtils.isEmpty(enabledNotificationListeners)) {
@@ -102,35 +107,21 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
         }
         // com.hjq.permissions.demo/com.hjq.permissions.demo.NotificationMonitorService:com.huawei.health/com.huawei.bone.ui.setting.NotificationPushListener
         final String[] allComponentNameArray = enabledNotificationListeners.split(":");
-
-        List<ComponentName> appComponentNameList = new ArrayList<>();
         for (String component : allComponentNameArray) {
             ComponentName componentName = ComponentName.unflattenFromString(component);
             if (componentName == null) {
                 continue;
             }
-            if (!TextUtils.equals(componentName.getPackageName(), context.getPackageName())) {
-                continue;
-            }
-            // 先筛选出来是当前应用的的组件
-            appComponentNameList.add(componentName);
-        }
-
-        // 判断是否指定了类名且类存在
-        if (PermissionUtils.isClassExist(mServiceClassName)) {
-            // 精准匹配
-            for (ComponentName componentName : appComponentNameList) {
-                if (TextUtils.equals(mServiceClassName, componentName.getClassName())) {
+            if (serviceClassName != null) {
+                // 精准匹配
+                if (serviceClassName.equals(componentName.getClassName())) {
                     return true;
                 }
-            }
-            return false;
-        }
-
-        // 模糊匹配
-        for (ComponentName componentName : appComponentNameList) {
-            if (PermissionUtils.isClassExist(componentName.getClassName())) {
-                return true;
+            } else {
+                // 模糊匹配
+                if (context.getPackageName().equals(componentName.getPackageName())) {
+                    return true;
+                }
             }
         }
         return false;
