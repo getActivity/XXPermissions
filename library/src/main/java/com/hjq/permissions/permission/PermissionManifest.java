@@ -26,6 +26,7 @@ import com.hjq.permissions.permission.dangerous.ReadMediaVisualUserSelectedPermi
 import com.hjq.permissions.permission.dangerous.ReadPhoneNumbersPermission;
 import com.hjq.permissions.permission.dangerous.WriteExternalStoragePermission;
 import com.hjq.permissions.permission.special.AccessNotificationPolicyPermission;
+import com.hjq.permissions.permission.special.BindAccessibilityServicePermission;
 import com.hjq.permissions.permission.special.BindDeviceAdminPermission;
 import com.hjq.permissions.permission.special.BindNotificationListenerServicePermission;
 import com.hjq.permissions.permission.special.BindVpnServicePermission;
@@ -291,6 +292,23 @@ public final class PermissionManifest {
             return permission;
         }
         return putCachePermission(new NotificationServicePermission());
+    }
+
+    /**
+     * 获取无障碍服务权限（特殊权限，Android 4.1 新增的权限，注意此权限不需要在清单文件中注册也能申请）
+     *
+     * @param clazz                                 无障碍 Service 类
+     */
+    public static IPermission getBindAccessibilityServicePermission(@NonNull Class<? extends Service> clazz) {
+        return new BindAccessibilityServicePermission(clazz);
+    }
+
+    public static IPermission getBindAccessibilityServicePermission() {
+        IPermission permission = getCachePermission(BindAccessibilityServicePermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new BindAccessibilityServicePermission());
     }
 
     /**

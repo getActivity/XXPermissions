@@ -229,6 +229,14 @@
                     android:text="@string/demo_request_device_admin_permission" />
 
                 <Button
+                    android:id="@+id/btn_main_request_accessibility_service_permission"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/demo_request_accessibility_service_permission" />
+
+                <Button
                     android:id="@+id/btn_main_request_get_installed_apps_permission"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

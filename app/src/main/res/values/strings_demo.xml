@@ -17,6 +17,8 @@
     <string name="test_notification_channel_id">test</string>
     <string name="test_notification_channel_name">test notification channel name</string>
 
+    <string name="test_accessibility_service_description">test description for accessibility services</string>
+
     <string name="demo_request_single_dangerous_permission">Request single dangerous permission</string>
     <string name="demo_request_multiple_dangerous_permission">Request multiple dangerous permission</string>
     <string name="demo_request_location_permission">Request location permission</string>
@@ -41,6 +43,7 @@
     <string name="demo_request_vpn_permission">Request vpn permission</string>
     <string name="demo_request_full_screen_notifications_permission">Request full screen notifications permission</string>
     <string name="demo_request_device_admin_permission">Request device admin permission</string>
+    <string name="demo_request_accessibility_service_permission">Request accessibility service permission</string>
     <string name="demo_request_get_installed_apps_permission">Request get installed application information permission</string>
     <string name="demo_request_multiple_type_permission">Request dangerous permission and special permission</string>
     <string name="demo_start_app_details_activity">Start app details activity</string>

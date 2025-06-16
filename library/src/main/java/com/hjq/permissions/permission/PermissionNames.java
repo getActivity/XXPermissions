@@ -82,6 +82,11 @@ public final class PermissionNames {
     public static final String NOTIFICATION_SERVICE = "android.permission.NOTIFICATION_SERVICE";
 
     /**
+     * 无障碍服务权限字符串常量，如需权限对象请调用 {@link PermissionManifest#getBindAccessibilityServicePermission(Class)} 获取
+     */
+    public static final String BIND_ACCESSIBILITY_SERVICE = "android.permission.BIND_ACCESSIBILITY_SERVICE";
+
+    /**
      * 设备管理器权限字符串常量，如需权限对象请调用 {@link PermissionManifest#getBindDeviceAdminPermission(Class, String)} 获取
      */
     public static final String BIND_DEVICE_ADMIN = "android.permission.BIND_DEVICE_ADMIN";

@@ -17,6 +17,8 @@
     <string name="test_notification_channel_id">test</string>
     <string name="test_notification_channel_name">用于测试的通知渠道名称</string>
 
+    <string name="test_accessibility_service_description">用于无障碍服务的测试描述</string>
+
     <string name="demo_request_single_dangerous_permission">申请单个危险权限</string>
     <string name="demo_request_multiple_dangerous_permission">申请多个危险权限</string>
     <string name="demo_request_location_permission">申请定位权限</string>
@@ -41,6 +43,7 @@
     <string name="demo_request_vpn_permission">申请 VPN 权限</string>
     <string name="demo_request_full_screen_notifications_permission">申请全屏通知权限</string>
     <string name="demo_request_device_admin_permission">申请设备管理器权限</string>
+    <string name="demo_request_accessibility_service_permission">申请无障碍服务权限</string>
     <string name="demo_request_get_installed_apps_permission">申请读取应用列表</string>
     <string name="demo_request_multiple_type_permission">申请危险权限和特殊权限</string>
     <string name="demo_start_app_details_activity">跳转到应用详情页</string>
