@@ -60,7 +60,12 @@ public final class UseFullScreenIntentPermission extends SpecialPermission {
         if (!AndroidVersionTools.isAndroid14()) {
             return true;
         }
-        return context.getSystemService(NotificationManager.class).canUseFullScreenIntent();
+        NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+        // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
+        if (notificationManager == null) {
+            return false;
+        }
+        return notificationManager.canUseFullScreenIntent();
     }
 
     @NonNull

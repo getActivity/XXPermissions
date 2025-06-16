@@ -63,7 +63,12 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
         if (!AndroidVersionTools.isAndroid6()) {
             return true;
         }
-        return context.getSystemService(PowerManager.class).isIgnoringBatteryOptimizations(context.getPackageName());
+        PowerManager powerManager = context.getSystemService(PowerManager.class);
+        // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
+        if (powerManager == null) {
+            return false;
+        }
+        return powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
     }
 
     @SuppressLint("BatteryLife")

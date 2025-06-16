@@ -98,6 +98,7 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         }
         String serviceClassName = PermissionUtils.isClassExist(mServiceClassName) ? mServiceClassName : null;
+        // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
         if (AndroidVersionTools.isAndroid8_1() && notificationManager != null && serviceClassName != null) {
             return notificationManager.isNotificationListenerAccessGranted(new ComponentName(context, serviceClassName));
         }

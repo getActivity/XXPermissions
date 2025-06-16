@@ -205,12 +205,21 @@ public abstract class BasePermission implements IPermission {
         if (!AndroidVersionTools.isAndroid4_4()) {
             return true;
         }
-        AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        AppOpsManager appOpsManager;
+        if (AndroidVersionTools.isAndroid6()) {
+            appOpsManager = context.getSystemService(AppOpsManager.class);
+        } else {
+            appOpsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        }
+        // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
+        if (appOpsManager == null) {
+            return false;
+        }
         int mode;
         if (AndroidVersionTools.isAndroid10()) {
-            mode = appOps.unsafeCheckOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
+            mode = appOpsManager.unsafeCheckOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
         } else {
-            mode = appOps.checkOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
+            mode = appOpsManager.checkOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
         }
         return mode == AppOpsManager.MODE_ALLOWED;
     }
@@ -226,7 +235,16 @@ public abstract class BasePermission implements IPermission {
         if (!AndroidVersionTools.isAndroid4_4()) {
             return true;
         }
-        AppOpsManager appOps = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        AppOpsManager appOpsManager;
+        if (AndroidVersionTools.isAndroid6()) {
+            appOpsManager = context.getSystemService(AppOpsManager.class);
+        } else {
+            appOpsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
+        }
+        // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
+        if (appOpsManager == null) {
+            return false;
+        }
         ApplicationInfo appInfo = context.getApplicationInfo();
         String pkg = context.getApplicationContext().getPackageName();
         int uid = appInfo.uid;
@@ -240,7 +258,7 @@ public abstract class BasePermission implements IPermission {
                 opValue = opDefaultValue;
             }
             Method checkOpNoThrowMethod = appOpsClass.getMethod("checkOpNoThrow", Integer.TYPE, Integer.TYPE, String.class);
-            return ((int) checkOpNoThrowMethod.invoke(appOps, opValue, uid, pkg) == AppOpsManager.MODE_ALLOWED);
+            return ((int) checkOpNoThrowMethod.invoke(appOpsManager, opValue, uid, pkg) == AppOpsManager.MODE_ALLOWED);
         } catch (ClassNotFoundException | NoSuchMethodException |
                  InvocationTargetException | IllegalAccessException | RuntimeException e) {
             return true;

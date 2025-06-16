@@ -81,8 +81,17 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        DevicePolicyManager policyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-        return policyManager.isAdminActive(new ComponentName(context, mClazzName));
+        DevicePolicyManager devicePolicyManager;
+        if (AndroidVersionTools.isAndroid6()) {
+            devicePolicyManager = context.getSystemService(DevicePolicyManager.class);
+        } else {
+            devicePolicyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        }
+        // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
+        if (devicePolicyManager == null) {
+            return false;
+        }
+        return devicePolicyManager.isAdminActive(new ComponentName(context, mClazzName));
     }
 
     @NonNull

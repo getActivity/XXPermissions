@@ -83,6 +83,10 @@ public final class NotificationServicePermission extends SpecialPermission {
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         if (AndroidVersionTools.isAndroid7()) {
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
+            if (notificationManager == null) {
+                return checkOpNoThrow(context, OP_POST_NOTIFICATION_FIELD_NAME, OP_POST_NOTIFICATION_DEFAULT_VALUE);
+            }
             if (!notificationManager.areNotificationsEnabled()) {
                 return false;
             }
@@ -105,7 +109,8 @@ public final class NotificationServicePermission extends SpecialPermission {
 
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             NotificationChannel notificationChannel = null;
-            if (!TextUtils.isEmpty(mChannelId)) {
+            // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
+            if (notificationManager != null && !TextUtils.isEmpty(mChannelId)) {
                 notificationChannel = notificationManager.getNotificationChannel(mChannelId);
             }
             // 设置通知渠道 id 参数的前提条件有两个

@@ -61,7 +61,12 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
         if (!AndroidVersionTools.isAndroid6()) {
             return true;
         }
-        return context.getSystemService(NotificationManager.class).isNotificationPolicyAccessGranted();
+        NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+        // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
+        if (notificationManager == null) {
+            return false;
+        }
+        return notificationManager.isNotificationPolicyAccessGranted();
     }
 
     @NonNull

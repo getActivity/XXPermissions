@@ -67,7 +67,12 @@ public final class ScheduleExactAlarmPermission extends SpecialPermission {
         if (!AndroidVersionTools.isAndroid12()) {
             return true;
         }
-        return context.getSystemService(AlarmManager.class).canScheduleExactAlarms();
+        AlarmManager alarmManager = context.getSystemService(AlarmManager.class);
+        // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
+        if (alarmManager == null) {
+            return false;
+        }
+        return alarmManager.canScheduleExactAlarms();
     }
 
     @NonNull
