@@ -504,11 +504,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_bind_notification_listener_permission) {
 
             XXPermissions.with(this)
-                    // 不需要指定通知监听类（不推荐，两种写法只能二选一，不可以两种都写）
-                    //.permission(PermissionManifest.getNotificationListenerServicePermission())
                     // 需要指定通知监听类（推荐，两种写法只能二选一，不可以两种都写）
                     .permission(PermissionManifest.getBindNotificationListenerServicePermission(
-                        DemoNotificationListenerService.class))
+                                                            DemoNotificationListenerService.class))
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -675,7 +673,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_accessibility_service_permission) {
 
             XXPermissions.with(this)
-                .permission(PermissionManifest.getBindAccessibilityServicePermission(DemoAccessibilityService.class))
+                .permission(PermissionManifest.getBindAccessibilityServicePermission(
+                                                        DemoAccessibilityService.class))
                 .interceptor(new PermissionInterceptor())
                 .description(new PermissionDescription())
                 .request(new OnPermissionCallback() {

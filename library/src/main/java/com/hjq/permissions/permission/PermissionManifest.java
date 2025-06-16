@@ -252,11 +252,17 @@ public final class PermissionManifest {
      *
      * @param clazz             通知监听的 Service 类型
      */
-    public static IPermission getBindNotificationListenerServicePermission(@Nullable Class<? extends Service> clazz) {
+    public static IPermission getBindNotificationListenerServicePermission(@NonNull Class<? extends Service> clazz) {
         // 该对象不会纳入到缓存的集合中，这是它携带了具体的参数，只有无参的才能丢到缓存的集合中
         return new BindNotificationListenerServicePermission(clazz);
     }
 
+    /**
+     * 同上
+     *
+     * @deprecated           此方法不推荐使用，推荐使用 {@link #getBindNotificationListenerServicePermission(Class)}
+     */
+    @Deprecated
     public static IPermission getBindNotificationListenerServicePermission() {
         IPermission permission = getCachePermission(BindNotificationListenerServicePermission.PERMISSION_NAME);
         if (permission != null) {
@@ -286,6 +292,9 @@ public final class PermissionManifest {
         return new NotificationServicePermission(channelId);
     }
 
+    /**
+     * 同上
+     */
     public static IPermission getNotificationServicePermission() {
         IPermission permission = getCachePermission(NotificationServicePermission.PERMISSION_NAME);
         if (permission != null) {
@@ -295,7 +304,7 @@ public final class PermissionManifest {
     }
 
     /**
-     * 获取无障碍服务权限（特殊权限，Android 4.1 新增的权限，注意此权限不需要在清单文件中注册也能申请）
+     * 无障碍服务权限（特殊权限，Android 4.1 新增的权限，注意此权限不需要在清单文件中注册也能申请）
      *
      * @param clazz                                 无障碍 Service 类
      */
@@ -303,6 +312,11 @@ public final class PermissionManifest {
         return new BindAccessibilityServicePermission(clazz);
     }
 
+    /**
+     * 同上
+     *
+     * @deprecated           此方法不推荐使用，推荐使用 {@link #getBindAccessibilityServicePermission(Class)}
+     */
     public static IPermission getBindAccessibilityServicePermission() {
         IPermission permission = getCachePermission(BindAccessibilityServicePermission.PERMISSION_NAME);
         if (permission != null) {
@@ -312,7 +326,7 @@ public final class PermissionManifest {
     }
 
     /**
-     * 获取设备管理权限（特殊权限，Android 2.2 新增的权限，注意此权限不需要在清单文件中注册也能申请）
+     * 设备管理权限（特殊权限，Android 2.2 新增的权限，注意此权限不需要在清单文件中注册也能申请）
      *
      * @param clazz                                 设备管理器的 BroadcastReceiver 类
      * @param extraAddExplanation                   申请设备管理器权限的附加说明
@@ -321,6 +335,9 @@ public final class PermissionManifest {
         return new BindDeviceAdminPermission(clazz, extraAddExplanation);
     }
 
+    /**
+     * 同上
+     */
     public static IPermission getBindDeviceAdminPermission(@NonNull Class<? extends BroadcastReceiver> clazz) {
         return new BindDeviceAdminPermission(clazz, null);
     }
