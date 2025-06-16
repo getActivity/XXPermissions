@@ -261,12 +261,12 @@ public final class PermissionManifest {
     /**
      * 通知栏监听权限（特殊权限，Android 4.3 新增的权限，注意此权限不需要在清单文件中注册也能申请）
      *
-     * @param clazz             通知监听的 Service 类型
+     * @param serviceClass             通知监听的 Service 类型
      */
     @NonNull
-    public static IPermission getBindNotificationListenerServicePermission(@NonNull Class<? extends Service> clazz) {
+    public static IPermission getBindNotificationListenerServicePermission(@NonNull Class<? extends Service> serviceClass) {
         // 该对象不会纳入到缓存的集合中，这是它携带了具体的参数，只有无参的才能丢到缓存的集合中
-        return new BindNotificationListenerServicePermission(clazz);
+        return new BindNotificationListenerServicePermission(serviceClass);
     }
 
     /**
@@ -322,11 +322,11 @@ public final class PermissionManifest {
     /**
      * 无障碍服务权限（特殊权限，Android 4.1 新增的权限，注意此权限不需要在清单文件中注册也能申请）
      *
-     * @param clazz                                 无障碍 Service 类
+     * @param serviceClass                                 无障碍 Service 类
      */
     @NonNull
-    public static IPermission getBindAccessibilityServicePermission(@NonNull Class<? extends Service> clazz) {
-        return new BindAccessibilityServicePermission(clazz);
+    public static IPermission getBindAccessibilityServicePermission(@NonNull Class<? extends Service> serviceClass) {
+        return new BindAccessibilityServicePermission(serviceClass);
     }
 
     /**
@@ -346,20 +346,20 @@ public final class PermissionManifest {
     /**
      * 设备管理权限（特殊权限，Android 2.2 新增的权限，注意此权限不需要在清单文件中注册也能申请）
      *
-     * @param clazz                                 设备管理器的 BroadcastReceiver 类
+     * @param broadcastReceiverClass                                 设备管理器的 BroadcastReceiver 类
      * @param extraAddExplanation                   申请设备管理器权限的附加说明
      */
     @NonNull
-    public static IPermission getBindDeviceAdminPermission(@NonNull Class<? extends BroadcastReceiver> clazz, @Nullable String extraAddExplanation) {
-        return new BindDeviceAdminPermission(clazz, extraAddExplanation);
+    public static IPermission getBindDeviceAdminPermission(@NonNull Class<? extends BroadcastReceiver> broadcastReceiverClass, @Nullable String extraAddExplanation) {
+        return new BindDeviceAdminPermission(broadcastReceiverClass, extraAddExplanation);
     }
 
     /**
      * 同上
      */
     @NonNull
-    public static IPermission getBindDeviceAdminPermission(@NonNull Class<? extends BroadcastReceiver> clazz) {
-        return new BindDeviceAdminPermission(clazz, null);
+    public static IPermission getBindDeviceAdminPermission(@NonNull Class<? extends BroadcastReceiver> broadcastReceiverClass) {
+        return new BindDeviceAdminPermission(broadcastReceiverClass, null);
     }
 
     /* ------------------------------------ 我是一条华丽的分割线 ------------------------------------ */

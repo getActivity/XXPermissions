@@ -42,18 +42,18 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
 
     /** 设备管理器的 BroadcastReceiver 类名 */
     @NonNull
-    private final String mClazzName;
+    private final String mBroadcastReceiverClassName;
 
     /** 申请设备管理器权限的附加说明 */
     @Nullable
     private final String mExtraAddExplanation;
 
-    public BindDeviceAdminPermission(@NonNull Class<? extends BroadcastReceiver> clazz, @Nullable String extraAddExplanation) {
-        this(clazz.getName(), extraAddExplanation);
+    public BindDeviceAdminPermission(@NonNull Class<? extends BroadcastReceiver> broadcastReceiverClass, @Nullable String extraAddExplanation) {
+        this(broadcastReceiverClass.getName(), extraAddExplanation);
     }
 
-    public BindDeviceAdminPermission(@NonNull String clazzName, @Nullable String extraAddExplanation) {
-        mClazzName = clazzName;
+    public BindDeviceAdminPermission(@NonNull String broadcastReceiverClassName, @Nullable String extraAddExplanation) {
+        mBroadcastReceiverClassName = broadcastReceiverClassName;
         mExtraAddExplanation = extraAddExplanation;
     }
 
@@ -64,7 +64,7 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mClazzName);
+        dest.writeString(mBroadcastReceiverClassName);
         dest.writeString(mExtraAddExplanation);
     }
 
@@ -91,14 +91,14 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
         if (devicePolicyManager == null) {
             return false;
         }
-        return devicePolicyManager.isAdminActive(new ComponentName(context, mClazzName));
+        return devicePolicyManager.isAdminActive(new ComponentName(context, mBroadcastReceiverClassName));
     }
 
     @NonNull
     @Override
     public Intent getPermissionSettingIntent(@NonNull Context context) {
         Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, new ComponentName(context, mClazzName));
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, new ComponentName(context, mBroadcastReceiverClassName));
         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, mExtraAddExplanation);
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {
@@ -138,8 +138,8 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
     }
 
     @NonNull
-    public String getClazzName() {
-        return mClazzName;
+    public String getBroadcastReceiverClassName() {
+        return mBroadcastReceiverClassName;
     }
 
     @Nullable

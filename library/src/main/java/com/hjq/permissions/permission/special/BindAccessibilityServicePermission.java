@@ -52,12 +52,12 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
         this((String) null);
     }
 
-    public BindAccessibilityServicePermission(@Nullable Class<? extends Service> clazz) {
-        this(clazz != null ? clazz.getName() : null);
+    public BindAccessibilityServicePermission(@Nullable Class<? extends Service> serviceClazz) {
+        this(serviceClazz != null ? serviceClazz.getName() : null);
     }
 
-    public BindAccessibilityServicePermission(@Nullable String clazzName) {
-        mServiceClassName = clazzName;
+    public BindAccessibilityServicePermission(@Nullable String serviceClassName) {
+        mServiceClassName = serviceClassName;
     }
 
     private BindAccessibilityServicePermission(Parcel in) {

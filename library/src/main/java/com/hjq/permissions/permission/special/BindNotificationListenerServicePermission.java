@@ -56,8 +56,8 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
         this((String) null);
     }
 
-    public BindNotificationListenerServicePermission(@Nullable Class<? extends Service> clazz) {
-        this(clazz != null ? clazz.getName() : null);
+    public BindNotificationListenerServicePermission(@Nullable Class<? extends Service> serviceClass) {
+        this(serviceClass != null ? serviceClass.getName() : null);
     }
 
     public BindNotificationListenerServicePermission(@Nullable String serviceClassName) {
