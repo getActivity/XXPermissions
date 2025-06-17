@@ -45,9 +45,13 @@ final class RequestPermissionDelegateImplByDangerous extends RequestPermissionDe
         // 释放对这个请求码的占用
         PermissionRequestCodeManager.releaseRequestCode(requestCode);
 
+        Activity activity = getActivity();
+        if (PermissionUtils.isActivityUnavailable(activity)) {
+            return;
+        }
         // 延迟处理权限请求的结果
         sendTask(this::dispatchPermissionCallback,
-            PermissionApi.getMaxWaitTimeByPermissions(getPermissionRequestList()));
+            PermissionApi.getMaxWaitTimeByPermissions(activity, getPermissionRequestList()));
     }
 
     private void dispatchPermissionCallback() {

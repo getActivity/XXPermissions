@@ -44,8 +44,12 @@ final class RequestPermissionDelegateImplBySpecial extends RequestPermissionDele
             return;
         }
 
+        Activity activity = getActivity();
+        if (PermissionUtils.isActivityUnavailable(activity)) {
+            return;
+        }
         // 延迟处理权限请求的结果
-        sendTask(this::dispatchPermissionCallback, PermissionApi.getMaxWaitTimeByPermissions(permissions));
+        sendTask(this::dispatchPermissionCallback, PermissionApi.getMaxWaitTimeByPermissions(activity, permissions));
     }
 
     private void dispatchPermissionCallback() {

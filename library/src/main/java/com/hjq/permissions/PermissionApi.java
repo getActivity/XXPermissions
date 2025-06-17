@@ -192,13 +192,13 @@ final class PermissionApi {
     /**
      * 通过权限集合获取最大的间隔时间
      */
-    static int getMaxIntervalTimeByPermissions(@Nullable List<IPermission> permissions) {
+    static int getMaxIntervalTimeByPermissions(@NonNull Context context, @Nullable List<IPermission> permissions) {
         if (permissions == null) {
             return 0;
         }
         int maxWaitTime = 0;
         for (IPermission permission : permissions) {
-            int time = permission.getRequestIntervalTime();
+            int time = permission.getRequestIntervalTime(context);
             if (time == 0) {
                 continue;
             }
@@ -210,13 +210,13 @@ final class PermissionApi {
     /**
      * 通过权限集合获取最大的回调等待时间
      */
-    static int getMaxWaitTimeByPermissions(@Nullable List<IPermission> permissions) {
+    static int getMaxWaitTimeByPermissions(@NonNull Context context, @Nullable List<IPermission> permissions) {
         if (permissions == null) {
             return 0;
         }
         int maxWaitTime = 0;
         for (IPermission permission : permissions) {
-            int time = permission.getResultWaitTime();
+            int time = permission.getResultWaitTime(context);
             if (time == 0) {
                 continue;
             }

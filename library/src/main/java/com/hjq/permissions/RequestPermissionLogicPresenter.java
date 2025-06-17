@@ -152,7 +152,7 @@ final class RequestPermissionLogicPresenter {
                 }
 
                 final List<IPermission> finalPermissions = nextPermissions;
-                int maxWaitTimeByPermissions = PermissionApi.getMaxIntervalTimeByPermissions(nextPermissions);
+                int maxWaitTimeByPermissions = PermissionApi.getMaxIntervalTimeByPermissions(activity, nextPermissions);
                 if (maxWaitTimeByPermissions == 0) {
                     requestPermissions(activity, finalPermissions, fragmentFactory, permissionDescription, this);
                 } else {
@@ -182,14 +182,13 @@ final class RequestPermissionLogicPresenter {
             }
             alreadyDonePermissions.add(permission);
 
-            // 如果这个权限已授权，就不纳入申请的范围内
-            if (permission.isGrantedPermission(activity)) {
+            // 如果这个权限不支持申请，就不纳入申请的范围内
+            if (!permission.isSupportRequestPermission(activity)) {
                 continue;
             }
 
-            // 如果当前设备的版本还没有出现过这个特殊权限，并且权限还没有授权的情况，证明这个特殊权限有向下兼容的权限
-            // 这种情况就不要跳转到权限设置页，例如 MANAGE_EXTERNAL_STORAGE 权限
-            if (permission.isLowVersionRunning()) {
+            // 如果这个权限已授权，就不纳入申请的范围内
+            if (permission.isGrantedPermission(activity)) {
                 continue;
             }
 
@@ -219,9 +218,9 @@ final class RequestPermissionLogicPresenter {
                     continue;
                 }
 
-                // 判断当前权限是否在低版本（不受支持的版本）上面运行
-                if (todoPermission.isLowVersionRunning()) {
-                    // 如果申请的权限是新系统才出现的，但是当前是旧系统运行，就不往下执行
+                // 判断当前权限是否支持申请
+                if (!todoPermission.isSupportRequestPermission(activity)) {
+                    // 如果这个权限不支持申请，就不往下执行
                     continue;
                 }
 

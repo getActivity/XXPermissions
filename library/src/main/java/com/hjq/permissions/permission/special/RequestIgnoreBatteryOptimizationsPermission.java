@@ -92,7 +92,11 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
     }
 
     @Override
-    public int getResultWaitTime() {
+    public int getResultWaitTime(@NonNull Context context) {
+        if (!isSupportRequestPermission(context)) {
+            return 0;
+        }
+
         // 小米手机默认等待时长
         final int xiaomiPhoneDefaultWaitTime = 1000;
         if (PhoneRomUtils.isHyperOs()) {
@@ -109,7 +113,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
             //         结果测试人员发现了，开发人员不得不修，否则会影响自己的绩效，至此这个历史遗留 Bug 终于被发现并修复
             //         Android 15 的澎湃 2.0 版本 200 毫秒没有问题，但是 Android 14 的版本澎湃 1.0 还有有问题
             if (AndroidVersionTools.isAndroid15()) {
-                return super.getResultWaitTime();
+                return super.getResultWaitTime(context);
             }
 
             if (AndroidVersionTools.isAndroid14()) {
@@ -126,7 +130,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
                     if (hyperOsBigVersion < 2) {
                         return xiaomiPhoneDefaultWaitTime;
                     } else {
-                        return super.getResultWaitTime();
+                        return super.getResultWaitTime(context);
                     }
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
@@ -146,6 +150,6 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
             return xiaomiPhoneDefaultWaitTime;
         }
 
-        return super.getResultWaitTime();
+        return super.getResultWaitTime(context);
     }
 }

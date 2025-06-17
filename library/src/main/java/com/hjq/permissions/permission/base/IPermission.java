@@ -82,6 +82,22 @@ public interface IPermission extends Parcelable {
     }
 
     /**
+     * 当前是否支持请求该权限
+     */
+    default boolean isSupportRequestPermission(@NonNull Context context) {
+        // 如果当前权限是否在低版本（不受支持的版本）上面运行，则证明不支持请求该权限
+        // 例如 MANAGE_EXTERNAL_STORAGE 权限是 Android 11 才出现的权限，在 Android 10 上面肯定是不支持申请
+        return getFromAndroidVersion() <= AndroidVersionTools.getCurrentAndroidVersionCode();
+    }
+
+    /**
+     * 判断当前权限是否在低版本（不受支持的版本）上面运行
+     */
+    default boolean isLowVersionRunning() {
+        return getFromAndroidVersion() > AndroidVersionTools.getCurrentAndroidVersionCode();
+    }
+
+    /**
      * 判断当前权限是否授予
      */
     default boolean isGrantedPermission(@NonNull Context context) {
@@ -107,23 +123,16 @@ public interface IPermission extends Parcelable {
     Intent getPermissionSettingIntent(@NonNull Context context);
 
     /**
-     * 判断当前权限是否在低版本（不受支持的版本）上面运行
-     */
-    default boolean isLowVersionRunning() {
-        return getFromAndroidVersion() > AndroidVersionTools.getCurrentAndroidVersionCode();
-    }
-
-    /**
      * 获取权限请求的间隔时间
      */
-    default int getRequestIntervalTime() {
+    default int getRequestIntervalTime(@NonNull Context context) {
         return 0;
     }
 
     /**
      * 获取处理权限结果的等待时间
      */
-    default int getResultWaitTime() {
+    default int getResultWaitTime(@NonNull Context context) {
         return 0;
     }
 

@@ -1,6 +1,7 @@
 package com.hjq.permissions.permission.common;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.AndroidVersionTools;
@@ -36,9 +37,9 @@ public abstract class SpecialPermission extends BasePermission {
     }
 
     @Override
-    public int getResultWaitTime() {
-        if (isLowVersionRunning()) {
-            return super.getResultWaitTime();
+    public int getResultWaitTime(@NonNull Context context) {
+        if (!isSupportRequestPermission(context)) {
+            return 0;
         }
 
         // 特殊权限一律需要一定的等待时间
