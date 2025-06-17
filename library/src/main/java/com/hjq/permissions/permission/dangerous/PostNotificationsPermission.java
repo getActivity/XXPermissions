@@ -70,11 +70,8 @@ public final class PostNotificationsPermission extends DangerousPermission {
     }
 
     @Override
-    public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
-        if (isLowVersionRunning()) {
-            return false;
-        }
-        return super.isDoNotAskAgainPermission(activity);
+    protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
+        return PermissionManifest.getNotificationServicePermission().isDoNotAskAgainPermission(activity);
     }
 
     @NonNull
