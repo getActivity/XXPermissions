@@ -296,7 +296,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             //    b. MANAGE_EXTERNAL_STORAGE 二选一
                             .permission(PermissionManifest.getReadMediaImagesPermission())
                             .permission(PermissionManifest.getReadMediaVideoPermission())
-                            .permission(PermissionManifest.getMediaLocationPermission())
+                            .permission(PermissionManifest.getAccessMediaLocationPermission())
                             .interceptor(new PermissionInterceptor())
                             .description(new PermissionDescription())
                             .request(new OnPermissionCallback() {

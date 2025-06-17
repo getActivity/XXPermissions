@@ -17,7 +17,7 @@
     <string name="common_permission_background_sensors_fail_hint">Failed to obtain background sensor permission, \nplease select %s option</string>
     <string name="common_permission_fine_location_fail_hint">Failed to obtain the precise location permission. \nplease select the precise location option</string>
     <string name="common_permission_background_default_option_label">Allow all the time</string>
-    <string name="common_permission_media_location_hint_fail">Failed to get media location permission\nPlease clear app data and try again</string>
+    <string name="common_permission_media_location_hint_fail">Failed to access media location permission\nPlease clear app data and try again</string>
     <string name="common_permission_goto_setting_page">Go to authorization</string>
 
     <string name="common_permission_comma">, </string>

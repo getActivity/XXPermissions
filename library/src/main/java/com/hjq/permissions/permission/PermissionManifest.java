@@ -15,7 +15,7 @@ import com.hjq.permissions.permission.dangerous.BluetoothConnectPermission;
 import com.hjq.permissions.permission.dangerous.BluetoothScanPermission;
 import com.hjq.permissions.permission.dangerous.BodySensorsBackgroundPermission;
 import com.hjq.permissions.permission.dangerous.GetInstalledAppsPermission;
-import com.hjq.permissions.permission.dangerous.MediaLocationPermission;
+import com.hjq.permissions.permission.dangerous.AccessMediaLocationPermission;
 import com.hjq.permissions.permission.dangerous.NearbyWifiDevicesPermission;
 import com.hjq.permissions.permission.dangerous.PostNotificationsPermission;
 import com.hjq.permissions.permission.dangerous.ReadExternalStoragePermission;
@@ -561,12 +561,12 @@ public final class PermissionManifest {
      *     2) 如果项目 targetSdkVersion >= 30 需要申请 {@link PermissionNames#MANAGE_EXTERNAL_STORAGE}
      */
     @NonNull
-    public static IPermission getMediaLocationPermission() {
-        IPermission permission = getCachePermission(MediaLocationPermission.PERMISSION_NAME);
+    public static IPermission getAccessMediaLocationPermission() {
+        IPermission permission = getCachePermission(AccessMediaLocationPermission.PERMISSION_NAME);
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new MediaLocationPermission());
+        return putCachePermission(new AccessMediaLocationPermission());
     }
 
     /**

@@ -17,31 +17,31 @@ import java.util.List;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/06/11
- *    desc   : 媒体位置权限类
+ *    desc   : 读取媒体文件位置权限类
  */
-public final class MediaLocationPermission extends DangerousPermission {
+public final class AccessMediaLocationPermission extends DangerousPermission {
 
     /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
     public static final String PERMISSION_NAME = PermissionNames.ACCESS_MEDIA_LOCATION;
 
-    public static final Parcelable.Creator<MediaLocationPermission> CREATOR = new Parcelable.Creator<MediaLocationPermission>() {
+    public static final Parcelable.Creator<AccessMediaLocationPermission> CREATOR = new Parcelable.Creator<AccessMediaLocationPermission>() {
 
         @Override
-        public MediaLocationPermission createFromParcel(Parcel source) {
-            return new MediaLocationPermission(source);
+        public AccessMediaLocationPermission createFromParcel(Parcel source) {
+            return new AccessMediaLocationPermission(source);
         }
 
         @Override
-        public MediaLocationPermission[] newArray(int size) {
-            return new MediaLocationPermission[size];
+        public AccessMediaLocationPermission[] newArray(int size) {
+            return new AccessMediaLocationPermission[size];
         }
     };
 
-    public MediaLocationPermission() {
+    public AccessMediaLocationPermission() {
         // default implementation ignored
     }
 
-    private MediaLocationPermission(Parcel in) {
+    private AccessMediaLocationPermission(Parcel in) {
         super(in);
     }
 

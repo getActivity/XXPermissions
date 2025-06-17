@@ -154,7 +154,7 @@ public final class PermissionNames {
     public static final String ACTIVITY_RECOGNITION = "android.permission.ACTIVITY_RECOGNITION";
 
     /**
-     * 读取媒体文件的位置权限字符串常量，如需权限对象请调用 {@link PermissionManifest#getMediaLocationPermission()} 获取
+     * 读取媒体文件位置权限字符串常量，如需权限对象请调用 {@link PermissionManifest#getAccessMediaLocationPermission()} 获取
      */
     public static final String ACCESS_MEDIA_LOCATION = "android.permission.ACCESS_MEDIA_LOCATION";
 
