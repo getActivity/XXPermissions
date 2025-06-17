@@ -124,7 +124,7 @@
     <string name="common_permission_device_admin_description">用于提供设备级管理功能，例如远程锁定设备、擦除数据或强制密码策略。</string>
 
     <string name="common_permission_accessibility_service">无障碍服务权限</string>
-    <string name="common_permission_accessibility_service_description">用于帮助残障用户使用手机，例如语音播报、手势辅助或自动点击。</string>
+    <string name="common_permission_accessibility_service_description">用于帮助残障用户使用手机，例如语音播报、手势辅助或自动点击。（请在已下载的应用或者服务列表中找到并开启）</string>
 
     <string name="common_permission_vpn">\tVPN\t权限</string>
     <string name="common_permission_vpn_description">用于创建和管理VPN连接，例如访问内网资源、网络代理或加密网络传输。</string>

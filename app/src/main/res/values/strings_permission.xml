@@ -124,7 +124,7 @@
     <string name="common_permission_device_admin_description">allows device-level management functions (e.g., remote lock, data wipe, password policies).</string>
 
     <string name="common_permission_accessibility_service">accessibility service permission</string>
-    <string name="common_permission_accessibility_service_description">allows assisting users with disabilities through features like voice announcements, gesture assistance, or automatic tapping.</string>
+    <string name="common_permission_accessibility_service_description">allows assisting users with disabilities through features like voice announcements, gesture assistance, or automatic tapping. (please find and open it in the list of downloaded applications or services)</string>
 
     <string name="common_permission_vpn">\tvpn\tpermission</string>
     <string name="common_permission_vpn_description">allows creating and managing vpn connections for accessing internal networks, network proxy, or encrypted data transmission.</string>
