@@ -571,6 +571,8 @@ public final class PermissionManifest {
 
     /**
      * 允许呼叫应用继续在另一个应用中启动的呼叫权限（Android 9.0 新增的权限）
+     *
+     * 需要注意：此权限在一些无法拨打电话的设备（例如：小米平板 5）上面申请，系统会直接回调失败，如有进行申请，请留意处理权限申请失败的情况
      */
     @NonNull
     public static IPermission getAcceptHandoverPermission() {
@@ -585,6 +587,8 @@ public final class PermissionManifest {
     /**
      * 读取手机号码权限（Android 8.0 新增的权限）
      *
+     * 需要注意：此权限在一些无法拨打电话的设备（例如：小米平板 5）上面申请，系统会直接回调成功，但是这非必然，如有进行申请，还需留意处理权限申请失败的情况
+     *
      * 为了兼容 Android 8.0 以下版本，需要在清单文件中注册 {@link PermissionNames#READ_PHONE_STATE} 权限
      */
     @NonNull
@@ -598,6 +602,8 @@ public final class PermissionManifest {
 
     /**
      * 接听电话权限（Android 8.0 新增的权限，Android 8.0 以下可以采用模拟耳机按键事件来实现接听电话，这种方式不需要权限）
+     *
+     * 需要注意：此权限在一些无法拨打电话的设备（例如：小米平板 5）上面申请，系统会直接回调失败，如有进行申请，请留意处理权限申请失败的情况
      */
     @NonNull
     public static IPermission getAnswerPhoneCallsPermission() {
@@ -751,14 +757,17 @@ public final class PermissionManifest {
     }
 
     /**
-     * 读取电话状态权限
+     * 读取电话状态权限，需要注意的是：
      *
-     * 需要注意的是：这个权限在某些手机上面是没办法获取到的，因为某些系统禁止应用获得该权限
-     *             所以你要是申请了这个权限之后没有弹授权框，而是直接回调授权失败方法
-     *             请不要惊慌，这个不是 Bug、不是 Bug、不是 Bug，而是正常现象
-     *
+     * 1. 这个权限在某些手机上面是没办法获取到的，因为某些系统禁止应用获得该权限
+     *    所以你要是申请了这个权限之后没有弹授权框，而是直接回调授权失败方法
+     *    请不要惊慌，这个不是 Bug、不是 Bug、不是 Bug，而是正常现象
      * 后续情况汇报：有人反馈在 iQOO 手机上面获取不到该权限，在清单文件加入下面这个权限就可以了（这里只是做记录，并不代表这种方式就一定有效果）
      *             <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
+     *
+     * 2. 这个权限在某些手机上面申请是直接通过的，但是系统没有弹出授权对话框，实际上也是没有授权
+     *    这个也不是 Bug，而是系统故意就是这么做的，你要问我怎么办，我只能说胳膊拗不过大腿
+     *    Github issue 地址：https://github.com/getActivity/XXPermissions/issues/369
      */
     @NonNull
     public static IPermission getReadPhoneStatePermission() {
@@ -772,6 +781,8 @@ public final class PermissionManifest {
 
     /**
      * 拨打电话权限
+     *
+     * 需要注意：此权限在一些无法拨打电话的设备（例如：小米平板 5）上面申请，系统会直接回调失败，如有进行申请，请留意处理权限申请失败的情况
      */
     @NonNull
     public static IPermission getCallPhonePermission() {
@@ -785,6 +796,8 @@ public final class PermissionManifest {
 
     /**
      * 读取通话记录权限
+     *
+     * 需要注意：此权限在一些无法拨打电话的设备（例如：小米平板 5）上面申请，系统会直接回调失败，如有进行申请，请留意处理权限申请失败的情况
      */
     @NonNull
     public static IPermission getReadCallLogPermission() {
@@ -800,6 +813,8 @@ public final class PermissionManifest {
 
     /**
      * 修改通话记录权限
+     *
+     * 需要注意：此权限在一些无法拨打电话的设备（例如：小米平板 5）上面申请，系统会直接回调失败，如有进行申请，请留意处理权限申请失败的情况
      */
     @NonNull
     public static IPermission getWriteCallLogPermission() {
@@ -842,6 +857,8 @@ public final class PermissionManifest {
     /**
      * 处理拨出电话权限
      *
+     * 需要注意：此权限在一些无法拨打电话的设备（例如：小米平板 5）上面申请，系统会直接回调失败，如有进行申请，请留意处理权限申请失败的情况
+     *
      * @deprecated         在 Android 10 已经过时，请见：https://developer.android.google.cn/reference/android/Manifest.permission?hl=zh_cn#PROCESS_OUTGOING_CALLS
      */
     @NonNull
@@ -871,6 +888,8 @@ public final class PermissionManifest {
 
     /**
      * 发送短信权限
+     *
+     * 需要注意：此权限在一些无法发送短信的设备（例如：小米平板 5）上面申请，系统会直接回调失败，如有进行申请，请留意处理权限申请失败的情况
      */
     @NonNull
     public static IPermission getSendSmsPermission() {
@@ -884,6 +903,8 @@ public final class PermissionManifest {
 
     /**
      * 接收短信权限
+     *
+     * 需要注意：此权限在一些无法发送短信的设备（例如：小米平板 5）上面申请，系统会直接回调失败，如有进行申请，请留意处理权限申请失败的情况
      */
     @NonNull
     public static IPermission getReceiveSmsPermission() {
@@ -897,6 +918,8 @@ public final class PermissionManifest {
 
     /**
      * 读取短信权限
+     *
+     * 需要注意：此权限在一些无法发送短信的设备（例如：小米平板 5）上面申请，系统会直接回调失败，如有进行申请，请留意处理权限申请失败的情况
      */
     @NonNull
     public static IPermission getReadSmsPermission() {
@@ -910,6 +933,8 @@ public final class PermissionManifest {
 
     /**
      * 接收 WAP 推送消息权限
+     *
+     * 需要注意：此权限在一些无法发送短信的设备（例如：小米平板 5）上面申请，系统会直接回调成功，但是这非必然，如有进行申请，还需留意处理权限申请失败的情况
      */
     @NonNull
     public static IPermission getReceiveWapPushPermission() {
@@ -923,6 +948,8 @@ public final class PermissionManifest {
 
     /**
      * 接收彩信权限
+     *
+     * 需要注意：此权限在一些无法发送短信的设备（例如：小米平板 5）上面申请，系统会直接回调成功，但是这非必然，如有进行申请，还需留意处理权限申请失败的情况
      */
     @NonNull
     public static IPermission getReceiveMmsPermission() {
