@@ -106,7 +106,7 @@ public final class PermissionConverter {
         PERMISSION_DESCRIPTION_MAP.put(activityRecognitionPermissionNameStringId, R.string.common_permission_activity_recognition_description);
 
         PERMISSION_NAME_MAP.put(PermissionNames.ACCESS_MEDIA_LOCATION, R.string.common_permission_access_media_location);
-        PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_access_media_location, R.string.common_permission_access_media_location);
+        PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_access_media_location, R.string.common_permission_access_media_location_description);
 
         PERMISSION_NAME_MAP.put(PermissionGroups.SMS, R.string.common_permission_sms);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_sms, R.string.common_permission_sms_description);
