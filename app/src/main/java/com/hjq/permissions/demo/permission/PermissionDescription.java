@@ -1,4 +1,4 @@
-package com.hjq.permissions.demo;
+package com.hjq.permissions.demo.permission;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -22,6 +22,8 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import com.hjq.permissions.OnPermissionDescription;
 import com.hjq.permissions.XXPermissions;
+import com.hjq.permissions.demo.R;
+import com.hjq.permissions.demo.WindowLifecycleManager;
 import com.hjq.permissions.permission.base.IPermission;
 import java.util.List;
 

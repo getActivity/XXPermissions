@@ -1,4 +1,4 @@
-package com.hjq.permissions.demo;
+package com.hjq.permissions.demo.permission;
 
 import android.content.Context;
 import android.os.Build;
@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.hjq.permissions.XXPermissions;
+import com.hjq.permissions.demo.R;
 import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;

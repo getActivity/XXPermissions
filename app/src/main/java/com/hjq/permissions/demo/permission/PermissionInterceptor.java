@@ -1,4 +1,4 @@
-package com.hjq.permissions.demo;
+package com.hjq.permissions.demo.permission;
 
 import android.app.Activity;
 import android.app.AlertDialog.Builder;
@@ -14,6 +14,8 @@ import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.OnPermissionInterceptor;
 import com.hjq.permissions.OnPermissionPageCallback;
 import com.hjq.permissions.XXPermissions;
+import com.hjq.permissions.demo.R;
+import com.hjq.permissions.demo.WindowLifecycleManager;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.toast.Toaster;
