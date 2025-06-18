@@ -11,6 +11,7 @@
     <string name="demo_android_13_read_media_permission_hint">The current version is not Android 13 and above, it will automatically change to the old version of the request method</string>
     <string name="demo_android_11_manage_storage_permission_hint">The current version is not Android 11 and above, it will automatically change to the old version of the request method</string>
     <string name="demo_android_13_post_notification_permission_hint">The current version is not Android 13 and above, it will automatically change to the old version of the request method</string>
+    <string name="demo_android_14_full_screen_notifications_permission_hint">The current version is not Android 14 and above, it will automatically change to the old version of the request method</string>
 
     <string name="demo_notification_listener_toast">A new notification message was listened for with the title: %s and the content: %s</string>
 

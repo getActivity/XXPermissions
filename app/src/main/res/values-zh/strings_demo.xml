@@ -11,6 +11,7 @@
     <string name="demo_android_13_read_media_permission_hint">当前版本不是 Android 13 及以上，会自动变更为旧版的请求方式</string>
     <string name="demo_android_11_manage_storage_permission_hint">当前版本不是 Android 11 及以上，会自动变更为旧版的请求方式</string>
     <string name="demo_android_13_post_notification_permission_hint">当前版本不是 Android 13 及以上，会自动变更为旧版的请求方式</string>
+    <string name="demo_android_14_full_screen_notifications_permission_hint">当前版本不是 Android 14 及以上，会自动变更为旧版的请求方式</string>
 
     <string name="demo_notification_listener_toast">监听到新的通知消息，标题为：%s，内容为：%s</string>
 

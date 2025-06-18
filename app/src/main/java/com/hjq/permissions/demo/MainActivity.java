@@ -635,21 +635,36 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
         } else if (viewId == R.id.btn_main_request_full_screen_notifications_permission) {
 
-            XXPermissions.with(this)
-                .permission(PermissionManifest.getUseFullScreenIntentPermission())
-                .interceptor(new PermissionInterceptor())
-                .description(new PermissionDescription())
-                .request(new OnPermissionCallback() {
+            long delayMillis = 0;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                delayMillis = 2000;
+                toast(getString(R.string.demo_android_14_full_screen_notifications_permission_hint));
+            }
 
-                    @Override
-                    public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                        if (!allGranted) {
-                            return;
-                        }
-                        toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                            PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
-                    }
-                });
+            view.postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    XXPermissions.with(MainActivity.this)
+                        // 请求全屏通知权限需要携带通知权限（发送通知权限或者通知服务权限任意一个即可）同时申请
+                        .permission(PermissionManifest.getPostNotificationsPermission())
+                        //.permission(PermissionManifest.getNotificationServicePermission())
+                        .permission(PermissionManifest.getUseFullScreenIntentPermission())
+                        .interceptor(new PermissionInterceptor())
+                        .description(new PermissionDescription())
+                        .request(new OnPermissionCallback() {
+
+                            @Override
+                            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
+                                if (!allGranted) {
+                                    return;
+                                }
+                                toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            }
+                        });
+                }
+            }, delayMillis);
 
         } else if (viewId == R.id.btn_main_request_device_admin_permission) {
 
