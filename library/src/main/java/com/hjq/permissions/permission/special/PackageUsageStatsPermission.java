@@ -75,10 +75,15 @@ public final class PackageUsageStatsPermission extends SpecialPermission {
             // 经过测试，只有在 Android 10 及以上加包名才有效果
             // 如果在 Android 10 以下加包名会导致无法跳转
             intent.setData(PermissionUtils.getPackageNameUri(context));
+
+            // 如果是因为加包名的数据后导致不能跳转，就把包名的数据移除掉
+            if (!PermissionUtils.areActivityIntent(context, intent)) {
+                intent.setData(null);
+            }
         }
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = getApplicationDetailsIntent(context);
+            intent = getAndroidSettingAppIntent();
         }
 
         return intent;

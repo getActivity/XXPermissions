@@ -4,7 +4,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.AndroidVersionTools;
@@ -24,7 +23,7 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
     /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
     public static final String PERMISSION_NAME = PermissionNames.ACCESS_NOTIFICATION_POLICY;
 
-    public static final Parcelable.Creator<AccessNotificationPolicyPermission> CREATOR = new Parcelable.Creator<AccessNotificationPolicyPermission>() {
+    public static final Creator<AccessNotificationPolicyPermission> CREATOR = new Creator<AccessNotificationPolicyPermission>() {
 
         @Override
         public AccessNotificationPolicyPermission createFromParcel(Parcel source) {
@@ -76,7 +75,7 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
             return getApplicationDetailsIntent(context);
         }
 
-        Intent intent;
+        Intent intent = null;
         // issue 地址：https://github.com/getActivity/XXPermissions/issues/190
         // 这里解释一下，为什么要排除 HarmonyOs 和 Magic，因为用代码能检测到有这个 Intent，也能跳转过去，但是会被马上拒绝
         // 测试过了其他厂商系统及 Android 原生系统都没有这个问题，就只有鸿蒙有这个问题
@@ -95,7 +94,14 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
             // android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS
             intent = new Intent("android.settings.NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS");
             intent.setData(PermissionUtils.getPackageNameUri(context));
-        } else {
+
+            // 如果还是找不到这个意图，就把意图的对象置空
+            if (!PermissionUtils.areActivityIntent(context, intent)) {
+                intent = null;
+            }
+        }
+
+        if (intent == null) {
             intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
         }
 

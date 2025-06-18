@@ -121,7 +121,7 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
         Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = getApplicationDetailsIntent(context);
+            intent = getAndroidSettingAppIntent();
         }
         return intent;
     }

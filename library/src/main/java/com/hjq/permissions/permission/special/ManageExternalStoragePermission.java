@@ -14,8 +14,8 @@ import com.hjq.permissions.AndroidManifestInfo.ApplicationInfo;
 import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
 import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionUtils;
-import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import java.util.List;
@@ -102,7 +102,7 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
         }
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = getApplicationDetailsIntent(context);
+            intent = getAndroidSettingAppIntent();
         }
 
         return intent;

@@ -71,6 +71,10 @@ public final class RequestInstallPackagesPermission extends SpecialPermission {
 
         Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
         intent.setData(PermissionUtils.getPackageNameUri(context));
+        // 如果是因为加包名的数据后导致不能跳转，就把包名的数据移除掉
+        if (!PermissionUtils.areActivityIntent(context, intent)) {
+            intent.setData(null);
+        }
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);

@@ -65,7 +65,7 @@ public final class BindVpnServicePermission extends SpecialPermission {
         Intent intent = VpnService.prepare(context);
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = getApplicationDetailsIntent(context);
+            intent = getAndroidSettingAppIntent();
         }
         return intent;
     }

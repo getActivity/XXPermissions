@@ -86,7 +86,14 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
         }
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = getApplicationDetailsIntent(context);
+            // 经过测试，得出结论，miui 和澎湃支持在应用详情页设置该权限：
+            // 1. miui 应用详情页 -> 省电策略
+            // 2. Hyper 应用详情页 -> 电量消耗
+            if (PhoneRomUtils.isMiui() || PhoneRomUtils.isHyperOs()) {
+                intent = getApplicationDetailsIntent(context);
+            } else {
+                intent = getAndroidSettingAppIntent();
+            }
         }
         return intent;
     }

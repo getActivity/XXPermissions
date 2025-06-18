@@ -102,7 +102,7 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, mExtraAddExplanation);
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = getApplicationDetailsIntent(context);
+            intent = getAndroidSettingAppIntent();
         }
         return intent;
     }

@@ -150,7 +150,7 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
         }
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = getApplicationDetailsIntent(context);
+            intent = getAndroidSettingAppIntent();
         }
 
         return intent;

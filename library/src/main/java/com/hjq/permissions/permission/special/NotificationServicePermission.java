@@ -135,6 +135,10 @@ public final class NotificationServicePermission extends SpecialPermission {
             intent.putExtra("app_uid", context.getApplicationInfo().uid);
         }
 
+        if (AndroidVersionTools.isAndroid13() && !PermissionUtils.areActivityIntent(context, intent)) {
+            intent = new Intent(Settings.ACTION_ALL_APPS_NOTIFICATION_SETTINGS);
+        }
+
         if (!PermissionUtils.areActivityIntent(context, intent)) {
             intent = getApplicationDetailsIntent(context);
         }

@@ -165,6 +165,10 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
         // https://developer.android.google.cn/reference/android/provider/Settings#ACTION_MANAGE_OVERLAY_PERMISSION
         if (!AndroidVersionTools.isAndroid11()) {
             intent.setData(PermissionUtils.getPackageNameUri(context));
+            // 如果是因为加包名的数据后导致不能跳转，就把包名的数据移除掉
+            if (!PermissionUtils.areActivityIntent(context, intent)) {
+                intent.setData(null);
+            }
         }
         return intent;
     }

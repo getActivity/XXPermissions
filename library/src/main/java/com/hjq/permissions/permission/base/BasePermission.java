@@ -64,9 +64,20 @@ public abstract class BasePermission implements IPermission {
         return false;
     }
 
+    /**
+     * 获取应用详情页意图
+     */
     @NonNull
     public Intent getApplicationDetailsIntent(@NonNull Context context) {
         return PermissionIntentManager.getApplicationDetailsIntent(context, this);
+    }
+
+    /**
+     * 获取系统设置意图
+     */
+    @NonNull
+    public Intent getAndroidSettingAppIntent() {
+        return PermissionIntentManager.getAndroidSettingAppIntent();
     }
 
     @Override
