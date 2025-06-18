@@ -648,7 +648,6 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                         toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
                             PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
-                        getAppList();
                     }
                 });
 
@@ -669,7 +668,6 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                         toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
                             PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
-                        getAppList();
                     }
                 });
 
@@ -689,7 +687,6 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                         toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
                             PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
-                        getAppList();
                     }
                 });
 
