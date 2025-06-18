@@ -109,6 +109,12 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
     }
 
     @Override
+    protected boolean isRegisterPermissionByManifestFile() {
+        // 表示当前权限需要在 AndroidManifest.xml 文件中进行静态注册
+        return true;
+    }
+
+    @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestPermissions,
                                             @NonNull AndroidManifestInfo androidManifestInfo,

@@ -93,13 +93,18 @@ public final class ScheduleExactAlarmPermission extends SpecialPermission {
     }
 
     @Override
+    protected boolean isRegisterPermissionByManifestFile() {
+        // 不使用父类的方式来检查清单权限有没有注册，但是不代表不检查，这个权限比较复杂，需要自定义检查
+        return false;
+    }
+
+    @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestPermissions,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionInfo> permissionInfoList,
                                             @Nullable PermissionInfo currentPermissionInfo) {
-        // 不使用父类的方式来检查清单权限有没有注册，但是不代表不检查，这个权限比较复杂，需要自定义检查
-        // super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
         String useExactAlarmPermissionName;
         if (AndroidVersionTools.isAndroid13()) {
             useExactAlarmPermissionName = permission.USE_EXACT_ALARM;

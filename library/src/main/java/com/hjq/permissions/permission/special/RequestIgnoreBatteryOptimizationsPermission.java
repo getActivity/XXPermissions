@@ -152,4 +152,10 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
 
         return super.getResultWaitTime(context);
     }
+
+    @Override
+    protected boolean isRegisterPermissionByManifestFile() {
+        // 表示当前权限需要在 AndroidManifest.xml 文件中进行静态注册
+        return true;
+    }
 }

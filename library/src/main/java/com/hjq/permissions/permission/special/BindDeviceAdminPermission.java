@@ -113,8 +113,7 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionInfo> permissionInfoList,
                                             @Nullable PermissionInfo currentPermissionInfo) {
-        // 该权限不需要在清单文件中静态注册，所以注释掉父类的调用
-        // super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
         // 判断有没有 BroadcastReceiver 类注册了 android:permission="android.permission.BIND_DEVICE_ADMIN" 属性
         List<BroadcastReceiverInfo> broadcastReceiverInfoList = androidManifestInfo.broadcastReceiverInfoList;
         for (int i = 0; i < broadcastReceiverInfoList.size(); i++) {

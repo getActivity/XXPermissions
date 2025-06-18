@@ -162,8 +162,7 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionInfo> permissionInfoList,
                                             @Nullable PermissionInfo currentPermissionInfo) {
-        // 该权限不需要在清单文件中静态注册，所以注释掉父类的调用
-        // super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
         // 判断有没有 Service 类注册了 android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" 属性
         List<ServiceInfo> serviceInfoList = androidManifestInfo.serviceInfoList;
         for (int i = 0; i < serviceInfoList.size(); i++) {

@@ -84,4 +84,10 @@ public final class UseFullScreenIntentPermission extends SpecialPermission {
 
         return intent;
     }
+
+    @Override
+    protected boolean isRegisterPermissionByManifestFile() {
+        // 表示当前权限需要在 AndroidManifest.xml 文件中进行静态注册
+        return true;
+    }
 }

@@ -60,4 +60,13 @@ public abstract class SpecialPermission extends BasePermission {
         }
         return waitTime;
     }
+
+    /**
+     * 当前权限是否强制在清单文件中静态注册
+     */
+    @Override
+    protected boolean isRegisterPermissionByManifestFile() {
+        // 特殊权限默认不需要在清单文件中注册，这样定义是为了避免外层在自定义特殊权限的时候，还要去重写此方法
+        return false;
+    }
 }

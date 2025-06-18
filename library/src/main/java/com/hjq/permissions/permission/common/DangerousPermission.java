@@ -86,6 +86,12 @@ public abstract class DangerousPermission extends BasePermission {
         return getApplicationDetailsIntent(context);
     }
 
+    @Override
+    protected boolean isRegisterPermissionByManifestFile() {
+        // 危险权限默认需要在清单文件中注册，这样定义是为了避免外层在自定义特殊权限的时候，还要去重写此方法
+        return true;
+    }
+
     /**
      * 判断某个危险权限是否授予了
      */

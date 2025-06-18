@@ -100,6 +100,11 @@ public abstract class BasePermission implements IPermission {
     }
 
     /**
+     * 当前权限是否在清单文件中静态注册
+     */
+    protected abstract boolean isRegisterPermissionByManifestFile();
+
+    /**
      * 检查 AndroidManifest.xml 是否符合要求，如果不合规则会抛出异常
      */
     protected void checkSelfByManifestFile(@NonNull Activity activity,
@@ -107,6 +112,9 @@ public abstract class BasePermission implements IPermission {
                                            @NonNull AndroidManifestInfo androidManifestInfo,
                                            @NonNull List<PermissionInfo> permissionInfoList,
                                            @Nullable PermissionInfo currentPermissionInfo) {
+        if (!isRegisterPermissionByManifestFile()) {
+            return;
+        }
         // 检查当前权限有没有在清单文件中静态注册，如果有注册，还要检查注册 maxSdkVersion 属性有没有问题
         checkPermissionRegistrationStatus(currentPermissionInfo, getPermissionName());
     }

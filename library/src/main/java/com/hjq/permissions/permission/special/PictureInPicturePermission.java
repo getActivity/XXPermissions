@@ -93,8 +93,7 @@ public final class PictureInPicturePermission extends SpecialPermission {
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionInfo> permissionInfoList,
                                             @Nullable PermissionInfo currentPermissionInfo) {
-        // 该权限不需要在清单文件中静态注册，所以注释掉父类的调用
-        // super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
         List<ActivityInfo> activityInfoList = androidManifestInfo.activityInfoList;
         for (int i = 0; i < activityInfoList.size(); i++) {
             boolean supportsPictureInPicture = activityInfoList.get(i).supportsPictureInPicture;
