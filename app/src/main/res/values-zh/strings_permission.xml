@@ -118,7 +118,7 @@
     <string name="common_permission_picture_in_picture_description">用于开启画中画模式，例如边看视频边操作其他应用、悬浮视频窗口或多任务处理。</string>
 
     <string name="common_permission_full_screen_notifications">全屏通知权限</string>
-    <string name="common_permission_full_screen_notifications_description">用于在全屏状态下显示重要通知（如来电、紧急消息），避免错过关键信息。</string>
+    <string name="common_permission_full_screen_notifications_description">允许在设备锁定时显示占据整个屏幕空间的通知，确保重要信息（如来电、紧急消息）不会被错过，即使设备处于锁屏状态也能立即看到提醒。</string>
 
     <string name="common_permission_device_admin">设备管理器权限</string>
     <string name="common_permission_device_admin_description">用于提供设备级管理功能，例如远程锁定设备、擦除数据或强制密码策略。</string>

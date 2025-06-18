@@ -118,7 +118,7 @@
     <string name="common_permission_picture_in_picture_description">allows enabling picture-in-picture mode for watching videos while using other apps, floating video windows, or multitasking.</string>
 
     <string name="common_permission_full_screen_notifications">full screen notifications permission</string>
-    <string name="common_permission_full_screen_notifications_description">allows displaying important notifications (e.g., calls, emergency messages) in full-screen mode to prevent missing critical information.</string>
+    <string name="common_permission_full_screen_notifications_description">allows displaying notifications that occupy the entire screen when the device is locked, ensuring important information (e.g., incoming calls, emergency messages) is not missed. These notifications appear even when the device is locked.</string>
 
     <string name="common_permission_device_admin">device admin permission</string>
     <string name="common_permission_device_admin_description">allows device-level management functions (e.g., remote lock, data wipe, password policies).</string>
