@@ -75,8 +75,7 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
 
     @Override
     protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.getReadExternalStoragePermission().isGrantedPermission(activity) &&
-                super.isDoNotAskAgainPermissionByLowVersion(activity);
+        return PermissionManifest.getReadExternalStoragePermission().isDoNotAskAgainPermission(activity);
     }
 
     /**
