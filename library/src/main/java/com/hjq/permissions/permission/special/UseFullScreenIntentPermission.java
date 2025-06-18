@@ -1,5 +1,6 @@
 package com.hjq.permissions.permission.special;
 
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +12,9 @@ import com.hjq.permissions.AndroidVersionTools;
 import com.hjq.permissions.PermissionUtils;
 import com.hjq.permissions.PhoneRomUtils;
 import com.hjq.permissions.permission.PermissionNames;
+import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -79,10 +82,14 @@ public final class UseFullScreenIntentPermission extends SpecialPermission {
         Intent intent = new Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT);
         intent.setData(PermissionUtils.getPackageNameUri(context));
 
-        // 经过测试，miui 和 Hyper 不支持在通知界面设置全屏通知权限的，但是 Android 原生是可以的
-        if (!PermissionUtils.areActivityIntent(context, intent) && !PhoneRomUtils.isHyperOs() && !PhoneRomUtils.isMiui()) {
-            intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+        if (!PermissionUtils.areActivityIntent(context, intent)) {
+            // 经过测试，miui 和 Hyper 不支持在通知界面设置全屏通知权限的，但是 Android 原生是可以的
+            if (PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui()) {
+                intent = getAndroidSettingAppIntent();
+            } else {
+                intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+            }
         }
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {
@@ -96,5 +103,42 @@ public final class UseFullScreenIntentPermission extends SpecialPermission {
     protected boolean isRegisterPermissionByManifestFile() {
         // 表示当前权限需要在 AndroidManifest.xml 文件中进行静态注册
         return true;
+    }
+
+    @Override
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
+        super.checkSelfByRequestPermissions(activity, requestPermissions);
+        // 全屏通知权限需要通知权限一起使用（NOTIFICATION_SERVICE 或者 POST_NOTIFICATIONS）
+        if (!PermissionUtils.containsPermission(requestPermissions, PermissionNames.NOTIFICATION_SERVICE) &&
+            !PermissionUtils.containsPermission(requestPermissions, PermissionNames.POST_NOTIFICATIONS)) {
+            throw new IllegalArgumentException("The \"" + getPermissionName() + "\" needs to be used together with the notification permission. "
+                + "(\"" + PermissionNames.NOTIFICATION_SERVICE + "\" or \"" + PermissionNames.POST_NOTIFICATIONS + "\")");
+        }
+
+        int thisPermissionindex = -1;
+        int notificationServicePermissionIndex = -1;
+        int postNotificationsPermissionIndex = -1;
+        for (int i = 0; i < requestPermissions.size(); i++) {
+            IPermission permission = requestPermissions.get(i);
+            if (PermissionUtils.equalsPermission(permission, getPermissionName())) {
+                thisPermissionindex = i;
+            } else if (PermissionUtils.equalsPermission(permission, PermissionNames.NOTIFICATION_SERVICE)) {
+                notificationServicePermissionIndex = i;
+            } else if (PermissionUtils.equalsPermission(permission, PermissionNames.POST_NOTIFICATIONS)) {
+                postNotificationsPermissionIndex = i;
+            }
+        }
+
+        if (notificationServicePermissionIndex != -1 && notificationServicePermissionIndex > thisPermissionindex) {
+            // 请把 USE_FULL_SCREEN_INTENT 权限放置在 NOTIFICATION_SERVICE 权限的后面
+            throw new IllegalArgumentException("Please place the " + getPermissionName() +
+                "\" permission after the \"" + PermissionNames.NOTIFICATION_SERVICE + "\" permission");
+        }
+
+        if (postNotificationsPermissionIndex != -1 && postNotificationsPermissionIndex > thisPermissionindex) {
+            // 请把 USE_FULL_SCREEN_INTENT 权限放置在 POST_NOTIFICATIONS 权限的后面
+            throw new IllegalArgumentException("Please place the \"" + getPermissionName() +
+                "\" permission after the \"" + PermissionNames.POST_NOTIFICATIONS + "\" permission");
+        }
     }
 }
