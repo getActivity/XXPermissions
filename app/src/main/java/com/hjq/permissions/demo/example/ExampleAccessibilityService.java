@@ -1,4 +1,4 @@
-package com.hjq.permissions.demo;
+package com.hjq.permissions.demo.example;
 
 import android.accessibilityservice.AccessibilityService;
 import android.support.annotation.NonNull;
@@ -10,9 +10,9 @@ import android.view.accessibility.AccessibilityEvent;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/06/15
- *    desc   : 无障碍服务实现类
+ *    desc   : 无障碍服务案例类
  */
-public final class DemoAccessibilityService extends AccessibilityService {
+public final class ExampleAccessibilityService extends AccessibilityService {
 
     /**
      * 无障碍服务的生命周期，表明服务已经连接成功

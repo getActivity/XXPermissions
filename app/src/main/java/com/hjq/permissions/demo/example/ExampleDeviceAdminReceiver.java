@@ -1,4 +1,4 @@
-package com.hjq.permissions.demo;
+package com.hjq.permissions.demo.example;
 
 import android.app.admin.DeviceAdminReceiver;
 import android.content.Context;
@@ -12,9 +12,9 @@ import android.util.Log;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/06/15
- *    desc   : 设备管理器广播实现类
+ *    desc   : 设备管理器广播案例类
  */
-public class DemoDeviceAdminReceiver extends DeviceAdminReceiver {
+public final class ExampleDeviceAdminReceiver extends DeviceAdminReceiver {
 
     @Override
     public void onEnabled(@NonNull Context context, @NonNull Intent intent) {

@@ -31,6 +31,9 @@ import com.hjq.bar.OnTitleBarListener;
 import com.hjq.bar.TitleBar;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.XXPermissions;
+import com.hjq.permissions.demo.example.ExampleAccessibilityService;
+import com.hjq.permissions.demo.example.ExampleDeviceAdminReceiver;
+import com.hjq.permissions.demo.example.ExampleNotificationListenerService;
 import com.hjq.permissions.demo.permission.PermissionConverter;
 import com.hjq.permissions.demo.permission.PermissionDescription;
 import com.hjq.permissions.demo.permission.PermissionInterceptor;
@@ -509,7 +512,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             XXPermissions.with(this)
                     // 需要指定通知监听类（推荐，两种写法只能二选一，不可以两种都写）
                     .permission(PermissionManifest.getBindNotificationListenerServicePermission(
-                                                            DemoNotificationListenerService.class))
+                                                            ExampleNotificationListenerService.class))
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -670,7 +673,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
             XXPermissions.with(this)
                 .permission(PermissionManifest.getBindDeviceAdminPermission(
-                                                DemoDeviceAdminReceiver.class,
+                                                ExampleDeviceAdminReceiver.class,
                                                 getString(R.string.test_device_admin_extra_add_explanation)))
                 .interceptor(new PermissionInterceptor())
                 .description(new PermissionDescription())
@@ -690,7 +693,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
             XXPermissions.with(this)
                 .permission(PermissionManifest.getBindAccessibilityServicePermission(
-                                                        DemoAccessibilityService.class))
+                                                        ExampleAccessibilityService.class))
                 .interceptor(new PermissionInterceptor())
                 .description(new PermissionDescription())
                 .request(new OnPermissionCallback() {
@@ -767,11 +770,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
     private void toggleNotificationListenerService() {
         PackageManager packageManager = getPackageManager();
         packageManager.setComponentEnabledSetting(
-                new ComponentName(this, DemoNotificationListenerService.class),
+                new ComponentName(this, ExampleNotificationListenerService.class),
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 
         packageManager.setComponentEnabledSetting(
-                new ComponentName(this, DemoNotificationListenerService.class),
+                new ComponentName(this, ExampleNotificationListenerService.class),
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
     }
 

@@ -192,7 +192,7 @@
 
         <!-- 通知监听服务 -->
         <service
-            android:name=".DemoNotificationListenerService"
+            android:name=".example.ExampleNotificationListenerService"
             android:exported="false"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" >
             <intent-filter>
@@ -202,7 +202,7 @@
 
         <!-- 设备管理器广播接收器 -->
         <receiver
-            android:name=".DemoDeviceAdminReceiver"
+            android:name=".example.ExampleDeviceAdminReceiver"
             android:exported="true"
             android:permission="android.permission.BIND_DEVICE_ADMIN" >
             <meta-data
@@ -217,7 +217,7 @@
         </receiver>
 
         <!-- 无障碍服务 -->
-        <service android:name=".DemoAccessibilityService"
+        <service android:name=".example.ExampleAccessibilityService"
             android:exported="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" >
 

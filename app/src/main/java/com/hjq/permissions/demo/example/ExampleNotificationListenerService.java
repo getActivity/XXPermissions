@@ -1,4 +1,4 @@
-package com.hjq.permissions.demo;
+package com.hjq.permissions.demo.example;
 
 import android.app.Notification;
 import android.os.Build;
@@ -6,14 +6,15 @@ import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
+import com.hjq.permissions.demo.R;
 
 /**
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2022/01/22
- *    desc   : 通知消息监控服务实现类
+ *    desc   : 通知消息监控服务案例类
  */
-public final class DemoNotificationListenerService extends NotificationListenerService {
+public final class ExampleNotificationListenerService extends NotificationListenerService {
 
     /**
      * 当系统收到新的通知后出发回调
