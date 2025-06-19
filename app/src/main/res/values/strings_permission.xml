@@ -17,7 +17,7 @@
     <string name="common_permission_background_sensors_fail_hint">Failed to obtain background sensor permission, \nplease select %s option</string>
     <string name="common_permission_fine_location_fail_hint">Failed to obtain the precise location permission. \nplease select the precise location option</string>
     <string name="common_permission_background_default_option_label">Allow all the time</string>
-    <string name="common_permission_media_location_hint_fail">Failed to access media location permission\nPlease clear app data and try again</string>
+    <string name="common_permission_access_media_location_information_hint_fail">Failed to access media location information permission\nPlease clear app data and try again</string>
     <string name="common_permission_goto_setting_page">Go to authorization</string>
 
     <string name="common_permission_comma">, </string>
@@ -63,8 +63,8 @@
     <string name="common_permission_activity_recognition_api30">physical activity permission</string>
     <string name="common_permission_activity_recognition_description">allows recognizing activities (e.g., walking, running) for automatic exercise mode switching, activity data statistics, or fitness plan creation.</string>
 
-    <string name="common_permission_access_media_location">read media file location permission</string>
-    <string name="common_permission_access_media_location_description">allows accessing the location metadata of photos and videos for organizing albums by location, displaying photo maps, or sharing media with location info.</string>
+    <string name="common_permission_access_media_location_information">access media location information permission</string>
+    <string name="common_permission_access_media_location_information_description">allows accessing the location metadata of photos and videos for organizing albums by location, displaying photo maps, or sharing media with location info.</string>
 
     <string name="common_permission_sms">sms permission</string>
     <string name="common_permission_sms_description">allows reading sms (e.g., verification codes), sending messages, or backing up sms records for automatic otp filling, bulk messaging, or sms archiving.</string>

@@ -89,7 +89,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_activity_recognition_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_bluetooth_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_wifi_devices_permission).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_read_media_location_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_read_media_location_information_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_read_media_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_manage_storage_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_install_packages_permission).setOnClickListener(this);
@@ -273,7 +273,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 }
             }, delayMillis);
 
-        } else if (viewId == R.id.btn_main_request_read_media_location_permission) {
+        } else if (viewId == R.id.btn_main_request_read_media_location_information_permission) {
 
             long delayMillis = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {

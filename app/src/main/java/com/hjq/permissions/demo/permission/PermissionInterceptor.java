@@ -39,7 +39,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
 
         if (doNotAskAgain) {
             if (deniedPermissions.size() == 1 && XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.ACCESS_MEDIA_LOCATION)) {
-                Toaster.show(R.string.common_permission_media_location_hint_fail);
+                Toaster.show(R.string.common_permission_access_media_location_information_hint_fail);
                 return;
             }
 

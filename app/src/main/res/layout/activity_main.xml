@@ -93,12 +93,12 @@
                     android:text="@string/demo_request_wifi_permission" />
 
                 <Button
-                    android:id="@+id/btn_main_request_read_media_location_permission"
+                    android:id="@+id/btn_main_request_read_media_location_information_permission"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="5dp"
-                    android:text="@string/demo_request_media_location_permission" />
+                    android:text="@string/demo_request_access_media_location_information_permission" />
 
                 <Button
                     android:id="@+id/btn_main_request_read_media_permission"

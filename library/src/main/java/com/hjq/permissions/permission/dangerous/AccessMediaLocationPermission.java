@@ -17,7 +17,7 @@ import java.util.List;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/06/11
- *    desc   : 读取媒体文件位置权限类
+ *    desc   : 访问媒体的位置信息权限类
  */
 public final class AccessMediaLocationPermission extends DangerousPermission {
 
@@ -83,7 +83,7 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
      */
     private boolean isGrantedReadMediaPermission(@NonNull Context context, boolean skipRequest) {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_13)) {
-            // 这里为什么加上 Android 14 和 READ_MEDIA_VISUAL_USER_SELECTED 权限判断？这是因为如果获取部分照片和视频
+            // 这里为什么不加上 Android 14 和 READ_MEDIA_VISUAL_USER_SELECTED 权限判断？这是因为如果获取部分照片和视频
             // 然后申请 Permission.ACCESS_MEDIA_LOCATION 系统会返回失败，必须要选择获取全部照片和视频才可以申请该权限
             return PermissionManifest.getReadMediaImagesPermission().isGrantedPermission(context, skipRequest) ||
                 PermissionManifest.getReadMediaVideoPermission().isGrantedPermission(context, skipRequest) ||
