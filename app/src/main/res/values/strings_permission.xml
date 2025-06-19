@@ -5,20 +5,22 @@
     <string name="common_permission_granted">Granted</string>
     <string name="common_permission_denied">Denied</string>
 
-    <string name="common_permission_alert">Authorization reminder</string>
-    <string name="common_permission_fail_hint">Authorization failed, please grant permission correctly</string>
-    <string name="common_permission_fail_assign_hint">Authorization failed, please grant %s correctly</string>
-    <string name="common_permission_manual_fail_hint">Failed to obtain permission, please grant permission manually</string>
-    <string name="common_permission_manual_assign_fail_hint">Failed to obtain permission, please grant %s manually</string>
-    <string name="common_permission_manual_assign_fail_background_location_hint">Failed to obtain the background location permission, please select %s in the location permission</string>
-    <string name="common_permission_manual_assign_fail_background_sensors_hint">Failed to obtain the background sensor permission, please select %s in the sensor permission</string>
-    <string name="common_permission_manual_assign_fail_fine_location_hint">Failed to obtain the precise location permission. please enable the precise location option in the location permission</string>
-    <string name="common_permission_background_location_fail_hint">Failed to obtain background location permission,\nplease select %s option</string>
-    <string name="common_permission_background_sensors_fail_hint">Failed to obtain background sensor permission, \nplease select %s option</string>
-    <string name="common_permission_fine_location_fail_hint">Failed to obtain the precise location permission. \nplease select the precise location option</string>
-    <string name="common_permission_background_default_option_label">Allow all the time</string>
-    <string name="common_permission_access_media_location_information_hint_fail">Failed to access media location information permission\nPlease clear app data and try again</string>
-    <string name="common_permission_goto_setting_page">Go to authorization</string>
+    <string name="common_permission_alert">Authorization prompt</string>
+
+    <string name="common_permission_fail_assign_hint_1">Failed to request permission, please grant \"%s\" manually</string>
+    <string name="common_permission_fail_assign_hint_2">Failed to request permission, please agree to grant %s</string>
+
+    <string name="common_permission_background_location_fail_hint_1">Failed to request the background location permission, please select \"%s\" option in the location permission</string>
+    <string name="common_permission_background_location_fail_hint_2">Failed to request background location permission,\nplease select \"%s\" option</string>
+
+    <string name="common_permission_background_sensors_fail_hint_1">Failed to request the background sensor permission, please select %s option in the sensor permission</string>
+    <string name="common_permission_background_sensors_fail_hint_2">Failed to request background sensor permission, \nplease select \"%s\" option</string>
+
+    <string name="common_permission_fine_location_fail_hint_1">Failed to request the precise location permission. please enable the \"precise location\" option in the location permission</string>
+    <string name="common_permission_fine_location_fail_hint_2">Failed to request the precise location permission. \nplease select the \"precise location\" option</string>
+
+    <string name="common_permission_background_default_option_label">allow all the time</string>
+    <string name="common_permission_go_to_authorization">Go to authorization</string>
 
     <string name="common_permission_comma">, </string>
     <string name="common_permission_colon">: </string>
