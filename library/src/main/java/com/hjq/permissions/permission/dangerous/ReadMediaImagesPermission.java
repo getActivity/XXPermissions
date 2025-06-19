@@ -115,7 +115,7 @@ public final class ReadMediaImagesPermission extends DangerousPermission {
         // 框架会在 Android 13 以下的版本上自动添加并申请这两个权限
         if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_EXTERNAL_STORAGE)) {
             throw new IllegalArgumentException("If you have applied for media permissions, " +
-                "do not apply for the READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE permissions");
+                "do not apply for the + \"" + PermissionNames.READ_EXTERNAL_STORAGE + "\" permissions");
         }
     }
 }

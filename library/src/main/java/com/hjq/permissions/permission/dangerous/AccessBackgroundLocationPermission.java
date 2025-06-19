@@ -170,7 +170,7 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
             // 但是为了兼容 Android 12 以下的设备还是要那么做，否则在 Android 11 及以下设备会出现异常
             // 另外这里解释一下为什么不直接判断有没有包含精确定位权限，而是要判断有模糊定位权限的情况下但是没有精确定位权限的情况
             // 这是因为框架考虑到外部的调用者会将前台定位权限（包含精确定位和模糊定位权限）和后台定位权限拆成独立的两次权限申请
-            throw new IllegalArgumentException("Applying for background positioning permissions must include " + PermissionNames.ACCESS_FINE_LOCATION);
+            throw new IllegalArgumentException("Applying for background positioning permissions must include \"" + PermissionNames.ACCESS_FINE_LOCATION + "\"");
         }
     }
 }

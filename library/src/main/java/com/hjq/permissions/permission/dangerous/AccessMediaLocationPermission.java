@@ -110,8 +110,9 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
             }
 
             // 如果不包含，你需要在外层手动添加 READ_MEDIA_IMAGES、READ_MEDIA_VIDEO、MANAGE_EXTERNAL_STORAGE 任一权限才可以申请 ACCESS_MEDIA_LOCATION 权限
-            throw new IllegalArgumentException("You must add " + PermissionNames.READ_MEDIA_IMAGES + " or " + PermissionNames.READ_MEDIA_VIDEO + " or " +
-                PermissionNames.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + getPermissionName() + " rights");
+            throw new IllegalArgumentException("You must add \"" + PermissionNames.READ_MEDIA_IMAGES + "\" or \"" +
+                PermissionNames.READ_MEDIA_VIDEO + "\" or \"" + PermissionNames.MANAGE_EXTERNAL_STORAGE +
+                "\" rights to apply for \"" + getPermissionName() + "\" rights");
         }
 
         // 如果当前项目还没有适配 Android 13，就判断请求的权限中是否包含了某些特定权限
@@ -122,7 +123,7 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
         }
 
         // 如果不包含，你需要在外层手动添加 READ_EXTERNAL_STORAGE 或者 MANAGE_EXTERNAL_STORAGE 才可以申请 ACCESS_MEDIA_LOCATION 权限
-        throw new IllegalArgumentException("You must add " + PermissionNames.READ_EXTERNAL_STORAGE + " or " +
-            PermissionNames.MANAGE_EXTERNAL_STORAGE + " rights to apply for " + getPermissionName() + " rights");
+        throw new IllegalArgumentException("You must add \"" + PermissionNames.READ_EXTERNAL_STORAGE + "\" or \"" +
+            PermissionNames.MANAGE_EXTERNAL_STORAGE + "\" rights to apply for \"" + getPermissionName() + "\" rights");
     }
 }

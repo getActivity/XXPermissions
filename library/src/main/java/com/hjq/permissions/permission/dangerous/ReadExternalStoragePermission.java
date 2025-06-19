@@ -128,7 +128,7 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
             // 如果不知道该怎么选择，可以看文档：https://github.com/getActivity/XXPermissions/blob/master/HelpDoc
             throw new IllegalArgumentException("The storage permission application is abnormal. If you have adapted the scope storage, " +
                 "please register the <meta-data android:name=\"ScopedStorage\" android:value=\"true\" /> attribute in the AndroidManifest.xml file. " +
-                "If there is no adaptation scope storage, please use " + PermissionNames.MANAGE_EXTERNAL_STORAGE + " to apply for permission");
+                "If there is no adaptation scope storage, please use \"" + PermissionNames.MANAGE_EXTERNAL_STORAGE + "\" to apply for permission");
         }
     }
 
@@ -143,13 +143,13 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
                如果 App 已经适配了分区存储，应当请求 READ_MEDIA_IMAGES 或 READ_MEDIA_VIDEO 或 READ_MEDIA_AUDIO 权限，
                如果 App 不需要适配分区存储，应当请求 MANAGE_EXTERNAL_STORAGE 权限
              */
-            throw new IllegalArgumentException("When the project targetSdkVersion >= 33, the " + PermissionNames.READ_EXTERNAL_STORAGE +
-                " permission cannot be applied for, and some problems will occur." + "Because after testing, if targetSdkVersion >= 33 applies for " +
-                PermissionNames.READ_EXTERNAL_STORAGE + " or " + PermissionNames.WRITE_EXTERNAL_STORAGE +
-                ", it will be directly rejected by the system and no authorization dialog box will be displayed."
-                + "If the App has been adapted for scoped storage, the should be requested " + PermissionNames.READ_MEDIA_IMAGES + " or " +
-                PermissionNames.READ_MEDIA_VIDEO + " or " + PermissionNames.READ_MEDIA_AUDIO + " permission."
-                + "If the App does not need to adapt scoped storage, the should be requested " + PermissionNames.MANAGE_EXTERNAL_STORAGE + " permission");
+            throw new IllegalArgumentException("When the project targetSdkVersion >= 33, the \"" + PermissionNames.READ_EXTERNAL_STORAGE +
+                "\" permission cannot be applied for, and some problems will occur." + "Because after testing, if targetSdkVersion >= 33 applies for \"" +
+                PermissionNames.READ_EXTERNAL_STORAGE + "\" or \"" + PermissionNames.WRITE_EXTERNAL_STORAGE +
+                "\", it will be directly rejected by the system and no authorization dialog box will be displayed."
+                + "If the App has been adapted for scoped storage, the should be requested \"" + PermissionNames.READ_MEDIA_IMAGES + "\" or \"" +
+                PermissionNames.READ_MEDIA_VIDEO + "\" or \"" + PermissionNames.READ_MEDIA_AUDIO + "\" permission."
+                + "If the App does not need to adapt scoped storage, the should be requested \"" + PermissionNames.MANAGE_EXTERNAL_STORAGE + "\" permission");
         }
     }
 }

@@ -167,7 +167,7 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
             // 如果不知道该怎么选择，可以看文档：https://github.com/getActivity/XXPermissions/blob/master/HelpDoc
             throw new IllegalArgumentException("The storage permission application is abnormal. If you have adapted the scope storage, " +
                 "please register the <meta-data android:name=\"ScopedStorage\" android:value=\"true\" /> attribute in the AndroidManifest.xml file. " +
-                "If there is no adaptation scope storage, please use " + PermissionNames.MANAGE_EXTERNAL_STORAGE + " to apply for permission");
+                "If there is no adaptation scope storage, please use \"" + PermissionNames.MANAGE_EXTERNAL_STORAGE + "\" to apply for permission");
         }
     }
 }

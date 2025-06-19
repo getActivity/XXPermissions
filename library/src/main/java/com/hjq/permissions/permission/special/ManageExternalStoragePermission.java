@@ -155,16 +155,16 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
         // 框架会在 Android 10 以下的版本上自动添加并申请这两个权限
         if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_EXTERNAL_STORAGE) ||
             PermissionUtils.containsPermission(requestPermissions, PermissionNames.WRITE_EXTERNAL_STORAGE)) {
-            throw new IllegalArgumentException("If you have applied for MANAGE_EXTERNAL_STORAGE permissions, " +
-                "do not apply for the " + PermissionNames.READ_EXTERNAL_STORAGE +
-                " or " + PermissionNames.WRITE_EXTERNAL_STORAGE + " permissions");
+            throw new IllegalArgumentException("If you have applied for \"" + getPermissionName() + "\" permissions, " +
+                                                "do not apply for the \"" + PermissionNames.READ_EXTERNAL_STORAGE +
+                                                "\" or \"" + PermissionNames.WRITE_EXTERNAL_STORAGE + "\" permissions");
         }
 
         // 因为 MANAGE_EXTERNAL_STORAGE 权限范围很大，有了它就可以读取媒体文件，不需要再叠加申请媒体权限
         if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_MEDIA_IMAGES) ||
             PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_MEDIA_VIDEO) ||
             PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_MEDIA_AUDIO)) {
-            throw new IllegalArgumentException("Because the MANAGE_EXTERNAL_STORAGE permission range is very large, "
+            throw new IllegalArgumentException("Because the \"" + getPermissionName() + "\" permission range is very large, "
                 + "you can read media files with it, and there is no need to apply for additional media permissions.");
         }
     }

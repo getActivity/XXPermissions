@@ -134,7 +134,7 @@ public final class BluetoothScanPermission extends DangerousPermission {
             currentPermissionInfo.name + "\" " + maxSdkVersionString + "/> node in the " +
             "manifest file to <uses-permission android:name=\"" + currentPermissionInfo.name +
             "\" android:usesPermissionFlags=\"neverForLocation\" " + maxSdkVersionString + "/> node, " +
-            "if your app need use " + currentPermissionInfo.name + " to get physical location, " +
-            "also need to add " + PermissionNames.ACCESS_FINE_LOCATION + " permissions");
+            "if your app need use \"" + currentPermissionInfo.name + "\" to get physical location, " +
+            "also need to add \"" + PermissionNames.ACCESS_FINE_LOCATION + "\" permissions");
     }
 }

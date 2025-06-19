@@ -78,7 +78,8 @@ public final class ReadMediaVisualUserSelectedPermission extends DangerousPermis
             return;
         }
         // 不能单独请求 READ_MEDIA_VISUAL_USER_SELECTED 权限，需要加上 READ_MEDIA_IMAGES 或者 READ_MEDIA_VIDEO 任一权限，又或者两个都有，否则权限申请会被系统直接拒绝
-        throw new IllegalArgumentException("You cannot request the " + getPermissionName() + " permission alone. "
-            + "must add either " + PermissionNames.READ_MEDIA_IMAGES + " or " + PermissionNames.READ_MEDIA_VIDEO + " permission, or maybe both");
+        throw new IllegalArgumentException("You cannot request the \"" + getPermissionName() + "\" permission alone. " +
+                                            "must add either \"" + PermissionNames.READ_MEDIA_IMAGES + "\" or \"" +
+                                            PermissionNames.READ_MEDIA_VIDEO + "\" permission, or maybe both");
     }
 }

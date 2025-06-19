@@ -124,7 +124,7 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
         super.checkSelfByRequestPermissions(activity, requestPermissions);
         // 必须要申请前台传感器权限才能申请后台传感器权限
         if (!PermissionUtils.containsPermission(requestPermissions, PermissionNames.BODY_SENSORS)) {
-            throw new IllegalArgumentException("Applying for background sensor permissions must contain " + PermissionNames.BODY_SENSORS);
+            throw new IllegalArgumentException("Applying for background sensor permissions must contain \"" + PermissionNames.BODY_SENSORS + "\"");
         }
     }
 }

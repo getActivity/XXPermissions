@@ -104,7 +104,7 @@ public abstract class BasePermission implements IPermission {
             return;
         }
 
-        throw new IllegalStateException("Request " + getPermissionName() + " permission, " +
+        throw new IllegalStateException("Request \"" + getPermissionName() + "\" permission, " +
             "The targetSdkVersion SDK must be " + minTargetSdkVersion +
             " or more, if you do not want to upgrade targetSdkVersion, " +
             "please apply with the old permission");
