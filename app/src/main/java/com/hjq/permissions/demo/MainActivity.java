@@ -96,7 +96,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_system_alert_window_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_write_settings_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_notification_service_permission).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_post_notification).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_post_notifications_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_bind_notification_listener_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_usage_stats_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_schedule_exact_alarm_permission).setOnClickListener(this);
@@ -474,7 +474,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_post_notification) {
+        } else if (viewId == R.id.btn_main_request_post_notifications_permission) {
 
             long delayMillis = 0;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {

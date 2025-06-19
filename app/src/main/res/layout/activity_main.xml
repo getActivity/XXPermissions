@@ -106,7 +106,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="5dp"
-                    android:text="@string/demo_request_media_read_permission" />
+                    android:text="@string/demo_request_read_media_permission" />
 
                 <Button
                     android:id="@+id/btn_main_request_manage_storage_permission"
@@ -149,12 +149,12 @@
                     android:text="@string/demo_request_allow_notifications_permission" />
 
                 <Button
-                    android:id="@+id/btn_main_request_post_notification"
+                    android:id="@+id/btn_main_request_post_notifications_permission"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="5dp"
-                    android:text="@string/demo_request_send_notifications_permission_api33" />
+                    android:text="@string/demo_request_post_notifications_permission_api33" />
 
                 <Button
                     android:id="@+id/btn_main_request_bind_notification_listener_permission"
