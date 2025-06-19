@@ -11,7 +11,7 @@ import android.support.v4.app.Fragment;
  *    time   : 2025/05/20
  *    desc   : startActivity 委托 Support 包下的 Fragment 实现
  */
-class StartActivityDelegateByFragmentSupport implements IStartActivityDelegate {
+final class StartActivityDelegateByFragmentSupport implements IStartActivityDelegate {
 
     @NonNull
     private final Fragment mFragment;

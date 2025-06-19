@@ -11,7 +11,7 @@ import android.support.annotation.NonNull;
  *    time   : 2025/05/20
  *    desc   : startActivity 委托 Activity 实现
  */
-class StartActivityDelegateByActivity implements IStartActivityDelegate {
+final class StartActivityDelegateByActivity implements IStartActivityDelegate {
 
     @NonNull
     private final Activity mActivity;

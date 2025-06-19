@@ -12,7 +12,7 @@ import android.support.annotation.NonNull;
  *    desc   : startActivity 委托 App 包下的 Fragment 实现
  */
 @SuppressWarnings("deprecation")
-class StartActivityDelegateByFragmentApp implements IStartActivityDelegate {
+final class StartActivityDelegateByFragmentApp implements IStartActivityDelegate {
 
     @NonNull
     private final Fragment mFragment;
