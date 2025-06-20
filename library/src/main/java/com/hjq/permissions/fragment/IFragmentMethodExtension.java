@@ -11,14 +11,14 @@ import com.hjq.permissions.core.RequestPermissionDelegateImpl;
  *    time   : 2025/05/20
  *    desc   : Fragment 扩展接口方法
  */
-public interface IFragmentMethodExtension<FM> {
+public interface IFragmentMethodExtension<M> {
 
     /** 获取请求权限的实现逻辑 */
     @NonNull
     RequestPermissionDelegateImpl getRequestPermissionDelegateImpl();
 
     /** 提交绑定 */
-    void commitAttach(@Nullable FM fragmentManager);
+    void commitAttach(@Nullable M fragmentManager);
 
     /** 提交解绑 */
     void commitDetach();

@@ -8,5 +8,4 @@ import android.app.Activity;
  *    time   : 2025/05/20
  *    desc   : Fragment 接口方法
  */
-public interface IFragmentMethod<A extends Activity, FM> extends IFragmentMethodNative<A>,
-    IFragmentMethodExtension<FM> {}
+public interface IFragmentMethod<A extends Activity, M> extends IFragmentMethodNative<A>, IFragmentMethodExtension<M> {}

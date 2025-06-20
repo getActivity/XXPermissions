@@ -18,7 +18,7 @@ import java.util.List;
  *    time   : 2025/05/20
  *    desc   : 权限 Fragment 生产工厂
  */
-public abstract class PermissionFragmentFactory<A extends Activity, F> {
+public abstract class PermissionFragmentFactory<A extends Activity, M> {
 
     /*
      * 这里解释一下为什么要用抽象工厂模式来创建 Fragment，而不是沿用之前版本做法，直接用 App 包下的 Fragment 来申请权限
@@ -49,9 +49,9 @@ public abstract class PermissionFragmentFactory<A extends Activity, F> {
     private final A mActivity;
 
     @NonNull
-    private final F mFragmentManager;
+    private final M mFragmentManager;
 
-    public PermissionFragmentFactory(@NonNull A activity, @NonNull F fragmentManager) {
+    PermissionFragmentFactory(@NonNull A activity, @NonNull M fragmentManager) {
         mActivity = activity;
         mFragmentManager = fragmentManager;
     }
@@ -68,7 +68,7 @@ public abstract class PermissionFragmentFactory<A extends Activity, F> {
      * 获得 FragmentManager 对象
      */
     @NonNull
-    F getFragmentManager() {
+    M getFragmentManager() {
         return mFragmentManager;
     }
 
