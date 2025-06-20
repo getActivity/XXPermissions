@@ -6,10 +6,12 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.manager.ActivityOrientationManager;
+import com.hjq.permissions.manager.PermissionRequestCodeManager;
 import com.hjq.permissions.tools.AndroidVersionTools;
 import com.hjq.permissions.fragment.IFragmentCallback;
 import com.hjq.permissions.fragment.IFragmentMethod;
 import com.hjq.permissions.delegate.IStartActivityDelegate;
+import com.hjq.permissions.tools.PermissionApi;
 import com.hjq.permissions.tools.PermissionTaskHandler;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.base.IPermission;
@@ -188,5 +190,50 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
         // 如果不是手动解绑绑定，则证明是系统解除绑定，这里需要恢复 Activity 屏幕方向
         // 如果是手动解除绑定，则会在所有的权限都申请完了之后恢复 Activity 屏幕方向
         ActivityOrientationManager.unlockActivityOrientation(activity);
+    }
+
+    /**
+     * 通知权限回调
+     */
+    protected void notificationPermissionCallback(int requestCode) {
+        // 如果回调中的请求码和请求时设置的请求码不一致，则证明回调有问题，则不往下执行代码
+        if (requestCode != getPermissionRequestCode()) {
+            return;
+        }
+
+        // 释放对这个请求码的占用
+        PermissionRequestCodeManager.releaseRequestCode(requestCode);
+
+        Activity activity = getActivity();
+        if (PermissionUtils.isActivityUnavailable(activity)) {
+            return;
+        }
+        // 延迟处理权限请求的结果
+        sendTask(this::handlerPermissionCallback, PermissionApi.getMaxWaitTimeByPermissions(activity, getPermissionRequestList()));
+    }
+
+    /**
+     * 处理权限回调
+     */
+    protected void handlerPermissionCallback() {
+        if (isFragmentUnavailable()) {
+            return;
+        }
+
+        Activity activity = getActivity();
+        if (PermissionUtils.isActivityUnavailable(activity)) {
+            return;
+        }
+
+        OnPermissionFlowCallback callback = getCallBack();
+        // 释放监听对象的引用
+        setCallback(null);
+
+        if (callback != null) {
+            callback.onRequestPermissionFinish();
+        }
+
+        // 将 Fragment 从 Activity 移除
+        commitDetach();
     }
 }
