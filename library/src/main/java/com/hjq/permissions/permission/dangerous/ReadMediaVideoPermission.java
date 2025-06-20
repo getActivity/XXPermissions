@@ -12,7 +12,7 @@ import com.hjq.permissions.tools.AndroidVersionTools;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionGroups;
-import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import java.util.List;
@@ -70,7 +70,7 @@ public final class ReadMediaVideoPermission extends DangerousPermission {
     @Override
     public List<IPermission> getOldPermissions(Context context) {
         // Android 13 以下访问媒体文件需要用到读取外部存储的权限
-        return PermissionUtils.asArrayList(PermissionManifest.getReadExternalStoragePermission());
+        return PermissionUtils.asArrayList(PermissionLists.getReadExternalStoragePermission());
     }
 
     @Override
@@ -80,19 +80,19 @@ public final class ReadMediaVideoPermission extends DangerousPermission {
             // 这是因为用户授权部分图片或者视频的时候，READ_MEDIA_VISUAL_USER_SELECTED 权限状态是授予的
             // 但是 READ_MEDIA_IMAGES 和 READ_MEDIA_VIDEO 的权限状态是拒绝的
             // 为了权限回调不出现失败，这里只能返回 true，这样告诉外层请求其实是成功的
-            return PermissionManifest.getReadMediaVisualUserSelectedPermission().isGrantedPermission(context, false);
+            return PermissionLists.getReadMediaVisualUserSelectedPermission().isGrantedPermission(context, false);
         }
         return super.isGrantedPermissionByStandardVersion(context, skipRequest);
     }
 
     @Override
     protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest);
+        return PermissionLists.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest);
     }
 
     @Override
     protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.getReadExternalStoragePermission().isDoNotAskAgainPermission(activity);
+        return PermissionLists.getReadExternalStoragePermission().isDoNotAskAgainPermission(activity);
     }
 
     @Override

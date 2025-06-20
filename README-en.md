@@ -100,8 +100,8 @@ android.enableJetifier = true
 ```java
 XXPermissions.with(this)
         // Request multiple permission
-        .permission(PermissionManifest.getRecordAudioPermission())
-        .permission(PermissionManifest.getCameraPermission())
+        .permission(PermissionLists.getRecordAudioPermission())
+        .permission(PermissionLists.getCameraPermission())
         // Setting does not trigger error detection mechanism (local setting)
         //.unchecked()
         .request(new OnPermissionCallback() {
@@ -133,8 +133,8 @@ XXPermissions.with(this)
 ```kotlin
 XXPermissions.with(this)
     // Request multiple permission
-    .permission(PermissionManifest.getRecordAudioPermission())
-    .permission(PermissionManifest.getCameraPermission())
+    .permission(PermissionLists.getRecordAudioPermission())
+    .permission(PermissionLists.getCameraPermission())
     // Setting does not trigger error detection mechanism (local setting)
     //.unchecked()
     .request(object : OnPermissionCallback {
@@ -252,7 +252,7 @@ XXPermissions.setCheckMode(false);
 
 * The framework will call first `onDenied` method, then call `onGranted` method. of which we can pass `onGranted` in the method `allGranted` parameters to determine whether all permissions are granted.
 
-* If you want to know whether a permission in the callback is granted or denied, you can call `List` in class `contains(PermissionManifest.XXX)` method to determine whether this permission is included in this collection.
+* If you want to know whether a permission in the callback is granted or denied, you can call `List` in class `contains(PermissionLists.XXX)` method to determine whether this permission is included in this collection.
 
 ## [For other frequently asked questions, please click here](HelpDoc-en.md)
 

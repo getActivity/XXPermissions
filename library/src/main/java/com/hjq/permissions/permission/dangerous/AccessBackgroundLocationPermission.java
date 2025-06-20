@@ -12,7 +12,7 @@ import com.hjq.permissions.tools.AndroidVersionTools;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionGroups;
-import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import java.util.List;
@@ -72,10 +72,10 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
         // 判断当前应用适配且运行在 Android 12 及以上
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_12)) {
             // 如果是的话，那么这个前台定位权限可以是精确定位权限，也可以是模糊定位权限
-            return PermissionUtils.asArrayList(PermissionManifest.getAccessFineLocationPermission(), PermissionManifest.getAccessCoarseLocationPermission());
+            return PermissionUtils.asArrayList(PermissionLists.getAccessFineLocationPermission(), PermissionLists.getAccessCoarseLocationPermission());
         } else {
             // 如果不是的话，那么这个前台定位权限只能是精确定位权限
-            return PermissionUtils.asArrayList(PermissionManifest.getAccessFineLocationPermission());
+            return PermissionUtils.asArrayList(PermissionLists.getAccessFineLocationPermission());
         }
     }
 
@@ -84,13 +84,13 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
         // 判断后台定位权限授予之前，需要先判断前台定位权限是否授予，如果前台定位权限没有授予，那么后台定位权限就算授予了也没用
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_12)) {
             // 在 Android 12 及之后的版本，申请后台定位权限既可以用精确定位权限也可以用模糊定位权限
-            if (!PermissionManifest.getAccessFineLocationPermission().isGrantedPermission(context, skipRequest) &&
-                !PermissionManifest.getAccessCoarseLocationPermission().isGrantedPermission(context, skipRequest)) {
+            if (!PermissionLists.getAccessFineLocationPermission().isGrantedPermission(context, skipRequest) &&
+                !PermissionLists.getAccessCoarseLocationPermission().isGrantedPermission(context, skipRequest)) {
                 return false;
             }
         } else {
             // 在 Android 11 及之前的版本，申请后台定位权限需要精确定位权限
-            if (!PermissionManifest.getAccessFineLocationPermission().isGrantedPermission(context, skipRequest)) {
+            if (!PermissionLists.getAccessFineLocationPermission().isGrantedPermission(context, skipRequest)) {
                 return false;
             }
         }
@@ -99,7 +99,7 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
 
     @Override
     protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.getAccessFineLocationPermission().isGrantedPermission(context, skipRequest);
+        return PermissionLists.getAccessFineLocationPermission().isGrantedPermission(context, skipRequest);
     }
 
     @Override
@@ -107,13 +107,13 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
         // 如果前台定位权限被用户勾选了不再询问选项，那么后台定位权限也要跟着同步
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_12)) {
             // 在 Android 12 及之后的版本，申请后台定位权限既可以用精确定位权限也可以用模糊定位权限
-            if (PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity) &&
-                PermissionManifest.getAccessCoarseLocationPermission().isDoNotAskAgainPermission(activity)) {
+            if (PermissionLists.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity) &&
+                PermissionLists.getAccessCoarseLocationPermission().isDoNotAskAgainPermission(activity)) {
                 return true;
             }
         } else {
             // 在 Android 11 及之前的版本，申请后台定位权限需要精确定位权限
-            if (PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity)) {
+            if (PermissionLists.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity)) {
                 return true;
             }
         }
@@ -122,7 +122,7 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
 
     @Override
     protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity);
+        return PermissionLists.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity);
     }
 
     @Override

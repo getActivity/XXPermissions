@@ -11,7 +11,7 @@ import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.tools.AndroidVersionTools;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
-import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import java.util.List;
@@ -63,17 +63,17 @@ public final class ReadMediaAudioPermission extends DangerousPermission {
     @Override
     public List<IPermission> getOldPermissions(Context context) {
         // Android 13 以下访问媒体文件需要用到读取外部存储的权限
-        return PermissionUtils.asArrayList(PermissionManifest.getReadExternalStoragePermission());
+        return PermissionUtils.asArrayList(PermissionLists.getReadExternalStoragePermission());
     }
 
     @Override
     protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest);
+        return PermissionLists.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest);
     }
 
     @Override
     protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.getReadExternalStoragePermission().isDoNotAskAgainPermission(activity);
+        return PermissionLists.getReadExternalStoragePermission().isDoNotAskAgainPermission(activity);
     }
 
     @Override

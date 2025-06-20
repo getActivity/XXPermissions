@@ -81,10 +81,10 @@ android
 ```java
 XXPermissions.with(MainActivity.this)
         // 适配 Android 11 分区存储这样写
-        //.permission(PermissionManifest.getReadExternalStoragePermission())
-        //.permission(PermissionManifest.getWriteExternalStoragePermission())
+        //.permission(PermissionLists.getReadExternalStoragePermission())
+        //.permission(PermissionLists.getWriteExternalStoragePermission())
         // 不适配 Android 11 分区存储这样写
-        .permission(PermissionManifest.getManageExternalStoragePermission())
+        .permission(PermissionLists.getManageExternalStoragePermission())
         .request(new OnPermissionCallback() {
 
             @Override
@@ -136,7 +136,7 @@ XXPermissions.with(MainActivity.this)
 
 ```java
 XXPermissions.with(this)
-        .permission(PermissionManifest.getXxx())
+        .permission(PermissionLists.getXxx())
         // 设置权限说明（局部设置）
         .description(new PermissionDescription())
         // 设置权限请求拦截器（局部设置）
@@ -176,9 +176,9 @@ public class XxxApplication extends Application {
 
 ```java
 XXPermissions.with(this)
-        .permission(PermissionManifest.getRecordAudioPermission())
-        .permission(PermissionManifest.getReadCalendarPermission())
-        .permission(PermissionManifest.getWriteCalendarPermission())
+        .permission(PermissionLists.getRecordAudioPermission())
+        .permission(PermissionLists.getReadCalendarPermission())
+        .permission(PermissionLists.getWriteCalendarPermission())
         .request(new OnPermissionCallback() {
 
             @Override
@@ -190,7 +190,7 @@ XXPermissions.with(this)
 
             @Override
             public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
-                if (doNotAskAgain && permissions.contains(PermissionManifest.getRecordAudioPermission()) &&
+                if (doNotAskAgain && permissions.contains(PermissionLists.getRecordAudioPermission()) &&
                         XXPermissions.isDoNotAskAgainPermissions(MainActivity.this, Permission.RECORD_AUDIO)) {
                     toast("录音权限请求被拒绝了，并且用户勾选了不再询问");
                 }
@@ -230,7 +230,7 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 
     private void requestCameraPermission() {
         XXPermissions.with(this)
-                .permission(PermissionManifest.getCameraPermission())
+                .permission(PermissionLists.getCameraPermission())
                 .request(this);
     }
 

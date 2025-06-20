@@ -13,7 +13,7 @@ import com.hjq.permissions.tools.AndroidVersionTools;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionGroups;
-import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import java.util.List;
@@ -80,17 +80,17 @@ public final class BluetoothScanPermission extends DangerousPermission {
     @Override
     public List<IPermission> getOldPermissions(Context context) {
         // Android 12 以下扫描蓝牙需要精确定位权限
-        return PermissionUtils.asArrayList(PermissionManifest.getAccessFineLocationPermission());
+        return PermissionUtils.asArrayList(PermissionLists.getAccessFineLocationPermission());
     }
 
     @Override
     protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.getAccessFineLocationPermission().isGrantedPermission(context, skipRequest);
+        return PermissionLists.getAccessFineLocationPermission().isGrantedPermission(context, skipRequest);
     }
 
     @Override
     protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity);
+        return PermissionLists.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity);
     }
 
     @Override

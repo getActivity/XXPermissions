@@ -50,9 +50,9 @@ import com.hjq.permissions.permission.special.WriteSettingsPermission;
  *             https://developer.android.google.cn/guide/topics/permissions/overview?hl=zh-cn#normal-dangerous
  *             http://www.taf.org.cn/upload/AssociationStandard/TTAF%20004-2017%20Android%E6%9D%83%E9%99%90%E8%B0%83%E7%94%A8%E5%BC%80%E5%8F%91%E8%80%85%E6%8C%87%E5%8D%97.pdf
  */
-public final class PermissionManifest {
+public final class PermissionLists {
 
-    private PermissionManifest() {}
+    private PermissionLists() {}
 
     /** 权限数量 */
     private static final int PERMISSION_COUNT = 54;

@@ -106,8 +106,8 @@ android.enableJetifier = true
 ```java
 XXPermissions.with(this)
         // 申请多个权限
-        .permission(PermissionManifest.getRecordAudioPermission())
-        .permission(PermissionManifest.getCameraPermission())
+        .permission(PermissionLists.getRecordAudioPermission())
+        .permission(PermissionLists.getCameraPermission())
         // 设置不触发错误检测机制（局部设置）
         //.unchecked()
         .request(new OnPermissionCallback() {
@@ -139,8 +139,8 @@ XXPermissions.with(this)
 ```kotlin
 XXPermissions.with(this)
     // 申请多个权限
-    .permission(PermissionManifest.getRecordAudioPermission())
-    .permission(PermissionManifest.getCameraPermission())
+    .permission(PermissionLists.getRecordAudioPermission())
+    .permission(PermissionLists.getCameraPermission())
     // 设置不触发错误检测机制（局部设置）
     //.unchecked()
     .request(object : OnPermissionCallback {
@@ -257,7 +257,7 @@ XXPermissions.setCheckMode(false);
 
 * 框架会先调用 `onDenied` 方法，再调用 `onGranted` 方法。其中我们可以通过 `onGranted` 方法中的 `allGranted` 参数来判断权限是否全部授予了。
 
-* 如果想知道回调中的某个权限是否被授权或者拒绝，可以调用 `List` 类中的 `contains(PermissionManifest.XXX)` 方法来判断这个集合中是否包含了这个权限。
+* 如果想知道回调中的某个权限是否被授权或者拒绝，可以调用 `List` 类中的 `contains(PermissionLists.XXX)` 方法来判断这个集合中是否包含了这个权限。
 
 ## [其他常见疑问请点击此处查看](HelpDoc-zh.md)
 

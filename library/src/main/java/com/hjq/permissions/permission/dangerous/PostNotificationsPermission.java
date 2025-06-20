@@ -9,7 +9,7 @@ import android.support.annotation.NonNull;
 import com.hjq.permissions.tools.AndroidVersionTools;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
-import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import java.util.List;
@@ -61,17 +61,17 @@ public final class PostNotificationsPermission extends DangerousPermission {
     @Override
     public List<IPermission> getOldPermissions(Context context) {
         // Android 13 以下开启通知栏服务，需要用到旧的通知栏权限（框架自己虚拟出来的）
-        return PermissionUtils.asArrayList(PermissionManifest.getNotificationServicePermission());
+        return PermissionUtils.asArrayList(PermissionLists.getNotificationServicePermission());
     }
 
     @Override
     protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.getNotificationServicePermission().isGrantedPermission(context, skipRequest);
+        return PermissionLists.getNotificationServicePermission().isGrantedPermission(context, skipRequest);
     }
 
     @Override
     protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.getNotificationServicePermission().isDoNotAskAgainPermission(activity);
+        return PermissionLists.getNotificationServicePermission().isDoNotAskAgainPermission(activity);
     }
 
     @NonNull
@@ -79,6 +79,6 @@ public final class PostNotificationsPermission extends DangerousPermission {
     public Intent getPermissionSettingIntent(@NonNull Context context) {
         // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/208
         // POST_NOTIFICATIONS 要跳转到权限设置页和 NOTIFICATION_SERVICE 权限是一样的
-        return PermissionManifest.getNotificationServicePermission().getPermissionSettingIntent(context);
+        return PermissionLists.getNotificationServicePermission().getPermissionSettingIntent(context);
     }
 }

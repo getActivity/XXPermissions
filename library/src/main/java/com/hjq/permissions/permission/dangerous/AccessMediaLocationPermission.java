@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import com.hjq.permissions.tools.AndroidVersionTools;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
-import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import java.util.List;
@@ -64,7 +64,7 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
 
     @Override
     protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest);
+        return PermissionLists.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest);
     }
 
     @Override
@@ -75,7 +75,7 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
 
     @Override
     protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.getReadExternalStoragePermission().isDoNotAskAgainPermission(activity);
+        return PermissionLists.getReadExternalStoragePermission().isDoNotAskAgainPermission(activity);
     }
 
     /**
@@ -85,15 +85,15 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_13)) {
             // 这里为什么不加上 Android 14 和 READ_MEDIA_VISUAL_USER_SELECTED 权限判断？这是因为如果获取部分照片和视频
             // 然后申请 Permission.ACCESS_MEDIA_LOCATION 系统会返回失败，必须要选择获取全部照片和视频才可以申请该权限
-            return PermissionManifest.getReadMediaImagesPermission().isGrantedPermission(context, skipRequest) ||
-                PermissionManifest.getReadMediaVideoPermission().isGrantedPermission(context, skipRequest) ||
-                PermissionManifest.getManageExternalStoragePermission().isGrantedPermission(context, skipRequest);
+            return PermissionLists.getReadMediaImagesPermission().isGrantedPermission(context, skipRequest) ||
+                PermissionLists.getReadMediaVideoPermission().isGrantedPermission(context, skipRequest) ||
+                PermissionLists.getManageExternalStoragePermission().isGrantedPermission(context, skipRequest);
         }
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_11)) {
-            return PermissionManifest.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest) ||
-                PermissionManifest.getManageExternalStoragePermission().isGrantedPermission(context, skipRequest);
+            return PermissionLists.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest) ||
+                PermissionLists.getManageExternalStoragePermission().isGrantedPermission(context, skipRequest);
         }
-        return PermissionManifest.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest);
+        return PermissionLists.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest);
     }
 
     @Override

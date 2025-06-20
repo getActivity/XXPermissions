@@ -37,7 +37,7 @@ import com.hjq.permissions.demo.example.ExampleNotificationListenerService;
 import com.hjq.permissions.demo.permission.PermissionConverter;
 import com.hjq.permissions.demo.permission.PermissionDescription;
 import com.hjq.permissions.demo.permission.PermissionInterceptor;
-import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.toast.Toaster;
 import java.io.IOException;
@@ -120,7 +120,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         if (viewId == R.id.btn_main_request_single_permission) {
 
             XXPermissions.with(this)
-                .permission(PermissionManifest.getCameraPermission())
+                .permission(PermissionLists.getCameraPermission())
                 .interceptor(new PermissionInterceptor())
                 .description(new PermissionDescription())
                 .request(new OnPermissionCallback() {
@@ -138,9 +138,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_group_permission) {
 
             XXPermissions.with(this)
-                    .permission(PermissionManifest.getRecordAudioPermission())
-                    .permission(PermissionManifest.getReadCalendarPermission())
-                    .permission(PermissionManifest.getWriteCalendarPermission())
+                    .permission(PermissionLists.getRecordAudioPermission())
+                    .permission(PermissionLists.getReadCalendarPermission())
+                    .permission(PermissionLists.getWriteCalendarPermission())
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -158,10 +158,10 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_location_permission) {
 
             XXPermissions.with(this)
-                    .permission(PermissionManifest.getAccessCoarseLocationPermission())
-                    .permission(PermissionManifest.getAccessFineLocationPermission())
+                    .permission(PermissionLists.getAccessCoarseLocationPermission())
+                    .permission(PermissionLists.getAccessFineLocationPermission())
                     // 如果不需要在后台使用定位功能，请不要申请此权限
-                    .permission(PermissionManifest.getAccessBackgroundLocationPermission())
+                    .permission(PermissionLists.getAccessBackgroundLocationPermission())
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -179,8 +179,8 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_sensors_permission) {
 
             XXPermissions.with(this)
-                    .permission(PermissionManifest.getBodySensorsPermission())
-                    .permission(PermissionManifest.getBodySensorsBackgroundPermission())
+                    .permission(PermissionLists.getBodySensorsPermission())
+                    .permission(PermissionLists.getBodySensorsBackgroundPermission())
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -198,7 +198,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_activity_recognition_permission) {
 
             XXPermissions.with(this)
-                    .permission(PermissionManifest.getActivityRecognitionPermission())
+                    .permission(PermissionLists.getActivityRecognitionPermission())
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -227,9 +227,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 @Override
                 public void run() {
                     XXPermissions.with(MainActivity.this)
-                            .permission(PermissionManifest.getBluetoothScanPermission())
-                            .permission(PermissionManifest.getBluetoothConnectPermission())
-                            .permission(PermissionManifest.getBluetoothAdvertisePermission())
+                            .permission(PermissionLists.getBluetoothScanPermission())
+                            .permission(PermissionLists.getBluetoothConnectPermission())
+                            .permission(PermissionLists.getBluetoothAdvertisePermission())
                             .interceptor(new PermissionInterceptor())
                             .description(new PermissionDescription())
                             .request(new OnPermissionCallback() {
@@ -259,7 +259,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 @Override
                 public void run() {
                     XXPermissions.with(MainActivity.this)
-                            .permission(PermissionManifest.getNearbyWifiDevicesPermission())
+                            .permission(PermissionLists.getNearbyWifiDevicesPermission())
                             .interceptor(new PermissionInterceptor())
                             .description(new PermissionDescription())
                             .request(new OnPermissionCallback() {
@@ -297,9 +297,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             // 2. 如果 targetSdk < 33，，有两种方案选择（二选一）：
                             //    a. 则添加 READ_EXTERNAL_STORAGE
                             //    b. MANAGE_EXTERNAL_STORAGE 二选一
-                            .permission(PermissionManifest.getReadMediaImagesPermission())
-                            .permission(PermissionManifest.getReadMediaVideoPermission())
-                            .permission(PermissionManifest.getAccessMediaLocationPermission())
+                            .permission(PermissionLists.getReadMediaImagesPermission())
+                            .permission(PermissionLists.getReadMediaVideoPermission())
+                            .permission(PermissionLists.getAccessMediaLocationPermission())
                             .interceptor(new PermissionInterceptor())
                             .description(new PermissionDescription())
                             .request(new OnPermissionCallback() {
@@ -336,13 +336,13 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 public void run() {
                     XXPermissions.with(MainActivity.this)
                             // 不适配分区存储应该这样写
-                            //.permission(PermissionManifest.getManageExternalStoragePermission())
+                            //.permission(PermissionLists.getManageExternalStoragePermission())
                             // 适配分区存储应该这样写
-                            .permission(PermissionManifest.getReadMediaImagesPermission())
-                            .permission(PermissionManifest.getReadMediaVideoPermission())
-                            .permission(PermissionManifest.getReadMediaAudioPermission())
-                            .permission(PermissionManifest.getReadMediaVisualUserSelectedPermission())
-                            .permission(PermissionManifest.getWriteExternalStoragePermission())
+                            .permission(PermissionLists.getReadMediaImagesPermission())
+                            .permission(PermissionLists.getReadMediaVideoPermission())
+                            .permission(PermissionLists.getReadMediaAudioPermission())
+                            .permission(PermissionLists.getReadMediaVisualUserSelectedPermission())
+                            .permission(PermissionLists.getWriteExternalStoragePermission())
                             .interceptor(new PermissionInterceptor())
                             .description(new PermissionDescription())
                             .request(new OnPermissionCallback() {
@@ -374,10 +374,10 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 public void run() {
                     XXPermissions.with(MainActivity.this)
                             // 适配分区存储应该这样写
-                            //.permission(PermissionManifest.getReadExternalStoragePermission())
-                            //.permission(PermissionManifest.getWriteExternalStoragePermission())
+                            //.permission(PermissionLists.getReadExternalStoragePermission())
+                            //.permission(PermissionLists.getWriteExternalStoragePermission())
                             // 不适配分区存储应该这样写
-                            .permission(PermissionManifest.getManageExternalStoragePermission())
+                            .permission(PermissionLists.getManageExternalStoragePermission())
                             .interceptor(new PermissionInterceptor())
                             .description(new PermissionDescription())
                             .request(new OnPermissionCallback() {
@@ -397,7 +397,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_install_packages_permission) {
 
             XXPermissions.with(this)
-                    .permission(PermissionManifest.getRequestInstallPackagesPermission())
+                    .permission(PermissionLists.getRequestInstallPackagesPermission())
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -415,7 +415,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_system_alert_window_permission) {
 
             XXPermissions.with(this)
-                    .permission(PermissionManifest.getSystemAlertWindowPermission())
+                    .permission(PermissionLists.getSystemAlertWindowPermission())
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -433,7 +433,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_write_settings_permission) {
 
             XXPermissions.with(this)
-                    .permission(PermissionManifest.getWriteSettingsPermission())
+                    .permission(PermissionLists.getWriteSettingsPermission())
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -460,9 +460,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
             XXPermissions.with(this)
                     // 不需要指定通知渠道 id 这样写（两种写法只能二选一，不可以两种都写）
-                    //.permission(PermissionManifest.getNotificationServicePermission())
+                    //.permission(PermissionLists.getNotificationServicePermission())
                     // 需要指定通知渠道 id 这样写（两种写法只能二选一，不可以两种都写）
-                    .permission(PermissionManifest.getNotificationServicePermission(channelId))
+                    .permission(PermissionLists.getNotificationServicePermission(channelId))
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -490,7 +490,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 @Override
                 public void run() {
                     XXPermissions.with(MainActivity.this)
-                            .permission(PermissionManifest.getPostNotificationsPermission())
+                            .permission(PermissionLists.getPostNotificationsPermission())
                             .interceptor(new PermissionInterceptor())
                             .description(new PermissionDescription())
                             .request(new OnPermissionCallback() {
@@ -511,7 +511,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
             XXPermissions.with(this)
                     // 需要指定通知监听类（推荐，两种写法只能二选一，不可以两种都写）
-                    .permission(PermissionManifest.getBindNotificationListenerServicePermission(
+                    .permission(PermissionLists.getBindNotificationListenerServicePermission(
                                                             ExampleNotificationListenerService.class))
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
@@ -531,7 +531,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_usage_stats_permission) {
 
             XXPermissions.with(this)
-                    .permission(PermissionManifest.getPackageUsageStatsPermission())
+                    .permission(PermissionLists.getPackageUsageStatsPermission())
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -549,7 +549,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_schedule_exact_alarm_permission) {
 
             XXPermissions.with(this)
-                    .permission(PermissionManifest.getScheduleExactAlarmPermission())
+                    .permission(PermissionLists.getScheduleExactAlarmPermission())
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -567,7 +567,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_access_notification_policy_permission) {
 
             XXPermissions.with(this)
-                    .permission(PermissionManifest.getAccessNotificationPolicyPermission())
+                    .permission(PermissionLists.getAccessNotificationPolicyPermission())
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -585,7 +585,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_ignore_battery_optimizations_permission) {
 
             XXPermissions.with(this)
-                    .permission(PermissionManifest.getRequestIgnoreBatteryOptimizationsPermission())
+                    .permission(PermissionLists.getRequestIgnoreBatteryOptimizationsPermission())
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -603,7 +603,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_picture_in_picture_permission) {
 
             XXPermissions.with(this)
-                    .permission(PermissionManifest.getPictureInPicturePermission())
+                    .permission(PermissionLists.getPictureInPicturePermission())
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -621,7 +621,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_bind_vpn_service_permission) {
 
             XXPermissions.with(this)
-                    .permission(PermissionManifest.getBindVpnServicePermission())
+                    .permission(PermissionLists.getBindVpnServicePermission())
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -650,9 +650,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 public void run() {
                     XXPermissions.with(MainActivity.this)
                         // 请求全屏通知权限需要携带通知权限（发送通知权限或者通知服务权限任意一个即可）同时申请
-                        .permission(PermissionManifest.getPostNotificationsPermission())
-                        //.permission(PermissionManifest.getNotificationServicePermission())
-                        .permission(PermissionManifest.getUseFullScreenIntentPermission())
+                        .permission(PermissionLists.getPostNotificationsPermission())
+                        //.permission(PermissionLists.getNotificationServicePermission())
+                        .permission(PermissionLists.getUseFullScreenIntentPermission())
                         .interceptor(new PermissionInterceptor())
                         .description(new PermissionDescription())
                         .request(new OnPermissionCallback() {
@@ -672,7 +672,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_device_admin_permission) {
 
             XXPermissions.with(this)
-                .permission(PermissionManifest.getBindDeviceAdminPermission(
+                .permission(PermissionLists.getBindDeviceAdminPermission(
                                                 ExampleDeviceAdminReceiver.class,
                                                 getString(R.string.test_device_admin_extra_add_explanation)))
                 .interceptor(new PermissionInterceptor())
@@ -692,7 +692,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_accessibility_service_permission) {
 
             XXPermissions.with(this)
-                .permission(PermissionManifest.getBindAccessibilityServicePermission(
+                .permission(PermissionLists.getBindAccessibilityServicePermission(
                                                         ExampleAccessibilityService.class))
                 .interceptor(new PermissionInterceptor())
                 .description(new PermissionDescription())
@@ -711,7 +711,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_get_installed_apps_permission) {
 
             XXPermissions.with(this)
-                    .permission(PermissionManifest.getGetInstalledAppsPermission())
+                    .permission(PermissionLists.getGetInstalledAppsPermission())
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
@@ -730,9 +730,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_multiple_type_permission) {
 
             XXPermissions.with(this)
-                .permission(PermissionManifest.getReadCallLogPermission())
-                .permission(PermissionManifest.getWriteCallLogPermission())
-                .permission(PermissionManifest.getSystemAlertWindowPermission())
+                .permission(PermissionLists.getReadCallLogPermission())
+                .permission(PermissionLists.getWriteCallLogPermission())
+                .permission(PermissionLists.getSystemAlertWindowPermission())
                 .interceptor(new PermissionInterceptor())
                 .description(new PermissionDescription())
                 .request(new OnPermissionCallback() {

@@ -12,7 +12,7 @@ import com.hjq.permissions.tools.AndroidVersionTools;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionGroups;
-import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import java.util.List;
@@ -70,17 +70,17 @@ public final class ReadPhoneNumbersPermission extends DangerousPermission {
     @Override
     public List<IPermission> getOldPermissions(Context context) {
         // Android 8.0 以下读取电话号码需要用到读取电话状态的权限
-        return PermissionUtils.asArrayList(PermissionManifest.getReadPhoneStatePermission());
+        return PermissionUtils.asArrayList(PermissionLists.getReadPhoneStatePermission());
     }
 
     @Override
     protected boolean isGrantedPermissionByLowVersion(@NonNull Context context, boolean skipRequest) {
-        return PermissionManifest.getReadPhoneStatePermission().isGrantedPermission(context, skipRequest);
+        return PermissionLists.getReadPhoneStatePermission().isGrantedPermission(context, skipRequest);
     }
 
     @Override
     protected boolean isDoNotAskAgainPermissionByLowVersion(@NonNull Activity activity) {
-        return PermissionManifest.getReadPhoneStatePermission().isDoNotAskAgainPermission(activity);
+        return PermissionLists.getReadPhoneStatePermission().isDoNotAskAgainPermission(activity);
     }
 
     @Override

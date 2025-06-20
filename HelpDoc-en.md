@@ -75,10 +75,10 @@ android
 ```java
 XXPermissions.with(MainActivity.this)
         // The scoped storage that has been adapted to Android 11 needs to be called like this
-        //.permission(PermissionManifest.getReadExternalStoragePermission())
-        //.permission(PermissionManifest.getWriteExternalStoragePermission())
+        //.permission(PermissionLists.getReadExternalStoragePermission())
+        //.permission(PermissionLists.getWriteExternalStoragePermission())
         // Not yet adapted to Android 11 scoped storage needs to be called like this
-        .permission(PermissionManifest.getManageExternalStoragePermission())
+        .permission(PermissionLists.getManageExternalStoragePermission())
         .request(new OnPermissionCallback() {
 
             @Override
@@ -130,7 +130,7 @@ XXPermissions.with(MainActivity.this)
 
 ```java
 XXPermissions.with(this)
-        .permission(PermissionManifest.getXxx())
+        .permission(PermissionLists.getXxx())
         // Set permission request description (local settings)
         .description(new PermissionDescription())
         // Set permission request interceptor (local settings)
@@ -170,9 +170,9 @@ public class XxxApplication extends Application {
 
 ```java
 XXPermissions.with(this)
-        .permission(PermissionManifest.getRecordAudioPermission())
-        .permission(PermissionManifest.getReadCalendarPermission())
-        .permission(PermissionManifest.getWriteCalendarPermission())
+        .permission(PermissionLists.getRecordAudioPermission())
+        .permission(PermissionLists.getReadCalendarPermission())
+        .permission(PermissionLists.getWriteCalendarPermission())
         .request(new OnPermissionCallback() {
 
             @Override
@@ -184,7 +184,7 @@ XXPermissions.with(this)
 
             @Override
             public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
-                if (doNotAskAgain && permissions.contains(PermissionManifest.getRecordAudioPermission()) &&
+                if (doNotAskAgain && permissions.contains(PermissionLists.getRecordAudioPermission()) &&
                         XXPermissions.isDoNotAskAgainPermissions(MainActivity.this, Permission.RECORD_AUDIO)) {
                     toast("The recording permission request was denied, and the user checked Do not ask");
                 }
@@ -216,7 +216,7 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 
     private void requestCameraPermission() {
         XXPermissions.with(this)
-                .permission(PermissionManifest.getCameraPermission())
+                .permission(PermissionLists.getCameraPermission())
                 .request(this);
     }
 

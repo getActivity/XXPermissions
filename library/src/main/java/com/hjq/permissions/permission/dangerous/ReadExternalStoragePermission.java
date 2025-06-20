@@ -13,7 +13,7 @@ import com.hjq.permissions.tools.AndroidVersionTools;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionGroups;
-import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import java.util.List;
@@ -72,9 +72,9 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
     @Override
     protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_13)) {
-            return PermissionManifest.getReadMediaImagesPermission().isGrantedPermission(context, skipRequest) &&
-                PermissionManifest.getReadMediaVideoPermission().isGrantedPermission(context, skipRequest) &&
-                PermissionManifest.getReadMediaAudioPermission().isGrantedPermission(context, skipRequest);
+            return PermissionLists.getReadMediaImagesPermission().isGrantedPermission(context, skipRequest) &&
+                PermissionLists.getReadMediaVideoPermission().isGrantedPermission(context, skipRequest) &&
+                PermissionLists.getReadMediaAudioPermission().isGrantedPermission(context, skipRequest);
         }
         return super.isGrantedPermissionByStandardVersion(context, skipRequest);
     }
@@ -82,9 +82,9 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
     @Override
     protected boolean isDoNotAskAgainPermissionByStandardVersion(@NonNull Activity activity) {
         if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_13)) {
-            return PermissionManifest.getReadMediaImagesPermission().isDoNotAskAgainPermission(activity) &&
-                PermissionManifest.getReadMediaVideoPermission().isDoNotAskAgainPermission(activity) &&
-                PermissionManifest.getReadMediaAudioPermission().isDoNotAskAgainPermission(activity);
+            return PermissionLists.getReadMediaImagesPermission().isDoNotAskAgainPermission(activity) &&
+                PermissionLists.getReadMediaVideoPermission().isDoNotAskAgainPermission(activity) &&
+                PermissionLists.getReadMediaAudioPermission().isDoNotAskAgainPermission(activity);
         }
         return super.isDoNotAskAgainPermissionByStandardVersion(activity);
     }

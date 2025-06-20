@@ -14,7 +14,7 @@ import com.hjq.permissions.manifest.node.ApplicationManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.tools.AndroidVersionTools;
 import com.hjq.permissions.tools.PermissionUtils;
-import com.hjq.permissions.permission.PermissionManifest;
+import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
@@ -67,8 +67,8 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
     @Override
     public List<IPermission> getOldPermissions(Context context) {
         // Android 11 以下访问完整的文件管理需要用到读写外部存储的权限
-        return PermissionUtils.asArrayList(PermissionManifest.getReadExternalStoragePermission(),
-                                            PermissionManifest.getWriteExternalStoragePermission());
+        return PermissionUtils.asArrayList(PermissionLists.getReadExternalStoragePermission(),
+                                            PermissionLists.getWriteExternalStoragePermission());
     }
 
     @Override
@@ -80,8 +80,8 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
             if (AndroidVersionTools.isAndroid10() && !Environment.isExternalStorageLegacy()) {
                 return false;
             }
-            return PermissionManifest.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest) &&
-                PermissionManifest.getWriteExternalStoragePermission().isGrantedPermission(context, skipRequest);
+            return PermissionLists.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest) &&
+                PermissionLists.getWriteExternalStoragePermission().isGrantedPermission(context, skipRequest);
         }
         // 是否有所有文件的管理权限
         return Environment.isExternalStorageManager();
