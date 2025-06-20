@@ -112,11 +112,11 @@ public final class ReadMediaImagesPermission extends DangerousPermission {
     @Override
     protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
         super.checkSelfByRequestPermissions(activity, requestPermissions);
-        // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这个权限
-        // 框架会在 Android 13 以下的版本上自动添加并申请这两个权限
+        // 检测是否有添加读取外部存储权限，有的话直接抛出异常，请不要自己手动添加这个权限，框架会在 Android 13 以下的版本上自动添加并申请这个权限
         if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_EXTERNAL_STORAGE)) {
-            throw new IllegalArgumentException("If you have applied for media permissions, " +
-                "do not apply for the + \"" + PermissionNames.READ_EXTERNAL_STORAGE + "\" permissions");
+            throw new IllegalArgumentException("You have added the \"" + getPermissionName() + "\" permission, "
+                + "please do not add the \"" + PermissionNames.READ_EXTERNAL_STORAGE + "\" permission, "
+                + "this conflicts with the framework's automatic compatibility policy.");
         }
     }
 }
