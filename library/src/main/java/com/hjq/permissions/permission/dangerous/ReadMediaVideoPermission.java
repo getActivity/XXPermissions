@@ -6,10 +6,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.AndroidManifestInfo;
-import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
-import com.hjq.permissions.AndroidVersionTools;
-import com.hjq.permissions.PermissionUtils;
+import com.hjq.permissions.manifest.AndroidManifestInfo;
+import com.hjq.permissions.manifest.node.PermissionManifestInfo;
+import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.PermissionManifest;
@@ -99,12 +99,13 @@ public final class ReadMediaVideoPermission extends DangerousPermission {
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestPermissions,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
-                                            @NonNull List<PermissionInfo> permissionInfoList,
-                                            @Nullable PermissionInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+                                            @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
+                                            @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
+            currentPermissionManifestInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
         if (getFromAndroidVersion() > getMinSdkVersion(activity, androidManifestInfo)) {
-            checkPermissionRegistrationStatus(permissionInfoList, PermissionNames.READ_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_12_L);
+            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.READ_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_12_L);
         }
     }
 

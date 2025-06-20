@@ -6,7 +6,7 @@ import android.content.BroadcastReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LruCache;
-import com.hjq.permissions.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersionTools;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.StandardDangerousPermission;
 import com.hjq.permissions.permission.dangerous.AccessBackgroundLocationPermission;

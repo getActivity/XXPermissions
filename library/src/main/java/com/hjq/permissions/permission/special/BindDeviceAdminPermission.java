@@ -9,11 +9,11 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.AndroidManifestInfo;
-import com.hjq.permissions.AndroidManifestInfo.BroadcastReceiverInfo;
-import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
-import com.hjq.permissions.AndroidVersionTools;
-import com.hjq.permissions.PermissionUtils;
+import com.hjq.permissions.manifest.AndroidManifestInfo;
+import com.hjq.permissions.manifest.node.BroadcastReceiverManifestInfo;
+import com.hjq.permissions.manifest.node.PermissionManifestInfo;
+import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
@@ -111,13 +111,14 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestPermissions,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
-                                            @NonNull List<PermissionInfo> permissionInfoList,
-                                            @Nullable PermissionInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+                                            @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
+                                            @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
+            currentPermissionManifestInfo);
         // 判断有没有 BroadcastReceiver 类注册了 android:permission="android.permission.BIND_DEVICE_ADMIN" 属性
-        List<BroadcastReceiverInfo> broadcastReceiverInfoList = androidManifestInfo.broadcastReceiverInfoList;
-        for (int i = 0; i < broadcastReceiverInfoList.size(); i++) {
-            String permission = broadcastReceiverInfoList.get(i).permission;
+        List<BroadcastReceiverManifestInfo> broadcastReceiverManifestInfoList = androidManifestInfo.mBroadcastReceiverManifestInfoList;
+        for (int i = 0; i < broadcastReceiverManifestInfoList.size(); i++) {
+            String permission = broadcastReceiverManifestInfoList.get(i).permission;
             if (permission == null) {
                 continue;
             }

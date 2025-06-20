@@ -8,11 +8,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.AndroidManifestInfo;
-import com.hjq.permissions.AndroidManifestInfo.ActivityInfo;
-import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
-import com.hjq.permissions.AndroidVersionTools;
-import com.hjq.permissions.PermissionUtils;
+import com.hjq.permissions.manifest.AndroidManifestInfo;
+import com.hjq.permissions.manifest.node.ActivityManifestInfo;
+import com.hjq.permissions.manifest.node.PermissionManifestInfo;
+import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
@@ -96,12 +96,13 @@ public final class PictureInPicturePermission extends SpecialPermission {
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestPermissions,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
-                                            @NonNull List<PermissionInfo> permissionInfoList,
-                                            @Nullable PermissionInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
-        List<ActivityInfo> activityInfoList = androidManifestInfo.activityInfoList;
-        for (int i = 0; i < activityInfoList.size(); i++) {
-            boolean supportsPictureInPicture = activityInfoList.get(i).supportsPictureInPicture;
+                                            @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
+                                            @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
+            currentPermissionManifestInfo);
+        List<ActivityManifestInfo> activityManifestInfoList = androidManifestInfo.mActivityManifestInfoList;
+        for (int i = 0; i < activityManifestInfoList.size(); i++) {
+            boolean supportsPictureInPicture = activityManifestInfoList.get(i).supportsPictureInPicture;
             if (supportsPictureInPicture) {
                 // 终止循环并返回
                 return;

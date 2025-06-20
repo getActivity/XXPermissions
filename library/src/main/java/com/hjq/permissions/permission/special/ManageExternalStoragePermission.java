@@ -9,11 +9,11 @@ import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.AndroidManifestInfo;
-import com.hjq.permissions.AndroidManifestInfo.ApplicationInfo;
-import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
-import com.hjq.permissions.AndroidVersionTools;
-import com.hjq.permissions.PermissionUtils;
+import com.hjq.permissions.manifest.AndroidManifestInfo;
+import com.hjq.permissions.manifest.node.ApplicationManifestInfo;
+import com.hjq.permissions.manifest.node.PermissionManifestInfo;
+import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionManifest;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
@@ -118,13 +118,14 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestPermissions,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
-                                            @NonNull List<PermissionInfo> permissionInfoList,
-                                            @Nullable PermissionInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+                                            @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
+                                            @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
+            currentPermissionManifestInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
         if (getFromAndroidVersion() > getMinSdkVersion(activity, androidManifestInfo)) {
-            checkPermissionRegistrationStatus(permissionInfoList, PermissionNames.READ_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_10);
-            checkPermissionRegistrationStatus(permissionInfoList, PermissionNames.WRITE_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_10);
+            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.READ_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_10);
+            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.WRITE_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_10);
         }
 
         // 如果申请的是 Android 10 获取媒体位置权限，则绕过本次检查
@@ -132,13 +133,13 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
             return;
         }
 
-        ApplicationInfo applicationInfo = androidManifestInfo.applicationInfo;
-        if (applicationInfo == null) {
+        ApplicationManifestInfo applicationManifestInfo = androidManifestInfo.mApplicationManifestInfo;
+        if (applicationManifestInfo == null) {
             return;
         }
 
         // 如果在已经适配 Android 10 的情况下，但是 android:requestLegacyExternalStorage 的属性为 false（假设没有注册该属性的情况下则获取到的值为 false）
-        if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_10 && !applicationInfo.requestLegacyExternalStorage) {
+        if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_10 && !applicationManifestInfo.requestLegacyExternalStorage) {
             // 请在清单文件 Application 节点中注册 android:requestLegacyExternalStorage="true" 属性
             // 否则就算申请了权限，也无法在 Android 10 的设备上正常读写外部存储上的文件
             // 如果你的项目已经全面适配了分区存储，请在清单文件中注册一个 meta-data 属性

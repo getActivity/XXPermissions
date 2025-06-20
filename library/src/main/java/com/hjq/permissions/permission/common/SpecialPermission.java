@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
-import com.hjq.permissions.AndroidVersionTools;
-import com.hjq.permissions.PermissionType;
-import com.hjq.permissions.PhoneRomUtils;
+import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.permission.PermissionType;
+import com.hjq.permissions.tools.PhoneRomUtils;
 import com.hjq.permissions.permission.base.BasePermission;
 
 /**

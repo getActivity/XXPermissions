@@ -6,17 +6,18 @@ import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.PermissionInfo;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.AndroidManifestInfo;
-import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
-import com.hjq.permissions.AndroidVersionTools;
-import com.hjq.permissions.PermissionActivityIntentHandler;
-import com.hjq.permissions.PermissionIntentManager;
-import com.hjq.permissions.PhoneRomUtils;
+import com.hjq.permissions.tools.PermissionSettingPage;
+import com.hjq.permissions.manifest.AndroidManifestInfo;
+import com.hjq.permissions.manifest.node.PermissionManifestInfo;
+import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.PermissionSettingPageHandler;
+import com.hjq.permissions.tools.PhoneRomUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
@@ -132,10 +133,10 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         if (PhoneRomUtils.isMiui()) {
             Intent intent = null;
             if (PhoneRomUtils.isMiuiOptimization()) {
-                intent = PermissionIntentManager.getMiuiPermissionPageIntent(context);
+                intent = PermissionSettingPage.getMiuiPermissionPageIntent(context);
             }
             // 另外跳转到应用详情页也可以开启读取应用列表权限
-            intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
+            intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
             return intent;
         }
 
@@ -146,9 +147,10 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestPermissions,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
-                                            @NonNull List<PermissionInfo> permissionInfoList,
-                                            @Nullable PermissionInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+                                            @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
+                                            @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
+            currentPermissionManifestInfo);
         // 当前 targetSdk 必须大于 Android 11，否则停止检查
         if (AndroidVersionTools.getTargetSdkVersionCode(activity) < AndroidVersionTools.ANDROID_11) {
             return;
@@ -161,8 +163,8 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
             queryAllPackagesPermissionName = "android.permission.QUERY_ALL_PACKAGES";
         }
 
-        PermissionInfo permissionInfo = findPermissionInfoByList(permissionInfoList, queryAllPackagesPermissionName);
-        if (permissionInfo != null || !androidManifestInfo.queriesPackageList.isEmpty()) {
+        PermissionManifestInfo permissionManifestInfo = findPermissionInfoByList(permissionManifestInfoList, queryAllPackagesPermissionName);
+        if (permissionManifestInfo != null || !androidManifestInfo.queriesPackageList.isEmpty()) {
             return;
         }
 
@@ -187,12 +189,12 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
             return false;
         }
         try {
-            android.content.pm.PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(getPermissionName(), 0);
+            PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(getPermissionName(), 0);
             if (permissionInfo != null) {
                 if (AndroidVersionTools.isAndroid9()) {
-                    return permissionInfo.getProtection() == android.content.pm.PermissionInfo.PROTECTION_DANGEROUS;
+                    return permissionInfo.getProtection() == PermissionInfo.PROTECTION_DANGEROUS;
                 } else {
-                    return (permissionInfo.protectionLevel & android.content.pm.PermissionInfo.PROTECTION_MASK_BASE) == android.content.pm.PermissionInfo.PROTECTION_DANGEROUS;
+                    return (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_MASK_BASE) == PermissionInfo.PROTECTION_DANGEROUS;
                 }
             }
         } catch (PackageManager.NameNotFoundException e) {

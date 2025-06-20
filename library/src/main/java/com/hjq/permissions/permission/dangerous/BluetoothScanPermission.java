@@ -7,10 +7,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.AndroidManifestInfo;
-import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
-import com.hjq.permissions.AndroidVersionTools;
-import com.hjq.permissions.PermissionUtils;
+import com.hjq.permissions.manifest.AndroidManifestInfo;
+import com.hjq.permissions.manifest.node.PermissionManifestInfo;
+import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.PermissionManifest;
@@ -97,14 +97,15 @@ public final class BluetoothScanPermission extends DangerousPermission {
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                            @NonNull List<IPermission> requestPermissions,
                                            @NonNull AndroidManifestInfo androidManifestInfo,
-                                           @NonNull List<PermissionInfo> permissionInfoList,
-                                           @Nullable PermissionInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+                                           @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
+                                           @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
+            currentPermissionManifestInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
         if (getFromAndroidVersion() > getMinSdkVersion(activity, androidManifestInfo)) {
-            checkPermissionRegistrationStatus(permissionInfoList, Manifest.permission.BLUETOOTH_ADMIN, AndroidVersionTools.ANDROID_11);
+            checkPermissionRegistrationStatus(permissionManifestInfoList, Manifest.permission.BLUETOOTH_ADMIN, AndroidVersionTools.ANDROID_11);
             // 这是 Android 12 之前遗留的问题，获取扫描蓝牙的结果需要精确定位权限
-            checkPermissionRegistrationStatus(permissionInfoList, PermissionNames.ACCESS_FINE_LOCATION, AndroidVersionTools.ANDROID_11);
+            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.ACCESS_FINE_LOCATION, AndroidVersionTools.ANDROID_11);
         }
 
         // 如果请求的权限已经包含了精确定位权限，就跳过检查
@@ -112,29 +113,29 @@ public final class BluetoothScanPermission extends DangerousPermission {
             return;
         }
         // 如果当前权限没有在清单文件中注册，就跳过检查
-        if (currentPermissionInfo == null) {
+        if (currentPermissionManifestInfo == null) {
             return;
         }
         // 如果当前权限有在清单文件注册，并且设置了 neverForLocation 标记，就跳过检查
-        if (currentPermissionInfo.neverForLocation()) {
+        if (currentPermissionManifestInfo.neverForLocation()) {
             return;
         }
 
         // 蓝牙权限：https://developer.android.google.cn/guide/topics/connectivity/bluetooth/permissions?hl=zh-cn#assert-never-for-location
         // 如果您的应用不使用蓝牙扫描结果来获取物理位置，则您可以断言您的应用从不使用蓝牙权限来获取物理位置。为此，请完成以下步骤：
         // 将该属性添加 android:usesPermissionFlags 到您的 BLUETOOTH_SCAN 权限声明中，并将该属性的值设置为 neverForLocation
-        String maxSdkVersionString = (currentPermissionInfo.maxSdkVersion != Integer.MAX_VALUE) ?
-            "android:maxSdkVersion=\"" + currentPermissionInfo.maxSdkVersion + "\" " : "";
+        String maxSdkVersionString = (currentPermissionManifestInfo.maxSdkVersion != Integer.MAX_VALUE) ?
+            "android:maxSdkVersion=\"" + currentPermissionManifestInfo.maxSdkVersion + "\" " : "";
         // 根据不同的需求场景决定，解决方法分为两种：
         //   1. 不需要使用蓝牙权限来获取物理位置：只需要在清单文件中注册的权限上面加上 android:usesPermissionFlags="neverForLocation" 即可
         //   2. 需要使用蓝牙权限来获取物理位置：在申请蓝牙权限时，还需要动态申请 ACCESS_FINE_LOCATION 权限
         // 通常情况下，我们都不需要使用蓝牙权限来获取物理位置，所以选择第一种方法即可
-        throw new IllegalArgumentException("If your app doesn't use " + currentPermissionInfo.name +
+        throw new IllegalArgumentException("If your app doesn't use " + currentPermissionManifestInfo.name +
             " to get physical location, " + "please change the <uses-permission android:name=\"" +
-            currentPermissionInfo.name + "\" " + maxSdkVersionString + "/> node in the " +
-            "manifest file to <uses-permission android:name=\"" + currentPermissionInfo.name +
+            currentPermissionManifestInfo.name + "\" " + maxSdkVersionString + "/> node in the " +
+            "manifest file to <uses-permission android:name=\"" + currentPermissionManifestInfo.name +
             "\" android:usesPermissionFlags=\"neverForLocation\" " + maxSdkVersionString + "/> node, " +
-            "if your app need use \"" + currentPermissionInfo.name + "\" to get physical location, " +
+            "if your app need use \"" + currentPermissionManifestInfo.name + "\" to get physical location, " +
             "also need to add \"" + PermissionNames.ACCESS_FINE_LOCATION + "\" permissions");
     }
 }

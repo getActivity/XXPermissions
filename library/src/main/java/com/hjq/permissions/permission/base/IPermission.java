@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.AndroidManifestInfo;
-import com.hjq.permissions.AndroidVersionTools;
-import com.hjq.permissions.PermissionType;
+import com.hjq.permissions.manifest.AndroidManifestInfo;
+import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.permission.PermissionType;
 import java.util.List;
 
 /**

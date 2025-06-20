@@ -10,10 +10,10 @@ import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.AndroidManifestInfo;
-import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
-import com.hjq.permissions.AndroidVersionTools;
-import com.hjq.permissions.PermissionUtils;
+import com.hjq.permissions.manifest.AndroidManifestInfo;
+import com.hjq.permissions.manifest.node.PermissionManifestInfo;
+import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
@@ -107,9 +107,10 @@ public final class ScheduleExactAlarmPermission extends SpecialPermission {
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestPermissions,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
-                                            @NonNull List<PermissionInfo> permissionInfoList,
-                                            @Nullable PermissionInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+                                            @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
+                                            @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
+            currentPermissionManifestInfo);
         String useExactAlarmPermissionName;
         if (AndroidVersionTools.isAndroid13()) {
             useExactAlarmPermissionName = permission.USE_EXACT_ALARM;
@@ -118,15 +119,15 @@ public final class ScheduleExactAlarmPermission extends SpecialPermission {
         }
 
         if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_13 &&
-            findPermissionInfoByList(permissionInfoList, useExactAlarmPermissionName) != null) {
+            findPermissionInfoByList(permissionManifestInfoList, useExactAlarmPermissionName) != null) {
             // 如果当前项目适配了 Android 13 的话，并且在清单文件中注册了 USE_EXACT_ALARM 权限，那么 SCHEDULE_EXACT_ALARM 权限在清单文件中可以这样注册
             // <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
             // 相关文档地址：https://developer.android.google.cn/reference/android/Manifest.permission#USE_EXACT_ALARM
             // 如果你的应用要上架 GooglePlay，那么需要慎重添加 USE_EXACT_ALARM 权限，因为不是日历、闹钟、时钟这类应用添加 USE_EXACT_ALARM 权限很难通过 GooglePlay 上架审核
-            checkPermissionRegistrationStatus(permissionInfoList, getPermissionName(), AndroidVersionTools.ANDROID_12_L);
+            checkPermissionRegistrationStatus(permissionManifestInfoList, getPermissionName(), AndroidVersionTools.ANDROID_12_L);
             return;
         }
 
-        checkPermissionRegistrationStatus(permissionInfoList, getPermissionName());
+        checkPermissionRegistrationStatus(permissionManifestInfoList, getPermissionName());
     }
 }

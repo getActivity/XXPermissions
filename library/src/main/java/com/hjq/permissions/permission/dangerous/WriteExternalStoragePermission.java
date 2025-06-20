@@ -8,11 +8,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.AndroidManifestInfo;
-import com.hjq.permissions.AndroidManifestInfo.ApplicationInfo;
-import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
-import com.hjq.permissions.AndroidVersionTools;
-import com.hjq.permissions.PermissionUtils;
+import com.hjq.permissions.manifest.AndroidManifestInfo;
+import com.hjq.permissions.manifest.node.ApplicationManifestInfo;
+import com.hjq.permissions.manifest.node.PermissionManifestInfo;
+import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.base.IPermission;
@@ -113,30 +113,32 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestPermissions,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
-                                            @NonNull List<PermissionInfo> permissionInfoList,
-                                            @Nullable PermissionInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
-        ApplicationInfo applicationInfo = androidManifestInfo.applicationInfo;
-        if (applicationInfo == null) {
+                                            @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
+                                            @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
+            currentPermissionManifestInfo);
+        ApplicationManifestInfo applicationManifestInfo = androidManifestInfo.mApplicationManifestInfo;
+        if (applicationManifestInfo == null) {
             return;
         }
 
         // 如果当前 targetSdk 版本比较低，甚至还没有到分区存储的版本，就直接跳过后面的检查，只检查当前权限有没有在清单文件中静态注册
         if (AndroidVersionTools.getTargetSdkVersionCode(activity) < AndroidVersionTools.ANDROID_10) {
-            checkPermissionRegistrationStatus(permissionInfoList, getPermissionName());
+            checkPermissionRegistrationStatus(permissionManifestInfoList, getPermissionName());
             return;
         }
 
         // 判断：当前项目是否适配了Android 11，并且还在清单文件中是否注册了 MANAGE_EXTERNAL_STORAGE 权限
         if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_11 &&
-            findPermissionInfoByList(permissionInfoList, PermissionNames.MANAGE_EXTERNAL_STORAGE) != null) {
+            findPermissionInfoByList(permissionManifestInfoList, PermissionNames.MANAGE_EXTERNAL_STORAGE) != null) {
             // 如果有的话，那么 maxSdkVersion 就必须是 Android 10 及以上的版本
-            checkPermissionRegistrationStatus(permissionInfoList, getPermissionName(), AndroidVersionTools.ANDROID_10);
+            checkPermissionRegistrationStatus(permissionManifestInfoList, getPermissionName(), AndroidVersionTools.ANDROID_10);
         } else {
             // 检查这个权限有没有在清单文件中注册，WRITE_EXTERNAL_STORAGE 权限比较特殊，要单独拎出来判断
             // 如果在清单文件中注册了 android:requestLegacyExternalStorage="true" 属性，即可延长一个 Android 版本适配
             // 所以 requestLegacyExternalStorage 属性在开启的状态下，对 maxSdkVersion 属性的要求延长一个版本
-            checkPermissionRegistrationStatus(permissionInfoList, getPermissionName(), applicationInfo.requestLegacyExternalStorage ?
+            checkPermissionRegistrationStatus(
+                permissionManifestInfoList, getPermissionName(), applicationManifestInfo.requestLegacyExternalStorage ?
                                                         AndroidVersionTools.ANDROID_10 : AndroidVersionTools.ANDROID_9);
         }
 
@@ -149,7 +151,7 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
         // 是否适配了分区存储
         boolean scopedStorage = PermissionUtils.getBooleanByMetaData(activity, ReadExternalStoragePermission.META_DATA_KEY_SCOPED_STORAGE, false);
         // 如果在已经适配 Android 10 的情况下
-        if (targetSdkVersion >= AndroidVersionTools.ANDROID_10 && !applicationInfo.requestLegacyExternalStorage && !scopedStorage) {
+        if (targetSdkVersion >= AndroidVersionTools.ANDROID_10 && !applicationManifestInfo.requestLegacyExternalStorage && !scopedStorage) {
             // 请在清单文件 Application 节点中注册 android:requestLegacyExternalStorage="true" 属性
             // 否则就算申请了权限，也无法在 Android 10 的设备上正常读写外部存储上的文件
             // 如果你的项目已经全面适配了分区存储，请在清单文件中注册一个 meta-data 属性

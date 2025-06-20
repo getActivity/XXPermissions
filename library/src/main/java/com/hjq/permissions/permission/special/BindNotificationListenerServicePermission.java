@@ -12,11 +12,11 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import com.hjq.permissions.AndroidManifestInfo;
-import com.hjq.permissions.AndroidManifestInfo.PermissionInfo;
-import com.hjq.permissions.AndroidManifestInfo.ServiceInfo;
-import com.hjq.permissions.AndroidVersionTools;
-import com.hjq.permissions.PermissionUtils;
+import com.hjq.permissions.manifest.AndroidManifestInfo;
+import com.hjq.permissions.manifest.node.PermissionManifestInfo;
+import com.hjq.permissions.manifest.node.ServiceManifestInfo;
+import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
@@ -160,13 +160,14 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestPermissions,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
-                                            @NonNull List<PermissionInfo> permissionInfoList,
-                                            @Nullable PermissionInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+                                            @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
+                                            @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
+            currentPermissionManifestInfo);
         // 判断有没有 Service 类注册了 android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" 属性
-        List<ServiceInfo> serviceInfoList = androidManifestInfo.serviceInfoList;
-        for (int i = 0; i < serviceInfoList.size(); i++) {
-            String permission = serviceInfoList.get(i).permission;
+        List<ServiceManifestInfo> serviceManifestInfoList = androidManifestInfo.mServiceManifestInfoList;
+        for (int i = 0; i < serviceManifestInfoList.size(); i++) {
+            String permission = serviceManifestInfoList.get(i).permission;
             if (permission == null) {
                 continue;
             }

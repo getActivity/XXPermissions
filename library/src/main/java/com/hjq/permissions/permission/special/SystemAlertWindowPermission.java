@@ -7,11 +7,11 @@ import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import com.hjq.permissions.AndroidVersionTools;
-import com.hjq.permissions.PermissionActivityIntentHandler;
-import com.hjq.permissions.PermissionIntentManager;
-import com.hjq.permissions.PermissionUtils;
-import com.hjq.permissions.PhoneRomUtils;
+import com.hjq.permissions.tools.PermissionSettingPage;
+import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.PermissionSettingPageHandler;
+import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PhoneRomUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
 
@@ -92,9 +92,9 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
             if (AndroidVersionTools.isAndroid11() && PhoneRomUtils.isMiui() && PhoneRomUtils.isMiuiOptimization()) {
                 // 因为 Android 11 及后面的版本无法直接跳转到具体权限设置页面，只能跳转到悬浮窗权限应用列表，十分地麻烦的，这里做了一下简化
                 // miui 做得比较人性化的，不会出现跳转不过去的问题，其他厂商就不一定了，就是不想让你跳转过去
-                Intent intent = PermissionIntentManager.getMiuiPermissionPageIntent(context);
+                Intent intent = PermissionSettingPage.getMiuiPermissionPageIntent(context);
                 // 另外跳转到应用详情页也可以开启悬浮窗权限
-                intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
+                intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
                 return intent;
             }
 
@@ -109,8 +109,8 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
 
         // 需要注意的是，这里不需要判断鸿蒙，因为鸿蒙 2.0 用代码判断是 API 等级是 29（Android 10）会直接走上面的逻辑，而不会走到下面来
         if (PhoneRomUtils.isEmui()) {
-            Intent intent = PermissionIntentManager.getEmuiWindowPermissionPageIntent(context);
-            intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
+            Intent intent = PermissionSettingPage.getEmuiWindowPermissionPageIntent(context);
+            intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
             return intent;
         }
 
@@ -119,36 +119,36 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
             Intent intent = null;
             if (PhoneRomUtils.isMiuiOptimization()) {
                 // 假设关闭了 miui 优化，就不走这里的逻辑
-                intent = PermissionIntentManager.getMiuiWindowPermissionPageIntent(context);
+                intent = PermissionSettingPage.getMiuiWindowPermissionPageIntent(context);
             }
 
             // 小米手机也可以通过应用详情页开启悬浮窗权限（只不过会多一步操作）
-            intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
+            intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
             return intent;
         }
 
         if (PhoneRomUtils.isColorOs()) {
-            Intent intent = PermissionIntentManager.getColorOsWindowPermissionPageIntent(context);
-            intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
+            Intent intent = PermissionSettingPage.getColorOsWindowPermissionPageIntent(context);
+            intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
             return intent;
         }
 
         if (PhoneRomUtils.isOriginOs()) {
-            Intent intent = PermissionIntentManager.getOriginOsWindowPermissionPageIntent(context);
-            intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
+            Intent intent = PermissionSettingPage.getOriginOsWindowPermissionPageIntent(context);
+            intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
             return intent;
         }
 
         if (PhoneRomUtils.isOneUi()) {
-            Intent intent = PermissionIntentManager.getOneUiWindowPermissionPageIntent(context);
-            intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
+            Intent intent = PermissionSettingPage.getOneUiWindowPermissionPageIntent(context);
+            intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
             return intent;
         }
 
         // 经过测试，锤子手机 5.1 及以上的手机的可以直接通过直接跳转到应用详情开启悬浮窗权限，但是 4.4 以下的手机就不行，需要跳转到安全中心
         if (PhoneRomUtils.isSmartisanOS() && !AndroidVersionTools.isAndroid5_1()) {
-            Intent intent = PermissionIntentManager.getSmartisanWindowPermissionPageIntent(context);
-            intent = PermissionActivityIntentHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
+            Intent intent = PermissionSettingPage.getSmartisanWindowPermissionPageIntent(context);
+            intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
             return intent;
         }
 
