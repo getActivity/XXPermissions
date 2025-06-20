@@ -92,7 +92,7 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
             if (AndroidVersionTools.isAndroid11() && PhoneRomUtils.isMiui() && PhoneRomUtils.isMiuiOptimization()) {
                 // 因为 Android 11 及后面的版本无法直接跳转到具体权限设置页面，只能跳转到悬浮窗权限应用列表，十分地麻烦的，这里做了一下简化
                 // miui 做得比较人性化的，不会出现跳转不过去的问题，其他厂商就不一定了，就是不想让你跳转过去
-                Intent intent = PermissionSettingPage.getMiuiPermissionPageIntent(context);
+                Intent intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
                 // 另外跳转到应用详情页也可以开启悬浮窗权限
                 intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
                 return intent;

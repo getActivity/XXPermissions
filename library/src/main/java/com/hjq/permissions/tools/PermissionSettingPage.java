@@ -96,7 +96,7 @@ public final class PermissionSettingPage {
      */
     @Nullable
     public static Intent getMiuiWindowPermissionPageIntent(Context context) {
-        return getMiuiPermissionPageIntent(context);
+        return getXiaoMiApplicationPermissionPageIntent(context);
     }
 
     /**
@@ -185,8 +185,11 @@ public final class PermissionSettingPage {
 
     /* ---------------------------------------------------------------------------------------- */
 
+    /**
+     * 获取小米应用具体的权限设置页意图
+     */
     @Nullable
-    public static Intent getMiuiPermissionPageIntent(Context context) {
+    public static Intent getXiaoMiApplicationPermissionPageIntent(Context context) {
         Intent appPermEditorActionIntent = new Intent()
             .setAction("miui.intent.action.APP_PERM_EDITOR")
             .putExtra("extra_pkgname", context.getPackageName());

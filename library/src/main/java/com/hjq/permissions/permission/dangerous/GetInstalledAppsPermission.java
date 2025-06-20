@@ -133,7 +133,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         if (PhoneRomUtils.isMiui()) {
             Intent intent = null;
             if (PhoneRomUtils.isMiuiOptimization()) {
-                intent = PermissionSettingPage.getMiuiPermissionPageIntent(context);
+                intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
             }
             // 另外跳转到应用详情页也可以开启读取应用列表权限
             intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
