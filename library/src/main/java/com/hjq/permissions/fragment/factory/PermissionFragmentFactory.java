@@ -81,7 +81,6 @@ public abstract class PermissionFragmentFactory<A extends Activity, F> {
 
     /**
      * 生成权限请求的参数
-     * @noinspection unchecked
      */
     @NonNull
     Bundle generatePermissionArguments(@NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode) {

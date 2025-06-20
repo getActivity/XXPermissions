@@ -15,7 +15,6 @@ import com.hjq.permissions.core.OnPermissionFlowCallback;
  *    time   : 2025/05/20
  *    desc   : 权限 Fragment 类（Support 包下 Fragment）
  */
-@SuppressWarnings("deprecation")
 public abstract class PermissionFragmentSupport extends Fragment implements
     IFragmentMethod<FragmentActivity, FragmentManager> {
 

@@ -25,7 +25,6 @@ import java.util.List;
  *    time   : 2018/06/15
  *    desc   : 权限申请主要逻辑实现类
  */
-@SuppressWarnings("deprecation")
 public final class RequestPermissionLogicPresenter {
 
     @NonNull

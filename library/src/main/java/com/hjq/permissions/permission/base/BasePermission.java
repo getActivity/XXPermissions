@@ -221,6 +221,7 @@ public abstract class BasePermission implements IPermission {
      *
      * @param opName               需要传入 {@link AppOpsManager} 类中的以 OPSTR 开头的字段
      */
+    @SuppressWarnings("deprecation")
     public static boolean checkOpNoThrow(Context context, String opName) {
         if (!AndroidVersionTools.isAndroid4_4()) {
             return true;

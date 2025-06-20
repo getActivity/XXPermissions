@@ -90,6 +90,7 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
         mFragmentMethod.requestPermissions(permissions, requestCode);
     }
 
+    @SuppressWarnings("deprecation")
     @Nullable
     List<IPermission> getPermissionRequestList() {
         Bundle arguments = mFragmentMethod.getArguments();

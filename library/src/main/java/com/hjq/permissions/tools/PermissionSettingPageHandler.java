@@ -29,6 +29,7 @@ public final class PermissionSettingPageHandler {
      *
      * @param superIntent           父意图对象
      */
+    @SuppressWarnings("deprecation")
     private static Intent findSubIntentBySuperIntent(@NonNull Intent superIntent) {
         Intent subIntent;
         if (AndroidVersionTools.isAndroid13()) {
