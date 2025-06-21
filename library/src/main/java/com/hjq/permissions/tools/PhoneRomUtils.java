@@ -198,6 +198,29 @@ public final class PhoneRomUtils {
     }
 
     /**
+     * 获取厂商系统版本的大版本号
+     *
+     * @return               如果获取不到则返回 0
+     */
+    public static int getRomBigVersionCode() {
+        String romVersionName = PhoneRomUtils.getRomVersionName();
+        if (romVersionName == null) {
+            return 0;
+        }
+        String[] array = romVersionName.split("\\.");
+        if (array.length == 0) {
+            return 0;
+        }
+        try {
+           return Integer.parseInt(array[0]);
+        } catch (Exception e) {
+            // java.lang.NumberFormatException: Invalid int: "0 "
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    /**
      * 返回经过美化的厂商系统版本号
      */
     @Nullable

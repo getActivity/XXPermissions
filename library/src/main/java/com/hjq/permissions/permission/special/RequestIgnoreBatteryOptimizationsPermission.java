@@ -8,7 +8,6 @@ import android.os.Parcelable;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 import com.hjq.permissions.tools.AndroidVersionTools;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PhoneRomUtils;
@@ -124,25 +123,12 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
             }
 
             if (AndroidVersionTools.isAndroid14()) {
-                String romVersionName = PhoneRomUtils.getRomVersionName();
-                if (TextUtils.isEmpty(romVersionName)) {
+                int romBigVersionCode = PhoneRomUtils.getRomBigVersionCode();
+                // 如果获取不到的大版本号又或者获取到的大版本号小于 2，就返回小米机型默认的等待时间
+                if (romBigVersionCode < 2) {
                     return xiaomiPhoneDefaultWaitTime;
                 }
-                String[] array = romVersionName.split("\\.");
-                if (array.length == 0) {
-                    return xiaomiPhoneDefaultWaitTime;
-                }
-                try {
-                    int hyperOsBigVersion = Integer.parseInt(array[0]);
-                    if (hyperOsBigVersion < 2) {
-                        return xiaomiPhoneDefaultWaitTime;
-                    } else {
-                        return super.getResultWaitTime(context);
-                    }
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                    return xiaomiPhoneDefaultWaitTime;
-                }
+                return super.getResultWaitTime(context);
             }
 
             return xiaomiPhoneDefaultWaitTime;
