@@ -3,6 +3,7 @@ package com.hjq.permissions.permission.common;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 /**
  *    author : Android 轮子哥
@@ -29,7 +30,7 @@ public final class StandardDangerousPermission extends DangerousPermission {
     @NonNull
     private final String mPermissionName;
     /** 权限组别 */
-    @NonNull
+    @Nullable
     private final String mPermissionGroup;
     /** 权限出现的 Android 版本 */
     private final int mFromAndroidVersion;
@@ -39,10 +40,10 @@ public final class StandardDangerousPermission extends DangerousPermission {
     }
 
     public StandardDangerousPermission(@NonNull String permissionName, int fromAndroidVersion) {
-        this(permissionName, "", fromAndroidVersion);
+        this(permissionName, null, fromAndroidVersion);
     }
 
-    public StandardDangerousPermission(@NonNull String permissionName, @NonNull String permissionGroup, int fromAndroidVersion) {
+    public StandardDangerousPermission(@NonNull String permissionName, @Nullable String permissionGroup, int fromAndroidVersion) {
         mPermissionName = permissionName;
         mPermissionGroup = permissionGroup;
         mFromAndroidVersion = fromAndroidVersion;
@@ -62,7 +63,7 @@ public final class StandardDangerousPermission extends DangerousPermission {
         return mPermissionName;
     }
 
-    @NonNull
+    @Nullable
     @Override
     public String getPermissionGroup() {
         return mPermissionGroup;

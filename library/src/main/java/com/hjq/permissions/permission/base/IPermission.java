@@ -7,8 +7,8 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
-import com.hjq.permissions.tools.AndroidVersionTools;
 import com.hjq.permissions.permission.PermissionType;
+import com.hjq.permissions.tools.AndroidVersionTools;
 import java.util.List;
 
 /**
@@ -34,10 +34,10 @@ public interface IPermission extends Parcelable {
     /**
      * 获取权限的组别
      */
-    @NonNull
+    @Nullable
     default String getPermissionGroup() {
-        // 空字符串表示没有组别
-        return "";
+        // 返回空表示没有组别
+        return null;
     }
 
     /**
