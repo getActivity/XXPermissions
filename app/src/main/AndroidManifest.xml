@@ -229,6 +229,15 @@
                 android:resource="@xml/accessibility_service_config" />
         </service>
 
+        <service
+            android:name=".example.ExampleVpnService"
+            android:exported="true"
+            android:permission="android.permission.BIND_VPN_SERVICE">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+        </service>
+
         <!-- 告知 XXPermissions 当前项目已经适配了分区存储特性 -->
         <meta-data
             android:name="ScopedStorage"
