@@ -207,9 +207,6 @@ XXPermissions.isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull IPe
 XXPermissions.isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull IPermission[] permissions);
 XXPermissions.isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull List<IPermission> permissions);
 
-// 判断某个权限出现的版本是否高于当前的设备的版本
-XXPermissions.isLowVersionRunning(@NonNull IPermission permission);
-
 // 跳转到权限设置页（Context 版本）
 XXPermissions.startPermissionActivity(@NonNull Context context);
 XXPermissions.startPermissionActivity(@NonNull Context context, @NonNull IPermission... permissions);

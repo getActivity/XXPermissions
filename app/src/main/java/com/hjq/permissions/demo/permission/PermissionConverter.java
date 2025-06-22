@@ -6,7 +6,6 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import com.hjq.permissions.XXPermissions;
 import com.hjq.permissions.demo.R;
 import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.PermissionNames;
@@ -196,7 +195,7 @@ public final class PermissionConverter {
         for (IPermission permission : permissions) {
             // 如果当前设置了过滤高版本权限，并且这个权限是高版本系统才出现的权限，则不继续往下执行
             // 避免出现在低版本上面执行拒绝权限后，连带高版本的名称也一起显示出来，但是在低版本上面是没有这个权限的
-            if (filterHighVersionPermissions && XXPermissions.isLowVersionRunning(permission)) {
+            if (filterHighVersionPermissions && permission.getFromAndroidVersion() > Build.VERSION.SDK_INT) {
                 continue;
             }
             String permissionName = getNickNameByPermission(context, permission);

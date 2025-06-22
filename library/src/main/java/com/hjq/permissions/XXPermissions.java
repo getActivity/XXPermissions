@@ -456,13 +456,6 @@ public final class XXPermissions {
         return PermissionApi.isDoNotAskAgainPermissions(activity, permissions);
     }
 
-    /**
-     * 判断某个权限出现的版本是否高于当前的设备的版本
-     */
-    public static boolean isLowVersionRunning(@NonNull IPermission permission) {
-        return permission.isLowVersionRunning();
-    }
-
     /* android.content.Context */
 
     public static void startPermissionActivity(@NonNull Context context) {

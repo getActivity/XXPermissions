@@ -91,13 +91,6 @@ public interface IPermission extends Parcelable {
     }
 
     /**
-     * 判断当前权限是否在低版本（不受支持的版本）上面运行
-     */
-    default boolean isLowVersionRunning() {
-        return getFromAndroidVersion() > AndroidVersionTools.getCurrentAndroidVersionCode();
-    }
-
-    /**
      * 判断当前权限是否授予
      */
     default boolean isGrantedPermission(@NonNull Context context) {

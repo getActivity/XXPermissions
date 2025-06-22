@@ -202,9 +202,6 @@ XXPermissions.isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull IPe
 XXPermissions.isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull IPermission[] permissions);
 XXPermissions.isDoNotAskAgainPermissions(@NonNull Activity activity, @NonNull List<IPermission> permissions);
 
-// Check if the API level required by a permission is higher than the current device's API level
-XXPermissions.isLowVersionRunning(@NonNull IPermission permission);
-
 // Navigate to the permission settings page (Context version)
 XXPermissions.startPermissionActivity(@NonNull Context context);
 XXPermissions.startPermissionActivity(@NonNull Context context, @NonNull IPermission... permissions);

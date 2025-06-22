@@ -37,7 +37,7 @@ public abstract class DangerousPermission extends BasePermission {
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         // 判断权限是不是在旧系统上面运行（权限出现的版本 > 当前系统的版本）
-        if (isLowVersionRunning()) {
+        if (getFromAndroidVersion() > AndroidVersionTools.getCurrentAndroidVersionCode()) {
             return isGrantedPermissionByLowVersion(context, skipRequest);
         }
         return isGrantedPermissionByStandardVersion(context, skipRequest);
@@ -60,7 +60,7 @@ public abstract class DangerousPermission extends BasePermission {
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
         // 判断权限是不是在旧系统上面运行（权限出现的版本 > 当前系统的版本）
-        if (isLowVersionRunning()) {
+        if (getFromAndroidVersion() > AndroidVersionTools.getCurrentAndroidVersionCode()) {
             return isDoNotAskAgainPermissionByLowVersion(activity);
         }
         return isDoNotAskAgainPermissionByStandardVersion(activity);
