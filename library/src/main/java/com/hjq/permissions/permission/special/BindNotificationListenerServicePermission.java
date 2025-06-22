@@ -165,7 +165,7 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
         super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
             currentPermissionManifestInfo);
         // 判断有没有 Service 类注册了 android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" 属性
-        List<ServiceManifestInfo> serviceManifestInfoList = androidManifestInfo.mServiceManifestInfoList;
+        List<ServiceManifestInfo> serviceManifestInfoList = androidManifestInfo.serviceManifestInfoList;
         for (int i = 0; i < serviceManifestInfoList.size(); i++) {
             String permission = serviceManifestInfoList.get(i).permission;
             if (permission == null) {

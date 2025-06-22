@@ -86,7 +86,7 @@ public abstract class BasePermission implements IPermission {
         checkSelfByTargetSdkVersion(activity);
         // 检查 AndroidManifest.xml 是否符合要求
         if (androidManifestInfo != null) {
-            List<PermissionManifestInfo> permissionManifestInfoList = androidManifestInfo.mPermissionManifestInfoList;
+            List<PermissionManifestInfo> permissionManifestInfoList = androidManifestInfo.permissionManifestInfoList;
             PermissionManifestInfo currentPermissionManifestInfo = findPermissionInfoByList(permissionManifestInfoList, getPermissionName());
             checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
                 currentPermissionManifestInfo);
@@ -195,10 +195,10 @@ public abstract class BasePermission implements IPermission {
             return context.getApplicationInfo().minSdkVersion;
         }
 
-        if (androidManifestInfo == null || androidManifestInfo.mUsesSdkManifestInfo == null) {
+        if (androidManifestInfo == null || androidManifestInfo.usesSdkManifestInfo == null) {
             return AndroidVersionTools.ANDROID_4_2;
         }
-        return androidManifestInfo.mUsesSdkManifestInfo.minSdkVersion;
+        return androidManifestInfo.usesSdkManifestInfo.minSdkVersion;
     }
 
     /**

@@ -101,7 +101,7 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
             return;
         }
 
-        ApplicationManifestInfo applicationManifestInfo = androidManifestInfo.mApplicationManifestInfo;
+        ApplicationManifestInfo applicationManifestInfo = androidManifestInfo.applicationManifestInfo;
         if (applicationManifestInfo == null) {
             return;
         }

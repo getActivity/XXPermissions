@@ -133,7 +133,7 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
             return;
         }
 
-        ApplicationManifestInfo applicationManifestInfo = androidManifestInfo.mApplicationManifestInfo;
+        ApplicationManifestInfo applicationManifestInfo = androidManifestInfo.applicationManifestInfo;
         if (applicationManifestInfo == null) {
             return;
         }

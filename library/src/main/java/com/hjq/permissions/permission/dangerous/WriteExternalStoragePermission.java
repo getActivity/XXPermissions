@@ -116,7 +116,7 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
                                             @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
         super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
             currentPermissionManifestInfo);
-        ApplicationManifestInfo applicationManifestInfo = androidManifestInfo.mApplicationManifestInfo;
+        ApplicationManifestInfo applicationManifestInfo = androidManifestInfo.applicationManifestInfo;
         if (applicationManifestInfo == null) {
             return;
         }

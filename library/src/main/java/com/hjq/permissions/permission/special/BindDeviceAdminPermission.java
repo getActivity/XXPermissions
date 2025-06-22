@@ -116,7 +116,7 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
         super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
             currentPermissionManifestInfo);
         // 判断有没有 BroadcastReceiver 类注册了 android:permission="android.permission.BIND_DEVICE_ADMIN" 属性
-        List<BroadcastReceiverManifestInfo> broadcastReceiverManifestInfoList = androidManifestInfo.mBroadcastReceiverManifestInfoList;
+        List<BroadcastReceiverManifestInfo> broadcastReceiverManifestInfoList = androidManifestInfo.broadcastReceiverManifestInfoList;
         for (int i = 0; i < broadcastReceiverManifestInfoList.size(); i++) {
             String permission = broadcastReceiverManifestInfoList.get(i).permission;
             if (permission == null) {

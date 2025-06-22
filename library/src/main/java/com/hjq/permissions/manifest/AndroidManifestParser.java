@@ -163,13 +163,13 @@ public final class AndroidManifestParser {
                 }
 
                 if (TextUtils.equals(TAG_USES_SDK, tagName)) {
-                    manifestInfo.mUsesSdkManifestInfo = parseUsesSdkFromXml(parser);
+                    manifestInfo.usesSdkManifestInfo = parseUsesSdkFromXml(parser);
                 }
 
                 if (TextUtils.equals(TAG_USES_PERMISSION, tagName) ||
                     TextUtils.equals(TAG_USES_PERMISSION_SDK_23, tagName) ||
                     TextUtils.equals(TAG_USES_PERMISSION_SDK_M, tagName)) {
-                    manifestInfo.mPermissionManifestInfoList.add(parsePermissionFromXml(parser));
+                    manifestInfo.permissionManifestInfoList.add(parsePermissionFromXml(parser));
                 }
 
                 if (TextUtils.equals(TAG_QUERIES, tagName)) {
@@ -177,20 +177,20 @@ public final class AndroidManifestParser {
                 }
 
                 if (TextUtils.equals(TAG_APPLICATION, tagName)) {
-                    manifestInfo.mApplicationManifestInfo = parseApplicationFromXml(parser);
+                    manifestInfo.applicationManifestInfo = parseApplicationFromXml(parser);
                 }
 
                 if (TextUtils.equals(TAG_ACTIVITY, tagName) ||
                     TextUtils.equals(TAG_ACTIVITY_ALIAS, tagName)) {
-                    manifestInfo.mActivityManifestInfoList.add(parseActivityFromXml(parser));
+                    manifestInfo.activityManifestInfoList.add(parseActivityFromXml(parser));
                 }
 
                 if (TextUtils.equals(TAG_SERVICE, tagName)) {
-                    manifestInfo.mServiceManifestInfoList.add(parseServerFromXml(parser));
+                    manifestInfo.serviceManifestInfoList.add(parseServerFromXml(parser));
                 }
 
                 if (TextUtils.equals(TAG_RECEIVER, tagName)) {
-                    manifestInfo.mBroadcastReceiverManifestInfoList.add(parseBroadcastReceiverFromXml(parser));
+                    manifestInfo.broadcastReceiverManifestInfoList.add(parseBroadcastReceiverFromXml(parser));
                 }
 
             } while (parser.next() != XmlResourceParser.END_DOCUMENT);
