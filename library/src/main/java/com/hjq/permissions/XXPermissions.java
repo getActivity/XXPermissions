@@ -11,13 +11,14 @@ import android.support.v4.app.FragmentActivity;
 import com.hjq.permissions.fragment.factory.PermissionFragmentFactory;
 import com.hjq.permissions.fragment.factory.PermissionFragmentFactoryByApp;
 import com.hjq.permissions.fragment.factory.PermissionFragmentFactoryBySupport;
-import com.hjq.permissions.tools.PermissionSettingPageHandler;
-import com.hjq.permissions.tools.PermissionSettingPage;
+import com.hjq.permissions.manifest.AndroidManifestParser;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.tools.AndroidVersionTools;
 import com.hjq.permissions.tools.PermissionApi;
 import com.hjq.permissions.tools.PermissionChecker;
+import com.hjq.permissions.tools.PermissionSettingPage;
+import com.hjq.permissions.tools.PermissionSettingPageHandler;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -249,7 +250,7 @@ public final class XXPermissions {
                 PermissionChecker.checkSupportFragmentStatus(supportFragment);
             }
             // 检查传入的权限是否正常
-            PermissionChecker.checkPermissionList(activity, permissions, PermissionUtils.getAndroidManifestInfo(context));
+            PermissionChecker.checkPermissionList(activity, permissions, AndroidManifestParser.getAndroidManifestInfo(context));
         }
 
         // 检查 Activity 是不是不可用

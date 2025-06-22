@@ -10,15 +10,11 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.PackageManager.ResolveInfoFlags;
-import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
-import com.hjq.permissions.manifest.AndroidManifestInfo;
-import com.hjq.permissions.manifest.AndroidManifestParser;
 import com.hjq.permissions.permission.base.IPermission;
 import java.io.BufferedReader;
 import java.io.File;
@@ -31,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
-import org.xmlpull.v1.XmlPullParserException;
 
 /**
  *    author : Android 轮子哥
@@ -46,29 +41,6 @@ public final class PermissionUtils {
      */
     public static boolean isDebugMode(@NonNull Context context) {
         return (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-    }
-
-    @Nullable
-    public static AndroidManifestInfo getAndroidManifestInfo(Context context) {
-        int apkPathCookie = PermissionUtils.findApkPathCookie(context, context.getApplicationInfo().sourceDir);
-        // 如果 cookie 为 0，证明获取失败
-        if (apkPathCookie == 0) {
-            return null;
-        }
-
-        AndroidManifestInfo androidManifestInfo = null;
-        try {
-            androidManifestInfo = AndroidManifestParser.parseAndroidManifest(context, apkPathCookie);
-            // 如果读取到的包名和当前应用的包名不是同一个的话，证明这个清单文件的内容不是当前应用的
-            // 具体案例：https://github.com/getActivity/XXPermissions/issues/102
-            if (!TextUtils.equals(context.getPackageName(), androidManifestInfo.packageName)) {
-                return null;
-            }
-        } catch (IOException | XmlPullParserException e) {
-            e.printStackTrace();
-        }
-
-        return androidManifestInfo;
     }
 
     /**
@@ -136,58 +108,6 @@ public final class PermissionUtils {
     @SuppressWarnings("deprecation")
     public static boolean isFragmentUnavailable(@Nullable Fragment appFragment) {
         return appFragment == null || !appFragment.isAdded() || appFragment.isRemoving();
-    }
-
-    /**
-     * 获取当前应用 Apk 在 AssetManager 中的 Cookie，如果获取失败，则为 0
-     */
-    @SuppressWarnings("JavaReflectionMemberAccess")
-    @SuppressLint("PrivateApi")
-    public static int findApkPathCookie(@NonNull Context context, @NonNull String apkPath) {
-        AssetManager assets = context.getAssets();
-        Integer cookie;
-
-        try {
-
-            if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_9) &&
-                AndroidVersionTools.getCurrentAndroidVersionCode() < AndroidVersionTools.ANDROID_11) {
-
-                // 反射套娃操作：实测这种方式只在 Android 9.0 和 Android 10.0 有效果，在 Android 11 上面就失效了
-                Method metaGetDeclaredMethod = Class.class.getDeclaredMethod(
-                    "getDeclaredMethod", String.class, Class[].class);
-                metaGetDeclaredMethod.setAccessible(true);
-                // 注意 AssetManager.findCookieForPath 是 Android 9.0（API 28）的时候才添加的方法
-                // 而 Android 9.0 用的是 AssetManager.addAssetPath 来获取 cookie
-                // 具体可以参考 PackageParser.parseBaseApk 方法源码的实现
-                Method findCookieForPathMethod = (Method) metaGetDeclaredMethod.invoke(AssetManager.class,
-                    "findCookieForPath", new Class[]{String.class});
-                if (findCookieForPathMethod != null) {
-                    findCookieForPathMethod.setAccessible(true);
-                    cookie = (Integer) findCookieForPathMethod.invoke(context.getAssets(), apkPath);
-                    if (cookie != null) {
-                        return cookie;
-                    }
-                }
-            }
-
-            Method addAssetPathMethod = assets.getClass().getDeclaredMethod("addAssetPath", String.class);
-            cookie = (Integer) addAssetPathMethod.invoke(assets, apkPath);
-            if (cookie != null) {
-                return cookie;
-            }
-
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-
-        // 获取失败直接返回 0
-        // 为什么不直接返回 Integer，而是返回 int 类型？
-        // 去看看 AssetManager.findCookieForPath 获取失败会返回什么就知道了
-        return 0;
     }
 
     /**
