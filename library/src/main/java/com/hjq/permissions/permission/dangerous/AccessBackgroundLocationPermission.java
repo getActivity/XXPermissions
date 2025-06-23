@@ -68,9 +68,9 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
     @NonNull
     @Override
     public List<IPermission> getForegroundPermissions(@NonNull Context context) {
-        // 判断当前应用适配且运行在 Android 12 及以上
-        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_12)) {
-            // 如果是的话，那么这个前台定位权限可以是精确定位权限，也可以是模糊定位权限
+        // 判断当前是否运行在 Android 12 及以上
+        if (AndroidVersionTools.isAndroid12()) {
+            // 如果是的话，那么这个前台定位权限既可以是精确定位权限也可以是模糊定位权限
             return PermissionUtils.asArrayList(PermissionLists.getAccessFineLocationPermission(), PermissionLists.getAccessCoarseLocationPermission());
         } else {
             // 如果不是的话，那么这个前台定位权限只能是精确定位权限
@@ -80,15 +80,14 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
 
     @Override
     protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
-        // 判断后台定位权限授予之前，需要先判断前台定位权限是否授予，如果前台定位权限没有授予，那么后台定位权限就算授予了也没用
-        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_12)) {
-            // 在 Android 12 及之后的版本，申请后台定位权限既可以用精确定位权限也可以用模糊定位权限
+        if (AndroidVersionTools.isAndroid12()) {
+            // 在 Android 12 及之后的版本，前台定位权限既可以用精确定位权限也可以用模糊定位权限
             if (!PermissionLists.getAccessFineLocationPermission().isGrantedPermission(context, skipRequest) &&
                 !PermissionLists.getAccessCoarseLocationPermission().isGrantedPermission(context, skipRequest)) {
                 return false;
             }
         } else {
-            // 在 Android 11 及之前的版本，申请后台定位权限需要精确定位权限
+            // 在 Android 11 及之前的版本，前台定位权限需要精确定位权限
             if (!PermissionLists.getAccessFineLocationPermission().isGrantedPermission(context, skipRequest)) {
                 return false;
             }
@@ -103,17 +102,18 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
 
     @Override
     protected boolean isDoNotAskAgainPermissionByStandardVersion(@NonNull Activity activity) {
-        // 如果前台定位权限被用户勾选了不再询问选项，那么后台定位权限也要跟着同步
-        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_12)) {
-            // 在 Android 12 及之后的版本，申请后台定位权限既可以用精确定位权限也可以用模糊定位权限
-            if (PermissionLists.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity) &&
-                PermissionLists.getAccessCoarseLocationPermission().isDoNotAskAgainPermission(activity)) {
-                return true;
+        // 如果前台定位权限没有授予，那么后台定位权限不再询问的状态要跟随前台定位权限
+        if (AndroidVersionTools.isAndroid12()) {
+            // 在 Android 12 及之后的版本，前台定位权限既可以用精确定位权限也可以用模糊定位权限
+            if (!PermissionLists.getAccessFineLocationPermission().isGrantedPermission(activity) &&
+                !PermissionLists.getAccessCoarseLocationPermission().isGrantedPermission(activity)) {
+                return PermissionLists.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity) &&
+                        PermissionLists.getAccessCoarseLocationPermission().isDoNotAskAgainPermission(activity);
             }
         } else {
-            // 在 Android 11 及之前的版本，申请后台定位权限需要精确定位权限
-            if (PermissionLists.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity)) {
-                return true;
+            // 在 Android 11 及之前的版本，前台定位权限需要精确定位权限
+            if (!PermissionLists.getAccessFineLocationPermission().isGrantedPermission(activity)) {
+                return PermissionLists.getAccessFineLocationPermission().isDoNotAskAgainPermission(activity);
             }
         }
         return super.isDoNotAskAgainPermissionByStandardVersion(activity);
@@ -138,8 +138,7 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
-            currentPermissionManifestInfo);
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
         // 如果您的应用以 Android 12 为目标平台并且您请求 ACCESS_FINE_LOCATION 权限
         // 则还必须请求 ACCESS_COARSE_LOCATION 权限。您必须在单个运行时请求中包含这两项权限
         // 如果您尝试仅请求 ACCESS_FINE_LOCATION，则系统会忽略该请求并在 Logcat 中记录以下错误消息：

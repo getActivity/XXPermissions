@@ -87,9 +87,9 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
 
     @Override
     protected boolean isDoNotAskAgainPermissionByStandardVersion(@NonNull Activity activity) {
-        // 如果前台传感器权限被用户勾选了不再询问选项，那么后台传感器权限也要跟着同步
-        if (PermissionLists.getBodySensorsPermission().isDoNotAskAgainPermission(activity)) {
-            return true;
+        // 如果前台传感器权限没有授予，那么后台传感器权限不再询问的状态要跟随前台传感器权限
+        if (!PermissionLists.getBodySensorsPermission().isGrantedPermission(activity)) {
+            return PermissionLists.getBodySensorsPermission().isDoNotAskAgainPermission(activity);
         }
         return super.isDoNotAskAgainPermissionByStandardVersion(activity);
     }
