@@ -13,7 +13,7 @@ import com.hjq.permissions.manifest.node.BroadcastReceiverManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.manifest.node.ServiceManifestInfo;
 import com.hjq.permissions.manifest.node.UsesSdkManifestInfo;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -95,9 +95,9 @@ public final class AndroidManifestParser {
         Integer cookie;
 
         try {
-            if (AndroidVersionTools.getTargetVersion(context) >= AndroidVersionTools.ANDROID_9 &&
-                AndroidVersionTools.getCurrentVersion() >= AndroidVersionTools.ANDROID_9 &&
-                AndroidVersionTools.getCurrentVersion() < AndroidVersionTools.ANDROID_11) {
+            if (AndroidVersion.getTargetVersion(context) >= AndroidVersion.ANDROID_9 &&
+                AndroidVersion.getCurrentVersion() >= AndroidVersion.ANDROID_9 &&
+                AndroidVersion.getCurrentVersion() < AndroidVersion.ANDROID_11) {
 
                 // 反射套娃操作：实测这种方式只在 Android 9.0 和 Android 10.0 有效果，在 Android 11 上面就失效了
                 Method metaGetDeclaredMethod = Class.class.getDeclaredMethod(

@@ -6,7 +6,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
@@ -51,12 +51,12 @@ public final class RequestInstallPackagesPermission extends SpecialPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersionTools.ANDROID_8;
+        return AndroidVersion.ANDROID_8;
     }
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (!AndroidVersionTools.isAndroid8()) {
+        if (!AndroidVersion.isAndroid8()) {
             return true;
         }
         return context.getPackageManager().canRequestPackageInstalls();
@@ -65,7 +65,7 @@ public final class RequestInstallPackagesPermission extends SpecialPermission {
     @NonNull
     @Override
     public Intent getPermissionSettingIntent(@NonNull Context context) {
-        if (!AndroidVersionTools.isAndroid8()) {
+        if (!AndroidVersion.isAndroid8()) {
             return getApplicationDetailsIntent(context);
         }
 

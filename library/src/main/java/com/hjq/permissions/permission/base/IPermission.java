@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.permission.PermissionType;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import java.util.List;
 
 /**
@@ -87,7 +87,7 @@ public interface IPermission extends Parcelable {
     default boolean isSupportRequestPermission(@NonNull Context context) {
         // 如果当前权限是否在低版本（不受支持的版本）上面运行，则证明不支持请求该权限
         // 例如 MANAGE_EXTERNAL_STORAGE 权限是 Android 11 才出现的权限，在 Android 10 上面肯定是不支持申请
-        return getFromAndroidVersion() <= AndroidVersionTools.getCurrentVersion();
+        return getFromAndroidVersion() <= AndroidVersion.getCurrentVersion();
     }
 
     /**

@@ -15,7 +15,7 @@ import android.support.annotation.Nullable;
 import com.hjq.permissions.tools.PermissionSettingPage;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionSettingPageHandler;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import com.hjq.permissions.permission.PermissionNames;
@@ -66,7 +66,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersionTools.ANDROID_4_2;
+        return AndroidVersion.ANDROID_4_2;
     }
 
     @Override
@@ -152,12 +152,12 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
             currentPermissionManifestInfo);
         // 当前 targetSdk 必须大于 Android 11，否则停止检查
-        if (AndroidVersionTools.getTargetVersion(activity) < AndroidVersionTools.ANDROID_11) {
+        if (AndroidVersion.getTargetVersion(activity) < AndroidVersion.ANDROID_11) {
             return;
         }
 
         String queryAllPackagesPermissionName;
-        if (AndroidVersionTools.isAndroid11()) {
+        if (AndroidVersion.isAndroid11()) {
             queryAllPackagesPermissionName = permission.QUERY_ALL_PACKAGES;
         } else {
             queryAllPackagesPermissionName = "android.permission.QUERY_ALL_PACKAGES";
@@ -184,14 +184,14 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
      */
     @SuppressWarnings("deprecation")
     private boolean isSupportRequestPermissionBySystem(Context context) {
-        if (!AndroidVersionTools.isAndroid6()) {
+        if (!AndroidVersion.isAndroid6()) {
             // 如果是 Android 6.0 以下，判定它是不支持的
             return false;
         }
         try {
             PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(getPermissionName(), 0);
             if (permissionInfo != null) {
-                if (AndroidVersionTools.isAndroid9()) {
+                if (AndroidVersion.isAndroid9()) {
                     return permissionInfo.getProtection() == PermissionInfo.PROTECTION_DANGEROUS;
                 } else {
                     return (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_MASK_BASE) == PermissionInfo.PROTECTION_DANGEROUS;
@@ -219,7 +219,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
      * 判断当前 miui 版本是否支持申请读取应用列表权限
      */
     private static boolean isSupportRequestPermissionByMiui() {
-        if (!AndroidVersionTools.isAndroid4_4()) {
+        if (!AndroidVersion.isAndroid4_4()) {
             return true;
         }
         try {

@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,7 +90,7 @@ public final class ActivityOrientationManager {
     @SuppressWarnings("deprecation")
     private static boolean isActivityReverse(@NonNull Activity activity) {
         Display display = null;
-        if (AndroidVersionTools.isAndroid11()) {
+        if (AndroidVersion.isAndroid11()) {
             display = activity.getDisplay();
         } else {
             WindowManager windowManager = activity.getWindowManager();

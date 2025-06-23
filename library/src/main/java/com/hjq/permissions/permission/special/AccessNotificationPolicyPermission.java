@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import com.hjq.permissions.permission.PermissionNames;
@@ -52,12 +52,12 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersionTools.ANDROID_6;
+        return AndroidVersion.ANDROID_6;
     }
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (!AndroidVersionTools.isAndroid6()) {
+        if (!AndroidVersion.isAndroid6()) {
             return true;
         }
         NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
@@ -71,7 +71,7 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
     @NonNull
     @Override
     public Intent getPermissionSettingIntent(@NonNull Context context) {
-        if (!AndroidVersionTools.isAndroid6()) {
+        if (!AndroidVersion.isAndroid6()) {
             return getApplicationDetailsIntent(context);
         }
 
@@ -90,7 +90,7 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
         // 荣耀 80 Pro Android 12  MagicOs 7.0
         // 荣耀 X20 SE Android 11  MagicOs 4.1
         // 荣耀 Play5 Android 10  MagicOs 4.0
-        if (AndroidVersionTools.isAndroid10() && !PhoneRomUtils.isHarmonyOs() && !PhoneRomUtils.isMagicOs()) {
+        if (AndroidVersion.isAndroid10() && !PhoneRomUtils.isHarmonyOs() && !PhoneRomUtils.isMagicOs()) {
             // android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS
             intent = new Intent("android.settings.NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS");
             intent.setData(PermissionUtils.getPackageNameUri(context));

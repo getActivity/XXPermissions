@@ -13,7 +13,7 @@ import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.List;
 
@@ -62,14 +62,14 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersionTools.ANDROID_10;
+        return AndroidVersion.ANDROID_10;
     }
 
     @NonNull
     @Override
     public List<IPermission> getForegroundPermissions(@NonNull Context context) {
         // 判断当前是否运行在 Android 12 及以上
-        if (AndroidVersionTools.isAndroid12()) {
+        if (AndroidVersion.isAndroid12()) {
             // 如果是的话，那么这个前台定位权限既可以是精确定位权限也可以是模糊定位权限
             return PermissionUtils.asArrayList(PermissionLists.getAccessFineLocationPermission(), PermissionLists.getAccessCoarseLocationPermission());
         } else {
@@ -80,7 +80,7 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
 
     @Override
     protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
-        if (AndroidVersionTools.isAndroid12()) {
+        if (AndroidVersion.isAndroid12()) {
             // 在 Android 12 及之后的版本，前台定位权限既可以用精确定位权限也可以用模糊定位权限
             if (!PermissionLists.getAccessFineLocationPermission().isGrantedPermission(context, skipRequest) &&
                 !PermissionLists.getAccessCoarseLocationPermission().isGrantedPermission(context, skipRequest)) {
@@ -103,7 +103,7 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
     @Override
     protected boolean isDoNotAskAgainPermissionByStandardVersion(@NonNull Activity activity) {
         // 如果前台定位权限没有授予，那么后台定位权限不再询问的状态要跟随前台定位权限
-        if (AndroidVersionTools.isAndroid12()) {
+        if (AndroidVersion.isAndroid12()) {
             // 在 Android 12 及之后的版本，前台定位权限既可以用精确定位权限也可以用模糊定位权限
             if (!PermissionLists.getAccessFineLocationPermission().isGrantedPermission(activity) &&
                 !PermissionLists.getAccessCoarseLocationPermission().isGrantedPermission(activity)) {
@@ -144,7 +144,7 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
         // 如果您尝试仅请求 ACCESS_FINE_LOCATION，则系统会忽略该请求并在 Logcat 中记录以下错误消息：
         // ACCESS_FINE_LOCATION must be requested with ACCESS_COARSE_LOCATION
         // 官方适配文档：https://developer.android.google.cn/develop/sensors-and-location/location/permissions/runtime?hl=zh-cn#approximate-request
-        if (AndroidVersionTools.getTargetVersion(activity) >= AndroidVersionTools.ANDROID_12) {
+        if (AndroidVersion.getTargetVersion(activity) >= AndroidVersion.ANDROID_12) {
             checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.ACCESS_COARSE_LOCATION);
             checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.ACCESS_FINE_LOCATION);
         } else {
@@ -160,7 +160,7 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
         // 如果您尝试仅请求 ACCESS_FINE_LOCATION，则系统会忽略该请求并在 Logcat 中记录以下错误消息：
         // ACCESS_FINE_LOCATION must be requested with ACCESS_COARSE_LOCATION
         // 官方适配文档：https://developer.android.google.cn/develop/sensors-and-location/location/permissions/runtime?hl=zh-cn#approximate-request
-        if (AndroidVersionTools.getTargetVersion(activity) >= AndroidVersionTools.ANDROID_12 &&
+        if (AndroidVersion.getTargetVersion(activity) >= AndroidVersion.ANDROID_12 &&
             PermissionUtils.containsPermission(requestPermissions, PermissionNames.ACCESS_COARSE_LOCATION) &&
             !PermissionUtils.containsPermission(requestPermissions, PermissionNames.ACCESS_FINE_LOCATION)) {
             // 申请后台定位权限可以不包含模糊定位权限，但是一定要包含精确定位权限，否则后台定位权限会无法申请

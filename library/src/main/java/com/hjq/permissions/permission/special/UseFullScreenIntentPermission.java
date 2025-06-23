@@ -8,7 +8,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import com.hjq.permissions.permission.PermissionNames;
@@ -56,12 +56,12 @@ public final class UseFullScreenIntentPermission extends SpecialPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersionTools.ANDROID_14;
+        return AndroidVersion.ANDROID_14;
     }
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (!AndroidVersionTools.isAndroid14()) {
+        if (!AndroidVersion.isAndroid14()) {
             return true;
         }
         NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
@@ -75,7 +75,7 @@ public final class UseFullScreenIntentPermission extends SpecialPermission {
     @NonNull
     @Override
     public Intent getPermissionSettingIntent(@NonNull Context context) {
-        if (!AndroidVersionTools.isAndroid14()) {
+        if (!AndroidVersion.isAndroid14()) {
             return getApplicationDetailsIntent(context);
         }
 

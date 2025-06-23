@@ -12,7 +12,7 @@ import android.os.Build;
  */
 @SuppressLint("AnnotateVersionCheck")
 @SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
-public final class AndroidVersionTools {
+public final class AndroidVersion {
 
     public static final int ANDROID_15 = Build.VERSION_CODES.VANILLA_ICE_CREAM;
     public static final int ANDROID_14 = Build.VERSION_CODES.UPSIDE_DOWN_CAKE;

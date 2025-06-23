@@ -6,7 +6,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
@@ -51,12 +51,12 @@ public final class WriteSettingsPermission extends SpecialPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersionTools.ANDROID_6;
+        return AndroidVersion.ANDROID_6;
     }
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (!AndroidVersionTools.isAndroid6()) {
+        if (!AndroidVersion.isAndroid6()) {
             return true;
         }
         return Settings.System.canWrite(context);
@@ -65,7 +65,7 @@ public final class WriteSettingsPermission extends SpecialPermission {
     @NonNull
     @Override
     public Intent getPermissionSettingIntent(@NonNull Context context) {
-        if (!AndroidVersionTools.isAndroid6()) {
+        if (!AndroidVersion.isAndroid6()) {
             return getApplicationDetailsIntent(context);
         }
 

@@ -12,7 +12,7 @@ import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.ApplicationManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.PermissionNames;
@@ -60,7 +60,7 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersionTools.ANDROID_11;
+        return AndroidVersion.ANDROID_11;
     }
 
     @NonNull
@@ -73,11 +73,11 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (!AndroidVersionTools.isAndroid11()) {
+        if (!AndroidVersion.isAndroid11()) {
             // 这个是 Android 10 上面的历史遗留问题，假设申请的是 MANAGE_EXTERNAL_STORAGE 权限
             // 必须要在 AndroidManifest.xml 中注册 android:requestLegacyExternalStorage="true"
             // Environment.isExternalStorageLegacy API 解释：是否采用的是非分区存储的模式
-            if (AndroidVersionTools.isAndroid10() && !Environment.isExternalStorageLegacy()) {
+            if (AndroidVersion.isAndroid10() && !Environment.isExternalStorageLegacy()) {
                 return false;
             }
             return PermissionLists.getReadExternalStoragePermission().isGrantedPermission(context, skipRequest) &&
@@ -90,7 +90,7 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
     @NonNull
     @Override
     public Intent getPermissionSettingIntent(@NonNull Context context) {
-        if (!AndroidVersionTools.isAndroid11()) {
+        if (!AndroidVersion.isAndroid11()) {
             return getApplicationDetailsIntent(context);
         }
 
@@ -124,8 +124,8 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
             currentPermissionManifestInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
         if (getFromAndroidVersion() > getMinSdkVersion(activity, androidManifestInfo)) {
-            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.READ_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_10);
-            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.WRITE_EXTERNAL_STORAGE, AndroidVersionTools.ANDROID_10);
+            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.READ_EXTERNAL_STORAGE, AndroidVersion.ANDROID_10);
+            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.WRITE_EXTERNAL_STORAGE, AndroidVersion.ANDROID_10);
         }
 
         // 如果申请的是 Android 10 获取媒体位置权限，则绕过本次检查
@@ -139,7 +139,7 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
         }
 
         // 如果在已经适配 Android 10 的情况下，但是 android:requestLegacyExternalStorage 的属性为 false（假设没有注册该属性的情况下则获取到的值为 false）
-        if (AndroidVersionTools.getTargetVersion(activity) >= AndroidVersionTools.ANDROID_10 && !applicationManifestInfo.requestLegacyExternalStorage) {
+        if (AndroidVersion.getTargetVersion(activity) >= AndroidVersion.ANDROID_10 && !applicationManifestInfo.requestLegacyExternalStorage) {
             // 请在清单文件 Application 节点中注册 android:requestLegacyExternalStorage="true" 属性
             // 否则就算申请了权限，也无法在 Android 10 的设备上正常读写外部存储上的文件
             // 如果你的项目已经全面适配了分区存储，请在清单文件中注册一个 meta-data 属性

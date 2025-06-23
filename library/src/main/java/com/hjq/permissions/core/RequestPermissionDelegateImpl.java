@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.manager.ActivityOrientationManager;
 import com.hjq.permissions.manager.PermissionRequestCodeManager;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.fragment.IFragmentCallback;
 import com.hjq.permissions.fragment.IFragmentMethod;
 import com.hjq.permissions.delegate.IStartActivityDelegate;
@@ -97,7 +97,7 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
         if (arguments == null) {
             return null;
         }
-        if (AndroidVersionTools.isAndroid13()) {
+        if (AndroidVersion.isAndroid13()) {
             return arguments.getParcelableArrayList(REQUEST_PERMISSIONS, IPermission.class);
         } else {
             return arguments.getParcelableArrayList(REQUEST_PERMISSIONS);

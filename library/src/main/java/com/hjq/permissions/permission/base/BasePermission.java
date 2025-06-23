@@ -10,7 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionSettingPage;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.lang.reflect.Field;
@@ -101,7 +101,7 @@ public abstract class BasePermission implements IPermission {
     protected void checkSelfByTargetSdkVersion(@NonNull Context context) {
         int minTargetSdkVersion = getMinTargetSdkVersion();
         // 必须设置正确的 targetSdkVersion 才能正常检测权限
-        if (AndroidVersionTools.getTargetVersion(context) >= minTargetSdkVersion) {
+        if (AndroidVersion.getTargetVersion(context) >= minTargetSdkVersion) {
             return;
         }
 
@@ -191,12 +191,12 @@ public abstract class BasePermission implements IPermission {
      * 获得当前项目的 minSdkVersion
      */
     protected static int getMinSdkVersion(@NonNull Context context, @Nullable AndroidManifestInfo androidManifestInfo) {
-        if (AndroidVersionTools.isAndroid7()) {
+        if (AndroidVersion.isAndroid7()) {
             return context.getApplicationInfo().minSdkVersion;
         }
 
         if (androidManifestInfo == null || androidManifestInfo.usesSdkManifestInfo == null) {
-            return AndroidVersionTools.ANDROID_4_2;
+            return AndroidVersion.ANDROID_4_2;
         }
         return androidManifestInfo.usesSdkManifestInfo.minSdkVersion;
     }
@@ -223,11 +223,11 @@ public abstract class BasePermission implements IPermission {
      */
     @SuppressWarnings("deprecation")
     public static boolean checkOpNoThrow(Context context, String opName) {
-        if (!AndroidVersionTools.isAndroid4_4()) {
+        if (!AndroidVersion.isAndroid4_4()) {
             return true;
         }
         AppOpsManager appOpsManager;
-        if (AndroidVersionTools.isAndroid6()) {
+        if (AndroidVersion.isAndroid6()) {
             appOpsManager = context.getSystemService(AppOpsManager.class);
         } else {
             appOpsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
@@ -237,7 +237,7 @@ public abstract class BasePermission implements IPermission {
             return false;
         }
         int mode;
-        if (AndroidVersionTools.isAndroid10()) {
+        if (AndroidVersion.isAndroid10()) {
             mode = appOpsManager.unsafeCheckOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
         } else {
             mode = appOpsManager.checkOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
@@ -253,11 +253,11 @@ public abstract class BasePermission implements IPermission {
      */
     @SuppressWarnings("ConstantConditions")
     public static boolean checkOpNoThrow(Context context, String opFieldName, int opDefaultValue) {
-        if (!AndroidVersionTools.isAndroid4_4()) {
+        if (!AndroidVersion.isAndroid4_4()) {
             return true;
         }
         AppOpsManager appOpsManager;
-        if (AndroidVersionTools.isAndroid6()) {
+        if (AndroidVersion.isAndroid6()) {
             appOpsManager = context.getSystemService(AppOpsManager.class);
         } else {
             appOpsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);

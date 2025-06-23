@@ -12,7 +12,7 @@ import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.BroadcastReceiverManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
@@ -76,13 +76,13 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersionTools.ANDROID_2_2;
+        return AndroidVersion.ANDROID_2_2;
     }
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         DevicePolicyManager devicePolicyManager;
-        if (AndroidVersionTools.isAndroid6()) {
+        if (AndroidVersion.isAndroid6()) {
             devicePolicyManager = context.getSystemService(DevicePolicyManager.class);
         } else {
             devicePolicyManager = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);

@@ -1,7 +1,7 @@
 package com.hjq.permissions.manifest.node;
 
 import android.content.pm.PackageInfo;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 
 /**
  *    author : Android 轮子哥
@@ -17,7 +17,7 @@ public final class PermissionManifestInfo {
     private static final int REQUESTED_PERMISSION_NEVER_FOR_LOCATION;
 
     static {
-        if (AndroidVersionTools.isAndroid12()) {
+        if (AndroidVersion.isAndroid12()) {
             REQUESTED_PERMISSION_NEVER_FOR_LOCATION = PackageInfo.REQUESTED_PERMISSION_NEVER_FOR_LOCATION;
         } else {
             REQUESTED_PERMISSION_NEVER_FOR_LOCATION = 0x00010000;

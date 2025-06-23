@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.BasePermission;
 import java.lang.reflect.InvocationTargetException;
@@ -37,7 +37,7 @@ public abstract class DangerousPermission extends BasePermission {
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         // 判断权限是不是在旧系统上面运行（权限出现的版本 > 当前系统的版本）
-        if (getFromAndroidVersion() > AndroidVersionTools.getCurrentVersion()) {
+        if (getFromAndroidVersion() > AndroidVersion.getCurrentVersion()) {
             return isGrantedPermissionByLowVersion(context, skipRequest);
         }
         return isGrantedPermissionByStandardVersion(context, skipRequest);
@@ -60,7 +60,7 @@ public abstract class DangerousPermission extends BasePermission {
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
         // 判断权限是不是在旧系统上面运行（权限出现的版本 > 当前系统的版本）
-        if (getFromAndroidVersion() > AndroidVersionTools.getCurrentVersion()) {
+        if (getFromAndroidVersion() > AndroidVersion.getCurrentVersion()) {
             return isDoNotAskAgainPermissionByLowVersion(activity);
         }
         return isDoNotAskAgainPermissionByStandardVersion(activity);
@@ -96,7 +96,7 @@ public abstract class DangerousPermission extends BasePermission {
      * 判断某个危险权限是否授予了
      */
     public static boolean checkSelfPermission(@NonNull Context context, @NonNull String permission) {
-        if (!AndroidVersionTools.isAndroid6()) {
+        if (!AndroidVersion.isAndroid6()) {
             return true;
         }
         return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
@@ -107,14 +107,14 @@ public abstract class DangerousPermission extends BasePermission {
      */
     @SuppressWarnings({"JavaReflectionMemberAccess", "ConstantConditions", "BooleanMethodIsAlwaysInverted"})
     public static boolean shouldShowRequestPermissionRationale(@NonNull Activity activity, @NonNull String permission) {
-        if (!AndroidVersionTools.isAndroid6()) {
+        if (!AndroidVersion.isAndroid6()) {
             return false;
         }
         // 解决 Android 12 调用 shouldShowRequestPermissionRationale 出现内存泄漏的问题
         // Android 12L 和 Android 13 版本经过测试不会出现这个问题，证明 Google 在新版本上已经修复了这个问题
         // 但是对于 Android 12 仍是一个历史遗留问题，这是我们所有 Android App 开发者不得不面对的一个事情
         // issue 地址：https://github.com/getActivity/XXPermissions/issues/133
-        if (AndroidVersionTools.getCurrentVersion() == AndroidVersionTools.ANDROID_12) {
+        if (AndroidVersion.getCurrentVersion() == AndroidVersion.ANDROID_12) {
             try {
                 // 另外针对这个问题，我还给谷歌的 AndroidX 项目无偿提供了解决方案，目前 Merge Request 已被合入主分支
                 // 我相信通过这一举措，将解决全球近 10 亿台 Android 12 设备出现的内存泄露问题
@@ -133,7 +133,7 @@ public abstract class DangerousPermission extends BasePermission {
      * 判断某个危险权限是否勾选了不再询问的选项
      */
     public static boolean checkDoNotAskAgainPermission(@NonNull Activity activity, @NonNull String permission) {
-        if (!AndroidVersionTools.isAndroid6()) {
+        if (!AndroidVersion.isAndroid6()) {
             return false;
         }
         return !checkSelfPermission(activity, permission) &&

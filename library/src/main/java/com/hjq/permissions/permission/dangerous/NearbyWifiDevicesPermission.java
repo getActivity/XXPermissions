@@ -13,7 +13,7 @@ import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.List;
 
@@ -58,12 +58,12 @@ public final class NearbyWifiDevicesPermission extends DangerousPermission {
     @Override
     public String getPermissionGroup() {
         // 注意：在 Android 13 的时候，WIFI 相关的权限已经归到附近设备的权限组了，但是在 Android 13 之前，WIFI 相关的权限归属定位权限组
-        return AndroidVersionTools.isAndroid13() ? PermissionGroups.NEARBY_DEVICES : PermissionGroups.LOCATION;
+        return AndroidVersion.isAndroid13() ? PermissionGroups.NEARBY_DEVICES : PermissionGroups.LOCATION;
     }
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersionTools.ANDROID_13;
+        return AndroidVersion.ANDROID_13;
     }
 
     @NonNull
@@ -93,7 +93,7 @@ public final class NearbyWifiDevicesPermission extends DangerousPermission {
             currentPermissionManifestInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
         if (getFromAndroidVersion() > getMinSdkVersion(activity, androidManifestInfo)) {
-            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.ACCESS_FINE_LOCATION, AndroidVersionTools.ANDROID_12_L);
+            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.ACCESS_FINE_LOCATION, AndroidVersion.ANDROID_12_L);
         }
 
         // 如果请求的权限已经包含了精确定位权限，就跳过检查

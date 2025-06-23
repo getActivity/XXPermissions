@@ -14,7 +14,7 @@ import com.hjq.permissions.fragment.factory.PermissionFragmentFactoryBySupport;
 import com.hjq.permissions.manifest.AndroidManifestParser;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.IPermission;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionApi;
 import com.hjq.permissions.tools.PermissionChecker;
 import com.hjq.permissions.tools.PermissionSettingPage;
@@ -304,7 +304,7 @@ public final class XXPermissions {
             return false;
         }
 
-        if (!AndroidVersionTools.isAndroid13()) {
+        if (!AndroidVersion.isAndroid13()) {
             return false;
         }
 

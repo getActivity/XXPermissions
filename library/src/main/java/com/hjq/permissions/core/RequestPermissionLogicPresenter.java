@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.hjq.permissions.manager.ActivityOrientationManager;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.OnPermissionDescription;
 import com.hjq.permissions.OnPermissionInterceptor;
@@ -311,7 +311,7 @@ public final class RequestPermissionLogicPresenter {
 
         PermissionType permissionType = PermissionApi.areAllDangerousPermission(permissions) ?
                                         PermissionType.DANGEROUS : PermissionType.SPECIAL;
-        if (permissionType == PermissionType.DANGEROUS && !AndroidVersionTools.isAndroid6()) {
+        if (permissionType == PermissionType.DANGEROUS && !AndroidVersion.isAndroid6()) {
             // 如果是 Android 6.0 以下，没有危险权限的概念
             finishRunnable.run();
             return;

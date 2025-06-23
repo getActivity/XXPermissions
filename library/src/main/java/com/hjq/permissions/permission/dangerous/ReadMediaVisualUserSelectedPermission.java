@@ -8,7 +8,7 @@ import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.List;
 
@@ -57,7 +57,7 @@ public final class ReadMediaVisualUserSelectedPermission extends DangerousPermis
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersionTools.ANDROID_14;
+        return AndroidVersion.ANDROID_14;
     }
 
     @Override
@@ -65,7 +65,7 @@ public final class ReadMediaVisualUserSelectedPermission extends DangerousPermis
         // 授予对照片和视频的部分访问权限：https://developer.android.google.cn/about/versions/14/changes/partial-photo-video-access?hl=zh-cn
         // READ_MEDIA_VISUAL_USER_SELECTED 这个权限比较特殊，不需要调高 targetSdk 的版本才能申请，但是需要和 READ_MEDIA_IMAGES 和 READ_MEDIA_VIDEO 组合使用
         // 这个权限不能单独申请，只能和 READ_MEDIA_IMAGES、READ_MEDIA_VIDEO 一起申请，否则会有问题，所以这个权限的 targetSdk 最低要求为 33 及以上
-        return AndroidVersionTools.ANDROID_13;
+        return AndroidVersion.ANDROID_13;
     }
 
     @Override

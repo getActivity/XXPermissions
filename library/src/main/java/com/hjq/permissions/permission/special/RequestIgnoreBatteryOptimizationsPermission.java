@@ -8,7 +8,7 @@ import android.os.Parcelable;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import com.hjq.permissions.tools.AndroidVersionTools;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import com.hjq.permissions.permission.PermissionNames;
@@ -54,12 +54,12 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersionTools.ANDROID_6;
+        return AndroidVersion.ANDROID_6;
     }
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (!AndroidVersionTools.isAndroid6()) {
+        if (!AndroidVersion.isAndroid6()) {
             return true;
         }
         PowerManager powerManager = context.getSystemService(PowerManager.class);
@@ -74,7 +74,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
     @NonNull
     @Override
     public Intent getPermissionSettingIntent(@NonNull Context context) {
-        if (!AndroidVersionTools.isAndroid6()) {
+        if (!AndroidVersion.isAndroid6()) {
             return getApplicationDetailsIntent(context);
         }
         Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
@@ -118,11 +118,11 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
             //         所以这个问题应该是在澎湃 2.0 上面修复了，大概率澎湃 2.0  UI 大改版改动到了（看到 UI 有明显变化）
             //         结果测试人员发现了，开发人员不得不修，否则会影响自己的绩效，至此这个历史遗留 Bug 终于被发现并修复
             //         Android 15 的澎湃 2.0 版本 200 毫秒没有问题，但是 Android 14 的版本澎湃 1.0 还有有问题
-            if (AndroidVersionTools.isAndroid15()) {
+            if (AndroidVersion.isAndroid15()) {
                 return super.getResultWaitTime(context);
             }
 
-            if (AndroidVersionTools.isAndroid14()) {
+            if (AndroidVersion.isAndroid14()) {
                 int romBigVersionCode = PhoneRomUtils.getRomBigVersionCode();
                 // 如果获取不到的大版本号又或者获取到的大版本号小于 2，就返回小米机型默认的等待时间
                 if (romBigVersionCode < 2) {
@@ -134,8 +134,8 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
             return xiaomiPhoneDefaultWaitTime;
         }
 
-        if (PhoneRomUtils.isMiui() && AndroidVersionTools.isAndroid11() &&
-            AndroidVersionTools.getCurrentVersion() >= getFromAndroidVersion()) {
+        if (PhoneRomUtils.isMiui() && AndroidVersion.isAndroid11() &&
+            AndroidVersion.getCurrentVersion() >= getFromAndroidVersion()) {
             // 经过测试，发现小米 Android 11 及以上的版本，申请这个权限需要 1000 毫秒才能判断到（测试了 800 毫秒还不行）
             // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
             // 然而在 Android 11 之后的，这个权限页面被小米改成了自己定制化的页面

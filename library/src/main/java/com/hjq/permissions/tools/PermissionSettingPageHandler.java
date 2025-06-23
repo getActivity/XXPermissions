@@ -32,7 +32,7 @@ public final class PermissionSettingPageHandler {
     @SuppressWarnings("deprecation")
     private static Intent findSubIntentBySuperIntent(@NonNull Intent superIntent) {
         Intent subIntent;
-        if (AndroidVersionTools.isAndroid13()) {
+        if (AndroidVersion.isAndroid13()) {
             subIntent = superIntent.getParcelableExtra(SUB_INTENT_KEY, Intent.class);
         } else {
             subIntent = superIntent.getParcelableExtra(SUB_INTENT_KEY);
