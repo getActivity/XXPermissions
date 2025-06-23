@@ -135,7 +135,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
         }
 
         if (PhoneRomUtils.isMiui() && AndroidVersionTools.isAndroid11() &&
-            AndroidVersionTools.getCurrentAndroidVersionCode() >= getFromAndroidVersion()) {
+            AndroidVersionTools.getCurrentVersion() >= getFromAndroidVersion()) {
             // 经过测试，发现小米 Android 11 及以上的版本，申请这个权限需要 1000 毫秒才能判断到（测试了 800 毫秒还不行）
             // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
             // 然而在 Android 11 之后的，这个权限页面被小米改成了自己定制化的页面

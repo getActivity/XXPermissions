@@ -152,7 +152,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
             currentPermissionManifestInfo);
         // 当前 targetSdk 必须大于 Android 11，否则停止检查
-        if (AndroidVersionTools.getTargetSdkVersionCode(activity) < AndroidVersionTools.ANDROID_11) {
+        if (AndroidVersionTools.getTargetVersion(activity) < AndroidVersionTools.ANDROID_11) {
             return;
         }
 

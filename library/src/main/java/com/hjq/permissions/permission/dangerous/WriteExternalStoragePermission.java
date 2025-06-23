@@ -1,6 +1,5 @@
 package com.hjq.permissions.permission.dangerous;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Environment;
@@ -67,10 +66,9 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
         return AndroidVersionTools.ANDROID_6;
     }
 
-    @SuppressLint("NewApi")
     @Override
     protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
-        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_11)) {
+        if (AndroidVersionTools.isAndroid11() && AndroidVersionTools.getTargetVersion(context) >= AndroidVersionTools.ANDROID_11) {
             // 这里补充一下这样写的具体原因：
             // 1. 当 targetSdk >= Android 11 并且在此版本及之上申请 WRITE_EXTERNAL_STORAGE，虽然可以弹出授权框，但是没有什么实际作用
             //    相关文档地址：https://developer.android.google.cn/reference/android/Manifest.permission#WRITE_EXTERNAL_STORAGE
@@ -82,21 +80,21 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
             // 判断 WRITE_EXTERNAL_STORAGE 权限，结果无论是否授予，最终都会直接返回 true 给外层
             return true;
         }
-        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(context, AndroidVersionTools.ANDROID_10)) {
+        if (AndroidVersionTools.isAndroid10() && AndroidVersionTools.getTargetVersion(context) >= AndroidVersionTools.ANDROID_10) {
             // Environment.isExternalStorageLegacy API 解释：是否采用的是非分区存储的模式
             return Environment.isExternalStorageLegacy();
         }
         return super.isGrantedPermissionByStandardVersion(context, skipRequest);
     }
 
-    @SuppressLint("NewApi")
     @Override
     protected boolean isDoNotAskAgainPermissionByStandardVersion(@NonNull Activity activity) {
-        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_11)) {
+        if (AndroidVersionTools.isAndroid11() && AndroidVersionTools.getTargetVersion(activity) >= AndroidVersionTools.ANDROID_11) {
             return false;
         }
         // Environment.isExternalStorageLegacy API 解释：是否采用的是非分区存储的模式
-        if (AndroidVersionTools.isAdaptationAndroidVersionNewFeatures(activity, AndroidVersionTools.ANDROID_10) && Environment.isExternalStorageLegacy()) {
+        if (AndroidVersionTools.isAndroid10() && AndroidVersionTools.getTargetVersion(activity) >= AndroidVersionTools.ANDROID_10 &&
+                                                    Environment.isExternalStorageLegacy()) {
             return false;
         }
         return super.isDoNotAskAgainPermissionByStandardVersion(activity);
@@ -122,13 +120,13 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
         }
 
         // 如果当前 targetSdk 版本比较低，甚至还没有到分区存储的版本，就直接跳过后面的检查，只检查当前权限有没有在清单文件中静态注册
-        if (AndroidVersionTools.getTargetSdkVersionCode(activity) < AndroidVersionTools.ANDROID_10) {
+        if (AndroidVersionTools.getTargetVersion(activity) < AndroidVersionTools.ANDROID_10) {
             checkPermissionRegistrationStatus(permissionManifestInfoList, getPermissionName());
             return;
         }
 
         // 判断：当前项目是否适配了Android 11，并且还在清单文件中是否注册了 MANAGE_EXTERNAL_STORAGE 权限
-        if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_11 &&
+        if (AndroidVersionTools.getTargetVersion(activity) >= AndroidVersionTools.ANDROID_11 &&
             findPermissionInfoByList(permissionManifestInfoList, PermissionNames.MANAGE_EXTERNAL_STORAGE) != null) {
             // 如果有的话，那么 maxSdkVersion 就必须是 Android 10 及以上的版本
             checkPermissionRegistrationStatus(permissionManifestInfoList, getPermissionName(), AndroidVersionTools.ANDROID_10);
@@ -146,7 +144,7 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
             return;
         }
 
-        int targetSdkVersion = AndroidVersionTools.getTargetSdkVersionCode(activity);
+        int targetSdkVersion = AndroidVersionTools.getTargetVersion(activity);
         // 是否适配了分区存储
         boolean scopedStorage = PermissionUtils.getBooleanByMetaData(activity, ReadExternalStoragePermission.META_DATA_KEY_SCOPED_STORAGE, false);
         // 如果在已经适配 Android 10 的情况下

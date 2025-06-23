@@ -144,7 +144,7 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
         // 如果您尝试仅请求 ACCESS_FINE_LOCATION，则系统会忽略该请求并在 Logcat 中记录以下错误消息：
         // ACCESS_FINE_LOCATION must be requested with ACCESS_COARSE_LOCATION
         // 官方适配文档：https://developer.android.google.cn/develop/sensors-and-location/location/permissions/runtime?hl=zh-cn#approximate-request
-        if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_12) {
+        if (AndroidVersionTools.getTargetVersion(activity) >= AndroidVersionTools.ANDROID_12) {
             checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.ACCESS_COARSE_LOCATION);
             checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.ACCESS_FINE_LOCATION);
         } else {
@@ -160,7 +160,7 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
         // 如果您尝试仅请求 ACCESS_FINE_LOCATION，则系统会忽略该请求并在 Logcat 中记录以下错误消息：
         // ACCESS_FINE_LOCATION must be requested with ACCESS_COARSE_LOCATION
         // 官方适配文档：https://developer.android.google.cn/develop/sensors-and-location/location/permissions/runtime?hl=zh-cn#approximate-request
-        if (AndroidVersionTools.getTargetSdkVersionCode(activity) >= AndroidVersionTools.ANDROID_12 &&
+        if (AndroidVersionTools.getTargetVersion(activity) >= AndroidVersionTools.ANDROID_12 &&
             PermissionUtils.containsPermission(requestPermissions, PermissionNames.ACCESS_COARSE_LOCATION) &&
             !PermissionUtils.containsPermission(requestPermissions, PermissionNames.ACCESS_FINE_LOCATION)) {
             // 申请后台定位权限可以不包含模糊定位权限，但是一定要包含精确定位权限，否则后台定位权限会无法申请

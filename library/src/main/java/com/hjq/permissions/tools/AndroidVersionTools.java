@@ -45,26 +45,17 @@ public final class AndroidVersionTools {
     public static final int ANDROID_2_0 = Build.VERSION_CODES.ECLAIR;
 
     /**
-     * 获取当前 AndroidSdk 版本码
+     * 获取当前 Android 版本
      */
-    public static int getCurrentAndroidVersionCode() {
+    public static int getCurrentVersion() {
         return Build.VERSION.SDK_INT;
     }
 
     /**
-     * 获取 TargetSdk 版本码
+     * 获取 TargetSdk 版本
      */
-    public static int getTargetSdkVersionCode(Context context) {
+    public static int getTargetVersion(Context context) {
         return context.getApplicationInfo().targetSdkVersion;
-    }
-
-    /**
-     * 判断当前环境是否需要适配特定 Android 版本新特性
-     *
-     * @param androidSdkVersionCode                        需要判断的 android sdk 版本码
-     */
-    public static boolean isAdaptationAndroidVersionNewFeatures(Context context, int androidSdkVersionCode) {
-        return getCurrentAndroidVersionCode() >= androidSdkVersionCode && getTargetSdkVersionCode(context) >= androidSdkVersionCode;
     }
 
     /**

@@ -101,7 +101,7 @@ public abstract class BasePermission implements IPermission {
     protected void checkSelfByTargetSdkVersion(@NonNull Context context) {
         int minTargetSdkVersion = getMinTargetSdkVersion();
         // 必须设置正确的 targetSdkVersion 才能正常检测权限
-        if (AndroidVersionTools.getTargetSdkVersionCode(context) >= minTargetSdkVersion) {
+        if (AndroidVersionTools.getTargetVersion(context) >= minTargetSdkVersion) {
             return;
         }
 
