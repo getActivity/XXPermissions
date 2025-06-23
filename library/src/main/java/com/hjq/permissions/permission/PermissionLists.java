@@ -270,21 +270,6 @@ public final class PermissionLists {
     }
 
     /**
-     * 同上
-     *
-     * @deprecated           此方法不推荐使用，推荐使用 {@link #getBindNotificationListenerServicePermission(Class)}
-     */
-    @Deprecated
-    @NonNull
-    public static IPermission getBindNotificationListenerServicePermission() {
-        IPermission permission = getCachePermission(BindNotificationListenerServicePermission.PERMISSION_NAME);
-        if (permission != null) {
-            return permission;
-        }
-        return putCachePermission(new BindNotificationListenerServicePermission());
-    }
-
-    /**
      * VPN 权限（特殊权限，Android 4.0 新增的权限，注意此权限不需要在清单文件中注册也能申请）
      */
     @NonNull
@@ -327,20 +312,6 @@ public final class PermissionLists {
     @NonNull
     public static IPermission getBindAccessibilityServicePermission(@NonNull Class<? extends Service> serviceClass) {
         return new BindAccessibilityServicePermission(serviceClass);
-    }
-
-    /**
-     * 同上
-     *
-     * @deprecated           此方法不推荐使用，推荐使用 {@link #getBindAccessibilityServicePermission(Class)}
-     */
-    @NonNull
-    public static IPermission getBindAccessibilityServicePermission() {
-        IPermission permission = getCachePermission(BindAccessibilityServicePermission.PERMISSION_NAME);
-        if (permission != null) {
-            return permission;
-        }
-        return putCachePermission(new BindAccessibilityServicePermission());
     }
 
     /**

@@ -510,7 +510,6 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         } else if (viewId == R.id.btn_main_request_bind_notification_listener_permission) {
 
             XXPermissions.with(this)
-                    // 需要指定通知监听类（推荐，两种写法只能二选一，不可以两种都写）
                     .permission(PermissionLists.getBindNotificationListenerServicePermission(
                                                             ExampleNotificationListenerService.class))
                     .interceptor(new PermissionInterceptor())

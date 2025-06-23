@@ -13,11 +13,11 @@ import android.text.TextUtils;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.manifest.node.ServiceManifestInfo;
-import com.hjq.permissions.tools.AndroidVersion;
-import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
+import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionUtils;
 import java.util.List;
 
 /**
@@ -45,18 +45,14 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
     };
 
     /** 设备管理器的 Service 类名 */
-    @Nullable
+    @NonNull
     private final String mServiceClassName;
 
-    public BindAccessibilityServicePermission() {
-        this((String) null);
+    public BindAccessibilityServicePermission(@NonNull Class<? extends Service> serviceClazz) {
+        this(serviceClazz.getName());
     }
 
-    public BindAccessibilityServicePermission(@Nullable Class<? extends Service> serviceClazz) {
-        this(serviceClazz != null ? serviceClazz.getName() : null);
-    }
-
-    public BindAccessibilityServicePermission(@Nullable String serviceClassName) {
+    public BindAccessibilityServicePermission(@NonNull String serviceClassName) {
         mServiceClassName = serviceClassName;
     }
 
@@ -127,6 +123,14 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
     }
 
     @Override
+    public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions, @Nullable AndroidManifestInfo androidManifestInfo) {
+        super.checkCompliance(activity, requestPermissions, androidManifestInfo);
+        if (!PermissionUtils.isClassExist(mServiceClassName)) {
+            throw new IllegalArgumentException("The passed-in ServiceClass is an invalid class");
+        }
+    }
+
+    @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestPermissions,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
@@ -156,7 +160,7 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
             + "otherwise it will lead to can't apply for the permission");
     }
 
-    @Nullable
+    @NonNull
     public String getServiceClassName() {
         return mServiceClassName;
     }

@@ -12,11 +12,11 @@ import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.BroadcastReceiverManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
-import com.hjq.permissions.tools.AndroidVersion;
-import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
+import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionUtils;
 import java.util.List;
 
 /**
@@ -105,6 +105,14 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
             intent = getAndroidSettingAppIntent();
         }
         return intent;
+    }
+
+    @Override
+    public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions, @Nullable AndroidManifestInfo androidManifestInfo) {
+        super.checkCompliance(activity, requestPermissions, androidManifestInfo);
+        if (!PermissionUtils.isClassExist(mBroadcastReceiverClassName)) {
+            throw new IllegalArgumentException("The passed-in BroadcastReceiverClass is an invalid class");
+        }
     }
 
     @Override

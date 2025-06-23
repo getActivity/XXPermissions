@@ -15,11 +15,11 @@ import android.text.TextUtils;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.manifest.node.ServiceManifestInfo;
-import com.hjq.permissions.tools.AndroidVersion;
-import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
+import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionUtils;
 import java.util.List;
 
 /**
@@ -49,18 +49,14 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
     /** Settings.Secure.ENABLED_NOTIFICATION_LISTENERS */
     private static final String SETTING_ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
 
-    @Nullable
+    @NonNull
     private final String mServiceClassName;
 
-    public BindNotificationListenerServicePermission() {
-        this((String) null);
+    public BindNotificationListenerServicePermission(@NonNull Class<? extends Service> serviceClass) {
+        this(serviceClass.getName());
     }
 
-    public BindNotificationListenerServicePermission(@Nullable Class<? extends Service> serviceClass) {
-        this(serviceClass != null ? serviceClass.getName() : null);
-    }
-
-    public BindNotificationListenerServicePermission(@Nullable String serviceClassName) {
+    public BindNotificationListenerServicePermission(@NonNull String serviceClassName) {
         mServiceClassName = serviceClassName;
     }
 
@@ -157,6 +153,14 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
     }
 
     @Override
+    public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions, @Nullable AndroidManifestInfo androidManifestInfo) {
+        super.checkCompliance(activity, requestPermissions, androidManifestInfo);
+        if (!PermissionUtils.isClassExist(mServiceClassName)) {
+            throw new IllegalArgumentException("The passed-in ServiceClass is an invalid class");
+        }
+    }
+
+    @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestPermissions,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
@@ -186,7 +190,7 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
             + "otherwise it will lead to can't apply for the permission");
     }
 
-    @Nullable
+    @NonNull
     public String getServiceClassName() {
         return mServiceClassName;
     }
