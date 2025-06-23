@@ -19,6 +19,7 @@ import com.hjq.permissions.OnPermissionPageCallback;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.permissions.demo.R;
 import com.hjq.permissions.demo.WindowLifecycleManager;
+import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.toast.Toaster;
@@ -41,7 +42,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
             callback.onDenied(deniedPermissions, doNotAskAgain);
         }
 
-        String permissionHint = generatePermissionHint(activity, requestPermissions, deniedPermissions, doNotAskAgain);
+        String permissionHint = generatePermissionHint(activity, deniedPermissions, doNotAskAgain);
         if (!doNotAskAgain) {
             // 如果没有勾选不再询问选项，就弹 Toast 提示给用户
             Toaster.show(permissionHint);
@@ -79,7 +80,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
                     List<IPermission> latestDeniedPermissions = XXPermissions.getDeniedPermissions(activity, requestPermissions);
                     // 递归显示对话框，让提示用户授权，只不过对话框是可取消的，用户不想授权了，随时可以点击返回键或者对话框蒙层来取消显示
                     showPermissionSettingDialog(activity, requestPermissions, latestDeniedPermissions, callback,
-                        generatePermissionHint(activity, requestPermissions, latestDeniedPermissions, true));
+                        generatePermissionHint(activity, latestDeniedPermissions, true));
                 }
             });
         };
@@ -116,24 +117,64 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
      * 生成权限提示文案
      */
     @NonNull
-    private String generatePermissionHint(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
-                                            @NonNull List<IPermission> deniedPermissions, boolean doNotAskAgain) {
-        if (deniedPermissions.size() == 1) {
-            IPermission deniedPermission = deniedPermissions.get(0);
-            if (XXPermissions.equalsPermission(deniedPermission, PermissionNames.ACCESS_BACKGROUND_LOCATION)) {
-                return activity.getString(doNotAskAgain ? R.string.common_permission_background_location_fail_hint_1 :
-                                                            R.string.common_permission_background_location_fail_hint_2,
+    private String generatePermissionHint(@NonNull Activity activity, @NonNull List<IPermission> deniedPermissions, boolean doNotAskAgain) {
+        int deniedPermissionCount = deniedPermissions.size();
+        int deniedLocationPermissionCount = 0;
+        int deniedSensorsPermissionCount = 0;
+        for (IPermission deniedPermission : deniedPermissions) {
+            String permissionGroup = deniedPermission.getPermissionGroup();
+            if (TextUtils.isEmpty(permissionGroup)) {
+                continue;
+            }
+            if (PermissionGroups.LOCATION.equals(permissionGroup)) {
+                deniedLocationPermissionCount++;
+            } else if (PermissionGroups.SENSORS.equals(permissionGroup)) {
+                deniedSensorsPermissionCount++;
+            }
+        }
+
+        if (deniedLocationPermissionCount == deniedPermissionCount) {
+            if (deniedLocationPermissionCount == 1) {
+                if (VERSION.SDK_INT >= VERSION_CODES.Q &&
+                    XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.ACCESS_BACKGROUND_LOCATION)) {
+                    return activity.getString(doNotAskAgain ? R.string.common_permission_location_fail_hint_1 :
+                                                                R.string.common_permission_location_fail_hint_2,
+                                                                getBackgroundPermissionOptionLabel(activity));
+                } else if (VERSION.SDK_INT >= VERSION_CODES.S &&
+                    XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.ACCESS_FINE_LOCATION)) {
+                    // 如果请求的定位权限中，既包含了精确定位权限，又包含了模糊定位权限或者后台定位权限，
+                    // 但是用户只同意了模糊定位权限的情况或者后台定位权限，并没有同意精确定位权限的情况，就提示用户开启确切位置选项
+                    // 需要注意的是 Android 12 才将模糊定位权限和精确定位权限的授权选项进行分拆，之前的版本没有区分得那么仔细
+                    return activity.getString(doNotAskAgain ? R.string.common_permission_location_fail_hint_3 :
+                                                                R.string.common_permission_location_fail_hint_4);
+                }
+            } else {
+                if (VERSION.SDK_INT >= VERSION_CODES.Q && doNotAskAgain &&
+                    XXPermissions.containsPermission(deniedPermissions, PermissionNames.ACCESS_BACKGROUND_LOCATION)) {
+                    if (VERSION.SDK_INT >= VERSION_CODES.S &&
+                        XXPermissions.containsPermission(deniedPermissions, PermissionNames.ACCESS_FINE_LOCATION)) {
+                        return activity.getString(R.string.common_permission_location_fail_hint_5,
+                            getBackgroundPermissionOptionLabel(activity));
+                    } else {
+                        return activity.getString(R.string.common_permission_location_fail_hint_6,
+                            getBackgroundPermissionOptionLabel(activity));
+                    }
+                }
+            }
+
+        } else if (deniedSensorsPermissionCount == deniedPermissionCount) {
+            if (deniedPermissionCount == 1) {
+                if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU &&
+                    XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.BODY_SENSORS_BACKGROUND)) {
+                    return activity.getString(doNotAskAgain ? R.string.common_permission_sensors_fail_hint_1 :
+                                                             R.string.common_permission_sensors_fail_hint_2,
                                                             getBackgroundPermissionOptionLabel(activity));
-            } else if (XXPermissions.equalsPermission(deniedPermission, PermissionNames.BODY_SENSORS_BACKGROUND)) {
-                return activity.getString(doNotAskAgain ? R.string.common_permission_background_sensors_fail_hint_1 :
-                                                            R.string.common_permission_background_sensors_fail_hint_2,
-                                                            getBackgroundPermissionOptionLabel(activity));
-            } else if (XXPermissions.equalsPermission(deniedPermission, PermissionNames.ACCESS_FINE_LOCATION) &&
-                XXPermissions.containsPermission(requestPermissions, PermissionNames.ACCESS_COARSE_LOCATION)) {
-                // 如果请求的权限中，既包含了精确定位权限，又包含了模糊定位权限，但是用户只同意了模糊定位权限的情况
-                return activity.getString(doNotAskAgain ? R.string.common_permission_fine_location_fail_hint_1 :
-                                                            R.string.common_permission_fine_location_fail_hint_2,
-                                                            getBackgroundPermissionOptionLabel(activity));
+                }
+            } else {
+                if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU && doNotAskAgain) {
+                    return activity.getString(R.string.common_permission_sensors_fail_hint_3,
+                        getBackgroundPermissionOptionLabel(activity));
+                }
             }
         }
 

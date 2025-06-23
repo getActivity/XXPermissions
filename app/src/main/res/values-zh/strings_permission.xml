@@ -10,14 +10,16 @@
     <string name="common_permission_fail_assign_hint_1">申请权限失败，请手动授予%s</string>
     <string name="common_permission_fail_assign_hint_2">申请权限失败，请正确授予%s</string>
 
-    <string name="common_permission_background_location_fail_hint_1">申请后台定位权限失败，请在定位权限中选择 \“%s\” 选项</string>
-    <string name="common_permission_background_location_fail_hint_2">申请后台定位权限失败，\n请选择 \“%s\” 选项</string>
+    <string name="common_permission_location_fail_hint_1">申请后台定位权限失败，请在定位权限中选择 \“%s\” 选项</string>
+    <string name="common_permission_location_fail_hint_2">申请后台定位权限失败，请选择 \“%s\” 选项</string>
+    <string name="common_permission_location_fail_hint_3">申请精确的定位权限失败，请在定位权限中开启 \“确切位置\” 选项</string>
+    <string name="common_permission_location_fail_hint_4">申请精确的定位权限失败，请选择 \“确切位置\” 选项</string>
+    <string name="common_permission_location_fail_hint_5">申请定位权限失败，请在定位权限中选择 \“%s\” 并开启 \“确切位置\” 选项</string>
+    <string name="common_permission_location_fail_hint_6">申请定位权限失败，请在定位权限中选择 \“%s\” 选项</string>
 
-    <string name="common_permission_background_sensors_fail_hint_1">申请后台传感器权限失败，请在传感器权限中选择 \“%s\” 选项</string>
-    <string name="common_permission_background_sensors_fail_hint_2">申请后台传感器权限失败，\n请选择 \“%s\” 选项</string>
-
-    <string name="common_permission_fine_location_fail_hint_1">申请精确的定位权限失败，请在定位权限中开启 \“确切位置\” 选项</string>
-    <string name="common_permission_fine_location_fail_hint_2">申请精确的定位权限失败，\n请选择 \“确切位置\” 选项</string>
+    <string name="common_permission_sensors_fail_hint_1">申请后台身体传感器权限失败，请在身体传感器权限中选择 \“%s\” 选项</string>
+    <string name="common_permission_sensors_fail_hint_2">申请后台身体传感器权限失败，请选择 \“%s\” 选项</string>
+    <string name="common_permission_sensors_fail_hint_3">申请身体传感器权限失败，请在身体传感器权限中选择 \“%s\” 选项</string>
 
     <string name="common_permission_background_default_option_label">始终允许</string>
 
