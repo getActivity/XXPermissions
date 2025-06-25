@@ -14,9 +14,13 @@ android {
         consumerProguardFiles 'proguard-permissions.pro'
     }
 
-    packagingOptions {
-        // 剔除这个包下的所有文件（不会移除签名信息）
-        exclude 'META-INF/*******'
+    libraryVariants.configureEach { variant ->
+        variant.packageLibraryProvider.configure { packageLib ->
+            // 剔除 META-INF 目录
+            packageLib.exclude 'META-INF/'
+            // 剔除 R.txt 文件
+            packageLib.exclude 'R.txt'
+        }
     }
 }
 
