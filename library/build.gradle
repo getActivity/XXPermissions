@@ -9,6 +9,9 @@ android {
     defaultConfig {
         // 最低安装版本
         minSdkVersion 17
+
+        // 框架的混淆配置
+        consumerProguardFiles 'proguard-permissions.pro'
     }
 
     packagingOptions {

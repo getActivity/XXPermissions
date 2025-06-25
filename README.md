@@ -99,6 +99,10 @@ android.enableJetifier = true
 
 * 需要注意的是：这个选项是框架用于判断当前项目是否适配了分区存储，需要注意的是，如果你的项目已经适配了分区存储特性，可以使用 `READ_EXTERNAL_STORAGE`、`WRITE_EXTERNAL_STORAGE` 来申请权限，如果你的项目还没有适配分区特性，就算申请了 `READ_EXTERNAL_STORAGE`、`WRITE_EXTERNAL_STORAGE` 权限也会导致无法正常读取外部存储上面的文件，如果你的项目没有适配分区存储，请使用 `MANAGE_EXTERNAL_STORAGE` 来申请权限，这样才能正常读取外部存储上面的文件，你如果想了解更多关于 Android 10 分区存储的特性，可以[点击此处查看和学习](https://github.com/getActivity/AndroidVersionAdapter#android-100)。
 
+#### 框架混淆规则
+
+* 框架已经在内部自动帮你添加了框架的混淆规则，在你添加框架的依赖远程库的时候，框架的混淆规则也会一同携带到你的项目中，你无需自己手动添加，具体的混淆规则内容 [可点击此处查看](library/proguard-permissions.pro)
+
 #### 一句代码搞定权限请求，从未如此简单
 
 * Java 用法示例

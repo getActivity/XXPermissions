@@ -93,6 +93,10 @@ android.enableJetifier = true
 
 * It should be noted that this option is used by the framework to determine whether the current project is adapted to scoped storage. It should be noted that if your project has been adapted to the scoped storage feature, you can use`READ_EXTERNAL_STORAGE`、`WRITE_EXTERNAL_STORAGE`To apply for permission, if your project has not yet adapted to the partition feature, even if you apply`READ_EXTERNAL_STORAGE`、`WRITE_EXTERNAL_STORAGE`The permissions will also cause the files on the external storage to be unable to be read normally. If your project is not suitable for scoped storage, please use`MANAGE_EXTERNAL_STORAGE`To apply for permission, so that the files on the external storage can be read normally. If you want to know more about the features of Android 10 partition storage, you can[Click here to view and learn](https://github.com/getActivity/AndroidVersionAdapter#android-100).
 
+#### Frame obfuscation rules
+
+The framework has automatically added the framework's obfuscation rules for you internally. When you add the framework's dependent remote libraries, the framework's obfuscation rules will also be carried into your project. You don't need to add them manually yourself. Specific obfuscation rule content [Click here to view](library/proguard-permissions.pro)
+
 #### One code to get permission request has never been easier
 
 * Java code example
