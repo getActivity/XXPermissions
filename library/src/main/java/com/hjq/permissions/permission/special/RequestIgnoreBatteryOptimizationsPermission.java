@@ -8,11 +8,11 @@ import android.os.Parcelable;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import com.hjq.permissions.permission.PermissionNames;
+import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PhoneRomUtils;
-import com.hjq.permissions.permission.PermissionNames;
-import com.hjq.permissions.permission.common.SpecialPermission;
 
 /**
  *    author : Android 轮子哥
@@ -77,8 +77,17 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
         if (!AndroidVersion.isAndroid6()) {
             return getApplicationDetailsIntent(context);
         }
+
         Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
         intent.setData(PermissionUtils.getPackageNameUri(context));
+
+        if (AndroidVersion.isAndroid12() && !PermissionUtils.areActivityIntent(context, intent)) {
+            // 应用的电池使用情况详情页：Settings.ACTION_VIEW_ADVANCED_POWER_USAGE_DETAIL
+            // 虽然 ACTION_VIEW_ADVANCED_POWER_USAGE_DETAIL 是 Android 10 的源码才出现的
+            // 但是经过测试，在 Android 10 上面是无法跳转的，只有到了 Android 12 才能跳转
+            intent = new Intent("android.settings.VIEW_ADVANCED_POWER_USAGE_DETAIL");
+            intent.setData(PermissionUtils.getPackageNameUri(context));
+        }
 
         if (!PermissionUtils.areActivityIntent(context, intent)) {
             intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
