@@ -61,9 +61,11 @@ dependencies {
 
 #### AndroidX compatible
 
-* If the project is based on **AndroidX** package, please in the item `gradle.properties` file added
+* If the project is based on **AndroidX** package, please in the item `gradle.properties` file added, if you have already joined, you can ignore it
 
 ```text
+# Indicates the use of AndroidX
+android.useAndroidX = true
 # Indicates migration of third-party libraries to AndroidX
 android.enableJetifier = true
 ```

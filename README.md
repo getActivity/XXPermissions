@@ -67,14 +67,16 @@ dependencies {
 
 #### AndroidX 兼容
 
-* 如果项目是基于 **AndroidX** 包，请在项目 `gradle.properties` 文件中加入
+* 如果项目是基于 **AndroidX** 库，请在项目 `gradle.properties` 文件中加入以下配置，如果已经加入则可以忽略
 
 ```text
+# 表示使用 AndroidX
+android.useAndroidX = true
 # 表示将第三方库迁移到 AndroidX
 android.enableJetifier = true
 ```
 
-* 如果项目是基于 **Support** 包则不需要加入此配置
+* 如果项目是基于 **Support** 库则不需要加入此配置
 
 #### 分区存储
 
