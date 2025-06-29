@@ -59,7 +59,7 @@ dependencies {
 }
 ```
 
-#### AndroidX compatible
+#### Support library compatible
 
 * If the project is based on **AndroidX** package, please in the item `gradle.properties` file added, if you have already joined, you can ignore it
 
@@ -71,6 +71,17 @@ android.enableJetifier = true
 ```
 
 * If the project is based on **Support** Packages do not need to be added to this configuration
+
+* If your project neither uses the **Suppor** library nor the **Android** library, because the framework uses the **Fragment** library, You also need to add the dependencies related to **Fragment** in the 'build.gradle' file under the project app module; otherwise, it will lead to compilation failure.
+
+```groovy
+dependencies {
+     // Version 24.2.0 is not mandatory and can be replaced with any version, and the framework is compatible with it
+    implementation 'com.android.support:support-fragment:24.2.0'
+}
+```
+
+* Of course, the above situation is extremely rare. Most projects rely on the **Support** library or the **AndroidX** library, so usually there is no need to consider this issue.
 
 #### scoped storage
 
