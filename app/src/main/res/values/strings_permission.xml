@@ -21,7 +21,8 @@
     <string name="common_permission_sensors_fail_hint_2">Failed to request background body sensor permission, please select \"%s\" option</string>
     <string name="common_permission_sensors_fail_hint_3">Failed to request the body sensor permission, please select \"%s\" option in the body sensor permission</string>
 
-    <string name="common_permission_background_default_option_label">allow all the time</string>
+    <string name="common_permission_background_default_option_label_api29">allow all the time</string>
+    <string name="common_permission_background_default_option_label_api30">@string/common_permission_background_default_option_label_api29</string>
     <string name="common_permission_go_to_authorization">Go to authorization</string>
 
     <string name="common_permission_comma">, </string>

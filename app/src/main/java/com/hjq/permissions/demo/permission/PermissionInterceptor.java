@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.support.annotation.NonNull;
@@ -189,12 +190,17 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     @NonNull
     private String getBackgroundPermissionOptionLabel(Context context) {
         PackageManager packageManager = context.getPackageManager();
-        if (packageManager != null && VERSION.SDK_INT >= VERSION_CODES.R) {
+        if (packageManager != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             CharSequence backgroundPermissionOptionLabel = packageManager.getBackgroundPermissionOptionLabel();
             if (!TextUtils.isEmpty(backgroundPermissionOptionLabel)) {
                 return backgroundPermissionOptionLabel.toString();
             }
         }
-        return context.getString(R.string.common_permission_background_default_option_label);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return context.getString(R.string.common_permission_background_default_option_label_api30);
+        } else {
+            return context.getString(R.string.common_permission_background_default_option_label_api29);
+        }
     }
 }

@@ -21,7 +21,8 @@
     <string name="common_permission_sensors_fail_hint_2">申请后台身体传感器权限失败，请选择 \“%s\” 选项</string>
     <string name="common_permission_sensors_fail_hint_3">申请身体传感器权限失败，请在身体传感器权限中选择 \“%s\” 选项</string>
 
-    <string name="common_permission_background_default_option_label">始终允许</string>
+    <string name="common_permission_background_default_option_label_api29">一律允许</string>
+    <string name="common_permission_background_default_option_label_api30">始终允许</string>
 
     <string name="common_permission_go_to_authorization">前往授权</string>
 
