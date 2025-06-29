@@ -12,15 +12,15 @@ import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.tools.PermissionSettingPage;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
-import com.hjq.permissions.tools.AndroidVersion;
-import com.hjq.permissions.tools.PermissionSettingPageHandler;
-import com.hjq.permissions.tools.PhoneRomUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
+import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionSettingPage;
+import com.hjq.permissions.tools.PermissionSettingPageHandler;
+import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.List;
 
 /**
@@ -101,7 +101,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
                 return true;
             }
             // 经过测试发现，OP_GET_INSTALLED_APPS 是小米在 Android 6.0 才加上的，看了 Android 5.0 的 miui 并没有出现读取应用列表的权限
-            return checkOpNoThrow(context, MIUI_OP_GET_INSTALLED_APPS_FIELD_NAME, MIUI_OP_GET_INSTALLED_APPS_DEFAULT_VALUE);
+            return checkOpPermission(context, MIUI_OP_GET_INSTALLED_APPS_FIELD_NAME, MIUI_OP_GET_INSTALLED_APPS_DEFAULT_VALUE, true);
         }
 
         // 如果不支持申请，则直接返回 true（代表有这个权限），反正也不会崩溃，顶多就是获取不到第三方应用列表
@@ -112,7 +112,8 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
         if (isSupportRequestPermissionBySystem(activity)) {
             // 如果支持申请，那么再去判断权限是否永久拒绝
-            return checkDoNotAskAgainPermission(activity, getPermissionName());
+            return !checkSelfPermission(activity, getPermissionName()) &&
+                !shouldShowRequestPermissionRationale(activity, getPermissionName());
         }
 
         if (PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {

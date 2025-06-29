@@ -4,10 +4,11 @@ import android.app.Activity;
 import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.tools.AndroidVersion;
@@ -217,15 +218,85 @@ public abstract class BasePermission implements IPermission {
     }
 
     /**
+     * 判断某个危险权限是否授予了
+     */
+    public static boolean checkSelfPermission(@NonNull Context context, @NonNull String permission) {
+        if (!AndroidVersion.isAndroid6()) {
+            return true;
+        }
+        return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * 判断是否应该向用户显示请求权限的理由
+     */
+    @SuppressWarnings({"JavaReflectionMemberAccess", "ConstantConditions", "BooleanMethodIsAlwaysInverted"})
+    public static boolean shouldShowRequestPermissionRationale(@NonNull Activity activity, @NonNull String permission) {
+        if (!AndroidVersion.isAndroid6()) {
+            return false;
+        }
+        // 解决 Android 12 调用 shouldShowRequestPermissionRationale 出现内存泄漏的问题
+        // Android 12L 和 Android 13 版本经过测试不会出现这个问题，证明 Google 在新版本上已经修复了这个问题
+        // 但是对于 Android 12 仍是一个历史遗留问题，这是我们所有 Android App 开发者不得不面对的一个事情
+        // issue 地址：https://github.com/getActivity/XXPermissions/issues/133
+        if (AndroidVersion.getCurrentVersion() == AndroidVersion.ANDROID_12) {
+            try {
+                // 另外针对这个问题，我还给谷歌的 AndroidX 项目无偿提供了解决方案，目前 Merge Request 已被合入主分支
+                // 我相信通过这一举措，将解决全球近 10 亿台 Android 12 设备出现的内存泄露问题
+                // Pull Request 地址：https://github.com/androidx/androidx/pull/435
+                PackageManager packageManager = activity.getApplication().getPackageManager();
+                Method method = PackageManager.class.getMethod("shouldShowRequestPermissionRationale", String.class);
+                return (boolean) method.invoke(packageManager, permission);
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        return activity.shouldShowRequestPermissionRationale(permission);
+    }
+
+    /**
      * 通过 AppOpsManager 判断某个权限是否授予
      *
      * @param opName               需要传入 {@link AppOpsManager} 类中的以 OPSTR 开头的字段
+     * @param defaultGranted       当判断不了该权限状态的时候，是否返回已授予状态
      */
-    @SuppressWarnings("deprecation")
-    public static boolean checkOpNoThrow(Context context, String opName) {
+    public static boolean checkOpPermission(@NonNull Context context, @NonNull String opName, boolean defaultGranted) {
         if (!AndroidVersion.isAndroid4_4()) {
-            return true;
+            return defaultGranted;
         }
+        int opMode = getOpPermissionMode(context, opName);
+        if (opMode == AppOpsManager.MODE_ERRORED) {
+            return defaultGranted;
+        }
+        return opMode == AppOpsManager.MODE_ALLOWED;
+    }
+
+    /**
+     * 通过 AppOpsManager 判断某个权限是否授予
+     *
+     * @param opFieldName               要反射 {@link AppOpsManager} 类中的字段名称
+     * @param opDefaultValue            当反射获取不到对应字段的值时，该值作为替补
+     * @param defaultGranted            当判断不了该权限状态的时候，是否返回已授予状态
+     */
+    public static boolean checkOpPermission(Context context, String opFieldName, int opDefaultValue, boolean defaultGranted) {
+        if (!AndroidVersion.isAndroid4_4()) {
+            return defaultGranted;
+        }
+        int opMode = getOpPermissionMode(context, opFieldName, opDefaultValue);
+        if (opMode == AppOpsManager.MODE_ERRORED) {
+            return defaultGranted;
+        }
+        return opMode == AppOpsManager.MODE_ALLOWED;
+    }
+
+    /**
+     * 获取 AppOpsManager 某个权限的状态
+     *
+     * @param opName               需要传入 {@link AppOpsManager} 类中的以 OPSTR 开头的字段
+     */
+    @RequiresApi(AndroidVersion.ANDROID_4_4)
+    @SuppressWarnings("deprecation")
+    public static int getOpPermissionMode(@NonNull Context context, @NonNull String opName) {
         AppOpsManager appOpsManager;
         if (AndroidVersion.isAndroid6()) {
             appOpsManager = context.getSystemService(AppOpsManager.class);
@@ -234,28 +305,29 @@ public abstract class BasePermission implements IPermission {
         }
         // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
         if (appOpsManager == null) {
-            return false;
+            return AppOpsManager.MODE_ERRORED;
         }
-        int mode;
-        if (AndroidVersion.isAndroid10()) {
-            mode = appOpsManager.unsafeCheckOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
-        } else {
-            mode = appOpsManager.checkOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
+        try {
+            if (AndroidVersion.isAndroid10()) {
+                return appOpsManager.unsafeCheckOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
+            } else {
+                return appOpsManager.checkOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return AppOpsManager.MODE_ERRORED;
         }
-        return mode == AppOpsManager.MODE_ALLOWED;
     }
 
     /**
-     * 判断 AppOpsManager 某个权限是否授予
+     * 获取 AppOpsManager 某个权限的状态
      *
      * @param opFieldName               要反射 {@link AppOpsManager} 类中的字段名称
      * @param opDefaultValue            当反射获取不到对应字段的值时，该值作为替补
      */
     @SuppressWarnings("ConstantConditions")
-    public static boolean checkOpNoThrow(Context context, String opFieldName, int opDefaultValue) {
-        if (!AndroidVersion.isAndroid4_4()) {
-            return true;
-        }
+    @RequiresApi(AndroidVersion.ANDROID_4_4)
+    public static int getOpPermissionMode(Context context, String opFieldName, int opDefaultValue) {
         AppOpsManager appOpsManager;
         if (AndroidVersion.isAndroid6()) {
             appOpsManager = context.getSystemService(AppOpsManager.class);
@@ -264,11 +336,8 @@ public abstract class BasePermission implements IPermission {
         }
         // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
         if (appOpsManager == null) {
-            return false;
+            return AppOpsManager.MODE_ERRORED;
         }
-        ApplicationInfo appInfo = context.getApplicationInfo();
-        String pkg = context.getApplicationContext().getPackageName();
-        int uid = appInfo.uid;
         try {
             Class<?> appOpsClass = Class.forName(AppOpsManager.class.getName());
             int opValue;
@@ -279,10 +348,10 @@ public abstract class BasePermission implements IPermission {
                 opValue = opDefaultValue;
             }
             Method checkOpNoThrowMethod = appOpsClass.getMethod("checkOpNoThrow", Integer.TYPE, Integer.TYPE, String.class);
-            return ((int) checkOpNoThrowMethod.invoke(appOpsManager, opValue, uid, pkg) == AppOpsManager.MODE_ALLOWED);
-        } catch (ClassNotFoundException | NoSuchMethodException |
-                 InvocationTargetException | IllegalAccessException | RuntimeException e) {
-            return true;
+            return ((int) checkOpNoThrowMethod.invoke(appOpsManager, opValue, context.getApplicationInfo().uid, context.getPackageName()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return AppOpsManager.MODE_ERRORED;
         }
     }
 }

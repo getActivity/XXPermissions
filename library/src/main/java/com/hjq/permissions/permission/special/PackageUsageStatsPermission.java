@@ -7,10 +7,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import com.hjq.permissions.tools.AndroidVersion;
-import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
+import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionUtils;
 
 /**
  *    author : Android 轮子哥
@@ -60,7 +60,7 @@ public final class PackageUsageStatsPermission extends SpecialPermission {
         if (!AndroidVersion.isAndroid5()) {
             return true;
         }
-        return checkOpNoThrow(context, AppOpsManager.OPSTR_GET_USAGE_STATS);
+        return checkOpPermission(context, AppOpsManager.OPSTR_GET_USAGE_STATS, false);
     }
 
     @NonNull

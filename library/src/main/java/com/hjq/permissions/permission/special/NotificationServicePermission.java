@@ -10,10 +10,10 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import com.hjq.permissions.tools.AndroidVersion;
-import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
+import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionUtils;
 
 /**
  *    author : Android 轮子哥
@@ -80,7 +80,7 @@ public final class NotificationServicePermission extends SpecialPermission {
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
             if (notificationManager == null) {
-                return checkOpNoThrow(context, OP_POST_NOTIFICATION_FIELD_NAME, OP_POST_NOTIFICATION_DEFAULT_VALUE);
+                return checkOpPermission(context, OP_POST_NOTIFICATION_FIELD_NAME, OP_POST_NOTIFICATION_DEFAULT_VALUE, true);
             }
             if (!notificationManager.areNotificationsEnabled()) {
                 return false;
@@ -91,7 +91,7 @@ public final class NotificationServicePermission extends SpecialPermission {
             NotificationChannel notificationChannel = notificationManager.getNotificationChannel(mChannelId);
             return notificationChannel != null && notificationChannel.getImportance() != NotificationManager.IMPORTANCE_NONE;
         }
-        return checkOpNoThrow(context, OP_POST_NOTIFICATION_FIELD_NAME, OP_POST_NOTIFICATION_DEFAULT_VALUE);
+        return checkOpPermission(context, OP_POST_NOTIFICATION_FIELD_NAME, OP_POST_NOTIFICATION_DEFAULT_VALUE, true);
     }
 
     @NonNull
