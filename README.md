@@ -78,17 +78,6 @@ android.enableJetifier = true
 
 * 如果项目是基于 **Support** 库则不需要加入此配置
 
-* 如果你的项目既没有用到 **Support** 库，也没有用到 **AndroidX** 库，由于框架使用了 **Fragment** 库，你还需要在项目 app 模块下的 `build.gradle` 文件中加入 **Fragment** 相关的依赖，否则会导致编译失败。
-
-```groovy
-dependencies {
-    // 24.2.0 版本不是强制的，可以替换成任一的版本，框架都能兼容
-    implementation 'com.android.support:support-fragment:24.2.0'
-}
-```
-
-* 当然上面这种属于极少数的情况，大部分项目都有依赖 **Support** 库或者 **AndroidX** 库，所以通常情况下无需考虑这个问题。
-
 #### 分区存储
 
 * 如果项目已经适配了 Android 10 分区存储特性，请在 `AndroidManifest.xml` 中加入
