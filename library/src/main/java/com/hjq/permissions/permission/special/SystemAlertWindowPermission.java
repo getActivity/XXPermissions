@@ -6,12 +6,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionSettingPage;
-import com.hjq.permissions.tools.PermissionSettingPageHandler;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
@@ -108,27 +106,97 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
 
             // 需要注意的是，这里不需要判断鸿蒙，因为鸿蒙 2.0 用代码判断是 API 等级是 29（Android 10）会直接走上面的逻辑，而不会走到下面来
             if (PhoneRomUtils.isEmui()) {
-                intent = getEmuiWindowPermissionPageIntent(context);
+                // EMUI 发展史：http://www.360doc.com/content/19/1017/10/9113704_867381705.shtml
+                // android 华为版本历史,一文看完华为EMUI发展史：https://blog.csdn.net/weixin_39959369/article/details/117351161
+
+                Intent addViewMonitorActivityIntent = new Intent();
+                // emui 3.1 的适配（华为荣耀 7 Android 5.0、华为揽阅 M2 青春版 Android 5.1、华为畅享 5S Android 5.1）
+                addViewMonitorActivityIntent.setClassName("com.huawei.systemmanager", "com.huawei.systemmanager.addviewmonitor.AddViewMonitorActivity");
+
+                Intent notificationManagementActivityIntent = new Intent();
+                // emui 3.0 的适配（华为麦芒 3S Android 4.4）
+                notificationManagementActivityIntent.setClassName("com.huawei.systemmanager", "com.huawei.notificationmanager.ui.NotificationManagmentActivity");
+
+                // 获取厂商版本号
+                String romVersionName = PhoneRomUtils.getRomVersionName();
+                if (romVersionName == null) {
+                    romVersionName = "";
+                }
+
+                if (romVersionName.startsWith("3.0")) {
+                    // 3.0、3.0.1
+                    intentList.add(notificationManagementActivityIntent);
+                    intentList.add(addViewMonitorActivityIntent);
+                } else {
+                    // 3.1、其他的
+                    intentList.add(addViewMonitorActivityIntent);
+                    intentList.add(notificationManagementActivityIntent);
+                }
+
+                // 华为手机管家主页
+                intent = PermissionSettingPage.getHuaWeiMobileManagerAppIntent(context);
                 intentList.add(intent);
+
             } else if (PhoneRomUtils.isMiui()) {
                 // 假设关闭了 miui 优化，就不走这里的逻辑
                 // 小米手机也可以通过应用详情页开启悬浮窗权限（只不过会多一步操作）
                 if (PhoneRomUtils.isXiaomiSystemOptimization()) {
-                    intent = getMiuiWindowPermissionPageIntent(context);
+                    intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
                     intentList.add(intent);
                 }
             } else if (PhoneRomUtils.isColorOs()) {
-                intent = getColorOsWindowPermissionPageIntent(context);
+                // com.color.safecenter 是之前 oppo 安全中心的包名，而 com.oppo.safe 是 oppo 后面改的安全中心的包名
+                // 经过测试发现是在 ColorOs 2.1 的时候改的，Android 4.4 还是 com.color.safecenter，到了 Android 5.0 变成了 com.oppo.safe
+
+                // java.lang.SecurityException: Permission Denial: starting Intent
+                // { cmp=com.oppo.safe/.permission.floatwindow.FloatWindowListActivity (has extras) } from
+                // ProcessRecord{839a7c5 10595:com.hjq.permissions.demo/u0a3781} (pid=10595, uid=13781) not exported from uid 1000
+                // intent.setClassName("com.oppo.safe", "com.oppo.safe.permission.floatwindow.FloatWindowListActivity");
+
+                // java.lang.SecurityException: Permission Denial: starting Intent
+                // { cmp=com.color.safecenter/.permission.floatwindow.FloatWindowListActivity (has extras) } from
+                // ProcessRecord{42b660b0 31279:com.hjq.permissions.demo/u0a204} (pid=31279, uid=10204) not exported from uid 1000
+                // intent.setClassName("com.color.safecenter", "com.color.safecenter.permission.floatwindow.FloatWindowListActivity");
+
+                // java.lang.SecurityException: Permission Denial: starting Intent
+                // { cmp=com.color.safecenter/.permission.PermissionAppAllPermissionActivity (has extras) } from
+                // ProcessRecord{42c49dd8 1791:com.hjq.permissions.demo/u0a204} (pid=1791, uid=10204) not exported from uid 1000
+                // intent.setClassName("com.color.safecenter", "com.color.safecenter.permission.PermissionAppAllPermissionActivity");
+
+                // 虽然不能直接到达悬浮窗界面，但是到达它的上一级页面（权限隐私页面）还是可以的，所以做了简单的取舍
+                // 测试机是 OPPO R7 Plus（Android 5.0，ColorOs 2.1）、OPPO R7s（Android 4.4，ColorOs 2.1）
+                // com.oppo.safe.permission.PermissionTopActivity
+                // com.oppo.safe..permission.PermissionAppListActivity
+                // com.color.safecenter.permission.PermissionTopActivity
+
+                intent = new Intent();
+                intent.setClassName("com.oppo.safe", "com.oppo.safe.permission.PermissionTopActivity");
                 intentList.add(intent);
+
+                intent = PermissionSettingPage.getOppoSafeCenterAppIntent(context);
+                intentList.add(intent);
+
             } else if (PhoneRomUtils.isOriginOs()) {
-                intent = getOriginOsWindowPermissionPageIntent(context);
+                // java.lang.SecurityException: Permission Denial: starting Intent
+                // { cmp=com.iqoo.secure/.ui.phoneoptimize.FloatWindowManager (has extras) } from
+                // ProcessRecord{2c3023cf 21847:com.hjq.permissions.demo/u0a4633} (pid=21847, uid=14633) not exported from uid 10055
+                // intent.setClassName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.FloatWindowManager");
+
+                // java.lang.SecurityException: Permission Denial: starting Intent
+                // { cmp=com.iqoo.secure/.safeguard.PurviewTabActivity (has extras) } from
+                // ProcessRecord{2c3023cf 21847:com.hjq.permissions.demo/u0a4633} (pid=21847, uid=14633) not exported from uid 10055
+                // intent.setClassName("com.iqoo.secure", "com.iqoo.secure.safeguard.PurviewTabActivity");
+
+                // 经过测试在 vivo x7 Plus（Android 5.1）上面能跳转过去，但是显示却是一个空白页面
+                // intent.setClassName("com.iqoo.secure", "com.iqoo.secure.safeguard.SoftPermissionDetailActivity");
+                intent = PermissionSettingPage.getVivoMobileManagerAppIntent(context);
                 intentList.add(intent);
             } else if (PhoneRomUtils.isOneUi()) {
-                intent = getOneUiWindowPermissionPageIntent(context);
+                intent = PermissionSettingPage.getOneUiPermissionPageIntent(context);
                 intentList.add(intent);
             } else if (PhoneRomUtils.isSmartisanOS() && !AndroidVersion.isAndroid5_1()) {
                 // 经过测试，锤子手机 5.1 及以上的手机的可以直接通过直接跳转到应用详情开启悬浮窗权限，但是 4.4 以下的手机就不行，需要跳转到安全中心
-                intent = getSmartisanWindowPermissionPageIntent(context);
+                intent = PermissionSettingPage.getSmartisanPermissionPageIntent(context);
                 intentList.add(intent);
             }
 
@@ -146,150 +214,5 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
     protected boolean isRegisterPermissionByManifestFile() {
         // 表示当前权限需要在 AndroidManifest.xml 文件中进行静态注册
         return true;
-    }
-
-    /**
-     * 获取华为悬浮窗权限设置意图
-     */
-    @Nullable
-    private static Intent getEmuiWindowPermissionPageIntent(Context context) {
-        // EMUI 发展史：http://www.360doc.com/content/19/1017/10/9113704_867381705.shtml
-        // android 华为版本历史,一文看完华为EMUI发展史：https://blog.csdn.net/weixin_39959369/article/details/117351161
-
-        Intent addViewMonitorActivityIntent = new Intent();
-        // emui 3.1 的适配（华为荣耀 7 Android 5.0、华为揽阅 M2 青春版 Android 5.1、华为畅享 5S Android 5.1）
-        addViewMonitorActivityIntent.setClassName("com.huawei.systemmanager", "com.huawei.systemmanager.addviewmonitor.AddViewMonitorActivity");
-
-        Intent notificationManagementActivityIntent = new Intent();
-        // emui 3.0 的适配（华为麦芒 3S Android 4.4）
-        notificationManagementActivityIntent.setClassName("com.huawei.systemmanager", "com.huawei.notificationmanager.ui.NotificationManagmentActivity");
-
-        // 华为手机管家主页
-        Intent huaWeiMobileManagerAppIntent = PermissionSettingPage.getHuaWeiMobileManagerAppIntent(context);
-
-        // 获取厂商版本号
-        String romVersionName = PhoneRomUtils.getRomVersionName();
-        if (romVersionName == null) {
-            romVersionName = "";
-        }
-
-        Intent intent = null;
-        if (romVersionName.startsWith("3.0")) {
-            // 3.0、3.0.1
-            if (PermissionUtils.areActivityIntent(context, notificationManagementActivityIntent)) {
-                intent = notificationManagementActivityIntent;
-            }
-
-            if (PermissionUtils.areActivityIntent(context, addViewMonitorActivityIntent)) {
-                intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, addViewMonitorActivityIntent);
-            }
-        } else {
-            // 3.1、其他的
-            if (PermissionUtils.areActivityIntent(context, addViewMonitorActivityIntent)) {
-                intent = addViewMonitorActivityIntent;
-            }
-
-            if (PermissionUtils.areActivityIntent(context, notificationManagementActivityIntent)) {
-                intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, notificationManagementActivityIntent);
-            }
-        }
-
-        if (PermissionUtils.areActivityIntent(context, huaWeiMobileManagerAppIntent)) {
-            intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, huaWeiMobileManagerAppIntent);
-        }
-
-        return intent;
-    }
-
-    /**
-     * 获取小米悬浮窗权限设置意图
-     */
-    @Nullable
-    private static Intent getMiuiWindowPermissionPageIntent(Context context) {
-        return PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
-    }
-
-    /**
-     * 获取 oppo 悬浮窗权限设置意图
-     */
-    @Nullable
-    private static Intent getColorOsWindowPermissionPageIntent(Context context) {
-        // com.color.safecenter 是之前 oppo 安全中心的包名，而 com.oppo.safe 是 oppo 后面改的安全中心的包名
-        // 经过测试发现是在 ColorOs 2.1 的时候改的，Android 4.4 还是 com.color.safecenter，到了 Android 5.0 变成了 com.oppo.safe
-
-        // java.lang.SecurityException: Permission Denial: starting Intent
-        // { cmp=com.oppo.safe/.permission.floatwindow.FloatWindowListActivity (has extras) } from
-        // ProcessRecord{839a7c5 10595:com.hjq.permissions.demo/u0a3781} (pid=10595, uid=13781) not exported from uid 1000
-        // intent.setClassName("com.oppo.safe", "com.oppo.safe.permission.floatwindow.FloatWindowListActivity");
-
-        // java.lang.SecurityException: Permission Denial: starting Intent
-        // { cmp=com.color.safecenter/.permission.floatwindow.FloatWindowListActivity (has extras) } from
-        // ProcessRecord{42b660b0 31279:com.hjq.permissions.demo/u0a204} (pid=31279, uid=10204) not exported from uid 1000
-        // intent.setClassName("com.color.safecenter", "com.color.safecenter.permission.floatwindow.FloatWindowListActivity");
-
-        // java.lang.SecurityException: Permission Denial: starting Intent
-        // { cmp=com.color.safecenter/.permission.PermissionAppAllPermissionActivity (has extras) } from
-        // ProcessRecord{42c49dd8 1791:com.hjq.permissions.demo/u0a204} (pid=1791, uid=10204) not exported from uid 1000
-        // intent.setClassName("com.color.safecenter", "com.color.safecenter.permission.PermissionAppAllPermissionActivity");
-
-        // 虽然不能直接到达悬浮窗界面，但是到达它的上一级页面（权限隐私页面）还是可以的，所以做了简单的取舍
-        // 测试机是 OPPO R7 Plus（Android 5.0，ColorOs 2.1）、OPPO R7s（Android 4.4，ColorOs 2.1）
-        // com.oppo.safe.permission.PermissionTopActivity
-        // com.oppo.safe..permission.PermissionAppListActivity
-        // com.color.safecenter.permission.PermissionTopActivity
-        Intent permissionTopActivityActionIntent = new Intent("com.oppo.safe.permission.PermissionTopActivity");
-
-        Intent oppoSafeCenterAppIntent = PermissionSettingPage.getOppoSafeCenterAppIntent(context);
-
-        Intent intent = null;
-
-        if (PermissionUtils.areActivityIntent(context, permissionTopActivityActionIntent)) {
-            intent = permissionTopActivityActionIntent;
-        }
-
-        if (PermissionUtils.areActivityIntent(context, oppoSafeCenterAppIntent)) {
-            intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, oppoSafeCenterAppIntent);;
-        }
-
-        return intent;
-    }
-
-    /**
-     * 获取 vivo 悬浮窗权限设置意图
-     */
-    @Nullable
-    private static Intent getOriginOsWindowPermissionPageIntent(Context context) {
-        // java.lang.SecurityException: Permission Denial: starting Intent
-        // { cmp=com.iqoo.secure/.ui.phoneoptimize.FloatWindowManager (has extras) } from
-        // ProcessRecord{2c3023cf 21847:com.hjq.permissions.demo/u0a4633} (pid=21847, uid=14633) not exported from uid 10055
-        // intent.setClassName("com.iqoo.secure", "com.iqoo.secure.ui.phoneoptimize.FloatWindowManager");
-
-        // java.lang.SecurityException: Permission Denial: starting Intent
-        // { cmp=com.iqoo.secure/.safeguard.PurviewTabActivity (has extras) } from
-        // ProcessRecord{2c3023cf 21847:com.hjq.permissions.demo/u0a4633} (pid=21847, uid=14633) not exported from uid 10055
-        // intent.setClassName("com.iqoo.secure", "com.iqoo.secure.safeguard.PurviewTabActivity");
-
-        // 经过测试在 vivo x7 Plus（Android 5.1）上面能跳转过去，但是显示却是一个空白页面
-        // intent.setClassName("com.iqoo.secure", "com.iqoo.secure.safeguard.SoftPermissionDetailActivity");
-
-        Intent intent = PermissionSettingPage.getVivoMobileManagerAppIntent(context);
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
-        }
-
-        return null;
-    }
-
-    @Nullable
-    private static Intent getOneUiWindowPermissionPageIntent(Context context) {
-        return PermissionSettingPage.getOneUiPermissionPageIntent(context);
-    }
-
-    /**
-     * 获取锤子手机悬浮窗权限设置意图
-     */
-    @Nullable
-    private static Intent getSmartisanWindowPermissionPageIntent(Context context) {
-        return PermissionSettingPage.getSmartisanPermissionPageIntent(context);
     }
 }
