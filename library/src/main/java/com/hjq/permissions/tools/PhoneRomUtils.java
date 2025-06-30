@@ -171,13 +171,17 @@ public final class PhoneRomUtils {
     }
 
     /**
-     * 判断 miui 优化开关（默认开启，关闭步骤为：开发者选项-> 启动 MIUI 优化 -> 点击关闭）
-     * 需要注意的是，关闭 miui 优化后，可以跳转到小米定制的权限请求页面，但是开启权限仍然是没有效果的
-     * 另外关于 miui 国际版开发者选项中是没有 miui 优化选项的，但是代码判断是有开启 miui 优化，也就是默认开启，这样是正确的
+     * 判断小米是否开启了系统优化（默认开启）
+     *
+     * Miui 关闭步骤为：开发者选项-> 启动 MIUI 优化 -> 点击关闭
+     * 澎湃的关闭步骤为：开发者选项-> 启用系统优化 -> 点击关闭
+     *
+     * 需要注意的是，关闭优化后，可以跳转到小米定制的权限请求页面，但是开启权限仍然是没有效果的
+     * 另外关于 miui 国际版开发者选项中是没有优化选项的，但是代码判断是有开启优化选项，也就是默认开启，这样是正确的
      * 相关 Github issue 地址：https://github.com/getActivity/XXPermissions/issues/38
      */
     @SuppressLint("PrivateApi")
-    public static boolean isMiuiOptimization() {
+    public static boolean isXiaomiSystemOptimization() {
         try {
             Class<?> clazz = Class.forName("android.os.SystemProperties");
             Method getMethod = clazz.getMethod("get", String.class, String.class);

@@ -87,7 +87,8 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
             // 如果当前系统是 HyperOs，那么就不要跳转到 miui 权限设置页了，因为还要点一下《其他权限》入口才能找到悬浮窗权限设置选项
             // 这样的效果还不如直接跳转到所有应用的悬浮窗权限设置列表，然后再点进去来得更直观
             // 相关 Github issue 地址：https://github.com/getActivity/XXPermissions/issues/342
-            if (AndroidVersion.isAndroid11() && !PhoneRomUtils.isHyperOs() && PhoneRomUtils.isMiui()  && PhoneRomUtils.isMiuiOptimization()) {
+            if (AndroidVersion.isAndroid11() && !PhoneRomUtils.isHyperOs() &&
+                        PhoneRomUtils.isMiui() && PhoneRomUtils.isXiaomiSystemOptimization()) {
                 // 因为 Android 11 及后面的版本无法直接跳转到具体权限设置页面，只能跳转到悬浮窗权限应用列表，十分地麻烦的，这里做了一下简化
                 // miui 做得比较人性化的，不会出现跳转不过去的问题，其他厂商就不一定了，就是不想让你跳转过去
                 intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
@@ -112,7 +113,7 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
             } else if (PhoneRomUtils.isMiui()) {
                 // 假设关闭了 miui 优化，就不走这里的逻辑
                 // 小米手机也可以通过应用详情页开启悬浮窗权限（只不过会多一步操作）
-                if (PhoneRomUtils.isMiuiOptimization()) {
+                if (PhoneRomUtils.isXiaomiSystemOptimization()) {
                     intent = getMiuiWindowPermissionPageIntent(context);
                     intentList.add(intent);
                 }
