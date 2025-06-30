@@ -3,9 +3,11 @@ package com.hjq.permissions.demo.permission;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Looper;
@@ -13,6 +15,8 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,18 +65,16 @@ public final class PermissionDescription implements OnPermissionDescription {
     @Override
     public void askWhetherRequestPermission(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
                                             @NonNull Runnable continueRequestRunnable, @NonNull Runnable breakRequestRunnable) {
-        if (XXPermissions.containsSpecialPermission(requestPermissions)) {
-            // 如果请求的权限中包含特殊权限，那么就用 Dialog 来展示权限说明弹窗
+        // 以下情况使用 Dialog 来展示权限说明弹窗，否则使用 PopupWindow 来展示权限说明弹窗
+        // 1. 如果请求的权限中包含特殊权限
+        // 2. 如果请求的权限中包含后台权限
+        // 3. 如果当前 Activity 的屏幕是竖屏的话，并且设备的屏幕尺寸还小于 10 寸
+        if (XXPermissions.containsSpecialPermission(requestPermissions) ||
+            XXPermissions.containsBackgroundPermission(activity, requestPermissions) ||
+            (isActivityLandscape(activity) && getPhysicalScreenSize(activity) < 10)) {
             mDescriptionWindowType = DESCRIPTION_WINDOW_TYPE_DIALOG;
         } else {
-            int activityOrientation = activity.getResources().getConfiguration().orientation;
-            // 如果当前 Activity 的屏幕是竖屏的话，就用 PopupWindow 展示权限说明弹窗，否则用 Dialog 来展示权限说明弹窗
-            mDescriptionWindowType = activityOrientation == Configuration.ORIENTATION_PORTRAIT ?
-                DESCRIPTION_WINDOW_TYPE_POPUP : DESCRIPTION_WINDOW_TYPE_DIALOG;
-            // 如果本次申请的权限中带有后台权限（例如后台定位权限、后台传感器权限等），则改用 Dialog 来展示权限说明弹窗
-            if (XXPermissions.containsBackgroundPermission(activity, requestPermissions)) {
-                mDescriptionWindowType = DESCRIPTION_WINDOW_TYPE_DIALOG;
-            }
+            mDescriptionWindowType = DESCRIPTION_WINDOW_TYPE_POPUP;
         }
 
         if (mDescriptionWindowType == DESCRIPTION_WINDOW_TYPE_POPUP) {
@@ -231,5 +233,37 @@ public final class PermissionDescription implements OnPermissionDescription {
         }
         mPermissionPopupWindow.dismiss();
         mPermissionPopupWindow = null;
+    }
+
+    /**
+     * 判断当前 Activity 是否是竖屏显示
+     */
+    public static boolean isActivityLandscape(@NonNull Activity activity) {
+        return activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    /**
+     * 获取当前设备的物理屏幕尺寸
+     */
+    @SuppressWarnings("deprecation")
+    public static double getPhysicalScreenSize(@NonNull Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display defaultDisplay = windowManager.getDefaultDisplay();
+        if (defaultDisplay == null) {
+            return 0;
+        }
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        defaultDisplay.getMetrics(metrics);
+
+        float screenWidthInInches;
+        float screenHeightInInches;
+        Point point = new Point();
+        defaultDisplay.getRealSize(point);
+        screenWidthInInches = point.x / metrics.xdpi;
+        screenHeightInInches = point.y / metrics.ydpi;
+
+        // 勾股定理：直角三角形的两条直角边的平方和等于斜边的平方
+        return Math.sqrt(Math.pow(screenWidthInInches, 2) + Math.pow(screenHeightInInches, 2));
     }
 }
