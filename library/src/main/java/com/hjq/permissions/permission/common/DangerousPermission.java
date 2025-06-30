@@ -8,6 +8,8 @@ import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.BasePermission;
 import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionSettingPage;
+import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,7 +86,18 @@ public abstract class DangerousPermission extends BasePermission {
     @Override
     public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
         List<Intent> intentList = new ArrayList<>();
-        intentList.add(getApplicationDetailsIntent(context));
+        Intent intent;
+
+        // 如果当前厂商系统是澎湃或者 miui 的话，并且已经开启小米系统优化的前提下
+        if ((PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui()) && PhoneRomUtils.isXiaomiSystemOptimization()) {
+            // 优先跳转到小米特有的应用权限设置页，这样做可以优化用户授权的体验
+            intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
+            intentList.add(intent);
+        }
+
+        intent = getApplicationDetailsIntent(context);
+        intentList.add(intent);
+
         return intentList;
     }
 
