@@ -20,6 +20,7 @@ import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionUtils;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -126,30 +127,30 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
 
     @NonNull
     @Override
-    public Intent getPermissionSettingIntent(@NonNull Context context) {
-        Intent intent = null;
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+        List<Intent> intentList = new ArrayList<>();
+        Intent intent;
+
         if (AndroidVersion.isAndroid11() && PermissionUtils.isClassExist(mServiceClassName)) {
             intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS);
             intent.putExtra(Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME, new ComponentName(context, mServiceClassName).flattenToString());
-            if (!PermissionUtils.areActivityIntent(context, intent)) {
-                intent = null;
-            }
+            intentList.add(intent);
         }
 
-        if (intent == null) {
-            if (AndroidVersion.isAndroid5_1()) {
-                intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
-            } else {
-                // android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
-                intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-            }
+        String action;
+        if (AndroidVersion.isAndroid5_1()) {
+            action = Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS;
+        } else {
+            // android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
+            action = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
         }
+        intent = new Intent(action);
+        intentList.add(intent);
 
-        if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = getAndroidSettingAppIntent();
-        }
+        intent = getAndroidSettingAppIntent();
+        intentList.add(intent);
 
-        return intent;
+        return intentList;
     }
 
     @Override

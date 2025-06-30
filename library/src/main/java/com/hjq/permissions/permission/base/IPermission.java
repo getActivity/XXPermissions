@@ -110,10 +110,16 @@ public interface IPermission extends Parcelable {
     boolean isDoNotAskAgainPermission(@NonNull Activity activity);
 
     /**
-     * 获取权限设置页的意图
+     * 获取当前权限所有可用的设置页意图
+     *
+     * 需要注意的是：无需在此方法中判断设置页的意图是否存在再添加，
+     *             因为框架在跳转的时候框架会先过滤一遍不存在的意图，
+     *             另外通过代码事先判断出来存在的意图也有可能会跳转失败，
+     *             如果出现跳转失败会自动使用下一个意图进行跳转，
+     *             总结：不存在的意图铁定会跳转失败，存在的意图不一定 100% 会跳转成功。
      */
     @NonNull
-    Intent getPermissionSettingIntent(@NonNull Context context);
+    List<Intent> getPermissionSettingIntents(@NonNull Context context);
 
     /**
      * 获取权限请求的间隔时间

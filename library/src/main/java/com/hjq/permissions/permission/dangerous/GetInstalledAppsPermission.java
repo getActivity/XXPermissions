@@ -19,8 +19,8 @@ import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionSettingPage;
-import com.hjq.permissions.tools.PermissionSettingPageHandler;
 import com.hjq.permissions.tools.PhoneRomUtils;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -130,18 +130,19 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public Intent getPermissionSettingIntent(@NonNull Context context) {
-        if (PhoneRomUtils.isMiui()) {
-            Intent intent = null;
-            if (PhoneRomUtils.isMiuiOptimization()) {
-                intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
-            }
-            // 另外跳转到应用详情页也可以开启读取应用列表权限
-            intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, getApplicationDetailsIntent(context));
-            return intent;
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+        List<Intent> intentList = new ArrayList<>();
+        Intent intent;
+
+        if (PhoneRomUtils.isMiui() && PhoneRomUtils.isMiuiOptimization()) {
+            intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
+            intentList.add(intent);
         }
 
-        return getApplicationDetailsIntent(context);
+        intent = getApplicationDetailsIntent(context);
+        intentList.add(intent);
+
+        return intentList;
     }
 
     @Override

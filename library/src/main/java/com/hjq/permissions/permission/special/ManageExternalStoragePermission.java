@@ -12,12 +12,13 @@ import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.ApplicationManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
-import com.hjq.permissions.tools.AndroidVersion;
-import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
+import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionUtils;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -89,23 +90,23 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public Intent getPermissionSettingIntent(@NonNull Context context) {
-        if (!AndroidVersion.isAndroid11()) {
-            return getApplicationDetailsIntent(context);
-        }
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+        List<Intent> intentList = new ArrayList<>();
+        Intent intent;
 
-        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-        intent.setData(PermissionUtils.getPackageNameUri(context));
+        if (AndroidVersion.isAndroid11()) {
+            intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+            intent.setData(PermissionUtils.getPackageNameUri(context));
+            intentList.add(intent);
 
-        if (!PermissionUtils.areActivityIntent(context, intent)) {
             intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+            intentList.add(intent);
         }
 
-        if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = getAndroidSettingAppIntent();
-        }
+        intent = getAndroidSettingAppIntent();
+        intentList.add(intent);
 
-        return intent;
+        return intentList;
     }
 
     @Override

@@ -17,6 +17,7 @@ import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionUtils;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -96,15 +97,19 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public Intent getPermissionSettingIntent(@NonNull Context context) {
-        Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+        List<Intent> intentList = new ArrayList<>();
+        Intent intent;
+
+        intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
         intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, new ComponentName(context, mBroadcastReceiverClassName));
         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, mExtraAddExplanation);
+        intentList.add(intent);
 
-        if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = getAndroidSettingAppIntent();
-        }
-        return intent;
+        intent = getAndroidSettingAppIntent();
+        intentList.add(intent);
+
+        return intentList;
     }
 
     @Override

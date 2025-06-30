@@ -8,6 +8,8 @@ import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.BasePermission;
 import com.hjq.permissions.tools.AndroidVersion;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -80,8 +82,10 @@ public abstract class DangerousPermission extends BasePermission {
 
     @NonNull
     @Override
-    public Intent getPermissionSettingIntent(@NonNull Context context) {
-        return getApplicationDetailsIntent(context);
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+        List<Intent> intentList = new ArrayList<>();
+        intentList.add(getApplicationDetailsIntent(context));
+        return intentList;
     }
 
     @Override

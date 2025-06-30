@@ -8,12 +8,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import com.hjq.permissions.tools.AndroidVersion;
-import com.hjq.permissions.tools.PermissionUtils;
-import com.hjq.permissions.tools.PhoneRomUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
+import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PhoneRomUtils;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -74,29 +75,33 @@ public final class UseFullScreenIntentPermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public Intent getPermissionSettingIntent(@NonNull Context context) {
-        if (!AndroidVersion.isAndroid14()) {
-            return getApplicationDetailsIntent(context);
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+        List<Intent> intentList = new ArrayList<>();
+        Intent intent;
+
+        if (AndroidVersion.isAndroid14()) {
+            intent = new Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT);
+            intent.setData(PermissionUtils.getPackageNameUri(context));
+            intentList.add(intent);
         }
 
-        Intent intent = new Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT);
-        intent.setData(PermissionUtils.getPackageNameUri(context));
-
-        if (!PermissionUtils.areActivityIntent(context, intent)) {
-            // 经过测试，miui 和 Hyper 不支持在通知界面设置全屏通知权限的，但是 Android 原生是可以的
-            if (PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui()) {
-                intent = getAndroidSettingAppIntent();
-            } else {
-                intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-                intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
-            }
+        // 经过测试，miui 和 Hyper 不支持在通知界面设置全屏通知权限的，但是 Android 原生是可以的
+        if (PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui()) {
+            intent = getAndroidSettingAppIntent();
+            intentList.add(intent);
+            return intentList;
         }
 
-        if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = getApplicationDetailsIntent(context);
+        if (AndroidVersion.isAndroid8()) {
+            intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+            intentList.add(intent);
         }
 
-        return intent;
+        intent = getApplicationDetailsIntent(context);
+        intentList.add(intent);
+
+        return intentList;
     }
 
     @Override

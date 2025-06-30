@@ -17,6 +17,7 @@ import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -77,24 +78,24 @@ public final class ScheduleExactAlarmPermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public Intent getPermissionSettingIntent(@NonNull Context context) {
-        if (!AndroidVersion.isAndroid12()) {
-            return getApplicationDetailsIntent(context);
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+        List<Intent> intentList = new ArrayList<>();
+        Intent intent;
+
+        if (AndroidVersion.isAndroid12()) {
+            intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+            intent.setData(PermissionUtils.getPackageNameUri(context));
+            intentList.add(intent);
+
+            // 如果是因为加包名的数据后导致不能跳转，就把包名的数据移除掉
+            intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+            intentList.add(intent);
         }
 
-        Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
-        intent.setData(PermissionUtils.getPackageNameUri(context));
+        intent = getApplicationDetailsIntent(context);
+        intentList.add(intent);
 
-        // 如果是因为加包名的数据后导致不能跳转，就把包名的数据移除掉
-        if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent.setData(null);
-        }
-
-        if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = getApplicationDetailsIntent(context);
-        }
-
-        return intent;
+        return intentList;
     }
 
     @Override

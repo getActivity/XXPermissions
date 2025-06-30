@@ -6,12 +6,12 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import com.hjq.permissions.tools.AndroidVersion;
-import com.hjq.permissions.tools.PermissionUtils;
-import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionLists;
+import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
+import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionUtils;
 import java.util.List;
 
 /**
@@ -76,9 +76,9 @@ public final class PostNotificationsPermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public Intent getPermissionSettingIntent(@NonNull Context context) {
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
         // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/208
         // POST_NOTIFICATIONS 要跳转到权限设置页和 NOTIFICATION_SERVICE 权限是一样的
-        return PermissionLists.getNotificationServicePermission().getPermissionSettingIntent(context);
+        return PermissionLists.getNotificationServicePermission().getPermissionSettingIntents(context);
     }
 }

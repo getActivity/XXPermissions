@@ -13,7 +13,8 @@ import android.text.TextUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.AndroidVersion;
-import com.hjq.permissions.tools.PermissionUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -96,12 +97,14 @@ public final class NotificationServicePermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public Intent getPermissionSettingIntent(@NonNull Context context) {
-        Intent intent = new Intent();
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+        List<Intent> intentList = new ArrayList<>();
+        Intent intent;
+
         if (AndroidVersion.isAndroid8()) {
+            intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
             // 添加应用的包名参数
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
-
             NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
             NotificationChannel notificationChannel = null;
             // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
@@ -120,30 +123,30 @@ public final class NotificationServicePermission extends SpecialPermission {
                     // 高版本会优先从会话 id 中找到对应的通知渠道，找不到再从渠道 id 上面找到对应的通知渠道
                     intent.putExtra(Settings.EXTRA_CONVERSATION_ID, notificationChannel.getConversationId());
                 }
-                // 如果系统不支持这个意图，就将 Action 修改成通知权限设置的页面
-                if (!PermissionUtils.areActivityIntent(context, intent)) {
-                    intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-                }
-            } else {
-                // 没有指定通知渠道，就将 Action 修改成通知权限设置的页面
-                intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intentList.add(intent);
             }
 
-        } else if (AndroidVersion.isAndroid5()) {
-            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+            intentList.add(intent);
+        }
+
+        if (AndroidVersion.isAndroid5()) {
+            intent = new Intent("android.settings.APP_NOTIFICATION_SETTINGS");
             intent.putExtra("app_package", context.getPackageName());
             intent.putExtra("app_uid", context.getApplicationInfo().uid);
+            intentList.add(intent);
         }
 
-        if (AndroidVersion.isAndroid13() && !PermissionUtils.areActivityIntent(context, intent)) {
+        if (AndroidVersion.isAndroid13()) {
             intent = new Intent(Settings.ACTION_ALL_APPS_NOTIFICATION_SETTINGS);
+            intentList.add(intent);
         }
 
-        if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = getApplicationDetailsIntent(context);
-        }
+        intent = getApplicationDetailsIntent(context);
+        intentList.add(intent);
 
-        return intent;
+        return intentList;
     }
 
     @Nullable

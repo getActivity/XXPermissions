@@ -11,6 +11,8 @@ import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -70,12 +72,10 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
 
     @NonNull
     @Override
-    public Intent getPermissionSettingIntent(@NonNull Context context) {
-        if (!AndroidVersion.isAndroid6()) {
-            return getApplicationDetailsIntent(context);
-        }
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+        List<Intent> intentList = new ArrayList<>();
+        Intent intent;
 
-        Intent intent = null;
         // issue 地址：https://github.com/getActivity/XXPermissions/issues/190
         // 这里解释一下，为什么要排除 HarmonyOs 和 Magic，因为用代码能检测到有这个 Intent，也能跳转过去，但是会被马上拒绝
         // 测试过了其他厂商系统及 Android 原生系统都没有这个问题，就只有鸿蒙有这个问题
@@ -94,22 +94,18 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
             // android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS
             intent = new Intent("android.settings.NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS");
             intent.setData(PermissionUtils.getPackageNameUri(context));
-
-            // 如果还是找不到这个意图，就把意图的对象置空
-            if (!PermissionUtils.areActivityIntent(context, intent)) {
-                intent = null;
-            }
+            intentList.add(intent);
         }
 
-        if (intent == null) {
+        if (AndroidVersion.isAndroid6()) {
             intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+            intentList.add(intent);
         }
 
-        if (!PermissionUtils.areActivityIntent(context, intent)) {
-            intent = getApplicationDetailsIntent(context);
-        }
+        intent = getApplicationDetailsIntent(context);
+        intentList.add(intent);
 
-        return intent;
+        return intentList;
     }
 
     @Override

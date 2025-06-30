@@ -12,6 +12,7 @@ import com.hjq.permissions.delegate.StartActivityDelegateByActivity;
 import com.hjq.permissions.delegate.StartActivityDelegateByContext;
 import com.hjq.permissions.delegate.StartActivityDelegateByFragmentApp;
 import com.hjq.permissions.delegate.StartActivityDelegateByFragmentSupport;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -68,6 +69,24 @@ public final class PermissionSettingPageHandler {
         }
         Intent deepSubIntent = findDeepIntent(mainIntent);
         deepSubIntent.putExtra(SUB_INTENT_KEY, subIntent);
+        return mainIntent;
+    }
+
+    /**
+     * 合并多个 Intent 意图
+     */
+    public static Intent mergeMultipleIntent(@NonNull Context context, @NonNull List<Intent> intentList) {
+        Intent mainIntent = null;
+        for (Intent intent : intentList) {
+            // 这个意图必须存在，才纳入到跳转的范围，否则就不考虑
+            if (!PermissionUtils.areActivityIntent(context, intent)) {
+                continue;
+            }
+            mainIntent = addSubIntentForMainIntent(mainIntent, intent);
+        }
+        if (mainIntent == null) {
+            return PermissionSettingPage.getApplicationDetailsIntent(context);
+        }
         return mainIntent;
     }
 

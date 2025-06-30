@@ -142,7 +142,7 @@ public final class PermissionApi {
         }
 
         if (realPermissions.size() == 1) {
-            return realPermissions.get(0).getPermissionSettingIntent(context);
+            return PermissionSettingPageHandler.mergeMultipleIntent(context, realPermissions.get(0).getPermissionSettingIntents(context));
         }
 
         return PermissionSettingPage.getApplicationDetailsIntent(context, realPermissions.toArray(new IPermission[0]));
