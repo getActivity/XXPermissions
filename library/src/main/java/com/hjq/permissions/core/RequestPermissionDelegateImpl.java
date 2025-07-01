@@ -5,16 +5,15 @@ import android.os.Bundle;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.manager.ActivityOrientationManager;
-import com.hjq.permissions.manager.PermissionRequestCodeManager;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.delegate.IStartActivityDelegate;
 import com.hjq.permissions.fragment.IFragmentCallback;
 import com.hjq.permissions.fragment.IFragmentMethod;
-import com.hjq.permissions.delegate.IStartActivityDelegate;
+import com.hjq.permissions.manager.ActivityOrientationManager;
+import com.hjq.permissions.permission.base.IPermission;
+import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionApi;
 import com.hjq.permissions.tools.PermissionTaskHandler;
 import com.hjq.permissions.tools.PermissionUtils;
-import com.hjq.permissions.permission.base.IPermission;
 import java.util.List;
 
 /**
@@ -194,15 +193,7 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
     /**
      * 通知权限回调
      */
-    protected void notificationPermissionCallback(int requestCode) {
-        // 如果回调中的请求码和请求时设置的请求码不一致，则证明回调有问题，则不往下执行代码
-        if (requestCode != getPermissionRequestCode()) {
-            return;
-        }
-
-        // 释放对这个请求码的占用
-        PermissionRequestCodeManager.releaseRequestCode(requestCode);
-
+    protected void notificationPermissionCallback() {
         Activity activity = getActivity();
         if (PermissionUtils.isActivityUnavailable(activity)) {
             return;

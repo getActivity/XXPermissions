@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.fragment.IFragmentMethod;
+import com.hjq.permissions.manager.PermissionRequestCodeManager;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionUtils;
@@ -40,6 +41,13 @@ public final class RequestPermissionDelegateImplByDangerous extends RequestPermi
 
     @Override
     public void onFragmentRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        notificationPermissionCallback(requestCode);
+        // 如果回调中的请求码和请求时设置的请求码不一致，则证明回调有问题，则不往下执行代码
+        if (requestCode != getPermissionRequestCode()) {
+            return;
+        }
+        // 释放对这个请求码的占用
+        PermissionRequestCodeManager.releaseRequestCode(requestCode);
+        // 通知权限请求回调
+        notificationPermissionCallback();
     }
 }

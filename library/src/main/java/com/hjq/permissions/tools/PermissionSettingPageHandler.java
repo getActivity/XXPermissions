@@ -138,7 +138,13 @@ public final class PermissionSettingPageHandler {
     }
 
     public static boolean startActivityForResult(@NonNull IStartActivityDelegate delegate, @NonNull Intent intent,
-                                                 @IntRange(from = 1, to = 65535) int requestCode) {
+                                                @IntRange(from = 1, to = 65535) int requestCode) {
+        return startActivityForResult(delegate, intent, requestCode, null);
+    }
+
+    public static boolean startActivityForResult(@NonNull IStartActivityDelegate delegate, @NonNull Intent intent,
+                                                 @IntRange(from = 1, to = 65535) int requestCode,
+                                                 @Nullable Runnable ignoreActivityResultCallback) {
         try {
             delegate.startActivityForResult(intent, requestCode);
             return true;
@@ -147,6 +153,11 @@ public final class PermissionSettingPageHandler {
             Intent subIntent = findSubIntentBySuperIntent(intent);
             if (subIntent == null) {
                 return false;
+            }
+            // 如果 subIntent 不为空才去触发失败的回调，这是因为如果 subIntent 为空，则证明已经没有下一个 Intent 可以再试了，
+            // 那么就不需要记录这次跳转失败的次数，这样前面 startActivityForResult 失败就会导致系统触发 onActivityResult 回调，形成闭环
+            if (ignoreActivityResultCallback != null) {
+                ignoreActivityResultCallback.run();
             }
             return startActivityForResult(delegate, subIntent, requestCode);
         }
