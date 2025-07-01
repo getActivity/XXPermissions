@@ -159,8 +159,6 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
             return;
         }
         startPermissionRequest(activity, permissions, requestCode);
-        // 锁定 Activity 屏幕方向
-        ActivityOrientationManager.lockActivityOrientation(activity);
         OnPermissionFlowCallback callback = getCallBack();
         if (callback == null) {
             return;

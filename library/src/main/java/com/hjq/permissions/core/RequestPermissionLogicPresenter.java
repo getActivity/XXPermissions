@@ -89,6 +89,9 @@ public final class RequestPermissionLogicPresenter {
         final PermissionFragmentFactory<?, ?> fragmentFactory = mFragmentFactory;
         final OnPermissionDescription permissionDescription = mPermissionDescription;
 
+        // 锁定 Activity 屏幕方向
+        ActivityOrientationManager.lockActivityOrientation(activity);
+
         // 发起权限请求
         requestPermissions(activity, firstPermissions, fragmentFactory, permissionDescription, new Runnable() {
             @Override
