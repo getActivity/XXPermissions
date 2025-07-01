@@ -69,6 +69,10 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
             return Settings.canDrawOverlays(context);
         }
 
+        if (!AndroidVersion.isAndroid4_4()) {
+            return true;
+        }
+
         // 经过测试在 vivo x7 Plus（Android 5.1）和 OPPO A53 （Android 5.1 ColorOs 2.1）的机子上面判断不准确
         // 经过 debug 发现并不是 vivo 和 oppo 修改了 OP_SYSTEM_ALERT_WINDOW 的赋值导致的
         // 估计是 vivo 和 oppo 的机子修改了整个悬浮窗机制，这种就没有办法了

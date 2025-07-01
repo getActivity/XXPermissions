@@ -2,7 +2,6 @@ package com.hjq.permissions.permission.dangerous;
 
 import android.Manifest.permission;
 import android.app.Activity;
-import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,6 +11,7 @@ import android.os.Parcelable;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.permission.PermissionNames;
@@ -74,12 +74,12 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         // 获取父类方法的返回值，看看它是不是支持申请的，这个是前提条件
         boolean superMethodSupportRequestPermission = super.isSupportRequestPermission(context);
         if (superMethodSupportRequestPermission) {
-            if (isSupportRequestPermissionBySystem(context)) {
+            if (AndroidVersion.isAndroid6() && isSupportRequestPermissionBySystem(context)) {
                 // 表示支持申请
                 return true;
             }
 
-            if (PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
+            if (AndroidVersion.isAndroid4_4() && PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
                 // 通过 miui 优化开关来决定是不是支持开启
                 return PhoneRomUtils.isXiaomiSystemOptimization();
             }
@@ -89,11 +89,11 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (isSupportRequestPermissionBySystem(context)) {
+        if (AndroidVersion.isAndroid6() && isSupportRequestPermissionBySystem(context)) {
             return checkSelfPermission(context, getPermissionName());
         }
 
-        if (PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
+        if (AndroidVersion.isAndroid4_4() && PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
             if (!PhoneRomUtils.isXiaomiSystemOptimization()) {
                 // 如果当前没有开启 miui 优化，则直接返回 true，表示已经授权，因为在这种情况下
                 // 就算跳转 miui 权限设置页，用户也授权了，用代码判断权限还是没有授予的状态
@@ -110,13 +110,13 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
-        if (isSupportRequestPermissionBySystem(activity)) {
+        if (AndroidVersion.isAndroid6() && isSupportRequestPermissionBySystem(activity)) {
             // 如果支持申请，那么再去判断权限是否永久拒绝
             return !checkSelfPermission(activity, getPermissionName()) &&
                 !shouldShowRequestPermissionRationale(activity, getPermissionName());
         }
 
-        if (PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
+        if (AndroidVersion.isAndroid4_4() && PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
             if (!PhoneRomUtils.isXiaomiSystemOptimization()) {
                 return false;
             }
@@ -185,11 +185,8 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
      * 判断是否支持获取应用列表权限
      */
     @SuppressWarnings("deprecation")
+    @RequiresApi(AndroidVersion.ANDROID_6)
     private boolean isSupportRequestPermissionBySystem(Context context) {
-        if (!AndroidVersion.isAndroid6()) {
-            // 如果是 Android 6.0 以下，判定它是不支持的
-            return false;
-        }
         try {
             PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(getPermissionName(), 0);
             if (permissionInfo != null) {
@@ -220,20 +217,8 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
     /**
      * 判断当前 miui 版本是否支持申请读取应用列表权限
      */
+    @RequiresApi(AndroidVersion.ANDROID_4_4)
     private static boolean isSupportRequestPermissionByMiui() {
-        if (!AndroidVersion.isAndroid4_4()) {
-            return true;
-        }
-        try {
-            Class<?> appOpsClass = Class.forName(AppOpsManager.class.getName());
-            appOpsClass.getDeclaredField(MIUI_OP_GET_INSTALLED_APPS_FIELD_NAME);
-            // 证明有这个字段，返回 true
-            return true;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-        return false;
+        return isExistOpPermission(MIUI_OP_GET_INSTALLED_APPS_FIELD_NAME);
     }
 }

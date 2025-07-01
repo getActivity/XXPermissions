@@ -48,6 +48,9 @@ public abstract class DangerousPermission extends BasePermission {
      * 在标准版本的系统上面判断权限是否授予
      */
     protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
+        if (!AndroidVersion.isAndroid6()) {
+            return true;
+        }
         return checkSelfPermission(context, getPermissionName());
     }
 
@@ -71,6 +74,9 @@ public abstract class DangerousPermission extends BasePermission {
      * 在标准版本的系统上面判断权限是否被用户勾选了《不再询问的选项》
      */
     protected boolean isDoNotAskAgainPermissionByStandardVersion(@NonNull Activity activity) {
+        if (!AndroidVersion.isAndroid6()) {
+            return false;
+        }
         return !checkSelfPermission(activity, getPermissionName()) &&
             !shouldShowRequestPermissionRationale(activity, getPermissionName());
     }

@@ -77,22 +77,26 @@ public final class NotificationServicePermission extends SpecialPermission {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (AndroidVersion.isAndroid7()) {
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
-            if (notificationManager == null) {
-                return checkOpPermission(context, OP_POST_NOTIFICATION_FIELD_NAME, OP_POST_NOTIFICATION_DEFAULT_VALUE, true);
-            }
-            if (!notificationManager.areNotificationsEnabled()) {
-                return false;
-            }
-            if (TextUtils.isEmpty(mChannelId) || !AndroidVersion.isAndroid8()) {
-                return true;
-            }
-            NotificationChannel notificationChannel = notificationManager.getNotificationChannel(mChannelId);
-            return notificationChannel != null && notificationChannel.getImportance() != NotificationManager.IMPORTANCE_NONE;
+        if (!AndroidVersion.isAndroid4_4()) {
+            return true;
         }
-        return checkOpPermission(context, OP_POST_NOTIFICATION_FIELD_NAME, OP_POST_NOTIFICATION_DEFAULT_VALUE, true);
+        if (!AndroidVersion.isAndroid7()) {
+            return checkOpPermission(context, OP_POST_NOTIFICATION_FIELD_NAME, OP_POST_NOTIFICATION_DEFAULT_VALUE, true);
+        }
+
+        NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+        // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
+        if (notificationManager == null) {
+            return checkOpPermission(context, OP_POST_NOTIFICATION_FIELD_NAME, OP_POST_NOTIFICATION_DEFAULT_VALUE, true);
+        }
+        if (!notificationManager.areNotificationsEnabled()) {
+            return false;
+        }
+        if (TextUtils.isEmpty(mChannelId) || !AndroidVersion.isAndroid8()) {
+            return true;
+        }
+        NotificationChannel notificationChannel = notificationManager.getNotificationChannel(mChannelId);
+        return notificationChannel != null && notificationChannel.getImportance() != NotificationManager.IMPORTANCE_NONE;
     }
 
     @NonNull

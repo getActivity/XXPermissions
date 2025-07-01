@@ -220,21 +220,17 @@ public abstract class BasePermission implements IPermission {
     /**
      * 判断某个危险权限是否授予了
      */
+    @RequiresApi(AndroidVersion.ANDROID_6)
     public static boolean checkSelfPermission(@NonNull Context context, @NonNull String permission) {
-        if (!AndroidVersion.isAndroid6()) {
-            return true;
-        }
         return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     /**
      * 判断是否应该向用户显示请求权限的理由
      */
+    @RequiresApi(AndroidVersion.ANDROID_6)
     @SuppressWarnings({"JavaReflectionMemberAccess", "ConstantConditions", "BooleanMethodIsAlwaysInverted"})
     public static boolean shouldShowRequestPermissionRationale(@NonNull Activity activity, @NonNull String permission) {
-        if (!AndroidVersion.isAndroid6()) {
-            return false;
-        }
         // 解决 Android 12 调用 shouldShowRequestPermissionRationale 出现内存泄漏的问题
         // Android 12L 和 Android 13 版本经过测试不会出现这个问题，证明 Google 在新版本上已经修复了这个问题
         // 但是对于 Android 12 仍是一个历史遗留问题，这是我们所有 Android App 开发者不得不面对的一个事情
@@ -260,10 +256,8 @@ public abstract class BasePermission implements IPermission {
      * @param opName               需要传入 {@link AppOpsManager} 类中的以 OPSTR 开头的字段
      * @param defaultGranted       当判断不了该权限状态的时候，是否返回已授予状态
      */
+    @RequiresApi(AndroidVersion.ANDROID_4_4)
     public static boolean checkOpPermission(@NonNull Context context, @NonNull String opName, boolean defaultGranted) {
-        if (!AndroidVersion.isAndroid4_4()) {
-            return defaultGranted;
-        }
         int opMode = getOpPermissionMode(context, opName);
         if (opMode == AppOpsManager.MODE_ERRORED) {
             return defaultGranted;
@@ -278,10 +272,8 @@ public abstract class BasePermission implements IPermission {
      * @param opDefaultValue            当反射获取不到对应字段的值时，该值作为替补
      * @param defaultGranted            当判断不了该权限状态的时候，是否返回已授予状态
      */
+    @RequiresApi(AndroidVersion.ANDROID_4_4)
     public static boolean checkOpPermission(Context context, String opFieldName, int opDefaultValue, boolean defaultGranted) {
-        if (!AndroidVersion.isAndroid4_4()) {
-            return defaultGranted;
-        }
         int opMode = getOpPermissionMode(context, opFieldName, opDefaultValue);
         if (opMode == AppOpsManager.MODE_ERRORED) {
             return defaultGranted;
@@ -322,12 +314,12 @@ public abstract class BasePermission implements IPermission {
     /**
      * 获取 AppOpsManager 某个权限的状态
      *
-     * @param opFieldName               要反射 {@link AppOpsManager} 类中的字段名称
-     * @param opDefaultValue            当反射获取不到对应字段的值时，该值作为替补
+     * @param opName                要反射 {@link AppOpsManager} 类中的字段名称
+     * @param opDefaultValue        当反射获取不到对应字段的值时，该值作为替补
      */
     @SuppressWarnings("ConstantConditions")
     @RequiresApi(AndroidVersion.ANDROID_4_4)
-    public static int getOpPermissionMode(Context context, String opFieldName, int opDefaultValue) {
+    public static int getOpPermissionMode(Context context, @NonNull String opName, int opDefaultValue) {
         AppOpsManager appOpsManager;
         if (AndroidVersion.isAndroid6()) {
             appOpsManager = context.getSystemService(AppOpsManager.class);
@@ -342,8 +334,8 @@ public abstract class BasePermission implements IPermission {
             Class<?> appOpsClass = Class.forName(AppOpsManager.class.getName());
             int opValue;
             try {
-                Field opValueField = appOpsClass.getDeclaredField(opFieldName);
-                opValue = (int) opValueField.get(Integer.class);
+                Field opField = appOpsClass.getDeclaredField(opName);
+                opValue = (int) opField.get(Integer.class);
             } catch (NoSuchFieldException e) {
                 opValue = opDefaultValue;
             }
@@ -352,6 +344,24 @@ public abstract class BasePermission implements IPermission {
         } catch (Exception e) {
             e.printStackTrace();
             return AppOpsManager.MODE_ERRORED;
+        }
+    }
+
+    /**
+     * 判断 AppOpsManager 是否存在某个 Op 权限
+     *
+     * @param opName                要反射 {@link AppOpsManager} 类中的字段名称
+     */
+    @RequiresApi(AndroidVersion.ANDROID_4_4)
+    public static boolean isExistOpPermission(String opName) {
+        try {
+            Class<?> appOpsClass = Class.forName(AppOpsManager.class.getName());
+            appOpsClass.getDeclaredField(opName);
+            // 证明有这个字段，返回 true
+            return true;
+        } catch (Exception ignored) {
+            // default implementation ignored
+            return false;
         }
     }
 }
