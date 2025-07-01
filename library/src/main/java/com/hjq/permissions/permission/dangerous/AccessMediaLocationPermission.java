@@ -5,12 +5,12 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import com.hjq.permissions.tools.AndroidVersion;
-import com.hjq.permissions.tools.PermissionUtils;
-import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionLists;
+import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
+import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionUtils;
 import java.util.List;
 
 /**
@@ -99,6 +99,69 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
     @Override
     protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
         super.checkSelfByRequestPermissions(activity, requestPermissions);
+
+        int thisPermissionindex = -1;
+        int readMediaImagesPermissionIndex = -1;
+        int readMediaVideoPermissionIndex = -1;
+        int readMediaVisualUserSelectedPermissionIndex = -1;
+        int manageExternalStoragePermissionIndex = -1;
+        int readExternalStoragePermissionIndex = -1;
+        int writeExternalStoragePermissionIndex = -1;
+        for (int i = 0; i < requestPermissions.size(); i++) {
+            IPermission permission = requestPermissions.get(i);
+            if (PermissionUtils.equalsPermission(permission, getPermissionName())) {
+                thisPermissionindex = i;
+            } else if (PermissionUtils.equalsPermission(permission, PermissionNames.READ_MEDIA_IMAGES)) {
+                readMediaImagesPermissionIndex = i;
+            } else if (PermissionUtils.equalsPermission(permission, PermissionNames.READ_MEDIA_VIDEO)) {
+                readMediaVideoPermissionIndex = i;
+            } else if (PermissionUtils.equalsPermission(permission, PermissionNames.READ_MEDIA_VISUAL_USER_SELECTED)) {
+                readMediaVisualUserSelectedPermissionIndex = i;
+            } else if (PermissionUtils.equalsPermission(permission, PermissionNames.MANAGE_EXTERNAL_STORAGE)) {
+                manageExternalStoragePermissionIndex = i;
+            } else if (PermissionUtils.equalsPermission(permission, PermissionNames.READ_EXTERNAL_STORAGE)) {
+                readExternalStoragePermissionIndex = i;
+            } else if (PermissionUtils.equalsPermission(permission, PermissionNames.WRITE_EXTERNAL_STORAGE)) {
+                writeExternalStoragePermissionIndex = i;
+            }
+        }
+
+        if (readMediaImagesPermissionIndex != -1 && readMediaImagesPermissionIndex > thisPermissionindex) {
+            // 请把 ACCESS_MEDIA_LOCATION 权限放置在 READ_MEDIA_IMAGES 权限的后面
+            throw new IllegalArgumentException("Please place the " + getPermissionName() +
+                "\" permission after the \"" + PermissionNames.READ_MEDIA_IMAGES + "\" permission");
+        }
+
+        if (readMediaVideoPermissionIndex != -1 && readMediaVideoPermissionIndex > thisPermissionindex) {
+            // 请把 ACCESS_MEDIA_LOCATION 权限放置在 READ_MEDIA_VIDEO 权限的后面
+            throw new IllegalArgumentException("Please place the \"" + getPermissionName() +
+                "\" permission after the \"" + PermissionNames.READ_MEDIA_VIDEO + "\" permission");
+        }
+
+        if (readMediaVisualUserSelectedPermissionIndex != -1 && readMediaVisualUserSelectedPermissionIndex > thisPermissionindex) {
+            // 请把 ACCESS_MEDIA_LOCATION 权限放置在 READ_MEDIA_VISUAL_USER_SELECTED 权限的后面
+            throw new IllegalArgumentException("Please place the \"" + getPermissionName() +
+                "\" permission after the \"" + PermissionNames.READ_MEDIA_VISUAL_USER_SELECTED + "\" permission");
+        }
+
+        if (manageExternalStoragePermissionIndex != -1 && manageExternalStoragePermissionIndex > thisPermissionindex) {
+            // 请把 ACCESS_MEDIA_LOCATION 权限放置在 MANAGE_EXTERNAL_STORAGE 权限的后面
+            throw new IllegalArgumentException("Please place the \"" + getPermissionName() +
+                "\" permission after the \"" + PermissionNames.MANAGE_EXTERNAL_STORAGE + "\" permission");
+        }
+
+        if (readExternalStoragePermissionIndex != -1 && readExternalStoragePermissionIndex > thisPermissionindex) {
+            // 请把 ACCESS_MEDIA_LOCATION 权限放置在 READ_EXTERNAL_STORAGE 权限的后面
+            throw new IllegalArgumentException("Please place the \"" + getPermissionName() +
+                "\" permission after the \"" + PermissionNames.READ_EXTERNAL_STORAGE + "\" permission");
+        }
+
+        if (writeExternalStoragePermissionIndex != -1 && writeExternalStoragePermissionIndex > thisPermissionindex) {
+            // 请把 ACCESS_MEDIA_LOCATION 权限放置在 WRITE_EXTERNAL_STORAGE 权限的后面
+            throw new IllegalArgumentException("Please place the \"" + getPermissionName() +
+                "\" permission after the \"" + PermissionNames.WRITE_EXTERNAL_STORAGE + "\" permission");
+        }
+
         // 判断当前项目是否适配了 Android 13
         if (AndroidVersion.getTargetVersion(activity) >= AndroidVersion.ANDROID_13) {
             // 判断请求的权限中是否包含了某些特定权限
