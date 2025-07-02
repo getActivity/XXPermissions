@@ -134,7 +134,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         List<Intent> intentList = new ArrayList<>();
         Intent intent;
 
-        if (PhoneRomUtils.isMiui() && PhoneRomUtils.isXiaomiSystemOptimization()) {
+        if ((PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui()) && PhoneRomUtils.isXiaomiSystemOptimization()) {
             intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
             intentList.add(intent);
         }
