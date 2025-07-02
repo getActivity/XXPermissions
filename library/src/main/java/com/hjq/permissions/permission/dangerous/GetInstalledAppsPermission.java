@@ -139,7 +139,16 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
             intentList.add(intent);
         }
 
-        intent = getApplicationDetailsIntent(context);
+        intent = getApplicationDetailsSettingIntent(context);
+        intentList.add(intent);
+
+        intent = getManageApplicationSettingIntent();
+        intentList.add(intent);
+
+        intent = getApplicationSettingIntent();
+        intentList.add(intent);
+
+        intent = getAndroidSettingIntent();
         intentList.add(intent);
 
         return intentList;

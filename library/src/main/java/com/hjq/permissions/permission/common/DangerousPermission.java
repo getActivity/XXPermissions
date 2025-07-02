@@ -91,7 +91,7 @@ public abstract class DangerousPermission extends BasePermission {
     @NonNull
     @Override
     public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(5);
         Intent intent;
 
         // 如果当前厂商系统是澎湃或者 miui 的话，并且已经开启小米系统优化的前提下
@@ -101,7 +101,16 @@ public abstract class DangerousPermission extends BasePermission {
             intentList.add(intent);
         }
 
-        intent = getApplicationDetailsIntent(context);
+        intent = getApplicationDetailsSettingIntent(context);
+        intentList.add(intent);
+
+        intent = getManageApplicationSettingIntent();
+        intentList.add(intent);
+
+        intent = getApplicationSettingIntent();
+        intentList.add(intent);
+
+        intent = getAndroidSettingIntent();
         intentList.add(intent);
 
         return intentList;

@@ -11,11 +11,11 @@ import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.manifest.node.ServiceManifestInfo;
+import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
+import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionUtils;
-import com.hjq.permissions.permission.PermissionNames;
-import com.hjq.permissions.permission.common.SpecialPermission;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,9 +70,9 @@ public final class BindVpnServicePermission extends SpecialPermission {
     @NonNull
     @Override
     public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(2);
         intentList.add(VpnService.prepare(context));
-        intentList.add(getAndroidSettingAppIntent());
+        intentList.add(getAndroidSettingIntent());
         return intentList;
     }
 

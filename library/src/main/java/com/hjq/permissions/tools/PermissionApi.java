@@ -114,7 +114,7 @@ public final class PermissionApi {
     public static Intent getBestPermissionSettingIntent(@NonNull Context context, @Nullable List<IPermission> permissions) {
         // 如果失败的权限里面不包含特殊权限
         if (permissions == null || permissions.isEmpty()) {
-            return PermissionSettingPage.getApplicationDetailsIntent(context);
+            return PermissionSettingPage.getCommonPermissionSettingIntent(context);
         }
 
         // 创建一个新的集合对象，避免复用对象可能引发外层的冲突
@@ -138,14 +138,14 @@ public final class PermissionApi {
         }
 
         if (realPermissions.isEmpty()) {
-            return PermissionSettingPage.getApplicationDetailsIntent(context);
+            return PermissionSettingPage.getCommonPermissionSettingIntent(context);
         }
 
         if (realPermissions.size() == 1) {
             return PermissionSettingPageHandler.mergeMultipleIntent(context, realPermissions.get(0).getPermissionSettingIntents(context));
         }
 
-        return PermissionSettingPage.getApplicationDetailsIntent(context, realPermissions.toArray(new IPermission[0]));
+        return PermissionSettingPage.getCommonPermissionSettingIntent(context, realPermissions.toArray(new IPermission[0]));
     }
 
     /**

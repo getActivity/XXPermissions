@@ -102,7 +102,7 @@ public final class NotificationServicePermission extends SpecialPermission {
     @NonNull
     @Override
     public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(8);
         Intent intent;
 
         if (AndroidVersion.isAndroid8()) {
@@ -147,7 +147,16 @@ public final class NotificationServicePermission extends SpecialPermission {
             intentList.add(intent);
         }
 
-        intent = getApplicationDetailsIntent(context);
+        intent = getApplicationDetailsSettingIntent(context);
+        intentList.add(intent);
+
+        intent = getManageApplicationSettingIntent();
+        intentList.add(intent);
+
+        intent = getApplicationSettingIntent();
+        intentList.add(intent);
+
+        intent = getAndroidSettingIntent();
         intentList.add(intent);
 
         return intentList;

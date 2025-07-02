@@ -98,7 +98,7 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
     @NonNull
     @Override
     public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(2);
         Intent intent;
 
         intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
@@ -106,7 +106,7 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, mExtraAddExplanation);
         intentList.add(intent);
 
-        intent = getAndroidSettingAppIntent();
+        intent = getAndroidSettingIntent();
         intentList.add(intent);
 
         return intentList;

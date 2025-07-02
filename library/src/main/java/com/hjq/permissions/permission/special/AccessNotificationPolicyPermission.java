@@ -6,11 +6,10 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import com.hjq.permissions.tools.AndroidVersion;
-import com.hjq.permissions.tools.PermissionUtils;
-import com.hjq.permissions.tools.PhoneRomUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
+import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,7 +72,7 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
     @NonNull
     @Override
     public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(6);
         Intent intent;
 
         // issue 地址：https://github.com/getActivity/XXPermissions/issues/190
@@ -93,7 +92,7 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
         if (AndroidVersion.isAndroid10() && !PhoneRomUtils.isHarmonyOs() && !PhoneRomUtils.isMagicOs()) {
             // android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS
             intent = new Intent("android.settings.NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS");
-            intent.setData(PermissionUtils.getPackageNameUri(context));
+            intent.setData(getPackageNameUri(context));
             intentList.add(intent);
         }
 
@@ -102,7 +101,16 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
             intentList.add(intent);
         }
 
-        intent = getApplicationDetailsIntent(context);
+        intent = getApplicationDetailsSettingIntent(context);
+        intentList.add(intent);
+
+        intent = getManageApplicationSettingIntent();
+        intentList.add(intent);
+
+        intent = getApplicationSettingIntent();
+        intentList.add(intent);
+
+        intent = getAndroidSettingIntent();
         intentList.add(intent);
 
         return intentList;

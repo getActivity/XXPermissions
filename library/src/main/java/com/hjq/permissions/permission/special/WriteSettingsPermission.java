@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.AndroidVersion;
-import com.hjq.permissions.tools.PermissionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,12 +66,12 @@ public final class WriteSettingsPermission extends SpecialPermission {
     @NonNull
     @Override
     public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(6);
         Intent intent;
 
         if (AndroidVersion.isAndroid6()) {
             intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-            intent.setData(PermissionUtils.getPackageNameUri(context));
+            intent.setData(getPackageNameUri(context));
             intentList.add(intent);
 
             // 如果是因为加包名的数据后导致不能跳转，就把包名的数据移除掉
@@ -80,7 +79,16 @@ public final class WriteSettingsPermission extends SpecialPermission {
             intentList.add(intent);
         }
 
-        intent = getApplicationDetailsIntent(context);
+        intent = getApplicationDetailsSettingIntent(context);
+        intentList.add(intent);
+
+        intent = getManageApplicationSettingIntent();
+        intentList.add(intent);
+
+        intent = getApplicationSettingIntent();
+        intentList.add(intent);
+
+        intent = getAndroidSettingIntent();
         intentList.add(intent);
 
         return intentList;

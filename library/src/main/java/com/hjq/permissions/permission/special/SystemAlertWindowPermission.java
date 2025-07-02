@@ -10,7 +10,6 @@ import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionSettingPage;
-import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +81,7 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
     @NonNull
     @Override
     public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(7);
         Intent intent;
 
         if (AndroidVersion.isAndroid6()) {
@@ -98,7 +97,7 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
             }
 
             intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-            intent.setData(PermissionUtils.getPackageNameUri(context));
+            intent.setData(getPackageNameUri(context));
             intentList.add(intent);
 
             // 在 Android 11 加包名跳转也是没有效果的，官方文档链接：
@@ -208,7 +207,16 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
             // 经过测试，魅族手机 6.0 可以直接通过直接跳转到应用详情开启悬浮窗权限
         }
 
-        intent = getApplicationDetailsIntent(context);
+        intent = getApplicationDetailsSettingIntent(context);
+        intentList.add(intent);
+
+        intent = getManageApplicationSettingIntent();
+        intentList.add(intent);
+
+        intent = getApplicationSettingIntent();
+        intentList.add(intent);
+
+        intent = getAndroidSettingIntent();
         intentList.add(intent);
 
         return intentList;

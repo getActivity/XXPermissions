@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.AndroidVersion;
-import com.hjq.permissions.tools.PermissionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,14 +67,14 @@ public final class PackageUsageStatsPermission extends SpecialPermission {
     @NonNull
     @Override
     public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(3);
         Intent intent;
 
         if (AndroidVersion.isAndroid10()) {
             intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             // 经过测试，只有在 Android 10 及以上加包名才有效果
             // 如果在 Android 10 以下加包名会导致无法跳转
-            intent.setData(PermissionUtils.getPackageNameUri(context));
+            intent.setData(getPackageNameUri(context));
             intentList.add(intent);
         }
 
@@ -84,7 +83,7 @@ public final class PackageUsageStatsPermission extends SpecialPermission {
             intentList.add(intent);
         }
 
-        intent = getAndroidSettingAppIntent();
+        intent = getAndroidSettingIntent();
         intentList.add(intent);
 
         return intentList;

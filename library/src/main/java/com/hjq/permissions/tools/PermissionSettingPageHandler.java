@@ -85,7 +85,7 @@ public final class PermissionSettingPageHandler {
             mainIntent = addSubIntentForMainIntent(mainIntent, intent);
         }
         if (mainIntent == null) {
-            return PermissionSettingPage.getApplicationDetailsIntent(context);
+            return PermissionSettingPage.getCommonPermissionSettingIntent(context);
         }
         return mainIntent;
     }

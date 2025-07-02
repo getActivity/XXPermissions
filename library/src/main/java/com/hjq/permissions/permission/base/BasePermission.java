@@ -5,6 +5,7 @@ import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -65,20 +66,29 @@ public abstract class BasePermission implements IPermission {
         return false;
     }
 
-    /**
-     * 获取应用详情页意图
-     */
     @NonNull
-    public Intent getApplicationDetailsIntent(@NonNull Context context) {
-        return PermissionSettingPage.getApplicationDetailsIntent(context, this);
+    protected Uri getPackageNameUri(@NonNull Context context) {
+        return PermissionUtils.getPackageNameUri(context);
     }
 
-    /**
-     * 获取系统设置意图
-     */
     @NonNull
-    public Intent getAndroidSettingAppIntent() {
-        return PermissionSettingPage.getAndroidSettingAppIntent();
+    protected Intent getApplicationDetailsSettingIntent(@NonNull Context context) {
+        return PermissionSettingPage.getApplicationDetailsSettingsIntent(context, this);
+    }
+
+    @NonNull
+    protected static Intent getManageApplicationSettingIntent() {
+        return PermissionSettingPage.getManageApplicationSettingsIntent();
+    }
+
+    @NonNull
+    protected static Intent getApplicationSettingIntent() {
+        return PermissionSettingPage.getApplicationSettingsIntent();
+    }
+
+    @NonNull
+    protected Intent getAndroidSettingIntent() {
+        return PermissionSettingPage.getAndroidSettingsIntent();
     }
 
     @Override

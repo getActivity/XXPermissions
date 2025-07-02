@@ -91,19 +91,19 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
     @NonNull
     @Override
     public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(3);
         Intent intent;
 
         if (AndroidVersion.isAndroid11()) {
             intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-            intent.setData(PermissionUtils.getPackageNameUri(context));
+            intent.setData(getPackageNameUri(context));
             intentList.add(intent);
 
             intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
             intentList.add(intent);
         }
 
-        intent = getAndroidSettingAppIntent();
+        intent = getAndroidSettingIntent();
         intentList.add(intent);
 
         return intentList;

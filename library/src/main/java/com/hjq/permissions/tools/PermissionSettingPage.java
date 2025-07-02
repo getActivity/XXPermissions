@@ -169,16 +169,43 @@ public final class PermissionSettingPage {
 
     /* ---------------------------------------------------------------------------------------- */
 
+    /**
+     * 获取通用的权限设置页
+     */
     @NonNull
-    public static Intent getApplicationDetailsIntent(@NonNull Context context) {
-        return getApplicationDetailsIntent(context, (IPermission[]) null);
+    public static Intent getCommonPermissionSettingIntent(@NonNull Context context) {
+        return getCommonPermissionSettingIntent(context, (IPermission[]) null);
+    }
+
+    @NonNull
+    public static Intent getCommonPermissionSettingIntent(@NonNull Context context, @Nullable IPermission... permissions) {
+        Intent mainIntent = null;
+
+        Intent applicationDetailsSettingIntent = getApplicationDetailsSettingsIntent(context, permissions);
+        if (PermissionUtils.areActivityIntent(context, applicationDetailsSettingIntent)) {
+            mainIntent = PermissionSettingPageHandler.addSubIntentForMainIntent(mainIntent, applicationDetailsSettingIntent);
+        }
+
+        Intent manageApplicationSettingIntent = getManageApplicationSettingsIntent();
+        if (PermissionUtils.areActivityIntent(context, manageApplicationSettingIntent)) {
+            mainIntent = PermissionSettingPageHandler.addSubIntentForMainIntent(mainIntent, manageApplicationSettingIntent);
+        }
+
+        Intent applicationSettingIntent = getApplicationSettingsIntent();
+        if (PermissionUtils.areActivityIntent(context, applicationSettingIntent)) {
+            mainIntent = PermissionSettingPageHandler.addSubIntentForMainIntent(mainIntent, applicationSettingIntent);
+        }
+
+        Intent androidSettingIntent = getAndroidSettingsIntent();
+        mainIntent = PermissionSettingPageHandler.addSubIntentForMainIntent(mainIntent, androidSettingIntent);
+        return mainIntent;
     }
 
     /**
      * 获取应用详情界面意图
      */
     @NonNull
-    public static Intent getApplicationDetailsIntent(@NonNull Context context, @Nullable IPermission... permissions) {
+    public static Intent getApplicationDetailsSettingsIntent(@NonNull Context context, @Nullable IPermission... permissions) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(PermissionUtils.getPackageNameUri(context));
         if (permissions != null && permissions.length > 0 && PhoneRomUtils.isColorOs()) {
@@ -192,25 +219,30 @@ public final class PermissionSettingPage {
             // 传入跳转优化标识
             intent.putExtra("isGetPermission", true);
         }
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
-        }
-
-        intent = new Intent(Settings.ACTION_APPLICATION_SETTINGS);
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
-        }
-
-        intent = new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
-        }
-        return getAndroidSettingAppIntent();
+        return intent;
     }
 
-    /** 跳转到系统设置页面 */
+    /**
+     * 获取管理所有应用意图
+     */
     @NonNull
-    public static Intent getAndroidSettingAppIntent() {
+    public static Intent getManageApplicationSettingsIntent() {
+        return new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
+    }
+
+    /**
+     * 获取所有应用详情页意图
+     */
+    @NonNull
+    public static Intent getApplicationSettingsIntent() {
+        return new Intent(Settings.ACTION_APPLICATION_SETTINGS);
+    }
+
+    /**
+     * 获取系统设置意图
+     */
+    @NonNull
+    public static Intent getAndroidSettingsIntent() {
         return new Intent(Settings.ACTION_SETTINGS);
     }
 }

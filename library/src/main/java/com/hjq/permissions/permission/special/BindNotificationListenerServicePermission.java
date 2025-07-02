@@ -128,7 +128,7 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
     @NonNull
     @Override
     public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(3);
         Intent intent;
 
         if (AndroidVersion.isAndroid11() && PermissionUtils.isClassExist(mServiceClassName)) {
@@ -147,7 +147,7 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
         intent = new Intent(action);
         intentList.add(intent);
 
-        intent = getAndroidSettingAppIntent();
+        intent = getAndroidSettingIntent();
         intentList.add(intent);
 
         return intentList;

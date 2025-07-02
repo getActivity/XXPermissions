@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.AndroidVersion;
-import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,12 +75,12 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
     @NonNull
     @Override
     public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(7);
         Intent intent;
 
         if (AndroidVersion.isAndroid6()) {
             intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-            intent.setData(PermissionUtils.getPackageNameUri(context));
+            intent.setData(getPackageNameUri(context));
             intentList.add(intent);
         }
 
@@ -90,7 +89,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
             // 虽然 ACTION_VIEW_ADVANCED_POWER_USAGE_DETAIL 是 Android 10 的源码才出现的
             // 但是经过测试，在 Android 10 上面是无法跳转的，只有到了 Android 12 才能跳转
             intent = new Intent("android.settings.VIEW_ADVANCED_POWER_USAGE_DETAIL");
-            intent.setData(PermissionUtils.getPackageNameUri(context));
+            intent.setData(getPackageNameUri(context));
             intentList.add(intent);
         }
 
@@ -103,10 +102,17 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
         // 1. miui 应用详情页 -> 省电策略
         // 2. Hyper 应用详情页 -> 电量消耗
         if (PhoneRomUtils.isMiui() || PhoneRomUtils.isHyperOs()) {
-            intent = getApplicationDetailsIntent(context);
-        } else {
-            intent = getAndroidSettingAppIntent();
+            intent = getApplicationDetailsSettingIntent(context);
+            intentList.add(intent);
+
+            intent = getManageApplicationSettingIntent();
+            intentList.add(intent);
+
+            intent = getApplicationSettingIntent();
+            intentList.add(intent);
         }
+
+        intent = getAndroidSettingIntent();
         intentList.add(intent);
 
         return intentList;
