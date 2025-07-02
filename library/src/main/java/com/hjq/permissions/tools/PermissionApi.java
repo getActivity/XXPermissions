@@ -145,7 +145,23 @@ public final class PermissionApi {
             return PermissionSettingPageHandler.mergeMultipleIntent(context, realPermissions.get(0).getPermissionSettingIntents(context));
         }
 
-        return PermissionSettingPage.getCommonPermissionSettingIntent(context, realPermissions.toArray(new IPermission[0]));
+        List<Intent> prePermissionIntentList = realPermissions.get(0).getPermissionSettingIntents(context);
+        for (int i = 1; i < realPermissions.size(); i++) {
+            List<Intent> currentPermissionIntentList = realPermissions.get(i).getPermissionSettingIntents(context);
+            // 对比这两个 Intent 列表的内容是否一致
+            if (!PermissionUtils.equalsIntentList(currentPermissionIntentList, prePermissionIntentList)) {
+                // 如果不一致，就结束循环
+                break;
+            }
+            // 当前权限列表在下次循环就是上一个了，记录一下，可以避免重复获取，节省代码性能
+            prePermissionIntentList = currentPermissionIntentList;
+
+            // 如果集合中的 Intent 列表都一样，就直接按照当前的 Intent 列表去做跳转
+            if (i == realPermissions.size() - 1) {
+                return PermissionSettingPageHandler.mergeMultipleIntent(context, currentPermissionIntentList);
+            }
+        }
+        return PermissionSettingPage.getCommonPermissionSettingIntent(context);
     }
 
     /**

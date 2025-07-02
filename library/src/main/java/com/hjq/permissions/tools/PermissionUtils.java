@@ -280,6 +280,22 @@ public final class PermissionUtils {
     }
 
     /**
+     * 比较两个 Intent 列表的内容是否一致
+     */
+    public static boolean equalsIntentList(@NonNull List<Intent> intentList1, @NonNull List<Intent> intentList2) {
+        if (intentList1.size() != intentList2.size() ) {
+            return false;
+        }
+
+        for (int i = 0; i < intentList1.size(); i++) {
+            if (!intentList1.get(i).filterEquals(intentList2.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * 获取系统属性值（多种方式）
      */
     @NonNull
