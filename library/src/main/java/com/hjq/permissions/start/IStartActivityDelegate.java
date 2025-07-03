@@ -1,4 +1,4 @@
-package com.hjq.permissions.delegate;
+package com.hjq.permissions.start;
 
 import android.content.Intent;
 import android.support.annotation.IntRange;

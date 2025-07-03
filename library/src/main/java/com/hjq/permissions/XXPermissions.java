@@ -18,7 +18,7 @@ import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionApi;
 import com.hjq.permissions.tools.PermissionChecker;
 import com.hjq.permissions.tools.PermissionSettingPage;
-import com.hjq.permissions.tools.PermissionSettingPageHandler;
+import com.hjq.permissions.start.StartActivityAgent;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -482,7 +482,7 @@ public final class XXPermissions {
         if (!(context instanceof Activity)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
-        PermissionSettingPageHandler.startActivity(context, intent);
+        StartActivityAgent.startActivity(context, intent);
     }
 
     /* android.app.Activity */
@@ -505,7 +505,7 @@ public final class XXPermissions {
                                                @NonNull List<IPermission> permissions,
                                                @IntRange(from = 1, to = 65535) int requestCode) {
         Intent intent = PermissionApi.getBestPermissionSettingIntent(activity, permissions);
-        PermissionSettingPageHandler.startActivityForResult(activity, intent, requestCode);
+        StartActivityAgent.startActivityForResult(activity, intent, requestCode);
     }
 
     public static void startPermissionActivity(@NonNull Activity activity,
@@ -521,7 +521,7 @@ public final class XXPermissions {
             return;
         }
         if (permissions.isEmpty()) {
-            PermissionSettingPageHandler.startActivity(activity, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
+            StartActivityAgent.startActivity(activity, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
             return;
         }
         PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity);
@@ -560,11 +560,11 @@ public final class XXPermissions {
             return;
         }
         if (permissions.isEmpty()) {
-            PermissionSettingPageHandler.startActivity(appFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
+            StartActivityAgent.startActivity(appFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
             return;
         }
         Intent intent = PermissionApi.getBestPermissionSettingIntent(activity, permissions);
-        PermissionSettingPageHandler.startActivityForResult(appFragment, intent, requestCode);
+        StartActivityAgent.startActivityForResult(appFragment, intent, requestCode);
     }
 
     public static void startPermissionActivity(@NonNull Fragment appFragment,
@@ -584,7 +584,7 @@ public final class XXPermissions {
             return;
         }
         if (permissions.isEmpty()) {
-            PermissionSettingPageHandler.startActivity(appFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
+            StartActivityAgent.startActivity(appFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
             return;
         }
         PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, appFragment);
@@ -623,11 +623,11 @@ public final class XXPermissions {
             return;
         }
         if (permissions.isEmpty()) {
-            PermissionSettingPageHandler.startActivity(supportFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
+            StartActivityAgent.startActivity(supportFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
             return;
         }
         Intent intent = PermissionApi.getBestPermissionSettingIntent(activity, permissions);
-        PermissionSettingPageHandler.startActivityForResult(supportFragment, intent, requestCode);
+        StartActivityAgent.startActivityForResult(supportFragment, intent, requestCode);
     }
 
     public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
@@ -647,7 +647,7 @@ public final class XXPermissions {
             return;
         }
         if (permissions.isEmpty()) {
-            PermissionSettingPageHandler.startActivity(supportFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
+            StartActivityAgent.startActivity(supportFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
             return;
         }
         PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, supportFragment);

@@ -1,23 +1,23 @@
-package com.hjq.permissions.delegate;
+package com.hjq.permissions.start;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 
 /**
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/05/20
- *    desc   : startActivity 委托 Support 包下的 Fragment 实现
+ *    desc   : startActivity 委托 Activity 实现
  */
-public final class StartActivityDelegateByFragmentSupport implements IStartActivityDelegate {
+public final class StartActivityDelegateByActivity implements IStartActivityDelegate {
 
     @NonNull
-    private final Fragment mFragment;
+    private final Activity mActivity;
 
-    public StartActivityDelegateByFragmentSupport(@NonNull Fragment fragment) {
-        mFragment = fragment;
+    public StartActivityDelegateByActivity(@NonNull Activity activity) {
+        mActivity = activity;
     }
 
     @Override
@@ -25,7 +25,7 @@ public final class StartActivityDelegateByFragmentSupport implements IStartActiv
         if (intent == null) {
             return;
         }
-        mFragment.startActivity(intent);
+        mActivity.startActivity(intent);
     }
 
     @Override
@@ -33,6 +33,6 @@ public final class StartActivityDelegateByFragmentSupport implements IStartActiv
         if (intent == null) {
             return;
         }
-        mFragment.startActivityForResult(intent, requestCode);
+        mActivity.startActivityForResult(intent, requestCode);
     }
 }

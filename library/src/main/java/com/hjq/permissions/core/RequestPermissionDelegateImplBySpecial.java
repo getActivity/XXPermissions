@@ -9,7 +9,7 @@ import com.hjq.permissions.fragment.IFragmentMethod;
 import com.hjq.permissions.manager.PermissionRequestCodeManager;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.tools.PermissionApi;
-import com.hjq.permissions.tools.PermissionSettingPageHandler;
+import com.hjq.permissions.start.StartActivityAgent;
 import java.util.List;
 
 /**
@@ -30,7 +30,7 @@ public final class RequestPermissionDelegateImplBySpecial extends RequestPermiss
     @Override
     void startPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> permissions,
                                 @IntRange(from = 1, to = 65535) int requestCode) {
-        PermissionSettingPageHandler.startActivityForResult(getStartActivityDelegate(),
+        StartActivityAgent.startActivityForResult(getStartActivityDelegate(),
                                 PermissionApi.getBestPermissionSettingIntent(activity, permissions),
                                 requestCode, () -> mIgnoreActivityResultCount++);
     }

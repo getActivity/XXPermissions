@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.delegate.IStartActivityDelegate;
+import com.hjq.permissions.start.IStartActivityDelegate;
 import com.hjq.permissions.fragment.IFragmentCallback;
 import com.hjq.permissions.fragment.IFragmentMethod;
 import com.hjq.permissions.manager.ActivityOrientationManager;

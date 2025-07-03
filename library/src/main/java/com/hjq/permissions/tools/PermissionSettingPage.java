@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.hjq.permissions.start.IntentNestedHandler;
 import com.hjq.permissions.permission.base.IPermission;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,7 @@ public final class PermissionSettingPage {
         }
 
         if (PermissionUtils.areActivityIntent(context, xiaoMiMobileManagerAppIntent)) {
-            intent = PermissionSettingPageHandler.addSubIntentForMainIntent(intent, xiaoMiMobileManagerAppIntent);
+            intent = IntentNestedHandler.addSubIntentForMainIntent(intent, xiaoMiMobileManagerAppIntent);
         }
 
         return intent;
@@ -183,21 +184,21 @@ public final class PermissionSettingPage {
 
         Intent applicationDetailsSettingIntent = getApplicationDetailsSettingsIntent(context, permissions);
         if (PermissionUtils.areActivityIntent(context, applicationDetailsSettingIntent)) {
-            mainIntent = PermissionSettingPageHandler.addSubIntentForMainIntent(mainIntent, applicationDetailsSettingIntent);
+            mainIntent = IntentNestedHandler.addSubIntentForMainIntent(mainIntent, applicationDetailsSettingIntent);
         }
 
         Intent manageApplicationSettingIntent = getManageApplicationSettingsIntent();
         if (PermissionUtils.areActivityIntent(context, manageApplicationSettingIntent)) {
-            mainIntent = PermissionSettingPageHandler.addSubIntentForMainIntent(mainIntent, manageApplicationSettingIntent);
+            mainIntent = IntentNestedHandler.addSubIntentForMainIntent(mainIntent, manageApplicationSettingIntent);
         }
 
         Intent applicationSettingIntent = getApplicationSettingsIntent();
         if (PermissionUtils.areActivityIntent(context, applicationSettingIntent)) {
-            mainIntent = PermissionSettingPageHandler.addSubIntentForMainIntent(mainIntent, applicationSettingIntent);
+            mainIntent = IntentNestedHandler.addSubIntentForMainIntent(mainIntent, applicationSettingIntent);
         }
 
         Intent androidSettingIntent = getAndroidSettingsIntent();
-        mainIntent = PermissionSettingPageHandler.addSubIntentForMainIntent(mainIntent, androidSettingIntent);
+        mainIntent = IntentNestedHandler.addSubIntentForMainIntent(mainIntent, androidSettingIntent);
         return mainIntent;
     }
 

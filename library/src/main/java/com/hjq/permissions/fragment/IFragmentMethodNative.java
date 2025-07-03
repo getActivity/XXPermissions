@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
-import com.hjq.permissions.delegate.IStartActivityDelegate;
+import com.hjq.permissions.start.IStartActivityDelegate;
 
 /**
  *    author : Android 轮子哥

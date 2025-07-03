@@ -11,7 +11,7 @@
 # 但是 App 包下的 Fragment 是系统类，是肯定不会被混淆的，那么就会导致调用的时候方法名对不上，从而报 AbstractMethodError，
 # 要么不去混淆，要混淆就大家一起混淆，这样大家的方法名还能保持一致，调用方法的时候还能对得上（能找到对应的方法），
 # 但问题就出在，有一方不能被混淆，这里的一方就是指 App 包下的 Fragment 类，所以唯一的解决方案就是不混淆这些方法名。
--keepclassmembers interface com.hjq.permissions.delegate.IStartActivityDelegate {
+-keepclassmembers interface com.hjq.permissions.start.IStartActivityDelegate {
     <methods>;
 }
 -keepclassmembers interface com.hjq.permissions.fragment.IFragmentMethodNative {
