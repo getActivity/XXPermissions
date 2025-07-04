@@ -6,7 +6,6 @@ import android.content.res.AssetManager;
 import android.content.res.XmlResourceParser;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import com.hjq.permissions.manifest.node.ActivityManifestInfo;
 import com.hjq.permissions.manifest.node.ApplicationManifestInfo;
 import com.hjq.permissions.manifest.node.BroadcastReceiverManifestInfo;
@@ -14,6 +13,7 @@ import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.manifest.node.ServiceManifestInfo;
 import com.hjq.permissions.manifest.node.UsesSdkManifestInfo;
 import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionUtils;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -75,7 +75,7 @@ public final class AndroidManifestParser {
             androidManifestInfo = AndroidManifestParser.parseAndroidManifest(context, apkPathCookie);
             // 如果读取到的包名和当前应用的包名不是同一个的话，证明这个清单文件的内容不是当前应用的
             // 具体案例：https://github.com/getActivity/XXPermissions/issues/102
-            if (!TextUtils.equals(context.getPackageName(), androidManifestInfo.packageName)) {
+            if (!PermissionUtils.reverseEqualsString(context.getPackageName(), androidManifestInfo.packageName)) {
                 return null;
             }
         } catch (IOException | XmlPullParserException e) {
@@ -158,38 +158,38 @@ public final class AndroidManifestParser {
 
                 String tagName = parser.getName();
 
-                if (TextUtils.equals(TAG_MANIFEST, tagName)) {
+                if (PermissionUtils.equalsString(TAG_MANIFEST, tagName)) {
                     manifestInfo.packageName = parsePackageFromXml(parser);
                 }
 
-                if (TextUtils.equals(TAG_USES_SDK, tagName)) {
+                if (PermissionUtils.equalsString(TAG_USES_SDK, tagName)) {
                     manifestInfo.usesSdkManifestInfo = parseUsesSdkFromXml(parser);
                 }
 
-                if (TextUtils.equals(TAG_USES_PERMISSION, tagName) ||
-                    TextUtils.equals(TAG_USES_PERMISSION_SDK_23, tagName) ||
-                    TextUtils.equals(TAG_USES_PERMISSION_SDK_M, tagName)) {
+                if (PermissionUtils.equalsString(TAG_USES_PERMISSION, tagName) ||
+                    PermissionUtils.equalsString(TAG_USES_PERMISSION_SDK_23, tagName) ||
+                    PermissionUtils.equalsString(TAG_USES_PERMISSION_SDK_M, tagName)) {
                     manifestInfo.permissionManifestInfoList.add(parsePermissionFromXml(parser));
                 }
 
-                if (TextUtils.equals(TAG_QUERIES, tagName)) {
+                if (PermissionUtils.equalsString(TAG_QUERIES, tagName)) {
                     manifestInfo.queriesPackageList.add(parsePackageFromXml(parser));
                 }
 
-                if (TextUtils.equals(TAG_APPLICATION, tagName)) {
+                if (PermissionUtils.equalsString(TAG_APPLICATION, tagName)) {
                     manifestInfo.applicationManifestInfo = parseApplicationFromXml(parser);
                 }
 
-                if (TextUtils.equals(TAG_ACTIVITY, tagName) ||
-                    TextUtils.equals(TAG_ACTIVITY_ALIAS, tagName)) {
+                if (PermissionUtils.equalsString(TAG_ACTIVITY, tagName) ||
+                    PermissionUtils.equalsString(TAG_ACTIVITY_ALIAS, tagName)) {
                     manifestInfo.activityManifestInfoList.add(parseActivityFromXml(parser));
                 }
 
-                if (TextUtils.equals(TAG_SERVICE, tagName)) {
+                if (PermissionUtils.equalsString(TAG_SERVICE, tagName)) {
                     manifestInfo.serviceManifestInfoList.add(parseServerFromXml(parser));
                 }
 
-                if (TextUtils.equals(TAG_RECEIVER, tagName)) {
+                if (PermissionUtils.equalsString(TAG_RECEIVER, tagName)) {
                     manifestInfo.broadcastReceiverManifestInfoList.add(parseBroadcastReceiverFromXml(parser));
                 }
 

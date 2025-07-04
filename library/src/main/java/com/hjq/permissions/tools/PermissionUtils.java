@@ -151,6 +151,29 @@ public final class PermissionUtils {
     }
 
     /**
+     * 比较字符串是否相等（从第一个字符串开始比较）
+     */
+    public static boolean equalsString(@Nullable String s1, @Nullable String s2) {
+        if (s1 == null || s2 == null) {
+            return false;
+        }
+        if (s1.hashCode() == s2.hashCode()) {
+            return true;
+        }
+        int length = s1.length();
+        if (length != s2.length()) {
+            return false;
+        }
+
+        for (int i = 0; i < length; i++) {
+            if (s1.charAt(i) != s2.charAt(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * 比较字符串是否相等（从最后一个字符串开始比较）
      */
     public static boolean reverseEqualsString(@Nullable String s1, @Nullable String s2) {

@@ -226,7 +226,7 @@ public final class RequestPermissionLogicPresenter {
             for (int j = i; j < requestPermissions.size(); j++) {
                 IPermission todoPermission = requestPermissions.get(j);
                 // 如果遍历到的权限对象不是同一个组别的，就继续找
-                if (!TextUtils.equals(todoPermission.getPermissionGroup(), permissionGroup)) {
+                if (!PermissionUtils.equalsString(todoPermission.getPermissionGroup(), permissionGroup)) {
                     continue;
                 }
 
