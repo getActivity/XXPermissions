@@ -140,6 +140,9 @@ public final class PermissionUtils {
         // 这里为什么不用 Intent.resolveActivity(intent) != null 来判断呢？
         // 这是因为在 OPPO R7 Plus （Android 5.0）会出现误判，明明没有这个 Activity，却返回了 ComponentName 对象
         PackageManager packageManager = context.getPackageManager();
+        if (packageManager == null) {
+            return false;
+        }
         if (AndroidVersion.isAndroid13()) {
             return !packageManager.queryIntentActivities(intent,
                     ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY)).isEmpty();
