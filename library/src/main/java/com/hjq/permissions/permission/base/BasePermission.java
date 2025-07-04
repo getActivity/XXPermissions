@@ -59,9 +59,9 @@ public abstract class BasePermission implements IPermission {
         // 重写 equals 方法是为了 List 和 Map 集合有能力辨别不同的权限对象是不是来自同一个权限
         // 如果这两个权限对象的名称一样，那么就认为它们是同一个权限
         if (obj instanceof IPermission) {
-            return PermissionUtils.equalsPermission(getPermissionName(), ((IPermission) obj).getPermissionName());
+            return PermissionUtils.equalsPermission(this, ((IPermission) obj));
         } else if (obj instanceof String) {
-            return PermissionUtils.equalsPermission(getPermissionName(), ((String) obj));
+            return PermissionUtils.equalsPermission(this, ((String) obj));
         }
         return false;
     }

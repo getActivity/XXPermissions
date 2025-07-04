@@ -151,22 +151,22 @@ public final class PermissionUtils {
     }
 
     /**
-     * 判断两个权限字符串是否为同一个
+     * 比较字符串是否相等（从最后一个字符串开始比较）
      */
-    public static boolean equalsPermission(@NonNull String permissionName1, @NonNull String permissionName2) {
-        // 如果这两个对象的哈希值一样，那么就证明它们是同一个对象
-        if (permissionName1.hashCode() == permissionName2.hashCode()) {
+    public static boolean reverseEqualsString(@Nullable String s1, @Nullable String s2) {
+        if (s1 == null || s2 == null) {
+            return false;
+        }
+        if (s1.hashCode() == s2.hashCode()) {
             return true;
         }
-        int length = permissionName1.length();
-        if (length != permissionName2.length()) {
+        int length = s1.length();
+        if (length != s2.length()) {
             return false;
         }
 
-        // 因为权限字符串大多数都是以 android.permission 开头
-        // 所以从最后一个字符开始判断，可以提升 equals 的判断效率
         for (int i = length - 1; i >= 0; i--) {
-            if (permissionName1.charAt(i) != permissionName2.charAt(i)) {
+            if (s1.charAt(i) != s2.charAt(i)) {
                 return false;
             }
         }
@@ -174,10 +174,27 @@ public final class PermissionUtils {
     }
 
     /**
-     * 判断两个权限字符串是否为同一个
+     * 判断两个权限是否为同一个
      */
-    public static boolean equalsPermission(@NonNull IPermission permission, @NonNull String permissionName) {
-        return equalsPermission(permission.getPermissionName(), permissionName);
+    public static boolean equalsPermission(@NonNull String permission1, @NonNull String permission2) {
+        // 因为权限字符串大多数都是以 android.permission 开头
+        // 所以从最后一个字符开始判断，可以大大提升 equals 的判断效率
+        return reverseEqualsString(permission1, permission2);
+    }
+
+    /**
+     * 判断两个权限是否为同一个
+     */
+    public static boolean equalsPermission(@NonNull IPermission permission1, @NonNull String permission2) {
+        // 因为权限字符串大多数都是以 android.permission 开头
+        // 所以从最后一个字符开始判断，可以大大提升 equals 的判断效率
+        return reverseEqualsString(permission1.getPermissionName(), permission2);
+    }
+
+    public static boolean equalsPermission(@NonNull IPermission permission1, @NonNull IPermission permission2) {
+        // 因为权限字符串大多数都是以 android.permission 开头
+        // 所以从最后一个字符开始判断，可以大大提升 equals 的判断效率
+        return reverseEqualsString(permission1.getPermissionName(), permission2.getPermissionName());
     }
 
     /**

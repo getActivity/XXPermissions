@@ -109,7 +109,7 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
         int writeExternalStoragePermissionIndex = -1;
         for (int i = 0; i < requestPermissions.size(); i++) {
             IPermission permission = requestPermissions.get(i);
-            if (PermissionUtils.equalsPermission(permission, getPermissionName())) {
+            if (PermissionUtils.equalsPermission(permission, this)) {
                 thisPermissionindex = i;
             } else if (PermissionUtils.equalsPermission(permission, PermissionNames.READ_MEDIA_IMAGES)) {
                 readMediaImagesPermissionIndex = i;

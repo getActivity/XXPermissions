@@ -14,11 +14,11 @@ import com.hjq.permissions.fragment.factory.PermissionFragmentFactoryBySupport;
 import com.hjq.permissions.manifest.AndroidManifestParser;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.IPermission;
+import com.hjq.permissions.start.StartActivityAgent;
 import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionApi;
 import com.hjq.permissions.tools.PermissionChecker;
 import com.hjq.permissions.tools.PermissionSettingPage;
-import com.hjq.permissions.start.StartActivityAgent;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -415,16 +415,16 @@ public final class XXPermissions {
     /**
      * 判断两个权限是否相等
      */
-    public static boolean equalsPermission(@NonNull IPermission permission, @NonNull IPermission permission2) {
-        return PermissionUtils.equalsPermission(permission.getPermissionName(), permission2.getPermissionName());
+    public static boolean equalsPermission(@NonNull IPermission permission1, @NonNull IPermission permission2) {
+        return PermissionUtils.equalsPermission(permission1, permission2);
     }
 
-    public static boolean equalsPermission(@NonNull IPermission permission, @NonNull String permissionName) {
-        return PermissionUtils.equalsPermission(permission.getPermissionName(), permissionName);
+    public static boolean equalsPermission(@NonNull IPermission permission1, @NonNull String permission2) {
+        return PermissionUtils.equalsPermission(permission1, permission2);
     }
 
-    public static boolean equalsPermission(@NonNull String permissionName1, @NonNull String permissionName2) {
-        return PermissionUtils.equalsPermission(permissionName1, permissionName2);
+    public static boolean equalsPermission(@NonNull String permissionName1, @NonNull String permission2) {
+        return PermissionUtils.equalsPermission(permissionName1, permission2);
     }
 
     /**

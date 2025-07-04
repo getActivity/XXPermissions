@@ -144,7 +144,7 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
             if (permission == null) {
                 continue;
             }
-            if (PermissionUtils.equalsPermission(getPermissionName(), permission)) {
+            if (PermissionUtils.equalsPermission(this, permission)) {
                 // 发现有 Service 注册过，终止循环并返回，避免走到抛异常的情况
                 return;
             }
