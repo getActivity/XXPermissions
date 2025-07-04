@@ -27,6 +27,9 @@ public final class PermissionTaskHandler {
      * 延迟发送一个指定令牌的任务
      */
     public static void sendTask(@NonNull Runnable runnable, @NonNull Object token, long delayMillis) {
+        if (delayMillis < 0) {
+            delayMillis = 0;
+        }
         long uptimeMillis = SystemClock.uptimeMillis() + delayMillis;
         HANDLER.postAtTime(runnable, token, uptimeMillis);
     }
