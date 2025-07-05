@@ -124,8 +124,11 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
     @Override
     public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions, @Nullable AndroidManifestInfo androidManifestInfo) {
         super.checkCompliance(activity, requestPermissions, androidManifestInfo);
+        if (TextUtils.isEmpty(mServiceClassName)) {
+            throw new IllegalArgumentException("Pass the ServiceClass parameter as empty");
+        }
         if (!PermissionUtils.isClassExist(mServiceClassName)) {
-            throw new IllegalArgumentException("The passed-in ServiceClass is an invalid class");
+            throw new IllegalArgumentException("The passed-in " + mServiceClassName + " is an invalid class");
         }
     }
 
@@ -135,28 +138,27 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
-            currentPermissionManifestInfo);
-        // 判断有没有 Service 类注册了 android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" 属性
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
+
         List<ServiceManifestInfo> serviceManifestInfoList = androidManifestInfo.serviceManifestInfoList;
-        for (int i = 0; i < serviceManifestInfoList.size(); i++) {
-            String permission = serviceManifestInfoList.get(i).permission;
-            if (permission == null) {
+        for (ServiceManifestInfo serviceManifestInfo : serviceManifestInfoList) {
+            if (serviceManifestInfo == null) {
                 continue;
             }
-            if (PermissionUtils.equalsPermission(this, permission)) {
-                // 发现有 Service 注册过，终止循环并返回，避免走到抛异常的情况
-                return;
+            if (!PermissionUtils.reverseEqualsString(mServiceClassName, serviceManifestInfo.name)) {
+                // 不是目标的 Service，继续循环
+                continue;
             }
+            if (serviceManifestInfo.permission == null || !PermissionUtils.equalsPermission(this, serviceManifestInfo.permission)) {
+                // 这个 Service 组件注册的 permission 节点为空或者错误
+                throw new IllegalArgumentException("Please register permission node in the AndroidManifest.xml file, for example: "
+                    + "<service android:name=\"" + mServiceClassName + "\" android:permission=\"" + getPermissionName() + "\" />");
+            }
+            return;
         }
 
-        /*
-         没有找到有任何 Service 注册过 android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" 属性，
-         请注册该属性给 AccessibilityService 的子类到 AndroidManifest.xml 文件中，否则会导致无法申请该权限
-         */
-        throw new IllegalArgumentException("No Service was found to have registered the android:permission=\"" + getPermissionName() +
-            "\" property, Please register this property to AccessibilityService subclass by AndroidManifest.xml file, "
-            + "otherwise it will lead to can't apply for the permission");
+        // 这个 Service 组件没有在清单文件中注册
+        throw new IllegalArgumentException("The \"" + mServiceClassName + "\" component is not registered in the AndroidManifest.xml file");
     }
 
     @NonNull
