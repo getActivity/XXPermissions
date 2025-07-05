@@ -5,11 +5,11 @@ import android.os.Bundle;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.start.IStartActivityDelegate;
 import com.hjq.permissions.fragment.IFragmentCallback;
 import com.hjq.permissions.fragment.IFragmentMethod;
 import com.hjq.permissions.manager.ActivityOrientationManager;
 import com.hjq.permissions.permission.base.IPermission;
+import com.hjq.permissions.start.IStartActivityDelegate;
 import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.tools.PermissionApi;
 import com.hjq.permissions.tools.PermissionTaskHandler;
@@ -86,7 +86,31 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
     }
 
     void requestPermissions(@NonNull String[] permissions, @IntRange(from = 1, to = 65535) int requestCode) {
-        mFragmentMethod.requestPermissions(permissions, requestCode);
+        try {
+            mFragmentMethod.requestPermissions(permissions, requestCode);
+        } catch (Exception e) {
+            // 在某些极端情况下，调用系统的 requestPermissions 方法时会出现崩溃，刚开始我还以为是 Android 6.0 以下的设备触发的 Bug，
+            // 结果发现 Android 6.0 及以上也有这个问题，你永远无法想象现实到底有多魔幻，经过分析得出结论，出现这种情况只有两种可能：
+            // 1. 厂商开发工程师修改了 com.android.packageinstaller 系统应用的包名，但是没有自测好就上线了（概率较小）
+            // 2. 用户有 Root 权限，在精简系统 App 的时候不小心删掉了 com.android.packageinstaller 这个系统应用（概率较大）
+            // 经过分析 Activity.requestPermissions 的源码，它本质上还是调用 startActivityForResult，只不过 Activity 找不到了而已，
+            // 目前能想到最好的解决方式，就是用 try catch 避免它出现崩溃，看到这里你可能会有一个疑问，就简单粗暴 try catch？你确定没问题？
+            // 会不会导致 onRequestPermissionsResult 没有回调？从而导致权限请求流程卡住的情况？虽然这个问题没有办法测试，但理论上是不会的，
+            // 因为我用了错误的 Intent 进行 startActivityForResult 并进行 try catch 做实验，结果 onActivityResult 还是有被系统正常回调，
+            // 证明对 startActivityForResult 进行 try catch 并不会影响 onActivityResult 的回调，我还分析了 Activity 回调方面的源码实现，
+            // 发现无论是 onRequestPermissionsResult 还是 onActivityResult，回调它们的都是 dispatchActivityResult 方法，
+            // 在那种极端情况下，既然 onActivityResult 能被回调，那么就证明 dispatchActivityResult 肯定有被系统正常调用的，
+            // 同理 onRequestPermissionsResult 也肯定会被 dispatchActivityResult 正常调用，从而形成一个完整的逻辑闭环。
+            // 如果真的出现这种极端情况，所有危险权限的申请必然会走失败的回调，但是框架要做的是：尽量让应用不要崩溃，并且能走完整个权限申请的流程。
+            // 涉及到此问题相关 Github issue 地址：
+            // 1. https://github.com/getActivity/XXPermissions/issues/153
+            // 2. https://github.com/getActivity/XXPermissions/issues/126
+            // 3. https://github.com/getActivity/XXPermissions/issues/327
+            // 4. https://github.com/getActivity/XXPermissions/issues/339
+            // android.content.ActivityNotFoundException: No Activity found to handle Intent
+            // { act=android.content.pm.action.REQUEST_PERMISSIONS pkg=com.android.packageinstaller (has extras) }
+            e.printStackTrace();
+        }
     }
 
     @SuppressWarnings("deprecation")
