@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.BroadcastReceiverManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
@@ -115,8 +116,11 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
     @Override
     public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions, @Nullable AndroidManifestInfo androidManifestInfo) {
         super.checkCompliance(activity, requestPermissions, androidManifestInfo);
+        if (TextUtils.isEmpty(mBroadcastReceiverClassName)) {
+            throw new IllegalArgumentException("Pass the BroadcastReceiverClass parameter as empty");
+        }
         if (!PermissionUtils.isClassExist(mBroadcastReceiverClassName)) {
-            throw new IllegalArgumentException("The passed-in BroadcastReceiverClass is an invalid class");
+            throw new IllegalArgumentException("The passed-in " + mBroadcastReceiverClassName + " is an invalid class");
         }
     }
 
@@ -126,28 +130,27 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
-            currentPermissionManifestInfo);
-        // 判断有没有 BroadcastReceiver 类注册了 android:permission="android.permission.BIND_DEVICE_ADMIN" 属性
+        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
+
         List<BroadcastReceiverManifestInfo> broadcastReceiverManifestInfoList = androidManifestInfo.broadcastReceiverManifestInfoList;
-        for (int i = 0; i < broadcastReceiverManifestInfoList.size(); i++) {
-            String permission = broadcastReceiverManifestInfoList.get(i).permission;
-            if (permission == null) {
+        for (BroadcastReceiverManifestInfo broadcastReceiverManifestInfo : broadcastReceiverManifestInfoList) {
+            if (broadcastReceiverManifestInfo == null) {
                 continue;
             }
-            if (PermissionUtils.equalsPermission(this, permission)) {
-                // 发现有 BroadcastReceiver 注册过，终止循环并返回，避免走到抛异常的情况
-                return;
+            if (!PermissionUtils.reverseEqualsString(mBroadcastReceiverClassName, broadcastReceiverManifestInfo.name)) {
+                // 不是目标的 BroadcastReceiver，继续循环
+                continue;
             }
+            if (broadcastReceiverManifestInfo.permission == null || !PermissionUtils.equalsPermission(this, broadcastReceiverManifestInfo.permission)) {
+                // 这个 BroadcastReceiver 组件注册的 permission 节点为空或者错误
+                throw new IllegalArgumentException("Please register permission node in the AndroidManifest.xml file, for example: "
+                    + "<receiver android:name=\"" + mBroadcastReceiverClassName + "\" android:permission=\"" + getPermissionName() + "\" />");
+            }
+            return;
         }
 
-        /*
-         没有找到有任何 BroadcastReceiver 注册过 android:permission="android.permission.BIND_DEVICE_ADMIN" 属性，
-         请注册该属性给 DeviceAdminReceiver 的子类到 AndroidManifest.xml 文件中，否则会导致无法申请该权限
-         */
-        throw new IllegalArgumentException("No BroadcastReceiver was found to have registered the android:permission=\"" + getPermissionName() +
-            "\" property, Please register this property to DeviceAdminReceiver subclass by AndroidManifest.xml file, "
-            + "otherwise it will lead to can't apply for the permission");
+        // 这个 BroadcastReceiver 组件没有在清单文件中注册
+        throw new IllegalArgumentException("The \"" + mBroadcastReceiverClassName + "\" component is not registered in the AndroidManifest.xml file");
     }
 
     @NonNull
