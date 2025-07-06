@@ -126,5 +126,22 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
         if (!PermissionUtils.containsPermission(requestPermissions, PermissionNames.BODY_SENSORS)) {
             throw new IllegalArgumentException("Applying for background sensor permissions must contain \"" + PermissionNames.BODY_SENSORS + "\"");
         }
+
+        int thisPermissionIndex = -1;
+        int bodySensorsPermissionindex = -1;
+        for (int i = 0; i < requestPermissions.size(); i++) {
+            IPermission permission = requestPermissions.get(i);
+            if (PermissionUtils.equalsPermission(permission, this)) {
+                thisPermissionIndex = i;
+            } else if (PermissionUtils.equalsPermission(permission, PermissionNames.BODY_SENSORS)) {
+                bodySensorsPermissionindex = i;
+            }
+        }
+
+        if (bodySensorsPermissionindex != -1 && bodySensorsPermissionindex > thisPermissionIndex) {
+            // 请把 BODY_SENSORS_BACKGROUND 权限放置在 BODY_SENSORS 权限的后面
+            throw new IllegalArgumentException("Please place the " + getPermissionName() +
+                "\" permission after the \"" + PermissionNames.BODY_SENSORS + "\" permission");
+        }
     }
 }
