@@ -75,7 +75,6 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
         List<Intent> intentList = new ArrayList<>(6);
         Intent intent;
 
-        // issue 地址：https://github.com/getActivity/XXPermissions/issues/190
         // 这里解释一下，为什么要排除 HarmonyOs 和 Magic，因为用代码能检测到有这个 Intent，也能跳转过去，但是会被马上拒绝
         // 测试过了其他厂商系统及 Android 原生系统都没有这个问题，就只有鸿蒙有这个问题
         // 只因为这个 Intent 是隐藏的意图，所以就不让用，鸿蒙 2.0 和 3.0 都有这个问题
