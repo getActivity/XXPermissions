@@ -1,6 +1,7 @@
 package com.hjq.permissions.permission;
 
 import android.Manifest;
+import android.accessibilityservice.AccessibilityService;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.support.annotation.NonNull;
@@ -307,11 +308,11 @@ public final class PermissionLists {
     /**
      * 无障碍服务权限（特殊权限，Android 4.1 新增的权限，注意此权限不需要在清单文件中注册也能申请）
      *
-     * @param serviceClass                                 无障碍 Service 类
+     * @param accessibilityServiceClass                                 无障碍 Service 类
      */
     @NonNull
-    public static IPermission getBindAccessibilityServicePermission(@NonNull Class<? extends Service> serviceClass) {
-        return new BindAccessibilityServicePermission(serviceClass);
+    public static IPermission getBindAccessibilityServicePermission(@NonNull Class<? extends AccessibilityService> accessibilityServiceClass) {
+        return new BindAccessibilityServicePermission(accessibilityServiceClass);
     }
 
     /**

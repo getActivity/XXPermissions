@@ -1,7 +1,7 @@
 package com.hjq.permissions.permission.special;
 
+import android.accessibilityservice.AccessibilityService;
 import android.app.Activity;
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -45,16 +45,16 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
         }
     };
 
-    /** 设备管理器的 Service 类名 */
+    /** 无障碍 Service 类名 */
     @NonNull
-    private final String mServiceClassName;
+    private final String mAccessibilityServiceClassName;
 
-    public BindAccessibilityServicePermission(@NonNull Class<? extends Service> serviceClazz) {
-        this(serviceClazz.getName());
+    public BindAccessibilityServicePermission(@NonNull Class<? extends AccessibilityService> accessibilityServiceClass) {
+        this(accessibilityServiceClass.getName());
     }
 
-    public BindAccessibilityServicePermission(@NonNull String serviceClassName) {
-        mServiceClassName = serviceClassName;
+    public BindAccessibilityServicePermission(@NonNull String accessibilityServiceClassName) {
+        mAccessibilityServiceClassName = accessibilityServiceClassName;
     }
 
     private BindAccessibilityServicePermission(Parcel in) {
@@ -64,7 +64,7 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mServiceClassName);
+        dest.writeString(mAccessibilityServiceClassName);
     }
 
     @NonNull
@@ -85,7 +85,7 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
             return false;
         }
 
-        String serviceClassName = PermissionUtils.isClassExist(mServiceClassName) ? mServiceClassName : null;
+        String serviceClassName = PermissionUtils.isClassExist(mAccessibilityServiceClassName) ? mAccessibilityServiceClassName : null;
         // hello.litiaotiao.app/hello.litiaotiao.app.LttService:com.hjq.permissions.demo/com.hjq.permissions.demo.DemoAccessibilityService
         final String[] allComponentNameArray = enabledNotificationListeners.split(":");
         for (String component : allComponentNameArray) {
@@ -124,11 +124,11 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
     @Override
     public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions, @Nullable AndroidManifestInfo androidManifestInfo) {
         super.checkCompliance(activity, requestPermissions, androidManifestInfo);
-        if (TextUtils.isEmpty(mServiceClassName)) {
+        if (TextUtils.isEmpty(mAccessibilityServiceClassName)) {
             throw new IllegalArgumentException("Pass the ServiceClass parameter as empty");
         }
-        if (!PermissionUtils.isClassExist(mServiceClassName)) {
-            throw new IllegalArgumentException("The passed-in " + mServiceClassName + " is an invalid class");
+        if (!PermissionUtils.isClassExist(mAccessibilityServiceClassName)) {
+            throw new IllegalArgumentException("The passed-in " + mAccessibilityServiceClassName + " is an invalid class");
         }
     }
 
@@ -145,24 +145,24 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
             if (serviceManifestInfo == null) {
                 continue;
             }
-            if (!PermissionUtils.reverseEqualsString(mServiceClassName, serviceManifestInfo.name)) {
+            if (!PermissionUtils.reverseEqualsString(mAccessibilityServiceClassName, serviceManifestInfo.name)) {
                 // 不是目标的 Service，继续循环
                 continue;
             }
             if (serviceManifestInfo.permission == null || !PermissionUtils.equalsPermission(this, serviceManifestInfo.permission)) {
                 // 这个 Service 组件注册的 permission 节点为空或者错误
                 throw new IllegalArgumentException("Please register permission node in the AndroidManifest.xml file, for example: "
-                    + "<service android:name=\"" + mServiceClassName + "\" android:permission=\"" + getPermissionName() + "\" />");
+                    + "<service android:name=\"" + mAccessibilityServiceClassName + "\" android:permission=\"" + getPermissionName() + "\" />");
             }
             return;
         }
 
         // 这个 Service 组件没有在清单文件中注册
-        throw new IllegalArgumentException("The \"" + mServiceClassName + "\" component is not registered in the AndroidManifest.xml file");
+        throw new IllegalArgumentException("The \"" + mAccessibilityServiceClassName + "\" component is not registered in the AndroidManifest.xml file");
     }
 
     @NonNull
-    public String getServiceClassName() {
-        return mServiceClassName;
+    public String getAccessibilityServiceClassName() {
+        return mAccessibilityServiceClassName;
     }
 }
