@@ -34,25 +34,13 @@ public final class PermissionSettingPage {
 
     /** 锤子安全中心包名 */
     private static final String SMARTISAN_OS_SECURITY_CENTER_APP_PACKAGE_NAME = "com.smartisanos.securitycenter";
-
     /** 锤子安全组件包名 */
     private static final String SMARTISAN_OS_SECURITY_COMPONENT_APP_PACKAGE_NAME = "com.smartisanos.security";
-
-    /* ---------------------------------------------------------------------------------------- */
-
-    /**
-     * 获取小米应用具体的权限设置页意图
-     */
-    @NonNull
-    public static Intent getXiaoMiApplicationPermissionPageIntent(Context context) {
-        return new Intent("miui.intent.action.APP_PERM_EDITOR")
-            .putExtra("extra_pkgname", context.getPackageName());
-    }
 
     /**
      * 获取三星权限设置意图
      */
-    @Nullable
+    @NonNull
     public static Intent getOneUiPermissionPageIntent(Context context) {
         Intent intent = new Intent();
         intent.setClassName("com.android.settings", "com.android.settings.Settings$AppOpsDetailsActivity");
@@ -60,10 +48,7 @@ public final class PermissionSettingPage {
         extraShowFragmentArguments.putString("package", context.getPackageName());
         intent.putExtra(":settings:show_fragment_args", extraShowFragmentArguments);
         intent.setData(PermissionUtils.getPackageNameUri(context));
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
-        }
-        return null;
+        return intent;
     }
 
     /* ---------------------------------------------------------------------------------------- */
@@ -73,11 +58,7 @@ public final class PermissionSettingPage {
      */
     @Nullable
     public static Intent getHuaWeiMobileManagerAppIntent(Context context) {
-        Intent intent = context.getPackageManager().getLaunchIntentForPackage(EMUI_MOBILE_MANAGER_APP_PACKAGE_NAME);
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
-        }
-        return null;
+        return context.getPackageManager().getLaunchIntentForPackage(EMUI_MOBILE_MANAGER_APP_PACKAGE_NAME);
     }
 
     /**
@@ -91,21 +72,27 @@ public final class PermissionSettingPage {
     /**
      * 获取 oppo 安全中心 App 意图
      */
-    @Nullable
-    public static Intent getOppoSafeCenterAppIntent(Context context) {
-        Intent intent = context.getPackageManager().getLaunchIntentForPackage(COLOR_OS_SAFE_CENTER_APP_PACKAGE_NAME_1);
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
+    @NonNull
+    public static List<Intent> getOppoSafeCenterAppIntent(Context context) {
+        List<Intent> intentList = new ArrayList<>();
+        Intent intent;
+
+        intent = context.getPackageManager().getLaunchIntentForPackage(COLOR_OS_SAFE_CENTER_APP_PACKAGE_NAME_1);
+        if (intent != null) {
+            intentList.add(intent);
         }
+
         intent = context.getPackageManager().getLaunchIntentForPackage(COLOR_OS_SAFE_CENTER_APP_PACKAGE_NAME_2);
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
+        if (intent != null) {
+            intentList.add(intent);
         }
+
         intent = context.getPackageManager().getLaunchIntentForPackage(COLOR_OS_SAFE_CENTER_APP_PACKAGE_NAME_3);
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
+        if (intent != null) {
+            intentList.add(intent);
         }
-        return null;
+
+        return intentList;
     }
 
     /**
@@ -113,40 +100,57 @@ public final class PermissionSettingPage {
      */
     @Nullable
     public static Intent getVivoMobileManagerAppIntent(Context context) {
-        Intent intent = context.getPackageManager().getLaunchIntentForPackage(ORIGIN_OS_MOBILE_MANAGER_APP_PACKAGE_NAME);
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
+        return context.getPackageManager().getLaunchIntentForPackage(ORIGIN_OS_MOBILE_MANAGER_APP_PACKAGE_NAME);
+    }
+
+    /**
+     * 获取锤子手机安全中心 App
+     */
+    @NonNull
+    public static List<Intent> getSmartisanSecurityCenterAppIntent(Context context) {
+        List<Intent> intentList = new ArrayList<>();
+        Intent intent;
+
+        intent = context.getPackageManager().getLaunchIntentForPackage(SMARTISAN_OS_SECURITY_COMPONENT_APP_PACKAGE_NAME);
+        if (intent != null) {
+            intentList.add(intent);
         }
-        return null;
+
+        intent = context.getPackageManager().getLaunchIntentForPackage(SMARTISAN_OS_SECURITY_CENTER_APP_PACKAGE_NAME);
+        if (intent != null) {
+            intentList.add(intent);
+        }
+
+        return intentList;
+    }
+
+    /* ---------------------------------------------------------------------------------------- */
+
+    /**
+     * 获取小米应用具体的权限设置页意图
+     */
+    @NonNull
+    public static Intent getXiaoMiApplicationPermissionPageIntent(Context context) {
+        return new Intent("miui.intent.action.APP_PERM_EDITOR")
+            .putExtra("extra_pkgname", context.getPackageName());
     }
 
     /**
      * 获取锤子安全中心权限设置页意图
      */
-    @Nullable
-    public static Intent getSmartisanPermissionPageIntent(Context context) {
-        Intent intent = new Intent(SMARTISAN_OS_SECURITY_COMPONENT_APP_PACKAGE_NAME + ".action.PACKAGE_OVERVIEW");
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
-        }
+    @NonNull
+    public static List<Intent> getSmartisanPermissionPageIntent() {
+        List<Intent> intentList = new ArrayList<>();
+        Intent intent;
+
+        intent = new Intent(SMARTISAN_OS_SECURITY_COMPONENT_APP_PACKAGE_NAME + ".action.PACKAGE_OVERVIEW");
+        intentList.add(intent);
 
         intent = new Intent();
         intent.setClassName(SMARTISAN_OS_SECURITY_COMPONENT_APP_PACKAGE_NAME, SMARTISAN_OS_SECURITY_COMPONENT_APP_PACKAGE_NAME + ".PackagesOverview");
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
-        }
+        intentList.add(intent);
 
-        intent = context.getPackageManager().getLaunchIntentForPackage(SMARTISAN_OS_SECURITY_COMPONENT_APP_PACKAGE_NAME);
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
-        }
-
-        intent = context.getPackageManager().getLaunchIntentForPackage(SMARTISAN_OS_SECURITY_CENTER_APP_PACKAGE_NAME);
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
-        }
-
-        return null;
+        return intentList;
     }
 
     /* ---------------------------------------------------------------------------------------- */

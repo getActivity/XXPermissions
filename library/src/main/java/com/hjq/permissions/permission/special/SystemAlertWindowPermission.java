@@ -138,7 +138,9 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
 
                 // 华为手机管家主页
                 intent = PermissionSettingPage.getHuaWeiMobileManagerAppIntent(context);
-                intentList.add(intent);
+                if (intent != null) {
+                    intentList.add(intent);
+                }
 
             } else if (PhoneRomUtils.isMiui()) {
                 // 假设关闭了 miui 优化，就不走这里的逻辑
@@ -181,8 +183,7 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
                 intent.setClassName("com.oppo.safe", "com.oppo.safe.permission.PermissionTopActivity");
                 intentList.add(intent);
 
-                intent = PermissionSettingPage.getOppoSafeCenterAppIntent(context);
-                intentList.add(intent);
+                intentList.addAll(PermissionSettingPage.getOppoSafeCenterAppIntent(context));
 
             } else if (PhoneRomUtils.isOriginOs()) {
                 // java.lang.SecurityException: Permission Denial: starting Intent
@@ -198,14 +199,16 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
                 // 经过测试在 vivo x7 Plus（Android 5.1）上面能跳转过去，但是显示却是一个空白页面
                 // intent.setClassName("com.iqoo.secure", "com.iqoo.secure.safeguard.SoftPermissionDetailActivity");
                 intent = PermissionSettingPage.getVivoMobileManagerAppIntent(context);
-                intentList.add(intent);
+                if (intent != null) {
+                    intentList.add(intent);
+                }
             } else if (PhoneRomUtils.isOneUi()) {
                 intent = PermissionSettingPage.getOneUiPermissionPageIntent(context);
                 intentList.add(intent);
             } else if (PhoneRomUtils.isSmartisanOS() && !AndroidVersion.isAndroid5_1()) {
                 // 经过测试，锤子手机 5.1 及以上的手机的可以直接通过直接跳转到应用详情开启悬浮窗权限，但是 4.4 以下的手机就不行，需要跳转到安全中心
-                intent = PermissionSettingPage.getSmartisanPermissionPageIntent(context);
-                intentList.add(intent);
+                intentList.addAll(PermissionSettingPage.getSmartisanPermissionPageIntent());
+                intentList.addAll(PermissionSettingPage.getSmartisanSecurityCenterAppIntent(context));
             }
 
             // 360 第一部发布的手机是 360 N4，Android 版本是 6.0 了，所以根本不需要跳转到指定的页面开启悬浮窗权限
