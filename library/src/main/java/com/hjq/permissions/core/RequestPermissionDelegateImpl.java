@@ -90,9 +90,12 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
             mFragmentMethod.requestPermissions(permissions, requestCode);
         } catch (Exception e) {
             // 在某些极端情况下，调用系统的 requestPermissions 方法时会出现崩溃，刚开始我还以为是 Android 6.0 以下的设备触发的 Bug，
-            // 结果发现 Android 6.0 及以上也有这个问题，你永远无法想象现实到底有多魔幻，经过分析得出结论，出现这种情况只有两种可能：
-            // 1. 厂商开发工程师修改了 com.android.packageinstaller 系统应用的包名，但是没有自测好就上线了（概率较小）
-            // 2. 用户有 Root 权限，在精简系统 App 的时候不小心删掉了 com.android.packageinstaller 这个系统应用（概率较大）
+            // 结果发现 Android 6.0 及以上也有这个问题，你永远无法想象现实到底有多魔幻，经过分析得出结论，出现这种情况有以下几种可能：
+            //   1. 厂商开发工程师修改了 com.android.packageinstaller 系统应用的包名，但是没有自测好就上线了（概率较小）
+            //   2. 厂商开发工程师删除了 com.android.packageinstaller 这个系统应用，但是没有自测好就上线了（概率较小）
+            //   3. 厂商开发工程师在修改 Android 系统源码的时候，改动的代码影响到权限模块，但是没有自测好就上线了（概率较小）
+            //   4. 厂商主动阉割掉了权限申请功能，例如在电视 TV 设备上面，间接导致请求危险权限的 App 一请求权限就闪退（概率较小）
+            //   5. 用户有 Root 权限，在精简系统 App 的时候不小心删掉了 com.android.packageinstaller 这个系统应用（概率较大）
             // 经过分析 Activity.requestPermissions 的源码，它本质上还是调用 startActivityForResult，只不过 Activity 找不到了而已，
             // 目前能想到最好的解决方式，就是用 try catch 避免它出现崩溃，看到这里你可能会有一个疑问，就简单粗暴 try catch？你确定没问题？
             // 会不会导致 onRequestPermissionsResult 没有回调？从而导致权限请求流程卡住的情况？虽然这个问题没有办法测试，但理论上是不会的，
@@ -103,10 +106,23 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
             // 同理 onRequestPermissionsResult 也肯定会被 dispatchActivityResult 正常调用，从而形成一个完整的逻辑闭环。
             // 如果真的出现这种极端情况，所有危险权限的申请必然会走失败的回调，但是框架要做的是：尽量让应用不要崩溃，并且能走完整个权限申请的流程。
             // 涉及到此问题相关 Github issue 地址：
-            // 1. https://github.com/getActivity/XXPermissions/issues/153
-            // 2. https://github.com/getActivity/XXPermissions/issues/126
-            // 3. https://github.com/getActivity/XXPermissions/issues/327
-            // 4. https://github.com/getActivity/XXPermissions/issues/339
+            //   1. https://github.com/getActivity/XXPermissions/issues/153
+            //   2. https://github.com/getActivity/XXPermissions/issues/126
+            //   3. https://github.com/getActivity/XXPermissions/issues/327
+            //   4. https://github.com/getActivity/XXPermissions/issues/339
+            //   5. https://github.com/guolindev/PermissionX/issues/92
+            //   6. https://github.com/yanzhenjie/AndPermission/issues/72
+            //   7. https://github.com/yanzhenjie/AndPermission/issues/28
+            //   8. https://github.com/permissions-dispatcher/PermissionsDispatcher/issues/288
+            //   9. https://github.com/googlesamples/easypermissions/issues/342
+            //   10. https://github.com/HuanTanSheng/EasyPhotos/issues/256
+            //   11. https://github.com/oasisfeng/island/issues/67
+            //   12. https://github.com/Rakashazi/emu-ex-plus-alpha/issues/137
+            //   13. https://github.com/hyb1996-guest/AutoJsIssueReport/issues/1792
+            //   14. https://github.com/hyb1996-guest/AutoJsIssueReport/issues/1794
+            //   15. https://github.com/hyb1996-guest/AutoJsIssueReport/issues/1795
+            //   16. https://github.com/hyb1996-guest/AutoJsIssueReport/issues/2012
+            //   17. https://github.com/hyb1996-guest/AutoJsIssueReport/issues/18264
             // android.content.ActivityNotFoundException: No Activity found to handle Intent
             // { act=android.content.pm.action.REQUEST_PERMISSIONS pkg=com.android.packageinstaller (has extras) }
             e.printStackTrace();
