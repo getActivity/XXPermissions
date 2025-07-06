@@ -172,5 +172,31 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
             // 这是因为框架考虑到外部的调用者会将前台定位权限（包含精确定位和模糊定位权限）和后台定位权限拆成独立的两次权限申请
             throw new IllegalArgumentException("Applying for background positioning permissions must include \"" + PermissionNames.ACCESS_FINE_LOCATION + "\"");
         }
+
+        int thisPermissionIndex = -1;
+        int accessFineLocationPermissionIndex = -1;
+        int accessCoarseLocationPermissionIndex = -1;
+        for (int i = 0; i < requestPermissions.size(); i++) {
+            IPermission permission = requestPermissions.get(i);
+            if (PermissionUtils.equalsPermission(permission, this)) {
+                thisPermissionIndex = i;
+            } else if (PermissionUtils.equalsPermission(permission, PermissionNames.ACCESS_FINE_LOCATION)) {
+                accessFineLocationPermissionIndex = i;
+            } else if (PermissionUtils.equalsPermission(permission, PermissionNames.ACCESS_COARSE_LOCATION)) {
+                accessCoarseLocationPermissionIndex = i;
+            }
+        }
+
+        if (accessFineLocationPermissionIndex != -1 && accessFineLocationPermissionIndex > thisPermissionIndex) {
+            // 请把 ACCESS_BACKGROUND_LOCATION 权限放置在 ACCESS_FINE_LOCATION 权限的后面
+            throw new IllegalArgumentException("Please place the " + getPermissionName() +
+                "\" permission after the \"" + PermissionNames.ACCESS_FINE_LOCATION + "\" permission");
+        }
+
+        if (accessCoarseLocationPermissionIndex != -1 && accessCoarseLocationPermissionIndex > thisPermissionIndex) {
+            // 请把 ACCESS_BACKGROUND_LOCATION 权限放置在 ACCESS_COARSE_LOCATION 权限的后面
+            throw new IllegalArgumentException("Please place the \"" + getPermissionName() +
+                "\" permission after the \"" + PermissionNames.ACCESS_COARSE_LOCATION + "\" permission");
+        }
     }
 }
