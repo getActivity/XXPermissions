@@ -129,13 +129,13 @@ public final class UseFullScreenIntentPermission extends SpecialPermission {
                 + "(\"" + PermissionNames.NOTIFICATION_SERVICE + "\" or \"" + PermissionNames.POST_NOTIFICATIONS + "\")");
         }
 
-        int thisPermissionindex = -1;
+        int thisPermissionIndex = -1;
         int notificationServicePermissionIndex = -1;
         int postNotificationsPermissionIndex = -1;
         for (int i = 0; i < requestPermissions.size(); i++) {
             IPermission permission = requestPermissions.get(i);
             if (PermissionUtils.equalsPermission(permission, getPermissionName())) {
-                thisPermissionindex = i;
+                thisPermissionIndex = i;
             } else if (PermissionUtils.equalsPermission(permission, PermissionNames.NOTIFICATION_SERVICE)) {
                 notificationServicePermissionIndex = i;
             } else if (PermissionUtils.equalsPermission(permission, PermissionNames.POST_NOTIFICATIONS)) {
@@ -143,13 +143,13 @@ public final class UseFullScreenIntentPermission extends SpecialPermission {
             }
         }
 
-        if (notificationServicePermissionIndex != -1 && notificationServicePermissionIndex > thisPermissionindex) {
+        if (notificationServicePermissionIndex != -1 && notificationServicePermissionIndex > thisPermissionIndex) {
             // 请把 USE_FULL_SCREEN_INTENT 权限放置在 NOTIFICATION_SERVICE 权限的后面
             throw new IllegalArgumentException("Please place the " + getPermissionName() +
                 "\" permission after the \"" + PermissionNames.NOTIFICATION_SERVICE + "\" permission");
         }
 
-        if (postNotificationsPermissionIndex != -1 && postNotificationsPermissionIndex > thisPermissionindex) {
+        if (postNotificationsPermissionIndex != -1 && postNotificationsPermissionIndex > thisPermissionIndex) {
             // 请把 USE_FULL_SCREEN_INTENT 权限放置在 POST_NOTIFICATIONS 权限的后面
             throw new IllegalArgumentException("Please place the \"" + getPermissionName() +
                 "\" permission after the \"" + PermissionNames.POST_NOTIFICATIONS + "\" permission");
