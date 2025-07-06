@@ -3,20 +3,19 @@ package com.hjq.permissions.permission;
 import android.Manifest;
 import android.accessibilityservice.AccessibilityService;
 import android.app.Service;
-import android.content.BroadcastReceiver;
+import android.app.admin.DeviceAdminReceiver;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LruCache;
-import com.hjq.permissions.tools.AndroidVersion;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.StandardDangerousPermission;
 import com.hjq.permissions.permission.dangerous.AccessBackgroundLocationPermission;
+import com.hjq.permissions.permission.dangerous.AccessMediaLocationPermission;
 import com.hjq.permissions.permission.dangerous.BluetoothAdvertisePermission;
 import com.hjq.permissions.permission.dangerous.BluetoothConnectPermission;
 import com.hjq.permissions.permission.dangerous.BluetoothScanPermission;
 import com.hjq.permissions.permission.dangerous.BodySensorsBackgroundPermission;
 import com.hjq.permissions.permission.dangerous.GetInstalledAppsPermission;
-import com.hjq.permissions.permission.dangerous.AccessMediaLocationPermission;
 import com.hjq.permissions.permission.dangerous.NearbyWifiDevicesPermission;
 import com.hjq.permissions.permission.dangerous.PostNotificationsPermission;
 import com.hjq.permissions.permission.dangerous.ReadExternalStoragePermission;
@@ -41,6 +40,7 @@ import com.hjq.permissions.permission.special.ScheduleExactAlarmPermission;
 import com.hjq.permissions.permission.special.SystemAlertWindowPermission;
 import com.hjq.permissions.permission.special.UseFullScreenIntentPermission;
 import com.hjq.permissions.permission.special.WriteSettingsPermission;
+import com.hjq.permissions.tools.AndroidVersion;
 
 /**
  *    author : Android 轮子哥
@@ -318,20 +318,20 @@ public final class PermissionLists {
     /**
      * 设备管理权限（特殊权限，Android 2.2 新增的权限，注意此权限不需要在清单文件中注册也能申请）
      *
-     * @param broadcastReceiverClass                                 设备管理器的 BroadcastReceiver 类
+     * @param deviceAdminReceiverClass              设备管理器的 BroadcastReceiver 类
      * @param extraAddExplanation                   申请设备管理器权限的附加说明
      */
     @NonNull
-    public static IPermission getBindDeviceAdminPermission(@NonNull Class<? extends BroadcastReceiver> broadcastReceiverClass, @Nullable String extraAddExplanation) {
-        return new BindDeviceAdminPermission(broadcastReceiverClass, extraAddExplanation);
+    public static IPermission getBindDeviceAdminPermission(@NonNull Class<? extends DeviceAdminReceiver> deviceAdminReceiverClass, @Nullable String extraAddExplanation) {
+        return new BindDeviceAdminPermission(deviceAdminReceiverClass, extraAddExplanation);
     }
 
     /**
      * 同上
      */
     @NonNull
-    public static IPermission getBindDeviceAdminPermission(@NonNull Class<? extends BroadcastReceiver> broadcastReceiverClass) {
-        return new BindDeviceAdminPermission(broadcastReceiverClass, null);
+    public static IPermission getBindDeviceAdminPermission(@NonNull Class<? extends DeviceAdminReceiver> deviceAdminReceiverClass) {
+        return new BindDeviceAdminPermission(deviceAdminReceiverClass, null);
     }
 
     /* ------------------------------------ 我是一条华丽的分割线 ------------------------------------ */

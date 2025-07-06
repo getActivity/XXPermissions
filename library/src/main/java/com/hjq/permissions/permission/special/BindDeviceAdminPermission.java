@@ -1,8 +1,8 @@
 package com.hjq.permissions.permission.special;
 
 import android.app.Activity;
+import android.app.admin.DeviceAdminReceiver;
 import android.app.admin.DevicePolicyManager;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -44,18 +44,18 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
 
     /** 设备管理器的 BroadcastReceiver 类名 */
     @NonNull
-    private final String mBroadcastReceiverClassName;
+    private final String mDeviceAdminReceiverClassName;
 
     /** 申请设备管理器权限的附加说明 */
     @Nullable
     private final String mExtraAddExplanation;
 
-    public BindDeviceAdminPermission(@NonNull Class<? extends BroadcastReceiver> broadcastReceiverClass, @Nullable String extraAddExplanation) {
-        this(broadcastReceiverClass.getName(), extraAddExplanation);
+    public BindDeviceAdminPermission(@NonNull Class<? extends DeviceAdminReceiver> deviceAdminReceiverClass, @Nullable String extraAddExplanation) {
+        this(deviceAdminReceiverClass.getName(), extraAddExplanation);
     }
 
-    public BindDeviceAdminPermission(@NonNull String broadcastReceiverClassName, @Nullable String extraAddExplanation) {
-        mBroadcastReceiverClassName = broadcastReceiverClassName;
+    public BindDeviceAdminPermission(@NonNull String deviceAdminReceiverClassName, @Nullable String extraAddExplanation) {
+        mDeviceAdminReceiverClassName = deviceAdminReceiverClassName;
         mExtraAddExplanation = extraAddExplanation;
     }
 
@@ -66,7 +66,7 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mBroadcastReceiverClassName);
+        dest.writeString(mDeviceAdminReceiverClassName);
         dest.writeString(mExtraAddExplanation);
     }
 
@@ -93,7 +93,7 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
         if (devicePolicyManager == null) {
             return false;
         }
-        return devicePolicyManager.isAdminActive(new ComponentName(context, mBroadcastReceiverClassName));
+        return devicePolicyManager.isAdminActive(new ComponentName(context, mDeviceAdminReceiverClassName));
     }
 
     @NonNull
@@ -103,7 +103,7 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
         Intent intent;
 
         intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, new ComponentName(context, mBroadcastReceiverClassName));
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, new ComponentName(context, mDeviceAdminReceiverClassName));
         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, mExtraAddExplanation);
         intentList.add(intent);
 
@@ -116,11 +116,11 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
     @Override
     public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions, @Nullable AndroidManifestInfo androidManifestInfo) {
         super.checkCompliance(activity, requestPermissions, androidManifestInfo);
-        if (TextUtils.isEmpty(mBroadcastReceiverClassName)) {
+        if (TextUtils.isEmpty(mDeviceAdminReceiverClassName)) {
             throw new IllegalArgumentException("Pass the BroadcastReceiverClass parameter as empty");
         }
-        if (!PermissionUtils.isClassExist(mBroadcastReceiverClassName)) {
-            throw new IllegalArgumentException("The passed-in " + mBroadcastReceiverClassName + " is an invalid class");
+        if (!PermissionUtils.isClassExist(mDeviceAdminReceiverClassName)) {
+            throw new IllegalArgumentException("The passed-in " + mDeviceAdminReceiverClassName + " is an invalid class");
         }
     }
 
@@ -137,25 +137,25 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
             if (broadcastReceiverManifestInfo == null) {
                 continue;
             }
-            if (!PermissionUtils.reverseEqualsString(mBroadcastReceiverClassName, broadcastReceiverManifestInfo.name)) {
+            if (!PermissionUtils.reverseEqualsString(mDeviceAdminReceiverClassName, broadcastReceiverManifestInfo.name)) {
                 // 不是目标的 BroadcastReceiver，继续循环
                 continue;
             }
             if (broadcastReceiverManifestInfo.permission == null || !PermissionUtils.equalsPermission(this, broadcastReceiverManifestInfo.permission)) {
                 // 这个 BroadcastReceiver 组件注册的 permission 节点为空或者错误
                 throw new IllegalArgumentException("Please register permission node in the AndroidManifest.xml file, for example: "
-                    + "<receiver android:name=\"" + mBroadcastReceiverClassName + "\" android:permission=\"" + getPermissionName() + "\" />");
+                    + "<receiver android:name=\"" + mDeviceAdminReceiverClassName + "\" android:permission=\"" + getPermissionName() + "\" />");
             }
             return;
         }
 
         // 这个 BroadcastReceiver 组件没有在清单文件中注册
-        throw new IllegalArgumentException("The \"" + mBroadcastReceiverClassName + "\" component is not registered in the AndroidManifest.xml file");
+        throw new IllegalArgumentException("The \"" + mDeviceAdminReceiverClassName + "\" component is not registered in the AndroidManifest.xml file");
     }
 
     @NonNull
-    public String getBroadcastReceiverClassName() {
-        return mBroadcastReceiverClassName;
+    public String getDeviceAdminReceiverClassName() {
+        return mDeviceAdminReceiverClassName;
     }
 
     @Nullable
