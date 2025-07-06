@@ -3,7 +3,6 @@ package com.hjq.permissions;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -478,11 +477,7 @@ public final class XXPermissions {
             startPermissionActivity(activity, permissions);
             return;
         }
-        Intent intent = PermissionApi.getBestPermissionSettingIntent(context, permissions);
-        if (!(context instanceof Activity)) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        }
-        StartActivityAgent.startActivity(context, intent);
+        StartActivityAgent.startActivity(context, PermissionApi.getBestPermissionSettingIntent(context, permissions));
     }
 
     /* android.app.Activity */
@@ -504,8 +499,8 @@ public final class XXPermissions {
     public static void startPermissionActivity(@NonNull Activity activity,
                                                @NonNull List<IPermission> permissions,
                                                @IntRange(from = 1, to = 65535) int requestCode) {
-        Intent intent = PermissionApi.getBestPermissionSettingIntent(activity, permissions);
-        StartActivityAgent.startActivityForResult(activity, intent, requestCode);
+        StartActivityAgent.startActivityForResult(activity,
+            PermissionApi.getBestPermissionSettingIntent(activity, permissions), requestCode);
     }
 
     public static void startPermissionActivity(@NonNull Activity activity,
@@ -563,8 +558,8 @@ public final class XXPermissions {
             StartActivityAgent.startActivity(appFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
             return;
         }
-        Intent intent = PermissionApi.getBestPermissionSettingIntent(activity, permissions);
-        StartActivityAgent.startActivityForResult(appFragment, intent, requestCode);
+        StartActivityAgent.startActivityForResult(appFragment,
+            PermissionApi.getBestPermissionSettingIntent(activity, permissions), requestCode);
     }
 
     public static void startPermissionActivity(@NonNull Fragment appFragment,
@@ -626,8 +621,8 @@ public final class XXPermissions {
             StartActivityAgent.startActivity(supportFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
             return;
         }
-        Intent intent = PermissionApi.getBestPermissionSettingIntent(activity, permissions);
-        StartActivityAgent.startActivityForResult(supportFragment, intent, requestCode);
+        StartActivityAgent.startActivityForResult(supportFragment,
+            PermissionApi.getBestPermissionSettingIntent(activity, permissions), requestCode);
     }
 
     public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,

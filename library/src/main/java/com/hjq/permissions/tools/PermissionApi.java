@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.start.IntentNestedHandler;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.IPermission;
 import java.util.ArrayList;
@@ -112,7 +111,8 @@ public final class PermissionApi {
     /**
      * 根据传入的权限自动选择最合适的权限设置页的意图
      */
-    public static Intent getBestPermissionSettingIntent(@NonNull Context context, @Nullable List<IPermission> permissions) {
+    @NonNull
+    public static List<Intent> getBestPermissionSettingIntent(@NonNull Context context, @Nullable List<IPermission> permissions) {
         // 如果失败的权限里面不包含特殊权限
         if (permissions == null || permissions.isEmpty()) {
             return PermissionSettingPage.getCommonPermissionSettingIntent(context);
@@ -143,7 +143,7 @@ public final class PermissionApi {
         }
 
         if (realPermissions.size() == 1) {
-            return IntentNestedHandler.mergeMultipleIntent(context, realPermissions.get(0).getPermissionSettingIntents(context));
+            return realPermissions.get(0).getPermissionSettingIntents(context);
         }
 
         List<Intent> prePermissionIntentList = realPermissions.get(0).getPermissionSettingIntents(context);
@@ -159,7 +159,7 @@ public final class PermissionApi {
 
             // 如果集合中的 Intent 列表都一样，就直接按照当前的 Intent 列表去做跳转
             if (i == realPermissions.size() - 1) {
-                return IntentNestedHandler.mergeMultipleIntent(context, currentPermissionIntentList);
+                return currentPermissionIntentList;
             }
         }
         return PermissionSettingPage.getCommonPermissionSettingIntent(context);

@@ -146,6 +146,11 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
                 if (PhoneRomUtils.isXiaomiSystemOptimization()) {
                     intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
                     intentList.add(intent);
+
+                    intent = PermissionSettingPage.getXiaoMiMobileManagerAppIntent(context);
+                    if (intent != null) {
+                        intentList.add(intent);
+                    }
                 }
             } else if (PhoneRomUtils.isColorOs()) {
                 // com.color.safecenter 是之前 oppo 安全中心的包名，而 com.oppo.safe 是 oppo 后面改的安全中心的包名

@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.hjq.permissions.tools.PermissionUtils;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -16,76 +19,97 @@ import android.support.annotation.Nullable;
  */
 public final class StartActivityAgent {
 
-    public static boolean startActivity(@NonNull Context context, Intent intent) {
-        return startActivity(new StartActivityDelegateByContext(context), intent);
+    public static void startActivity(@NonNull Context context,
+                                     @NonNull List<Intent> intentList) {
+        startActivity(context, new StartActivityDelegateByContext(context), intentList);
     }
 
-    public static boolean startActivity(@NonNull Activity activity, Intent intent) {
-        return startActivity(new StartActivityDelegateByActivity(activity), intent);
+    public static void startActivity(@NonNull Activity activity,
+                                     @NonNull List<Intent> intentList) {
+        startActivity(activity, new StartActivityDelegateByActivity(activity), intentList);
     }
 
     @SuppressWarnings("deprecation")
-    public static boolean startActivity(@NonNull Fragment fragment, Intent intent) {
-        return startActivity(new StartActivityDelegateByFragmentApp(fragment), intent);
+    public static void startActivity(@NonNull Fragment fragment,
+                                     @NonNull List<Intent> intentList) {
+        startActivity(fragment.getActivity(), new StartActivityDelegateByFragmentApp(fragment), intentList);
     }
 
-    public static boolean startActivity(@NonNull android.support.v4.app.Fragment fragment, Intent intent) {
-        return startActivity(new StartActivityDelegateByFragmentSupport(fragment), intent);
+    public static void startActivity(@NonNull android.support.v4.app.Fragment fragment,
+                                     @NonNull List<Intent> intentList) {
+        startActivity(fragment.getActivity(), new StartActivityDelegateByFragmentSupport(fragment), intentList);
     }
 
-    public static boolean startActivity(@NonNull IStartActivityDelegate delegate, @NonNull Intent intent) {
-        try {
-            delegate.startActivity(intent);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            Intent subIntent = IntentNestedHandler.findSubIntentBySuperIntent(intent);
-            if (subIntent == null) {
-                return false;
+    public static void startActivity(@NonNull Context context,
+                                     @NonNull IStartActivityDelegate delegate,
+                                     @NonNull List<Intent> intentList) {
+        for (Intent intent : intentList) {
+            if (!PermissionUtils.areActivityIntent(context, intent)) {
+                // 如果这个 Intent 不存在，就继续循环，直到找到存在的 Intent 为止，否则就不进行跳转
+                continue;
             }
-            return startActivity(delegate, subIntent);
+            try {
+                delegate.startActivity(intent);
+                // 跳转成功，结束循环
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public static boolean startActivityForResult(@NonNull Activity activity, @NonNull Intent intent,
-                                          @IntRange(from = 1, to = 65535) int requestCode) {
-        return startActivityForResult(new StartActivityDelegateByActivity(activity), intent, requestCode);
+    public static void startActivityForResult(@NonNull Activity activity,
+                                              @NonNull List<Intent> intentList,
+                                              @IntRange(from = 1, to = 65535) int requestCode) {
+        startActivityForResult(activity, new StartActivityDelegateByActivity(activity), intentList, requestCode);
     }
 
     @SuppressWarnings("deprecation")
-    public static boolean startActivityForResult(@NonNull Fragment fragment, @NonNull Intent intent,
-                                          @IntRange(from = 1, to = 65535) int requestCode) {
-        return startActivityForResult(new StartActivityDelegateByFragmentApp(fragment), intent, requestCode);
+    public static void startActivityForResult(@NonNull Fragment fragment,
+                                              @NonNull List<Intent> intentList,
+                                              @IntRange(from = 1, to = 65535) int requestCode) {
+        startActivityForResult(fragment.getActivity(), new StartActivityDelegateByFragmentApp(fragment), intentList, requestCode);
     }
 
-    public static boolean startActivityForResult(@NonNull android.support.v4.app.Fragment fragment, @NonNull Intent intent,
-                                          @IntRange(from = 1, to = 65535) int requestCode) {
-        return startActivityForResult(new StartActivityDelegateByFragmentSupport(fragment), intent, requestCode);
+    public static void startActivityForResult(@NonNull android.support.v4.app.Fragment fragment,
+                                              @NonNull List<Intent> intentList,
+                                              @IntRange(from = 1, to = 65535) int requestCode) {
+        startActivityForResult(fragment.getActivity(), new StartActivityDelegateByFragmentSupport(fragment), intentList, requestCode);
     }
 
-    public static boolean startActivityForResult(@NonNull IStartActivityDelegate delegate, @NonNull Intent intent,
-                                                @IntRange(from = 1, to = 65535) int requestCode) {
-        return startActivityForResult(delegate, intent, requestCode, null);
+    public static void startActivityForResult(@NonNull Context context,
+                                              @NonNull IStartActivityDelegate delegate,
+                                              @NonNull List<Intent> intentList,
+                                              @IntRange(from = 1, to = 65535) int requestCode) {
+        startActivityForResult(context, delegate, intentList, requestCode, null);
     }
 
-    public static boolean startActivityForResult(@NonNull IStartActivityDelegate delegate, @NonNull Intent intent,
-                                                 @IntRange(from = 1, to = 65535) int requestCode,
-                                                 @Nullable Runnable ignoreActivityResultCallback) {
-        try {
-            delegate.startActivityForResult(intent, requestCode);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            Intent subIntent = IntentNestedHandler.findSubIntentBySuperIntent(intent);
-            if (subIntent == null) {
-                return false;
+    public static void startActivityForResult(@NonNull Context context,
+                                              @NonNull IStartActivityDelegate delegate,
+                                              @NonNull List<Intent> intentList,
+                                              @IntRange(from = 1, to = 65535) int requestCode,
+                                              @Nullable Runnable ignoreActivityResultCallback) {
+        Iterator<Intent> iterator = intentList.iterator();
+        while (iterator.hasNext()) {
+            Intent intent = iterator.next();
+            if (!PermissionUtils.areActivityIntent(context, intent) && iterator.hasNext()) {
+                // 如果这个 Intent 不存在，并且不是最后一个 Intent ，就继续循环
+                // 假设当前是最后一个 Intent，但是 Intent 不存在，也会让它执行 startActivityForResult，
+                // 虽然最终会失败，但是只有这样做才能让系统触发回调 onActivityResult 方法，才使得整个权限请求流程形成闭环
+                continue;
             }
-            // 如果 subIntent 不为空才去触发失败的回调，这是因为如果 subIntent 为空，则证明已经没有下一个 Intent 可以再试了，
-            // 那么就不需要记录这次跳转失败的次数，这样前面 startActivityForResult 失败就会导致系统触发 onActivityResult 回调，形成闭环
-            if (ignoreActivityResultCallback != null) {
-                ignoreActivityResultCallback.run();
+            try {
+                delegate.startActivityForResult(intent, requestCode);
+                // 跳转成功，结束循环
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
+                // 如果下一个 Intent 不为空才去触发失败结果的回调，这是因为如果下一个 Intent 为空，则证明已经没有下一个 Intent 可以再试了，
+                // 那么就不需要记录这次跳转失败的次数，这样前面 startActivityForResult 失败就会导致系统触发 onActivityResult 回调，形成闭环
+                if (iterator.hasNext() && ignoreActivityResultCallback != null) {
+                    ignoreActivityResultCallback.run();
+                }
             }
-            return startActivityForResult(delegate, subIntent, requestCode);
         }
     }
 }

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.start.IntentNestedHandler;
 import com.hjq.permissions.permission.base.IPermission;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,24 +43,10 @@ public final class PermissionSettingPage {
     /**
      * 获取小米应用具体的权限设置页意图
      */
-    @Nullable
+    @NonNull
     public static Intent getXiaoMiApplicationPermissionPageIntent(Context context) {
-        Intent appPermEditorActionIntent = new Intent()
-            .setAction("miui.intent.action.APP_PERM_EDITOR")
+        return new Intent("miui.intent.action.APP_PERM_EDITOR")
             .putExtra("extra_pkgname", context.getPackageName());
-
-        Intent xiaoMiMobileManagerAppIntent = getXiaoMiMobileManagerAppIntent(context);
-
-        Intent intent = null;
-        if (PermissionUtils.areActivityIntent(context, appPermEditorActionIntent)) {
-            intent = appPermEditorActionIntent;
-        }
-
-        if (PermissionUtils.areActivityIntent(context, xiaoMiMobileManagerAppIntent)) {
-            intent = IntentNestedHandler.addSubIntentForMainIntent(intent, xiaoMiMobileManagerAppIntent);
-        }
-
-        return intent;
     }
 
     /**
@@ -100,11 +85,7 @@ public final class PermissionSettingPage {
      */
     @Nullable
     public static Intent getXiaoMiMobileManagerAppIntent(Context context) {
-        Intent intent = context.getPackageManager().getLaunchIntentForPackage(MIUI_MOBILE_MANAGER_APP_PACKAGE_NAME);
-        if (PermissionUtils.areActivityIntent(context, intent)) {
-            return intent;
-        }
-        return null;
+        return context.getPackageManager().getLaunchIntentForPackage(MIUI_MOBILE_MANAGER_APP_PACKAGE_NAME);
     }
 
     /**
@@ -174,32 +155,18 @@ public final class PermissionSettingPage {
      * 获取通用的权限设置页
      */
     @NonNull
-    public static Intent getCommonPermissionSettingIntent(@NonNull Context context) {
+    public static List<Intent> getCommonPermissionSettingIntent(@NonNull Context context) {
         return getCommonPermissionSettingIntent(context, (IPermission[]) null);
     }
 
     @NonNull
-    public static Intent getCommonPermissionSettingIntent(@NonNull Context context, @Nullable IPermission... permissions) {
-        Intent mainIntent = null;
-
-        Intent applicationDetailsSettingIntent = getApplicationDetailsSettingsIntent(context, permissions);
-        if (PermissionUtils.areActivityIntent(context, applicationDetailsSettingIntent)) {
-            mainIntent = IntentNestedHandler.addSubIntentForMainIntent(mainIntent, applicationDetailsSettingIntent);
-        }
-
-        Intent manageApplicationSettingIntent = getManageApplicationSettingsIntent();
-        if (PermissionUtils.areActivityIntent(context, manageApplicationSettingIntent)) {
-            mainIntent = IntentNestedHandler.addSubIntentForMainIntent(mainIntent, manageApplicationSettingIntent);
-        }
-
-        Intent applicationSettingIntent = getApplicationSettingsIntent();
-        if (PermissionUtils.areActivityIntent(context, applicationSettingIntent)) {
-            mainIntent = IntentNestedHandler.addSubIntentForMainIntent(mainIntent, applicationSettingIntent);
-        }
-
-        Intent androidSettingIntent = getAndroidSettingsIntent();
-        mainIntent = IntentNestedHandler.addSubIntentForMainIntent(mainIntent, androidSettingIntent);
-        return mainIntent;
+    public static List<Intent> getCommonPermissionSettingIntent(@NonNull Context context, @Nullable IPermission... permissions) {
+        List<Intent> intentList = new ArrayList<>(4);
+        intentList.add(getApplicationDetailsSettingsIntent(context, permissions));
+        intentList.add(getManageApplicationSettingsIntent());
+        intentList.add(getApplicationSettingsIntent());
+        intentList.add(getAndroidSettingsIntent());
+        return intentList;
     }
 
     /**
