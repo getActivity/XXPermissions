@@ -100,7 +100,7 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
     protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
         super.checkSelfByRequestPermissions(activity, requestPermissions);
 
-        int thisPermissionindex = -1;
+        int thisPermissionIndex = -1;
         int readMediaImagesPermissionIndex = -1;
         int readMediaVideoPermissionIndex = -1;
         int readMediaVisualUserSelectedPermissionIndex = -1;
@@ -110,7 +110,7 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
         for (int i = 0; i < requestPermissions.size(); i++) {
             IPermission permission = requestPermissions.get(i);
             if (PermissionUtils.equalsPermission(permission, this)) {
-                thisPermissionindex = i;
+                thisPermissionIndex = i;
             } else if (PermissionUtils.equalsPermission(permission, PermissionNames.READ_MEDIA_IMAGES)) {
                 readMediaImagesPermissionIndex = i;
             } else if (PermissionUtils.equalsPermission(permission, PermissionNames.READ_MEDIA_VIDEO)) {
@@ -126,37 +126,37 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
             }
         }
 
-        if (readMediaImagesPermissionIndex != -1 && readMediaImagesPermissionIndex > thisPermissionindex) {
+        if (readMediaImagesPermissionIndex != -1 && readMediaImagesPermissionIndex > thisPermissionIndex) {
             // 请把 ACCESS_MEDIA_LOCATION 权限放置在 READ_MEDIA_IMAGES 权限的后面
             throw new IllegalArgumentException("Please place the " + getPermissionName() +
                 "\" permission after the \"" + PermissionNames.READ_MEDIA_IMAGES + "\" permission");
         }
 
-        if (readMediaVideoPermissionIndex != -1 && readMediaVideoPermissionIndex > thisPermissionindex) {
+        if (readMediaVideoPermissionIndex != -1 && readMediaVideoPermissionIndex > thisPermissionIndex) {
             // 请把 ACCESS_MEDIA_LOCATION 权限放置在 READ_MEDIA_VIDEO 权限的后面
             throw new IllegalArgumentException("Please place the \"" + getPermissionName() +
                 "\" permission after the \"" + PermissionNames.READ_MEDIA_VIDEO + "\" permission");
         }
 
-        if (readMediaVisualUserSelectedPermissionIndex != -1 && readMediaVisualUserSelectedPermissionIndex > thisPermissionindex) {
+        if (readMediaVisualUserSelectedPermissionIndex != -1 && readMediaVisualUserSelectedPermissionIndex > thisPermissionIndex) {
             // 请把 ACCESS_MEDIA_LOCATION 权限放置在 READ_MEDIA_VISUAL_USER_SELECTED 权限的后面
             throw new IllegalArgumentException("Please place the \"" + getPermissionName() +
                 "\" permission after the \"" + PermissionNames.READ_MEDIA_VISUAL_USER_SELECTED + "\" permission");
         }
 
-        if (manageExternalStoragePermissionIndex != -1 && manageExternalStoragePermissionIndex > thisPermissionindex) {
+        if (manageExternalStoragePermissionIndex != -1 && manageExternalStoragePermissionIndex > thisPermissionIndex) {
             // 请把 ACCESS_MEDIA_LOCATION 权限放置在 MANAGE_EXTERNAL_STORAGE 权限的后面
             throw new IllegalArgumentException("Please place the \"" + getPermissionName() +
                 "\" permission after the \"" + PermissionNames.MANAGE_EXTERNAL_STORAGE + "\" permission");
         }
 
-        if (readExternalStoragePermissionIndex != -1 && readExternalStoragePermissionIndex > thisPermissionindex) {
+        if (readExternalStoragePermissionIndex != -1 && readExternalStoragePermissionIndex > thisPermissionIndex) {
             // 请把 ACCESS_MEDIA_LOCATION 权限放置在 READ_EXTERNAL_STORAGE 权限的后面
             throw new IllegalArgumentException("Please place the \"" + getPermissionName() +
                 "\" permission after the \"" + PermissionNames.READ_EXTERNAL_STORAGE + "\" permission");
         }
 
-        if (writeExternalStoragePermissionIndex != -1 && writeExternalStoragePermissionIndex > thisPermissionindex) {
+        if (writeExternalStoragePermissionIndex != -1 && writeExternalStoragePermissionIndex > thisPermissionIndex) {
             // 请把 ACCESS_MEDIA_LOCATION 权限放置在 WRITE_EXTERNAL_STORAGE 权限的后面
             throw new IllegalArgumentException("Please place the \"" + getPermissionName() +
                 "\" permission after the \"" + PermissionNames.WRITE_EXTERNAL_STORAGE + "\" permission");
