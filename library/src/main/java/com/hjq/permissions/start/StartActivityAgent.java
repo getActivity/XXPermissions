@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.hjq.permissions.tools.PermissionSettingPage;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.Iterator;
 import java.util.List;
@@ -43,11 +44,22 @@ public final class StartActivityAgent {
     public static void startActivity(@NonNull Context context,
                                      @NonNull IStartActivityDelegate delegate,
                                      @NonNull List<Intent> intentList) {
-        for (Intent intent : intentList) {
-            if (!PermissionUtils.areActivityIntent(context, intent)) {
-                // 如果这个 Intent 不存在，就继续循环，直到找到存在的 Intent 为止，否则就不进行跳转
+        Iterator<Intent> iterator = intentList.iterator();
+        while (iterator.hasNext()) {
+            Intent intent = iterator.next();
+            if (PermissionUtils.areActivityIntent(context, intent)) {
                 continue;
             }
+            // 移除那些不存在的 Intent 对象，这样做的好处是：
+            // 1. 拿不存在的 Intent 去跳转必定是失败的（如果项目适配了 Android 11，需要注意适配软件包可见性的特性）
+            // 2. 在 Debug 代码调试的时候，可以很直观看出来有哪些 Intent 是存在的，也可以比较过滤前后的 Intent 列表
+            iterator.remove();
+        }
+
+        // 由于 Iterator 接口中没有重置索引的方法，所以这里只能重新获取一次 Iterator 对象
+        iterator = intentList.iterator();
+        while (iterator.hasNext()) {
+            Intent intent = iterator.next();
             try {
                 delegate.startActivity(intent);
                 // 跳转成功，结束循环
@@ -92,12 +104,26 @@ public final class StartActivityAgent {
         Iterator<Intent> iterator = intentList.iterator();
         while (iterator.hasNext()) {
             Intent intent = iterator.next();
-            if (!PermissionUtils.areActivityIntent(context, intent) && iterator.hasNext()) {
-                // 如果这个 Intent 不存在，并且不是最后一个 Intent ，就继续循环
-                // 假设当前是最后一个 Intent，但是 Intent 不存在，也会让它执行 startActivityForResult，
-                // 虽然最终会失败，但是只有这样做才能让系统触发回调 onActivityResult 方法，才使得整个权限请求流程形成闭环
+            if (PermissionUtils.areActivityIntent(context, intent)) {
                 continue;
             }
+            // 移除那些不存在的 Intent 对象，这样做的好处是：
+            // 1. 拿不存在的 Intent 去跳转必定是失败的（如果项目适配了 Android 11，需要注意适配软件包可见性的特性）
+            // 2. 在 Debug 代码调试的时候，可以很直观看出来有哪些 Intent 是存在的，也可以比较过滤前后的 Intent 列表
+            iterator.remove();
+        }
+
+        // 当所有的 Intent 都不存在的时候，那么就默认添加一个 Android 系统设置的 Intent，这样写的原因如下：
+        // 1. 不至于用户一点申请权限就立马提示失败，用户会一头雾水，这样的体验太差了，最起码跳转一下 Android 系统设置页，这样效果会好很多
+        // 2. 假设连 Android 系统设置页都跳转失败了，但是这样做可以让系统触发回调 onActivityResult 方法，才使得整个权限请求流程形成闭环
+        if (intentList.isEmpty()) {
+            intentList.add(PermissionSettingPage.getAndroidSettingsIntent());
+        }
+
+        // 由于 Iterator 接口中没有重置索引的方法，所以这里只能重新获取一次 Iterator 对象
+        iterator = intentList.iterator();
+        while (iterator.hasNext()) {
+            Intent intent = iterator.next();
             try {
                 delegate.startActivityForResult(intent, requestCode);
                 // 跳转成功，结束循环
