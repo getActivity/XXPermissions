@@ -2,8 +2,8 @@ package com.hjq.permissions.permission;
 
 import android.Manifest;
 import android.accessibilityservice.AccessibilityService;
-import android.app.Service;
 import android.app.admin.DeviceAdminReceiver;
+import android.service.notification.NotificationListenerService;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.LruCache;
@@ -262,12 +262,12 @@ public final class PermissionLists {
     /**
      * 通知栏监听权限（特殊权限，Android 4.3 新增的权限，注意此权限不需要在清单文件中注册也能申请）
      *
-     * @param serviceClass             通知监听的 Service 类型
+     * @param notificationListenerServiceClass             通知监听器的 Service 类型
      */
     @NonNull
-    public static IPermission getBindNotificationListenerServicePermission(@NonNull Class<? extends Service> serviceClass) {
+    public static IPermission getBindNotificationListenerServicePermission(@NonNull Class<? extends NotificationListenerService> notificationListenerServiceClass) {
         // 该对象不会纳入到缓存的集合中，这是它携带了具体的参数，只有无参的才能丢到缓存的集合中
-        return new BindNotificationListenerServicePermission(serviceClass);
+        return new BindNotificationListenerServicePermission(notificationListenerServiceClass);
     }
 
     /**

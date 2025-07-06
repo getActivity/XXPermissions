@@ -2,13 +2,13 @@ package com.hjq.permissions.permission.special;
 
 import android.app.Activity;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.Settings;
+import android.service.notification.NotificationListenerService;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -50,15 +50,16 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
     /** Settings.Secure.ENABLED_NOTIFICATION_LISTENERS */
     private static final String SETTING_ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
 
+    /** 通知监听器的 Service 类名 */
     @NonNull
-    private final String mServiceClassName;
+    private final String mNotificationListenerServiceClassName;
 
-    public BindNotificationListenerServicePermission(@NonNull Class<? extends Service> serviceClass) {
-        this(serviceClass.getName());
+    public BindNotificationListenerServicePermission(@NonNull Class<? extends NotificationListenerService> notificationListenerServiceClass) {
+        this(notificationListenerServiceClass.getName());
     }
 
-    public BindNotificationListenerServicePermission(@NonNull String serviceClassName) {
-        mServiceClassName = serviceClassName;
+    public BindNotificationListenerServicePermission(@NonNull String notificationListenerServiceClassName) {
+        mNotificationListenerServiceClassName = notificationListenerServiceClassName;
     }
 
     private BindNotificationListenerServicePermission(Parcel in) {
@@ -68,7 +69,7 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(mServiceClassName);
+        dest.writeString(mNotificationListenerServiceClassName);
     }
 
     @NonNull
@@ -94,7 +95,8 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
         } else {
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         }
-        String serviceClassName = PermissionUtils.isClassExist(mServiceClassName) ? mServiceClassName : null;
+        String serviceClassName = PermissionUtils.isClassExist(mNotificationListenerServiceClassName) ?
+                                    mNotificationListenerServiceClassName : null;
         // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
         if (AndroidVersion.isAndroid8_1() && notificationManager != null && serviceClassName != null) {
             return notificationManager.isNotificationListenerAccessGranted(new ComponentName(context, serviceClassName));
@@ -131,9 +133,10 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
         List<Intent> intentList = new ArrayList<>(3);
         Intent intent;
 
-        if (AndroidVersion.isAndroid11() && PermissionUtils.isClassExist(mServiceClassName)) {
+        if (AndroidVersion.isAndroid11() && PermissionUtils.isClassExist(mNotificationListenerServiceClassName)) {
             intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS);
-            intent.putExtra(Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME, new ComponentName(context, mServiceClassName).flattenToString());
+            intent.putExtra(Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME,
+                            new ComponentName(context, mNotificationListenerServiceClassName).flattenToString());
             intentList.add(intent);
         }
 
@@ -156,11 +159,11 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
     @Override
     public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions, @Nullable AndroidManifestInfo androidManifestInfo) {
         super.checkCompliance(activity, requestPermissions, androidManifestInfo);
-        if (TextUtils.isEmpty(mServiceClassName)) {
+        if (TextUtils.isEmpty(mNotificationListenerServiceClassName)) {
             throw new IllegalArgumentException("Pass the ServiceClass parameter as empty");
         }
-        if (!PermissionUtils.isClassExist(mServiceClassName)) {
-            throw new IllegalArgumentException("The passed-in " + mServiceClassName + " is an invalid class");
+        if (!PermissionUtils.isClassExist(mNotificationListenerServiceClassName)) {
+            throw new IllegalArgumentException("The passed-in " + mNotificationListenerServiceClassName + " is an invalid class");
         }
     }
 
@@ -177,24 +180,24 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
             if (serviceManifestInfo == null) {
                 continue;
             }
-            if (!PermissionUtils.reverseEqualsString(mServiceClassName, serviceManifestInfo.name)) {
+            if (!PermissionUtils.reverseEqualsString(mNotificationListenerServiceClassName, serviceManifestInfo.name)) {
                 // 不是目标的 Service，继续循环
                 continue;
             }
             if (serviceManifestInfo.permission == null || !PermissionUtils.equalsPermission(this, serviceManifestInfo.permission)) {
                 // 这个 Service 组件注册的 permission 节点为空或者错误
                 throw new IllegalArgumentException("Please register permission node in the AndroidManifest.xml file, for example: "
-                    + "<service android:name=\"" + mServiceClassName + "\" android:permission=\"" + getPermissionName() + "\" />");
+                    + "<service android:name=\"" + mNotificationListenerServiceClassName + "\" android:permission=\"" + getPermissionName() + "\" />");
             }
             return;
         }
 
         // 这个 Service 组件没有在清单文件中注册
-        throw new IllegalArgumentException("The \"" + mServiceClassName + "\" component is not registered in the AndroidManifest.xml file");
+        throw new IllegalArgumentException("The \"" + mNotificationListenerServiceClassName + "\" component is not registered in the AndroidManifest.xml file");
     }
 
     @NonNull
-    public String getServiceClassName() {
-        return mServiceClassName;
+    public String getNotificationListenerServiceClassName() {
+        return mNotificationListenerServiceClassName;
     }
 }
