@@ -126,9 +126,10 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
 
     @Override
     public int getRequestIntervalTime(@NonNull Context context) {
-        // 经过测试，在 Android 13 设备上面，先申请前台权限，然后立马申请后台权限大概率会出现失败
+        // 经过测试，在 Android 11 设备上面，先申请前台权限，然后立马申请后台权限大概率会出现失败
         // 这里为了避免这种情况出现，所以加了一点延迟，这样就没有什么问题了
         // 为什么延迟时间是 150 毫秒？ 经过实践得出 100 还是有概率会出现失败，但是换成 150 试了很多次就都没有问题了
+        // 官方的文档地址：https://developer.android.google.cn/about/versions/11/privacy?hl=zh-cn
         return isSupportRequestPermission(context) ? 150 : 0;
     }
 
