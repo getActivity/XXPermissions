@@ -25,7 +25,7 @@ import java.util.List;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/06/15
- *    desc   : 无障碍服务权限
+ *    desc   : 无障碍服务权限类
  */
 public final class BindAccessibilityServicePermission extends SpecialPermission {
 

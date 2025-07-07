@@ -16,7 +16,7 @@ import java.util.List;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/06/13
- *    desc   : 授予对照片和视频的部分访问权限
+ *    desc   : 访问部分照片和视频的权限类
  */
 public final class ReadMediaVisualUserSelectedPermission extends DangerousPermission {
 

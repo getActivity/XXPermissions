@@ -19,7 +19,7 @@ import java.util.List;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/06/11
- *    desc   : 请求忽略电池优化选项权限
+ *    desc   : 请求忽略电池优化选项权限类
  */
 public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPermission {
 

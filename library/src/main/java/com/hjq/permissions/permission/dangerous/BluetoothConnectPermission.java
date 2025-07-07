@@ -19,7 +19,7 @@ import java.util.List;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/06/14
- *    desc   : 蓝牙连接权限
+ *    desc   : 蓝牙连接权限类
  */
 public final class BluetoothConnectPermission extends DangerousPermission {
 

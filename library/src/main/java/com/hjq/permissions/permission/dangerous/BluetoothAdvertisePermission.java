@@ -19,7 +19,7 @@ import java.util.List;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/06/14
- *    desc   : 蓝牙广播权限
+ *    desc   : 蓝牙广播权限类
  */
 public final class BluetoothAdvertisePermission extends DangerousPermission {
 

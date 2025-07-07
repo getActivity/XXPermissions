@@ -27,7 +27,7 @@ import java.util.List;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/06/11
- *    desc   : 读取应用列表权限
+ *    desc   : 读取应用列表权限类
  */
 public final class GetInstalledAppsPermission extends DangerousPermission {
 

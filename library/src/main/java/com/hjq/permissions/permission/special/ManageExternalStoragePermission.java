@@ -25,7 +25,7 @@ import java.util.List;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/06/11
- *    desc   : 所有文件访问权限
+ *    desc   : 所有文件访问权限类
  */
 public final class ManageExternalStoragePermission extends SpecialPermission {
 

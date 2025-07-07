@@ -337,7 +337,7 @@ public final class PermissionLists {
     /* ------------------------------------ 我是一条华丽的分割线 ------------------------------------ */
 
     /**
-     * 授予对照片和视频的部分访问权限（Android 14.0 新增的权限）
+     * 访问部分照片和视频的权限（Android 14.0 新增的权限）
      */
     @NonNull
     public static IPermission getReadMediaVisualUserSelectedPermission() {
