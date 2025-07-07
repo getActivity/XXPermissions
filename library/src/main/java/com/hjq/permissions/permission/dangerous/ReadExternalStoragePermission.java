@@ -14,7 +14,7 @@ import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.List;
 
@@ -65,12 +65,12 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersion.ANDROID_6;
+        return PermissionVersion.ANDROID_6;
     }
 
     @Override
     protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
-        if (AndroidVersion.isAndroid13() && AndroidVersion.getCurrentVersion() >= AndroidVersion.ANDROID_13) {
+        if (PermissionVersion.isAndroid13() && PermissionVersion.getCurrentVersion() >= PermissionVersion.ANDROID_13) {
             return PermissionLists.getReadMediaImagesPermission().isGrantedPermission(context, skipRequest) &&
                 PermissionLists.getReadMediaVideoPermission().isGrantedPermission(context, skipRequest) &&
                 PermissionLists.getReadMediaAudioPermission().isGrantedPermission(context, skipRequest);
@@ -80,7 +80,7 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
 
     @Override
     protected boolean isDoNotAskAgainPermissionByStandardVersion(@NonNull Activity activity) {
-        if (AndroidVersion.isAndroid13() && AndroidVersion.getCurrentVersion() >= AndroidVersion.ANDROID_13) {
+        if (PermissionVersion.isAndroid13() && PermissionVersion.getCurrentVersion() >= PermissionVersion.ANDROID_13) {
             return PermissionLists.getReadMediaImagesPermission().isDoNotAskAgainPermission(activity) &&
                 PermissionLists.getReadMediaVideoPermission().isDoNotAskAgainPermission(activity) &&
                 PermissionLists.getReadMediaAudioPermission().isDoNotAskAgainPermission(activity);
@@ -106,11 +106,11 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
             return;
         }
 
-        int targetSdkVersion = AndroidVersion.getTargetVersion(activity);
+        int targetSdkVersion = PermissionVersion.getTargetVersion(activity);
         // 是否适配了分区存储
         boolean scopedStorage = PermissionUtils.getBooleanByMetaData(activity, ReadExternalStoragePermission.META_DATA_KEY_SCOPED_STORAGE, false);
         // 如果在已经适配 Android 10 的情况下
-        if (targetSdkVersion >= AndroidVersion.ANDROID_10 && !applicationManifestInfo.requestLegacyExternalStorage && !scopedStorage) {
+        if (targetSdkVersion >= PermissionVersion.ANDROID_10 && !applicationManifestInfo.requestLegacyExternalStorage && !scopedStorage) {
             // 请在清单文件 Application 节点中注册 android:requestLegacyExternalStorage="true" 属性
             // 否则就算申请了权限，也无法在 Android 10 的设备上正常读写外部存储上的文件
             // 如果你的项目已经全面适配了分区存储，请在清单文件中注册一个 meta-data 属性
@@ -120,7 +120,7 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
         }
 
         // 如果在已经适配 Android 11 的情况下
-        if (targetSdkVersion >= AndroidVersion.ANDROID_11 && !scopedStorage) {
+        if (targetSdkVersion >= PermissionVersion.ANDROID_11 && !scopedStorage) {
             // 1. 适配分区存储的特性，并在清单文件中注册一个 meta-data 属性
             // <meta-data android:name="ScopedStorage" android:value="true" />
             // 2. 如果不想适配分区存储，则需要使用 Permission.MANAGE_EXTERNAL_STORAGE 来申请权限
@@ -136,7 +136,7 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
     protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
         super.checkSelfByRequestPermissions(activity, requestPermissions);
 
-        if (AndroidVersion.getTargetVersion(activity) >= AndroidVersion.ANDROID_13) {
+        if (PermissionVersion.getTargetVersion(activity) >= PermissionVersion.ANDROID_13) {
             /*
                当项目 targetSdkVersion >= 33 时，则不能申请 READ_EXTERNAL_STORAGE 权限，会出现一些问题，
                因为经过测试，如果当 targetSdkVersion >= 33 申请 READ_EXTERNAL_STORAGE 或者 WRITE_EXTERNAL_STORAGE 会直接被系统拒绝，不会显示任何授权对话框，

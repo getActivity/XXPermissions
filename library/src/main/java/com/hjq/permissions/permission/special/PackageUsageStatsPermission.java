@@ -9,7 +9,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,12 +53,12 @@ public final class PackageUsageStatsPermission extends SpecialPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersion.ANDROID_5;
+        return PermissionVersion.ANDROID_5;
     }
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (!AndroidVersion.isAndroid5()) {
+        if (!PermissionVersion.isAndroid5()) {
             return true;
         }
         return checkOpPermission(context, AppOpsManager.OPSTR_GET_USAGE_STATS, false);
@@ -70,7 +70,7 @@ public final class PackageUsageStatsPermission extends SpecialPermission {
         List<Intent> intentList = new ArrayList<>(3);
         Intent intent;
 
-        if (AndroidVersion.isAndroid10()) {
+        if (PermissionVersion.isAndroid10()) {
             intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             // 经过测试，只有在 Android 10 及以上加包名才有效果
             // 如果在 Android 10 以下加包名会导致无法跳转
@@ -78,7 +78,7 @@ public final class PackageUsageStatsPermission extends SpecialPermission {
             intentList.add(intent);
         }
 
-        if (AndroidVersion.isAndroid5()) {
+        if (PermissionVersion.isAndroid5()) {
             intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             intentList.add(intent);
         }

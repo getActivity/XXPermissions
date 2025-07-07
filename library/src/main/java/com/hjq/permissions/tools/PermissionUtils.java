@@ -143,7 +143,7 @@ public final class PermissionUtils {
         if (packageManager == null) {
             return false;
         }
-        if (AndroidVersion.isAndroid13()) {
+        if (PermissionVersion.isAndroid13()) {
             return !packageManager.queryIntentActivities(intent,
                     ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY)).isEmpty();
         }

@@ -16,7 +16,7 @@ import com.hjq.permissions.manifest.node.ServiceManifestInfo;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +75,7 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersion.ANDROID_4_1;
+        return PermissionVersion.ANDROID_4_1;
     }
 
     @Override

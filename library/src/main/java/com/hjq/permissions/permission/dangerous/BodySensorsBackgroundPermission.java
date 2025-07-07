@@ -13,7 +13,7 @@ import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.List;
 
@@ -62,7 +62,7 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersion.ANDROID_13;
+        return PermissionVersion.ANDROID_13;
     }
 
     @NonNull

@@ -10,7 +10,7 @@ import com.hjq.permissions.fragment.IFragmentMethod;
 import com.hjq.permissions.manager.ActivityOrientationManager;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.start.IStartActivityDelegate;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionApi;
 import com.hjq.permissions.tools.PermissionTaskHandler;
 import com.hjq.permissions.tools.PermissionUtils;
@@ -136,7 +136,7 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
         if (arguments == null) {
             return null;
         }
-        if (AndroidVersion.isAndroid13()) {
+        if (PermissionVersion.isAndroid13()) {
             return arguments.getParcelableArrayList(REQUEST_PERMISSIONS, IPermission.class);
         } else {
             return arguments.getParcelableArrayList(REQUEST_PERMISSIONS);

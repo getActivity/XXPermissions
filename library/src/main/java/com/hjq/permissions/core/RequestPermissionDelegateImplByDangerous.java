@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import com.hjq.permissions.fragment.IFragmentMethod;
 import com.hjq.permissions.manager.PermissionRequestCodeManager;
 import com.hjq.permissions.permission.base.IPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.List;
 
@@ -25,7 +25,7 @@ public final class RequestPermissionDelegateImplByDangerous extends RequestPermi
     @Override
     void startPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> permissions,
                                 @IntRange(from = 1, to = 65535) int requestCode) {
-        if (!AndroidVersion.isAndroid6()) {
+        if (!PermissionVersion.isAndroid6()) {
             // 如果当前系统是 Android 6.0 以下，则没有危险权限的概念，则直接回调权限监听
             // 有人看到这句代码，忍不住想吐槽了，你这不是太阳能手电筒，纯纯脱裤子放屁
             // 实则不然，也有例外的情况，GET_INSTALLED_APPS 权限虽然是危险权限

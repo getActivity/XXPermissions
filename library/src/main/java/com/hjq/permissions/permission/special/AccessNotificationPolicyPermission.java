@@ -8,7 +8,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,12 +53,12 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersion.ANDROID_6;
+        return PermissionVersion.ANDROID_6;
     }
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (!AndroidVersion.isAndroid6()) {
+        if (!PermissionVersion.isAndroid6()) {
             return true;
         }
         NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
@@ -88,14 +88,14 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
         // 荣耀 80 Pro Android 12  MagicOs 7.0
         // 荣耀 X20 SE Android 11  MagicOs 4.1
         // 荣耀 Play5 Android 10  MagicOs 4.0
-        if (AndroidVersion.isAndroid10() && !PhoneRomUtils.isHarmonyOs() && !PhoneRomUtils.isMagicOs()) {
+        if (PermissionVersion.isAndroid10() && !PhoneRomUtils.isHarmonyOs() && !PhoneRomUtils.isMagicOs()) {
             // android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS
             intent = new Intent("android.settings.NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS");
             intent.setData(getPackageNameUri(context));
             intentList.add(intent);
         }
 
-        if (AndroidVersion.isAndroid6()) {
+        if (PermissionVersion.isAndroid6()) {
             intent = new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
             intentList.add(intent);
         }

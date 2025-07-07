@@ -14,7 +14,7 @@ import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.List;
 
@@ -59,12 +59,12 @@ public final class BluetoothScanPermission extends DangerousPermission {
     @Override
     public String getPermissionGroup() {
         // 注意：在 Android 12 的时候，蓝牙相关的权限已经归到附近设备的权限组了，但是在 Android 12 之前，蓝牙相关的权限归属定位权限组
-        return AndroidVersion.isAndroid12() ? PermissionGroups.NEARBY_DEVICES : PermissionGroups.LOCATION;
+        return PermissionVersion.isAndroid12() ? PermissionGroups.NEARBY_DEVICES : PermissionGroups.LOCATION;
     }
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersion.ANDROID_12;
+        return PermissionVersion.ANDROID_12;
     }
 
     @Override
@@ -72,7 +72,7 @@ public final class BluetoothScanPermission extends DangerousPermission {
         // 部分厂商修改了蓝牙权限机制，在 targetSdk 不满足条件的情况下（小于 31），仍需要让应用申请这个权限，相关的 issue 地址：
         // 1. https://github.com/getActivity/XXPermissions/issues/123
         // 2. https://github.com/getActivity/XXPermissions/issues/302
-        return AndroidVersion.ANDROID_6;
+        return PermissionVersion.ANDROID_6;
     }
 
     @NonNull
@@ -102,9 +102,9 @@ public final class BluetoothScanPermission extends DangerousPermission {
             currentPermissionManifestInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
         if (getFromAndroidVersion() > getMinSdkVersion(activity, androidManifestInfo)) {
-            checkPermissionRegistrationStatus(permissionManifestInfoList, Manifest.permission.BLUETOOTH_ADMIN, AndroidVersion.ANDROID_11);
+            checkPermissionRegistrationStatus(permissionManifestInfoList, Manifest.permission.BLUETOOTH_ADMIN, PermissionVersion.ANDROID_11);
             // 这是 Android 12 之前遗留的问题，获取扫描蓝牙的结果需要精确定位权限
-            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.ACCESS_FINE_LOCATION, AndroidVersion.ANDROID_11);
+            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.ACCESS_FINE_LOCATION, PermissionVersion.ANDROID_11);
         }
 
         // 如果请求的权限已经包含了精确定位权限，就跳过检查

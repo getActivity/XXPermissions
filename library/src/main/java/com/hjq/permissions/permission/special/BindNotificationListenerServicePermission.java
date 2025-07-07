@@ -18,7 +18,7 @@ import com.hjq.permissions.manifest.node.ServiceManifestInfo;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,17 +80,17 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersion.ANDROID_4_3;
+        return PermissionVersion.ANDROID_4_3;
     }
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         // 经过实践得出，通知监听权限是在 Android 4.3 才出现的，所以前面的版本统一返回 true
-        if (!AndroidVersion.isAndroid4_3()) {
+        if (!PermissionVersion.isAndroid4_3()) {
             return true;
         }
         NotificationManager notificationManager;
-        if (AndroidVersion.isAndroid6()) {
+        if (PermissionVersion.isAndroid6()) {
             notificationManager = context.getSystemService(NotificationManager.class);
         } else {
             notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -98,7 +98,7 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
         String serviceClassName = PermissionUtils.isClassExist(mNotificationListenerServiceClassName) ?
                                     mNotificationListenerServiceClassName : null;
         // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
-        if (AndroidVersion.isAndroid8_1() && notificationManager != null && serviceClassName != null) {
+        if (PermissionVersion.isAndroid8_1() && notificationManager != null && serviceClassName != null) {
             return notificationManager.isNotificationListenerAccessGranted(new ComponentName(context, serviceClassName));
         }
         final String enabledNotificationListeners = Settings.Secure.getString(context.getContentResolver(), SETTING_ENABLED_NOTIFICATION_LISTENERS);
@@ -133,7 +133,7 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
         List<Intent> intentList = new ArrayList<>(3);
         Intent intent;
 
-        if (AndroidVersion.isAndroid11() && PermissionUtils.isClassExist(mNotificationListenerServiceClassName)) {
+        if (PermissionVersion.isAndroid11() && PermissionUtils.isClassExist(mNotificationListenerServiceClassName)) {
             intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS);
             intent.putExtra(Settings.EXTRA_NOTIFICATION_LISTENER_COMPONENT_NAME,
                             new ComponentName(context, mNotificationListenerServiceClassName).flattenToString());
@@ -141,7 +141,7 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
         }
 
         String action;
-        if (AndroidVersion.isAndroid5_1()) {
+        if (PermissionVersion.isAndroid5_1()) {
             action = Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS;
         } else {
             // android.provider.Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS

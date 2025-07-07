@@ -14,7 +14,7 @@ import com.hjq.permissions.manifest.AndroidManifestParser;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.start.StartActivityAgent;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionApi;
 import com.hjq.permissions.tools.PermissionChecker;
 import com.hjq.permissions.tools.PermissionSettingPage;
@@ -303,7 +303,7 @@ public final class XXPermissions {
             return false;
         }
 
-        if (!AndroidVersion.isAndroid13()) {
+        if (!PermissionVersion.isAndroid13()) {
             return false;
         }
 

@@ -13,7 +13,7 @@ import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.List;
 
@@ -62,7 +62,7 @@ public final class ReadMediaImagesPermission extends DangerousPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersion.ANDROID_13;
+        return PermissionVersion.ANDROID_13;
     }
 
     @NonNull
@@ -74,7 +74,7 @@ public final class ReadMediaImagesPermission extends DangerousPermission {
 
     @Override
     protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
-        if (AndroidVersion.isAndroid14() && !skipRequest) {
+        if (PermissionVersion.isAndroid14() && !skipRequest) {
             // 如果是在 Android 14 上面，并且是图片权限或者视频权限，则需要重新检查权限的状态
             // 这是因为用户授权部分图片或者视频的时候，READ_MEDIA_VISUAL_USER_SELECTED 权限状态是授予的
             // 但是 READ_MEDIA_IMAGES 和 READ_MEDIA_VIDEO 的权限状态是拒绝的
@@ -104,7 +104,7 @@ public final class ReadMediaImagesPermission extends DangerousPermission {
             currentPermissionManifestInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
         if (getFromAndroidVersion() > getMinSdkVersion(activity, androidManifestInfo)) {
-            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.READ_EXTERNAL_STORAGE, AndroidVersion.ANDROID_12_L);
+            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.READ_EXTERNAL_STORAGE, PermissionVersion.ANDROID_12_L);
         }
     }
 

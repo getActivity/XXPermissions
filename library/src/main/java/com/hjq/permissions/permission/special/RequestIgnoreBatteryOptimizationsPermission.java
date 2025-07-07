@@ -10,7 +10,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,12 +55,12 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersion.ANDROID_6;
+        return PermissionVersion.ANDROID_6;
     }
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (!AndroidVersion.isAndroid6()) {
+        if (!PermissionVersion.isAndroid6()) {
             return true;
         }
         PowerManager powerManager = context.getSystemService(PowerManager.class);
@@ -78,13 +78,13 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
         List<Intent> intentList = new ArrayList<>(7);
         Intent intent;
 
-        if (AndroidVersion.isAndroid6()) {
+        if (PermissionVersion.isAndroid6()) {
             intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
             intent.setData(getPackageNameUri(context));
             intentList.add(intent);
         }
 
-        if (AndroidVersion.isAndroid12()) {
+        if (PermissionVersion.isAndroid12()) {
             // 应用的电池使用情况详情页：Settings.ACTION_VIEW_ADVANCED_POWER_USAGE_DETAIL
             // 虽然 ACTION_VIEW_ADVANCED_POWER_USAGE_DETAIL 是 Android 10 的源码才出现的
             // 但是经过测试，在 Android 10 上面是无法跳转的，只有到了 Android 12 才能跳转
@@ -93,7 +93,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
             intentList.add(intent);
         }
 
-        if (AndroidVersion.isAndroid6()) {
+        if (PermissionVersion.isAndroid6()) {
             intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
             intentList.add(intent);
         }
@@ -139,11 +139,11 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
             //         所以这个问题应该是在澎湃 2.0 上面修复了，大概率澎湃 2.0  UI 大改版改动到了（看到 UI 有明显变化）
             //         结果测试人员发现了，开发人员不得不修，否则会影响自己的绩效，至此这个历史遗留 Bug 终于被发现并修复
             //         Android 15 的澎湃 2.0 版本 200 毫秒没有问题，但是 Android 14 的版本澎湃 1.0 还有有问题
-            if (AndroidVersion.isAndroid15()) {
+            if (PermissionVersion.isAndroid15()) {
                 return super.getResultWaitTime(context);
             }
 
-            if (AndroidVersion.isAndroid14()) {
+            if (PermissionVersion.isAndroid14()) {
                 int romBigVersionCode = PhoneRomUtils.getRomBigVersionCode();
                 // 如果获取不到的大版本号又或者获取到的大版本号小于 2，就返回小米机型默认的等待时间
                 if (romBigVersionCode < 2) {
@@ -155,8 +155,8 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
             return xiaomiPhoneDefaultWaitTime;
         }
 
-        if (PhoneRomUtils.isMiui() && AndroidVersion.isAndroid11() &&
-            AndroidVersion.getCurrentVersion() >= getFromAndroidVersion()) {
+        if (PhoneRomUtils.isMiui() && PermissionVersion.isAndroid11() &&
+            PermissionVersion.getCurrentVersion() >= getFromAndroidVersion()) {
             // 经过测试，发现小米 Android 11 及以上的版本，申请这个权限需要 1000 毫秒才能判断到（测试了 800 毫秒还不行）
             // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
             // 然而在 Android 11 之后的，这个权限页面被小米改成了自己定制化的页面

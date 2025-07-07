@@ -17,7 +17,7 @@ import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionSettingPage;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersion.ANDROID_4_2;
+        return PermissionVersion.ANDROID_4_2;
     }
 
     @Override
@@ -74,12 +74,12 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         // 获取父类方法的返回值，看看它是不是支持申请的，这个是前提条件
         boolean superMethodSupportRequestPermission = super.isSupportRequestPermission(context);
         if (superMethodSupportRequestPermission) {
-            if (AndroidVersion.isAndroid6() && isSupportRequestPermissionBySystem(context)) {
+            if (PermissionVersion.isAndroid6() && isSupportRequestPermissionBySystem(context)) {
                 // 表示支持申请
                 return true;
             }
 
-            if (AndroidVersion.isAndroid4_4() && PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
+            if (PermissionVersion.isAndroid4_4() && PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
                 // 通过 miui 优化开关来决定是不是支持开启
                 return PhoneRomUtils.isXiaomiSystemOptimization();
             }
@@ -89,11 +89,11 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (AndroidVersion.isAndroid6() && isSupportRequestPermissionBySystem(context)) {
+        if (PermissionVersion.isAndroid6() && isSupportRequestPermissionBySystem(context)) {
             return checkSelfPermission(context, getPermissionName());
         }
 
-        if (AndroidVersion.isAndroid4_4() && PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
+        if (PermissionVersion.isAndroid4_4() && PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
             if (!PhoneRomUtils.isXiaomiSystemOptimization()) {
                 // 如果当前没有开启 miui 优化，则直接返回 true，表示已经授权，因为在这种情况下
                 // 就算跳转 miui 权限设置页，用户也授权了，用代码判断权限还是没有授予的状态
@@ -110,13 +110,13 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
-        if (AndroidVersion.isAndroid6() && isSupportRequestPermissionBySystem(activity)) {
+        if (PermissionVersion.isAndroid6() && isSupportRequestPermissionBySystem(activity)) {
             // 如果支持申请，那么再去判断权限是否永久拒绝
             return !checkSelfPermission(activity, getPermissionName()) &&
                 !shouldShowRequestPermissionRationale(activity, getPermissionName());
         }
 
-        if (AndroidVersion.isAndroid4_4() && PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
+        if (PermissionVersion.isAndroid4_4() && PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
             if (!PhoneRomUtils.isXiaomiSystemOptimization()) {
                 return false;
             }
@@ -163,12 +163,12 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
             currentPermissionManifestInfo);
         // 当前 targetSdk 必须大于 Android 11，否则停止检查
-        if (AndroidVersion.getTargetVersion(activity) < AndroidVersion.ANDROID_11) {
+        if (PermissionVersion.getTargetVersion(activity) < PermissionVersion.ANDROID_11) {
             return;
         }
 
         String queryAllPackagesPermissionName;
-        if (AndroidVersion.isAndroid11()) {
+        if (PermissionVersion.isAndroid11()) {
             queryAllPackagesPermissionName = permission.QUERY_ALL_PACKAGES;
         } else {
             queryAllPackagesPermissionName = "android.permission.QUERY_ALL_PACKAGES";
@@ -194,12 +194,12 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
      * 判断是否支持获取应用列表权限
      */
     @SuppressWarnings("deprecation")
-    @RequiresApi(AndroidVersion.ANDROID_6)
+    @RequiresApi(PermissionVersion.ANDROID_6)
     private boolean isSupportRequestPermissionBySystem(Context context) {
         try {
             PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(getPermissionName(), 0);
             if (permissionInfo != null) {
-                if (AndroidVersion.isAndroid9()) {
+                if (PermissionVersion.isAndroid9()) {
                     return permissionInfo.getProtection() == PermissionInfo.PROTECTION_DANGEROUS;
                 } else {
                     return (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_MASK_BASE) == PermissionInfo.PROTECTION_DANGEROUS;
@@ -226,7 +226,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
     /**
      * 判断当前 miui 版本是否支持申请读取应用列表权限
      */
-    @RequiresApi(AndroidVersion.ANDROID_4_4)
+    @RequiresApi(PermissionVersion.ANDROID_4_4)
     private static boolean isSupportRequestPermissionByMiui() {
         return isExistOpPermission(MIUI_OP_GET_INSTALLED_APPS_FIELD_NAME);
     }

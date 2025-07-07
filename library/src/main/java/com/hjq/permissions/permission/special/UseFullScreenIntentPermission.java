@@ -11,7 +11,7 @@ import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
@@ -57,12 +57,12 @@ public final class UseFullScreenIntentPermission extends SpecialPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersion.ANDROID_14;
+        return PermissionVersion.ANDROID_14;
     }
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (!AndroidVersion.isAndroid14()) {
+        if (!PermissionVersion.isAndroid14()) {
             return true;
         }
         NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
@@ -79,7 +79,7 @@ public final class UseFullScreenIntentPermission extends SpecialPermission {
         List<Intent> intentList = new ArrayList<>(6);
         Intent intent;
 
-        if (AndroidVersion.isAndroid14()) {
+        if (PermissionVersion.isAndroid14()) {
             intent = new Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT);
             intent.setData(getPackageNameUri(context));
             intentList.add(intent);
@@ -92,7 +92,7 @@ public final class UseFullScreenIntentPermission extends SpecialPermission {
             return intentList;
         }
 
-        if (AndroidVersion.isAndroid8()) {
+        if (PermissionVersion.isAndroid8()) {
             intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
             intentList.add(intent);

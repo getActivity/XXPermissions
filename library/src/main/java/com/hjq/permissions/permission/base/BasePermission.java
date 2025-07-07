@@ -12,7 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionSettingPage;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.lang.reflect.Field;
@@ -112,7 +112,7 @@ public abstract class BasePermission implements IPermission {
     protected void checkSelfByTargetSdkVersion(@NonNull Context context) {
         int minTargetSdkVersion = getMinTargetSdkVersion();
         // 必须设置正确的 targetSdkVersion 才能正常检测权限
-        if (AndroidVersion.getTargetVersion(context) >= minTargetSdkVersion) {
+        if (PermissionVersion.getTargetVersion(context) >= minTargetSdkVersion) {
             return;
         }
 
@@ -202,12 +202,12 @@ public abstract class BasePermission implements IPermission {
      * 获得当前项目的 minSdkVersion
      */
     protected static int getMinSdkVersion(@NonNull Context context, @Nullable AndroidManifestInfo androidManifestInfo) {
-        if (AndroidVersion.isAndroid7()) {
+        if (PermissionVersion.isAndroid7()) {
             return context.getApplicationInfo().minSdkVersion;
         }
 
         if (androidManifestInfo == null || androidManifestInfo.usesSdkManifestInfo == null) {
-            return AndroidVersion.ANDROID_4_2;
+            return PermissionVersion.ANDROID_4_2;
         }
         return androidManifestInfo.usesSdkManifestInfo.minSdkVersion;
     }
@@ -230,7 +230,7 @@ public abstract class BasePermission implements IPermission {
     /**
      * 判断某个危险权限是否授予了
      */
-    @RequiresApi(AndroidVersion.ANDROID_6)
+    @RequiresApi(PermissionVersion.ANDROID_6)
     public static boolean checkSelfPermission(@NonNull Context context, @NonNull String permission) {
         return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
     }
@@ -238,14 +238,14 @@ public abstract class BasePermission implements IPermission {
     /**
      * 判断是否应该向用户显示请求权限的理由
      */
-    @RequiresApi(AndroidVersion.ANDROID_6)
+    @RequiresApi(PermissionVersion.ANDROID_6)
     @SuppressWarnings({"JavaReflectionMemberAccess", "ConstantConditions", "BooleanMethodIsAlwaysInverted"})
     public static boolean shouldShowRequestPermissionRationale(@NonNull Activity activity, @NonNull String permission) {
         // 解决 Android 12 调用 shouldShowRequestPermissionRationale 出现内存泄漏的问题
         // Android 12L 和 Android 13 版本经过测试不会出现这个问题，证明 Google 在新版本上已经修复了这个问题
         // 但是对于 Android 12 仍是一个历史遗留问题，这是我们所有 Android App 开发者不得不面对的一个事情
         // issue 地址：https://github.com/getActivity/XXPermissions/issues/133
-        if (AndroidVersion.getCurrentVersion() == AndroidVersion.ANDROID_12) {
+        if (PermissionVersion.getCurrentVersion() == PermissionVersion.ANDROID_12) {
             try {
                 // 另外针对这个问题，我还给谷歌的 AndroidX 项目无偿提供了解决方案，目前 Merge Request 已被合入主分支
                 // 我相信通过这一举措，将解决全球近 10 亿台 Android 12 设备出现的内存泄露问题
@@ -266,7 +266,7 @@ public abstract class BasePermission implements IPermission {
      * @param opName               需要传入 {@link AppOpsManager} 类中的以 OPSTR 开头的字段
      * @param defaultGranted       当判断不了该权限状态的时候，是否返回已授予状态
      */
-    @RequiresApi(AndroidVersion.ANDROID_4_4)
+    @RequiresApi(PermissionVersion.ANDROID_4_4)
     public static boolean checkOpPermission(@NonNull Context context, @NonNull String opName, boolean defaultGranted) {
         int opMode = getOpPermissionMode(context, opName);
         if (opMode == AppOpsManager.MODE_ERRORED) {
@@ -282,7 +282,7 @@ public abstract class BasePermission implements IPermission {
      * @param opDefaultValue            当反射获取不到对应字段的值时，该值作为替补
      * @param defaultGranted            当判断不了该权限状态的时候，是否返回已授予状态
      */
-    @RequiresApi(AndroidVersion.ANDROID_4_4)
+    @RequiresApi(PermissionVersion.ANDROID_4_4)
     public static boolean checkOpPermission(Context context, String opFieldName, int opDefaultValue, boolean defaultGranted) {
         int opMode = getOpPermissionMode(context, opFieldName, opDefaultValue);
         if (opMode == AppOpsManager.MODE_ERRORED) {
@@ -296,11 +296,11 @@ public abstract class BasePermission implements IPermission {
      *
      * @param opName               需要传入 {@link AppOpsManager} 类中的以 OPSTR 开头的字段
      */
-    @RequiresApi(AndroidVersion.ANDROID_4_4)
+    @RequiresApi(PermissionVersion.ANDROID_4_4)
     @SuppressWarnings("deprecation")
     public static int getOpPermissionMode(@NonNull Context context, @NonNull String opName) {
         AppOpsManager appOpsManager;
-        if (AndroidVersion.isAndroid6()) {
+        if (PermissionVersion.isAndroid6()) {
             appOpsManager = context.getSystemService(AppOpsManager.class);
         } else {
             appOpsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
@@ -310,7 +310,7 @@ public abstract class BasePermission implements IPermission {
             return AppOpsManager.MODE_ERRORED;
         }
         try {
-            if (AndroidVersion.isAndroid10()) {
+            if (PermissionVersion.isAndroid10()) {
                 return appOpsManager.unsafeCheckOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
             } else {
                 return appOpsManager.checkOpNoThrow(opName, context.getApplicationInfo().uid, context.getPackageName());
@@ -328,10 +328,10 @@ public abstract class BasePermission implements IPermission {
      * @param opDefaultValue        当反射获取不到对应字段的值时，该值作为替补
      */
     @SuppressWarnings("ConstantConditions")
-    @RequiresApi(AndroidVersion.ANDROID_4_4)
+    @RequiresApi(PermissionVersion.ANDROID_4_4)
     public static int getOpPermissionMode(Context context, @NonNull String opName, int opDefaultValue) {
         AppOpsManager appOpsManager;
-        if (AndroidVersion.isAndroid6()) {
+        if (PermissionVersion.isAndroid6()) {
             appOpsManager = context.getSystemService(AppOpsManager.class);
         } else {
             appOpsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
@@ -362,7 +362,7 @@ public abstract class BasePermission implements IPermission {
      *
      * @param opName                要反射 {@link AppOpsManager} 类中的字段名称
      */
-    @RequiresApi(AndroidVersion.ANDROID_4_4)
+    @RequiresApi(PermissionVersion.ANDROID_4_4)
     public static boolean isExistOpPermission(String opName) {
         try {
             Class<?> appOpsClass = Class.forName(AppOpsManager.class.getName());

@@ -12,7 +12,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,15 +72,15 @@ public final class NotificationServicePermission extends SpecialPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersion.ANDROID_4_4;
+        return PermissionVersion.ANDROID_4_4;
     }
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (!AndroidVersion.isAndroid4_4()) {
+        if (!PermissionVersion.isAndroid4_4()) {
             return true;
         }
-        if (!AndroidVersion.isAndroid7()) {
+        if (!PermissionVersion.isAndroid7()) {
             return checkOpPermission(context, OP_POST_NOTIFICATION_FIELD_NAME, OP_POST_NOTIFICATION_DEFAULT_VALUE, true);
         }
 
@@ -92,7 +92,7 @@ public final class NotificationServicePermission extends SpecialPermission {
         if (!notificationManager.areNotificationsEnabled()) {
             return false;
         }
-        if (TextUtils.isEmpty(mChannelId) || !AndroidVersion.isAndroid8()) {
+        if (TextUtils.isEmpty(mChannelId) || !PermissionVersion.isAndroid8()) {
             return true;
         }
         NotificationChannel notificationChannel = notificationManager.getNotificationChannel(mChannelId);
@@ -105,7 +105,7 @@ public final class NotificationServicePermission extends SpecialPermission {
         List<Intent> intentList = new ArrayList<>(8);
         Intent intent;
 
-        if (AndroidVersion.isAndroid8()) {
+        if (PermissionVersion.isAndroid8()) {
             intent = new Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
             // 添加应用的包名参数
             intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
@@ -123,7 +123,7 @@ public final class NotificationServicePermission extends SpecialPermission {
                 intent.setAction(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS);
                 // 指定通知渠道 id
                 intent.putExtra(Settings.EXTRA_CHANNEL_ID, notificationChannel.getId());
-                if (AndroidVersion.isAndroid11()) {
+                if (PermissionVersion.isAndroid11()) {
                     // 高版本会优先从会话 id 中找到对应的通知渠道，找不到再从渠道 id 上面找到对应的通知渠道
                     intent.putExtra(Settings.EXTRA_CONVERSATION_ID, notificationChannel.getConversationId());
                 }
@@ -135,14 +135,14 @@ public final class NotificationServicePermission extends SpecialPermission {
             intentList.add(intent);
         }
 
-        if (AndroidVersion.isAndroid5()) {
+        if (PermissionVersion.isAndroid5()) {
             intent = new Intent("android.settings.APP_NOTIFICATION_SETTINGS");
             intent.putExtra("app_package", context.getPackageName());
             intent.putExtra("app_uid", context.getApplicationInfo().uid);
             intentList.add(intent);
         }
 
-        if (AndroidVersion.isAndroid13()) {
+        if (PermissionVersion.isAndroid13()) {
             intent = new Intent(Settings.ACTION_ALL_APPS_NOTIFICATION_SETTINGS);
             intentList.add(intent);
         }

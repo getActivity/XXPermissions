@@ -8,7 +8,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,12 +52,12 @@ public final class WriteSettingsPermission extends SpecialPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersion.ANDROID_6;
+        return PermissionVersion.ANDROID_6;
     }
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (!AndroidVersion.isAndroid6()) {
+        if (!PermissionVersion.isAndroid6()) {
             return true;
         }
         return Settings.System.canWrite(context);
@@ -69,7 +69,7 @@ public final class WriteSettingsPermission extends SpecialPermission {
         List<Intent> intentList = new ArrayList<>(6);
         Intent intent;
 
-        if (AndroidVersion.isAndroid6()) {
+        if (PermissionVersion.isAndroid6()) {
             intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
             intent.setData(getPackageNameUri(context));
             intentList.add(intent);

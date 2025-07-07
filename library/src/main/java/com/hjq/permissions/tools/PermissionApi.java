@@ -121,7 +121,7 @@ public final class PermissionApi {
         // 创建一个新的集合对象，避免复用对象可能引发外层的冲突
         List<IPermission> realPermissions = new ArrayList<>(permissions);
         for (IPermission permission : permissions) {
-            if (permission.getFromAndroidVersion() > AndroidVersion.getCurrentVersion()) {
+            if (permission.getFromAndroidVersion() > PermissionVersion.getCurrentVersion()) {
                 // 如果当前权限是高版本才出现的权限，则进行剔除
                 realPermissions.remove(permission);
                 continue;
@@ -176,7 +176,7 @@ public final class PermissionApi {
         while (++index < requestPermissions.size()) {
             IPermission permission = requestPermissions.get(index);
             // 如果当前运行的 Android 版本大于权限出现的 Android 版本，则证明这个权限在当前设备上不用添加旧权限
-            if (AndroidVersion.getCurrentVersion() >= permission.getFromAndroidVersion()) {
+            if (PermissionVersion.getCurrentVersion() >= permission.getFromAndroidVersion()) {
                 continue;
             }
             // 通过新权限查询到对应的旧权限

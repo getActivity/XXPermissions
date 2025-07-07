@@ -8,7 +8,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,12 +52,12 @@ public final class RequestInstallPackagesPermission extends SpecialPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersion.ANDROID_8;
+        return PermissionVersion.ANDROID_8;
     }
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (!AndroidVersion.isAndroid8()) {
+        if (!PermissionVersion.isAndroid8()) {
             return true;
         }
         return context.getPackageManager().canRequestPackageInstalls();
@@ -69,7 +69,7 @@ public final class RequestInstallPackagesPermission extends SpecialPermission {
         List<Intent> intentList = new ArrayList<>(6);
         Intent intent;
 
-        if (AndroidVersion.isAndroid8()) {
+        if (PermissionVersion.isAndroid8()) {
             intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
             intent.setData(getPackageNameUri(context));
             intentList.add(intent);

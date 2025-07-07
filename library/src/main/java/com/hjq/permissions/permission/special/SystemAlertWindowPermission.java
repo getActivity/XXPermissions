@@ -8,7 +8,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionSettingPage;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
@@ -59,16 +59,16 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
     public int getFromAndroidVersion() {
         // 虽然悬浮窗权限是在 Android 6.0 新增的权限，但是有些国产的厂商在 Android 6.0 之前的版本就自己加了，并且框架已经有做兼容了
         // 所以为了兼容更低的 Android 版本，这里需要将悬浮窗权限出现的 Android 版本成 API 17（即框架要求 minSdkVersion 版本）
-        return AndroidVersion.ANDROID_4_2;
+        return PermissionVersion.ANDROID_4_2;
     }
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (AndroidVersion.isAndroid6()) {
+        if (PermissionVersion.isAndroid6()) {
             return Settings.canDrawOverlays(context);
         }
 
-        if (!AndroidVersion.isAndroid4_4()) {
+        if (!PermissionVersion.isAndroid4_4()) {
             return true;
         }
 
@@ -84,11 +84,11 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
         List<Intent> intentList = new ArrayList<>(7);
         Intent intent;
 
-        if (AndroidVersion.isAndroid6()) {
+        if (PermissionVersion.isAndroid6()) {
             // 如果当前系统是 HyperOs，那么就不要跳转到 miui 权限设置页了，因为还要点一下《其他权限》入口才能找到悬浮窗权限设置选项
             // 这样的效果还不如直接跳转到所有应用的悬浮窗权限设置列表，然后再点进去来得更直观
             // 相关 Github issue 地址：https://github.com/getActivity/XXPermissions/issues/342
-            if (AndroidVersion.isAndroid11() && !PhoneRomUtils.isHyperOs() &&
+            if (PermissionVersion.isAndroid11() && !PhoneRomUtils.isHyperOs() &&
                         PhoneRomUtils.isMiui() && PhoneRomUtils.isXiaomiSystemOptimization()) {
                 // 因为 Android 11 及后面的版本无法直接跳转到具体权限设置页面，只能跳转到悬浮窗权限应用列表，十分地麻烦的，这里做了一下简化
                 // miui 做得比较人性化的，不会出现跳转不过去的问题，其他厂商就不一定了，就是不想让你跳转过去
@@ -205,7 +205,7 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
             } else if (PhoneRomUtils.isOneUi()) {
                 intent = PermissionSettingPage.getOneUiPermissionPageIntent(context);
                 intentList.add(intent);
-            } else if (PhoneRomUtils.isSmartisanOS() && !AndroidVersion.isAndroid5_1()) {
+            } else if (PhoneRomUtils.isSmartisanOS() && !PermissionVersion.isAndroid5_1()) {
                 // 经过测试，锤子手机 5.1 及以上的手机的可以直接通过直接跳转到应用详情开启悬浮窗权限，但是 4.4 以下的手机就不行，需要跳转到安全中心
                 intentList.addAll(PermissionSettingPage.getSmartisanPermissionPageIntent());
                 intentList.addAll(PermissionSettingPage.getSmartisanSecurityCenterAppIntent(context));

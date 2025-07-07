@@ -7,7 +7,7 @@ import android.os.Parcel;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.BasePermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionSettingPage;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public abstract class DangerousPermission extends BasePermission {
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         // 判断权限是不是在旧系统上面运行（权限出现的版本 > 当前系统的版本）
-        if (getFromAndroidVersion() > AndroidVersion.getCurrentVersion()) {
+        if (getFromAndroidVersion() > PermissionVersion.getCurrentVersion()) {
             return isGrantedPermissionByLowVersion(context, skipRequest);
         }
         return isGrantedPermissionByStandardVersion(context, skipRequest);
@@ -48,7 +48,7 @@ public abstract class DangerousPermission extends BasePermission {
      * 在标准版本的系统上面判断权限是否授予
      */
     protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
-        if (!AndroidVersion.isAndroid6()) {
+        if (!PermissionVersion.isAndroid6()) {
             return true;
         }
         return checkSelfPermission(context, getPermissionName());
@@ -64,7 +64,7 @@ public abstract class DangerousPermission extends BasePermission {
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
         // 判断权限是不是在旧系统上面运行（权限出现的版本 > 当前系统的版本）
-        if (getFromAndroidVersion() > AndroidVersion.getCurrentVersion()) {
+        if (getFromAndroidVersion() > PermissionVersion.getCurrentVersion()) {
             return isDoNotAskAgainPermissionByLowVersion(activity);
         }
         return isDoNotAskAgainPermissionByStandardVersion(activity);
@@ -74,7 +74,7 @@ public abstract class DangerousPermission extends BasePermission {
      * 在标准版本的系统上面判断权限是否被用户勾选了《不再询问的选项》
      */
     protected boolean isDoNotAskAgainPermissionByStandardVersion(@NonNull Activity activity) {
-        if (!AndroidVersion.isAndroid6()) {
+        if (!PermissionVersion.isAndroid6()) {
             return false;
         }
         return !checkSelfPermission(activity, getPermissionName()) &&

@@ -139,7 +139,7 @@ public final class PhoneRomUtils {
      */
     public static boolean isHarmonyOs() {
         // 鸿蒙系统没有 Android 10 以下的
-        if (!AndroidVersion.isAndroid10()) {
+        if (!PermissionVersion.isAndroid10()) {
             return false;
         }
         try {

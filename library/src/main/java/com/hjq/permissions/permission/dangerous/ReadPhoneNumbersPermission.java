@@ -13,7 +13,7 @@ import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
-import com.hjq.permissions.tools.AndroidVersion;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.List;
 
@@ -62,7 +62,7 @@ public final class ReadPhoneNumbersPermission extends DangerousPermission {
 
     @Override
     public int getFromAndroidVersion() {
-        return AndroidVersion.ANDROID_8;
+        return PermissionVersion.ANDROID_8;
     }
 
     @NonNull
@@ -92,7 +92,7 @@ public final class ReadPhoneNumbersPermission extends DangerousPermission {
             currentPermissionManifestInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
         if (getFromAndroidVersion() > getMinSdkVersion(activity, androidManifestInfo)) {
-            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.READ_PHONE_STATE, AndroidVersion.ANDROID_7_1);
+            checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.READ_PHONE_STATE, PermissionVersion.ANDROID_7_1);
         }
     }
 }
