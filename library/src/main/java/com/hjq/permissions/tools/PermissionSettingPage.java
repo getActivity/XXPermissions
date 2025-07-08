@@ -58,7 +58,7 @@ public final class PermissionSettingPage {
      */
     @NonNull
     public static List<Intent> getHuaWeiMobileManagerAppIntent(Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(1);
         Intent intent;
 
         intent = context.getPackageManager().getLaunchIntentForPackage(HUA_WEI_MOBILE_MANAGER_APP_PACKAGE_NAME);
@@ -73,7 +73,7 @@ public final class PermissionSettingPage {
      */
     @NonNull
     public static List<Intent> getXiaoMiMobileManagerAppIntent(Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(2);
         Intent intent;
 
         intent = new Intent("miui.intent.action.SECURITY_CENTER");
@@ -91,7 +91,7 @@ public final class PermissionSettingPage {
      */
     @NonNull
     public static List<Intent> getOppoSafeCenterAppIntent(Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(3);
         Intent intent;
 
         intent = context.getPackageManager().getLaunchIntentForPackage(OPPO_SAFE_CENTER_APP_PACKAGE_NAME_1);
@@ -117,7 +117,7 @@ public final class PermissionSettingPage {
      */
     @NonNull
     public static List<Intent> getVivoMobileManagerAppIntent(Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(1);
         Intent intent;
 
         intent = context.getPackageManager().getLaunchIntentForPackage(VIVO_MOBILE_MANAGER_APP_PACKAGE_NAME);
@@ -132,7 +132,7 @@ public final class PermissionSettingPage {
      */
     @NonNull
     public static List<Intent> getSmartisanSecurityCenterAppIntent(Context context) {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(2);
         Intent intent;
 
         intent = context.getPackageManager().getLaunchIntentForPackage(SMARTISAN_SECURITY_COMPONENT_APP_PACKAGE_NAME);
@@ -164,7 +164,7 @@ public final class PermissionSettingPage {
      */
     @NonNull
     public static List<Intent> getSmartisanPermissionPageIntent() {
-        List<Intent> intentList = new ArrayList<>();
+        List<Intent> intentList = new ArrayList<>(2);
         Intent intent;
 
         intent = new Intent(SMARTISAN_SECURITY_COMPONENT_APP_PACKAGE_NAME + ".action.PACKAGE_OVERVIEW");
