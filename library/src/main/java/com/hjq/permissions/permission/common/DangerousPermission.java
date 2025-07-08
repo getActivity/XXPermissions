@@ -7,8 +7,8 @@ import android.os.Parcel;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.BasePermission;
-import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionSettingPage;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,10 +95,20 @@ public abstract class DangerousPermission extends BasePermission {
         Intent intent;
 
         // 如果当前厂商系统是澎湃或者 miui 的话，并且已经开启小米系统优化的前提下
-        if ((PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui()) && PhoneRomUtils.isXiaomiSystemOptimization()) {
-            // 优先跳转到小米特有的应用权限设置页，这样做可以优化用户授权的体验
+        // 优先跳转到小米特有的应用权限设置页，这样做可以优化用户授权的体验
+        if (PhoneRomUtils.isMiui() && PhoneRomUtils.isXiaomiSystemOptimization()) {
             intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
             intentList.add(intent);
+        } else if (PhoneRomUtils.isHyperOs() && PhoneRomUtils.isXiaomiSystemOptimization()) {
+            String romVersionName = PhoneRomUtils.getRomVersionName();
+            // 这里需要过滤 2.0.0.0 ~ 2.0.5.0 范围的版本，因为我在小米云测上面测试了，这个范围的版本直接跳转到小米特有的应用权限设置页有问题
+            // 实测在 2.0.6.0 这个问题才被解决，但是澎湃 1.0 无论是什么版本都没有这个问题，所以基本锁定这个问题是在 2.0.0.0 ~ 2.0.5.0 的版本
+            // 这是因为小米在刚开始做澎湃 2.0 的时候，小米特有的权限设置页还是一个半成品，跳转后里面没有危险权限的选项，只有一个《其他权限》的选项
+            // 并且其他权限的选项点进去后还只有可伶的几个权限：桌面快捷方式、通知类短信、锁屏显示、后台弹出界面、显示悬浮窗
+            if (romVersionName != null && !romVersionName.matches("^2\\.0\\.[012345]\\.\\d+$")) {
+                intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
+                intentList.add(intent);
+            }
         }
 
         intent = getApplicationDetailsSettingIntent(context);
