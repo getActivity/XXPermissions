@@ -16,13 +16,17 @@
 
 ![](picture/zh/demo_request_permission_activity.jpg) ![](picture/zh/demo_request_single_permission.jpg) ![](picture/zh/demo_request_group_permission.jpg)
 
-![](picture/zh/demo_request_system_alert_window_permission.jpg) ![](picture/zh/demo_request_notification_service_permission.jpg) ![](picture/zh/demo_request_write_settings_permission.jpg)
+![](picture/zh/demo_request_system_alert_window_permission.jpg) ![](picture/zh/demo_request_notification_service_permission.jpg) ![](picture/zh/demo_request_notification_service_channel_permission.jpg) 
 
-![](picture/zh/demo_request_manage_storage_permission.jpg) ![](picture/zh/demo_request_usage_stats_permission.jpg) ![](picture/zh/demo_request_schedule_exact_alarm_permission.jpg)
+![](picture/zh/demo_request_full_screen_notifications_permission.jpg) ![](picture/zh/demo_request_write_settings_permission.jpg) ![](picture/zh/demo_request_manage_storage_permission.jpg) 
 
-![](picture/zh/demo_request_bind_notification_listener_permission.jpg) ![](picture/zh/demo_request_access_notification_policy_permission.jpg) ![](picture/zh/demo_request_ignore_battery_optimizations_permission.jpg)
+![](picture/zh/demo_request_usage_stats_permission.jpg) ![](picture/zh/demo_request_schedule_exact_alarm_permission.jpg) ![](picture/zh/demo_request_bind_notification_listener_permission.jpg) 
 
-![](picture/zh/demo_request_bind_vpn_service_permission.jpg) ![](picture/zh/demo_request_picture_in_picture_permission.jpg) ![](picture/zh/demo_request_get_installed_apps_permission.jpg)
+![](picture/zh/demo_request_access_notification_policy_permission.jpg) ![](picture/zh/demo_request_ignore_battery_optimizations_permission.jpg) ![](picture/zh/demo_request_bind_vpn_service_permission.jpg) 
+
+![](picture/zh/demo_request_picture_in_picture_permission.jpg) ![](picture/zh/demo_request_accessibility_service_permission.jpg) ![](picture/zh/demo_request_device_admin_permission.jpg) 
+
+![](picture/zh/demo_request_get_installed_apps_permission.jpg)
 
 #### 集成步骤
 
@@ -266,37 +270,34 @@ XXPermissions.setCheckMode(false);
 
 #### 同类权限请求框架之间的对比
 
-|     适配细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode-PermissionUtils](https://github.com/Blankj/AndroidUtilCode)   | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |
-| :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    对应版本  |  23.2 |  2.0.3  |  1.8.1    |  1.31.0    |   4.9.2  |  0.12   |  3.0.0   |
-|    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |
-|    框架体积  |  109 KB  | 127 KB  |  97 KB  |   500 KB |  99 KB  | 28 KB  | 48 KB |
-|  框架维护状态 |**维护中**|  停止维护 | 停止维护 |  停止维护 | 停止维护 | 停止维护 | 停止维护 |
-|       闹钟提醒权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|     所有文件管理权限      |  ✅  |  ❌  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
-|        安装包权限        |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |
-|        画中画权限        |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|        悬浮窗权限        |  ✅  |  ✅  |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |
-|       系统设置权限       |  ✅  |  ✅  |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |
-|        通知栏权限        |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|       通知栏监听权限      |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|         勿扰权限         |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|     忽略电池优化权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|     查看应用使用情况权限   |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|        VPN 权限         |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|      读取应用列表权限     |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
-|    Android 14 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
-|    Android 13 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
-|    Android 12 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
-|    Android 11 危险权限   |  ✅  |  ❌  |  ✅  |  ❌ |  ❌  |   ❌  |  ❌  |
-|    Android 10 危险权限   |  ✅  |  ✅  |  ✅  |  ❌ |  ✅  |   ❌  |  ❌  |
-|    Android 9.0 危险权限  |  ✅  |  ❌  |  ✅  |  ❌ |  ✅  |   ❌  |  ❌  |
-|    Android 8.0 危险权限  |  ✅  |  ✅  |  ✅  |  ❌ |  ✅  |   ❌  |  ❌  |
-|    新权限自动兼容旧设备    |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
-|    屏幕方向旋转场景适配    |  ✅  |  ✅  |  ✅  |  ❌ |  ✅  |  ❌   |  ❌  |
-|    后台申请权限场景适配    |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
-| Android 12 内存泄漏问题修复 |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |   ❌  |  ❌  |
-|       错误检测机制        |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |
+|     适配细节    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode-PermissionUtils](https://github.com/Blankj/AndroidUtilCode)   | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |  [Dexter](https://github.com/Karumi/Dexter) |
+| :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
+|    对应版本  |  23.2 |  2.0.3  |  1.8.1    |  1.31.0    |   4.9.2  |  0.12   |  3.0.0   |  6.2.3   |
+|    issues 数   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |  [![](https://img.shields.io/github/issues/Karumi/Dexter.svg)](https://github.com/Karumi/Dexter/issues)  |
+|  框架维护状态 |**维护中**|  停止维护 | 停止维护 |  停止维护 | 停止维护 | 停止维护 | 停止维护 | 停止维护 |
+|      读取应用列表权限     |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|       闹钟提醒权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|     所有文件管理权限      |  ✅  |  ❌  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|        安装包权限        |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|        画中画权限        |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|        悬浮窗权限        |  ✅  |  ✅  |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |
+|       系统设置权限       |  ✅  |  ✅  |  ✅  |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |
+|        通知栏权限        |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|       通知栏渠道权限      |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|       通知栏监听权限      |  ✅  |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|         勿扰权限         |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|     忽略电池优化权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|     查看应用使用情况权限   |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|        全屏通知权限       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|        VPN 权限         |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|        无障碍权限         |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|       设备管理器权限      |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|       自定义权限申请      |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|    新权限自动兼容旧设备    |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |  ❌  |
+|    屏幕方向旋转场景适配    |  ✅  |  ✅  |  ✅  |  ❌ |  ✅  |  ❌   |  ❌  |  ❌  |
+|    后台申请权限场景适配    |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |  ❌  |
+| Android 12 内存泄漏问题修复 |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |   ❌  |  ❌  |  ❌  |
+|       错误检测机制        |  ✅  |  ❌  |  ❌  |  ❌ |  ❌  |  ❌   |  ❌  |  ❌  |
 
 #### 读取应用列表权限介绍
 
@@ -325,7 +326,15 @@ XXPermissions.setCheckMode(false);
 
 * 还有一些厂商没有列出来，并不是作者没有做测试，而是他们的系统本身就是直接用 Android 的，Android 原生目前不支持申请该权限
 
-* 另外对于 miui 的设备，这套机制只支持 miui 13 及以上的版本，但是框架做了一些兼容手段，目前已经适配了所有 miui 版本读取应用列表权限的申请
+* 另外对于 miui 的设备，这套机制只支持 miui 13 及以上的版本，但是框架做了一些兼容手段，目前已经适配了所有 miui 版本读取应用列表权限的申请。
+
+#### 自定义权限申请
+
+* 顾名思义，开发者除了可以申请框架中已支持的权限，还支持申请开发者自己定义的权限，这个功能非常强大，此功能可以满足以下场景的需求：
+
+    1. 可以定义一些框架不支持的权限并进行申请，例如开机自启权限、操作外部存储 `Android/data` 权限，特定厂商的一些权限等等适配，甚至是[蓝牙开关、WIFI 开关、定位开关](https://github.com/getActivity/XXPermissions/issues/170)等等，此处请尽情发挥你的想象力，现在只需要继承框架提供的 `DangerousPermission` 或 `SpecialPermission` 类即可实现自定义权限，要知道这个功能放在之前的版本只能通过修改框架的源码才能实现，过程十分麻烦，你不仅要研究框架的源码，又要在修改后做严格的自测，而现在不需要这样做了，框架对外提供了这个扩展接口，实现一个接口即可实现。
+
+    2. 开发者不需要再依赖权限框架作者来适配新的权限，当 Google 发布了新的 Android 版本，并且增加了新的权限，而框架来不及适配，而你又急需申请这个新的权限，那么这个时候可以使用这个功能，率先对新权限进行适配。
 
 #### 新权限自动兼容旧设备介绍
 
