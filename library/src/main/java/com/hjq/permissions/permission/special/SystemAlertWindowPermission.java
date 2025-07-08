@@ -137,10 +137,7 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
                 }
 
                 // 华为手机管家主页
-                intent = PermissionSettingPage.getHuaWeiMobileManagerAppIntent(context);
-                if (intent != null) {
-                    intentList.add(intent);
-                }
+                intentList.addAll(PermissionSettingPage.getHuaWeiMobileManagerAppIntent(context));
 
             } else if (PhoneRomUtils.isMiui()) {
                 // 假设关闭了 miui 优化，就不走这里的逻辑
@@ -149,10 +146,8 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
                     intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
                     intentList.add(intent);
 
-                    intent = PermissionSettingPage.getXiaoMiMobileManagerAppIntent(context);
-                    if (intent != null) {
-                        intentList.add(intent);
-                    }
+                    // 小米手机管家主页
+                    intentList.addAll(PermissionSettingPage.getXiaoMiMobileManagerAppIntent(context));
                 }
             } else if (PhoneRomUtils.isColorOs()) {
                 // com.color.safecenter 是之前 oppo 安全中心的包名，而 com.oppo.safe 是 oppo 后面改的安全中心的包名
@@ -198,10 +193,10 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
 
                 // 经过测试在 vivo x7 Plus（Android 5.1）上面能跳转过去，但是显示却是一个空白页面
                 // intent.setClassName("com.iqoo.secure", "com.iqoo.secure.safeguard.SoftPermissionDetailActivity");
-                intent = PermissionSettingPage.getVivoMobileManagerAppIntent(context);
-                if (intent != null) {
-                    intentList.add(intent);
-                }
+
+                // Vivo 手机管家主页
+                intentList.addAll(PermissionSettingPage.getVivoMobileManagerAppIntent(context));
+
             } else if (PhoneRomUtils.isOneUi()) {
                 intent = PermissionSettingPage.getOneUiPermissionPageIntent(context);
                 intentList.add(intent);
