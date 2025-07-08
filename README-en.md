@@ -6,7 +6,7 @@
 
 * project address: [Github](https://github.com/getActivity/XXPermissions)
 
-* [Click here to download demo apk directly](https://github.com/getActivity/XXPermissions/releases/download/23.2/XXPermissions.apk)
+* [Click here to download demo apk directly](https://github.com/getActivity/XXPermissions/releases/download/25.0/XXPermissions.apk)
 
 ![](picture/en/demo_request_permission_activity.jpg) ![](picture/en/demo_request_single_permission.jpg) ![](picture/en/demo_request_group_permission.jpg)
 
@@ -57,7 +57,7 @@ android {
 
 dependencies {
     // Permission request framework：https://github.com/getActivity/XXPermissions
-    implementation 'com.github.getActivity:XXPermissions:23.2'
+    implementation 'com.github.getActivity:XXPermissions:25.0'
 }
 ```
 
@@ -265,7 +265,7 @@ XXPermissions.setCheckMode(false);
 
 |     Adaptation details    | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode-PermissionUtils](https://github.com/Blankj/AndroidUtilCode)   | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |  [Dexter](https://github.com/Karumi/Dexter) |
 | :--------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: | :------------: |
-|    Corresponding version  |  23.2 |  2.0.3  |  1.8.1    |  1.31.0    |   4.9.2  |  0.12   |  3.0.0   |  6.2.3   |
+|    Corresponding version  |  25.0 |  2.0.3  |  1.8.1    |  1.31.0    |   4.9.2  |  0.12   |  3.0.0   |  6.2.3   |
 |    Number of issues   |  [![](https://img.shields.io/github/issues/getActivity/XXPermissions.svg)](https://github.com/getActivity/XXPermissions/issues)  |  [![](https://img.shields.io/github/issues/yanzhenjie/AndPermission.svg)](https://github.com/yanzhenjie/AndPermission/issues)  |  [![](https://img.shields.io/github/issues/guolindev/PermissionX.svg)](https://github.com/guolindev/PermissionX/issues)  |  [![](https://img.shields.io/github/issues/Blankj/AndroidUtilCode.svg)](https://github.com/Blankj/AndroidUtilCode/issues)  |  [![](https://img.shields.io/github/issues/permissions-dispatcher/PermissionsDispatcher.svg)](https://github.com/permissions-dispatcher/PermissionsDispatcher/issues)  |  [![](https://img.shields.io/github/issues/tbruyelle/RxPermissions.svg)](https://github.com/tbruyelle/RxPermissions/issues)  |  [![](https://img.shields.io/github/issues/googlesamples/easypermissions.svg)](https://github.com/googlesamples/easypermissions/issues)  |  [![](https://img.shields.io/github/issues/Karumi/Dexter.svg)](https://github.com/Karumi/Dexter/issues)  |
 |  Framework Maintenance Status |**In maintenance**|  stop maintenance | stop maintenance |  stop maintenance | stop maintenance | stop maintenance | stop maintenance | stop maintenance |
 |      `SCHEDULE_EXACT_ALARM`       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
