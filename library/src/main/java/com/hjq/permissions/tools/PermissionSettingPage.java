@@ -76,6 +76,9 @@ public final class PermissionSettingPage {
         List<Intent> intentList = new ArrayList<>();
         Intent intent;
 
+        intent = new Intent("miui.intent.action.SECURITY_CENTER");
+        intentList.add(intent);
+
         intent = context.getPackageManager().getLaunchIntentForPackage(XiAO_MI_MOBILE_MANAGER_APP_PACKAGE_NAME);
         if (intent != null) {
             intentList.add(intent);
