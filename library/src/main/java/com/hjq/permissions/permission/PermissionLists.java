@@ -99,14 +99,16 @@ public final class PermissionLists {
      * 移动终端应用软件列表权限实施指南：http://www.taf.org.cn/StdDetail.aspx?uid=3A7D6656-43B8-4C46-8871-E379A3EA1D48&stdType=TAF
      *
      * 需要注意的是：
-     *   1. 需要在清单文件中注册 QUERY_ALL_PACKAGES 权限，否则在 Android 11 上面就算申请成功也是获取不到第三方安装列表信息的
+     *   1. 需要在清单文件中注册 QUERY_ALL_PACKAGES 权限或者注册 <queries> 节点，否则在 Android 11 上面就算申请成功也是获取不到已安装应用列表的
      *   2. 这个权限在有的手机上面是授予状态，在有的手机上面是还没有授予，在有的手机上面是无法申请，能支持申请该权限的的厂商系统版本有：
      *      华为：Harmony 3.0.0 及以上版本，Harmony 2.0.1 实测不行
      *      荣耀：Magic UI 6.0 及以上版本，Magic UI 5.0 实测不行
-     *      小米：Miui 13 及以上版本，Miui 12 实测不行，经过验证 miui 上面默认会授予此权限
+     *      小米：Miui 13 及以上版本，Miui 12 实测不行，经过验证 miui 上面默认会授予此权限，而 Hyper 任何版本都支持
      *      OPPO：(ColorOs 12 及以上版本 && Android 11+) || (ColorOs 11.1 及以上版本 && Android 12+)
      *      VIVO：虽然没有申请这个权限的通道，但是读取已安装第三方应用列表是没有问题的，没有任何限制
      *      真我：realme UI 3.0 及以上版本，realme UI 2.0 实测不行
+     *   3. 如果你贪图方便在清单文件中注册了 QUERY_ALL_PACKAGES 权限，并且 App 需要上架 GooglePlay，注意看一下 GooglePlay 的政策：
+     *      https://support.google.com/googleplay/android-developer/answer/9888170?hl=zh-Hans
      */
     @NonNull
     public static IPermission getGetInstalledAppsPermission() {
@@ -122,7 +124,7 @@ public final class PermissionLists {
      *
      * 需要注意的是，如果你的应用需要上架 GooglePlay，请慎重添加此权限，相关文档介绍如下：
      * 1. 了解前台服务和全屏 intent 要求：https://support.google.com/googleplay/android-developer/answer/13392821?hl=zh-Hans
-     * 2. Google Play 对 Android 14 全屏 Intent 的要求：https://orangeoma.zendesk.com/hc/en-us/articles/14126775576988-Google-Play-requirements-on-Full-screen-intent-for-Android-14
+     * 2. GooglePlay 对 Android 14 全屏 Intent 的要求：https://orangeoma.zendesk.com/hc/en-us/articles/14126775576988-Google-Play-requirements-on-Full-screen-intent-for-Android-14
      */
     @NonNull
     public static IPermission getUseFullScreenIntentPermission() {
@@ -138,6 +140,8 @@ public final class PermissionLists {
      *
      * 需要注意的是：这个权限和其他特殊权限不同的是，默认已经是授予状态，用户也可以手动撤销授权
      * 官方文档介绍：https://developer.android.google.cn/about/versions/12/behavior-changes-12?hl=zh_cn#exact-alarm-permission
+     * 应用只有在其核心功能支持精确闹钟需求的情况下才能声明此权限。请求此受限权限的应用需要接受审核；如果应用不符合可接受的用例标准，则不允许在 GooglePlay 上发布
+     * 查看 GooglePlay 对闹钟权限的要求：https://support.google.com/googleplay/android-developer/answer/9888170?hl=zh-Hans
      */
     @NonNull
     public static IPermission getScheduleExactAlarmPermission() {
@@ -351,7 +355,7 @@ public final class PermissionLists {
     /**
      * 发送通知权限（Android 13.0 新增的权限）
      *
-     * 为了兼容 Android 13 以下版本，框架会自动申请 {@link PermissionNames#NOTIFICATION_SERVICE} 权限
+     * 为了向下兼容，框架会自动在旧的安卓设备上自动添加 {@link PermissionLists#getNotificationServicePermission()} 权限进行动态申请，无需你手动添加
      */
     @NonNull
     public static IPermission getPostNotificationsPermission() {
@@ -370,7 +374,7 @@ public final class PermissionLists {
      * <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
      *
      * 为了兼容 Android 13 以下版本，需要清单文件中注册 {@link PermissionNames#ACCESS_FINE_LOCATION} 权限
-     * 还有 Android 13 以下设备，使用 WIFI 需要 {@link PermissionNames#ACCESS_FINE_LOCATION} 权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
+     * 另外框架会自动在旧的安卓设备上自动添加 {@link PermissionLists#getAccessFineLocationPermission()} 权限进行动态申请，无需你手动添加
      */
     @NonNull
     public static IPermission getNearbyWifiDevicesPermission() {
@@ -401,6 +405,7 @@ public final class PermissionLists {
      * 读取图片权限（Android 13.0 新增的权限）
      *
      * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link PermissionNames#READ_EXTERNAL_STORAGE} 权限
+     * 另外框架会自动在旧的安卓设备上自动添加 {@link PermissionLists#getReadExternalStoragePermission()} 权限进行动态申请，无需你手动添加
      */
     @NonNull
     public static IPermission getReadMediaImagesPermission() {
@@ -415,6 +420,7 @@ public final class PermissionLists {
      * 读取视频权限（Android 13.0 新增的权限）
      *
      * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link PermissionNames#READ_EXTERNAL_STORAGE} 权限
+     * 另外框架会自动在旧的安卓设备上自动添加 {@link PermissionLists#getReadExternalStoragePermission()} 权限进行动态申请，无需你手动添加
      */
     @NonNull
     public static IPermission getReadMediaVideoPermission() {
@@ -429,6 +435,7 @@ public final class PermissionLists {
      * 读取音频权限（Android 13.0 新增的权限）
      *
      * 为了兼容 Android 13 以下版本，需要在清单文件中注册 {@link PermissionNames#READ_EXTERNAL_STORAGE} 权限
+     * 另外框架会自动在旧的安卓设备上自动添加 {@link PermissionLists#getReadExternalStoragePermission()} 权限进行动态申请，无需你手动添加
      */
     @NonNull
     public static IPermission getReadMediaAudioPermission() {
@@ -446,8 +453,8 @@ public final class PermissionLists {
      * 否则就会导致在没有定位权限的情况下扫描不到附近的蓝牙设备，这个是经过测试的，下面是清单权限注册案例，请参考以下进行注册
      * <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" tools:targetApi="s" />
      *
-     * 为了兼容 Android 12 以下版本，需要清单文件中注册 {@link Manifest.permission#BLUETOOTH_ADMIN} 权限
-     * 还有 Android 12 以下设备，获取蓝牙扫描结果需要 {@link PermissionNames#ACCESS_FINE_LOCATION} 权限，框架会自动在旧的安卓设备上自动添加此权限进行动态申请
+     * 为了兼容 Android 12 以下版本，需要清单文件中注册 {@link Manifest.permission#BLUETOOTH_ADMIN} 和 {@link PermissionNames#ACCESS_FINE_LOCATION} 权限
+     * 另外框架会自动在旧的安卓设备上自动添加 {@link PermissionLists#getAccessFineLocationPermission()} 权限进行动态申请，无需你手动添加
      */
     @NonNull
     public static IPermission getBluetoothScanPermission() {
@@ -525,12 +532,13 @@ public final class PermissionLists {
      * 需要注意的是：如果这个权限申请成功了但是不能正常读取照片的地理信息，那么需要先申请存储权限，具体可分别下面两种情况：
      *
      * 1. 如果适配了分区存储的情况下：
-     *     1) 如果项目 targetSdkVersion <= 32 需要申请 {@link PermissionNames#READ_EXTERNAL_STORAGE}
-     *     2) 如果项目 targetSdkVersion >= 33 需要申请 {@link PermissionNames#READ_MEDIA_IMAGES} 或 {@link PermissionNames#READ_MEDIA_VIDEO}，并且需要全部授予，不能部分授予
+     *     1) 如果项目 targetSdkVersion <= 32 需要申请 {@link PermissionLists#getReadExternalStoragePermission()}
+     *     2) 如果项目 targetSdkVersion >= 33 需要申请 {@link PermissionLists#getReadMediaImagesPermission()} 或者
+     *        {@link PermissionLists#getReadMediaVideoPermission()}，并且需要授予全部，不能选择授予部分
      *
      * 2. 如果没有适配分区存储的情况下：
-     *     1) 如果项目 targetSdkVersion <= 29 需要申请 {@link PermissionNames#READ_EXTERNAL_STORAGE}
-     *     2) 如果项目 targetSdkVersion >= 30 需要申请 {@link PermissionNames#MANAGE_EXTERNAL_STORAGE}
+     *     1) 如果项目 targetSdkVersion <= 29 需要申请 {@link PermissionLists#getReadExternalStoragePermission()}
+     *     2) 如果项目 targetSdkVersion >= 30 需要申请 {@link PermissionLists#getManageExternalStoragePermission()}
      */
     @NonNull
     public static IPermission getAccessMediaLocationPermission() {
@@ -562,6 +570,7 @@ public final class PermissionLists {
      * 需要注意：此权限在一些无法拨打电话的设备（例如：小米平板 5）上面申请，系统会直接回调成功，但是这非必然，如有进行申请，还需留意处理权限申请失败的情况
      *
      * 为了兼容 Android 8.0 以下版本，需要在清单文件中注册 {@link PermissionNames#READ_PHONE_STATE} 权限
+     * 另外框架会自动在旧的安卓设备上自动添加 {@link PermissionLists#getReadPhoneStatePermission()} 权限进行动态申请，无需你手动添加
      */
     @NonNull
     public static IPermission getReadPhoneNumbersPermission() {
@@ -734,8 +743,9 @@ public final class PermissionLists {
      * 1. 这个权限在某些手机上面是没办法获取到的，因为某些系统禁止应用获得该权限
      *    所以你要是申请了这个权限之后没有弹授权框，而是直接回调授权失败方法
      *    请不要惊慌，这个不是 Bug、不是 Bug、不是 Bug，而是正常现象
-     * 后续情况汇报：有人反馈在 iQOO 手机上面获取不到该权限，在清单文件加入下面这个权限就可以了（这里只是做记录，并不代表这种方式就一定有效果）
-     *             <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
+     *    后续情况汇报：有人反馈在 iQOO 手机上面获取不到该权限，在清单文件加入下面这个权限就可以了（这里只是做记录，并不代表这种方式就一定有效果）
+     *    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
+     *    Github issue 地址：https://github.com/getActivity/XXPermissions/issues/98
      *
      * 2. 这个权限在某些手机上面申请是直接通过的，但是系统没有弹出授权对话框，实际上也是没有授权
      *    这个也不是 Bug，而是系统故意就是这么做的，你要问我怎么办，我只能说胳膊拗不过大腿
