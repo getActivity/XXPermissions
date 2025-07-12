@@ -27,6 +27,10 @@ public final class StartActivityDelegateByContext implements IStartActivityDeleg
         if (intent == null) {
             return;
         }
+        // https://developer.android.google.cn/about/versions/pie/android-9.0-changes-all?hl=zh-cn#fant-required
+        if (!(mContext instanceof Activity)) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
         mContext.startActivity(intent);
     }
 
