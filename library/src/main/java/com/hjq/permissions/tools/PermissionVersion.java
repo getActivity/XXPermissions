@@ -14,6 +14,7 @@ import android.os.Build;
 @SuppressWarnings("AlibabaLowerCamelCaseVariableNaming")
 public final class PermissionVersion {
 
+    public static final int ANDROID_16 = Build.VERSION_CODES.BAKLAVA;
     public static final int ANDROID_15 = Build.VERSION_CODES.VANILLA_ICE_CREAM;
     public static final int ANDROID_14 = Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     public static final int ANDROID_13 = Build.VERSION_CODES.TIRAMISU;
@@ -56,6 +57,13 @@ public final class PermissionVersion {
      */
     public static int getTargetVersion(Context context) {
         return context.getApplicationInfo().targetSdkVersion;
+    }
+
+    /**
+     * 是否是 Android 16 及以上版本
+     */
+    public static boolean isAndroid16() {
+        return Build.VERSION.SDK_INT >= ANDROID_16;
     }
 
     /**
