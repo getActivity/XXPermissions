@@ -9,7 +9,9 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
+import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.common.SpecialPermission;
+import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
@@ -51,6 +53,25 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
     @Override
     public String getPermissionName() {
         return PERMISSION_NAME;
+    }
+
+    @SuppressLint("BatteryLife")
+    @NonNull
+    @Override
+    public PermissionPageType getPermissionPageType(@NonNull Context context) {
+        // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
+        // 然而在 Android 11 之后的，这个权限页面被小米改成了自己定制化的页面
+        if (PermissionVersion.isAndroid11() && (PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui())) {
+            return PermissionPageType.OPAQUE_ACTIVITY;
+        }
+        if (PermissionVersion.isAndroid6()) {
+            Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            intent.setData(getPackageNameUri(context));
+            if (PermissionUtils.areActivityIntent(context, intent)) {
+                return PermissionPageType.TRANSPARENT_ACTIVITY;
+            }
+        }
+        return PermissionPageType.OPAQUE_ACTIVITY;
     }
 
     @Override

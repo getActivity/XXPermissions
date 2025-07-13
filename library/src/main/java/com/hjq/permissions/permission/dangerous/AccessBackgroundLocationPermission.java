@@ -11,10 +11,12 @@ import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.PermissionNames;
+import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
-import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PermissionVersion;
+import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.List;
 
 /**
@@ -53,6 +55,19 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
     @Override
     public String getPermissionName() {
         return PERMISSION_NAME;
+    }
+
+    @NonNull
+    @Override
+    public PermissionPageType getPermissionPageType(@NonNull Context context) {
+        if (PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui()) {
+            return PermissionPageType.TRANSPARENT_ACTIVITY;
+        }
+        // 后台定位权限申请页在 Android 10 还是透明的 Activity，到了 Android 11 就变成了不透明的 Activity
+        if (PermissionVersion.isAndroid10() && !PermissionVersion.isAndroid11()) {
+            return PermissionPageType.TRANSPARENT_ACTIVITY;
+        }
+        return PermissionPageType.OPAQUE_ACTIVITY;
     }
 
     @Override

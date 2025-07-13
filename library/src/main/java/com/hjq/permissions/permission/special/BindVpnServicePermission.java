@@ -12,10 +12,11 @@ import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.manifest.node.ServiceManifestInfo;
 import com.hjq.permissions.permission.PermissionNames;
+import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +56,12 @@ public final class BindVpnServicePermission extends SpecialPermission {
     @Override
     public String getPermissionName() {
         return PERMISSION_NAME;
+    }
+
+    @NonNull
+    @Override
+    public PermissionPageType getPermissionPageType(@NonNull Context context) {
+        return VpnService.prepare(context) != null ? PermissionPageType.TRANSPARENT_ACTIVITY : PermissionPageType.OPAQUE_ACTIVITY;
     }
 
     @Override

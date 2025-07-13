@@ -15,6 +15,7 @@ import android.support.annotation.RequiresApi;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.permission.PermissionNames;
+import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import com.hjq.permissions.tools.PermissionSettingPage;
@@ -62,6 +63,15 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
     @Override
     public String getPermissionName() {
         return PERMISSION_NAME;
+    }
+
+    @NonNull
+    @Override
+    public PermissionPageType getPermissionPageType(@NonNull Context context) {
+        if (PermissionVersion.isAndroid6() && isSupportRequestPermissionBySystem(context)) {
+            return PermissionPageType.TRANSPARENT_ACTIVITY;
+        }
+        return PermissionPageType.OPAQUE_ACTIVITY;
     }
 
     @Override

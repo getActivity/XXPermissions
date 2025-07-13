@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
+import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.tools.PermissionVersion;
 import java.util.List;
@@ -30,6 +31,12 @@ public interface IPermission extends Parcelable {
      */
     @NonNull
     PermissionType getPermissionType();
+
+    /**
+     * 获取权限页面的类型
+     */
+    @NonNull
+    PermissionPageType getPermissionPageType(@NonNull Context context);
 
     /**
      * 获取权限的组别

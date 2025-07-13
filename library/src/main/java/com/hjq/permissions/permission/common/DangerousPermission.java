@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.manager.AlreadyRequestPermissionsManager;
+import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.BasePermission;
 import com.hjq.permissions.tools.PermissionSettingPage;
@@ -34,6 +35,12 @@ public abstract class DangerousPermission extends BasePermission {
     @Override
     public PermissionType getPermissionType() {
         return PermissionType.DANGEROUS;
+    }
+
+    @NonNull
+    @Override
+    public PermissionPageType getPermissionPageType(@NonNull Context context) {
+        return PermissionPageType.TRANSPARENT_ACTIVITY;
     }
 
     @Override

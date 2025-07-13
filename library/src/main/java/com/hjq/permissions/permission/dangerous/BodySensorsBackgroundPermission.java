@@ -11,10 +11,12 @@ import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.PermissionNames;
+import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
-import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PermissionVersion;
+import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.List;
 
 /**
@@ -53,6 +55,15 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
     @Override
     public String getPermissionName() {
         return PERMISSION_NAME;
+    }
+
+    @NonNull
+    @Override
+    public PermissionPageType getPermissionPageType(@NonNull Context context) {
+        if (PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui()) {
+            return PermissionPageType.TRANSPARENT_ACTIVITY;
+        }
+        return PermissionPageType.OPAQUE_ACTIVITY;
     }
 
     @Override

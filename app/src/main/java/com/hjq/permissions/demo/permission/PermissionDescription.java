@@ -25,9 +25,9 @@ import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import com.hjq.permissions.OnPermissionDescription;
-import com.hjq.permissions.XXPermissions;
 import com.hjq.permissions.demo.R;
 import com.hjq.permissions.demo.WindowLifecycleManager;
+import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.base.IPermission;
 import java.util.List;
 
@@ -66,16 +66,18 @@ public final class PermissionDescription implements OnPermissionDescription {
     public void askWhetherRequestPermission(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
                                             @NonNull Runnable continueRequestRunnable, @NonNull Runnable breakRequestRunnable) {
         // 以下情况使用 Dialog 来展示权限说明弹窗，否则使用 PopupWindow 来展示权限说明弹窗
-        // 1. 如果请求的权限中包含特殊权限
-        // 2. 如果请求的权限中包含后台权限
-        // 3. 如果当前 Activity 的屏幕是竖屏的话，并且设备的物理屏幕尺寸还小于 9 寸（目前大多数小屏平板大多数集中在 8、8.7、8.8、10 寸）
+        // 1. 如果请求的权限显示的系统界面是不透明的 Activity
+        // 2. 如果当前 Activity 的屏幕是竖屏的话，并且设备的物理屏幕尺寸还小于 9 寸（目前大多数小屏平板大多数集中在 8、8.7、8.8、10 寸）
         //    实测 8 寸的平板获取到的物理尺寸到只有 7.958788793906728，所以这里的代码判断基本上是针对 10 寸及以上的平板做优化
-        if (XXPermissions.containsSpecialPermission(requestPermissions) ||
-            XXPermissions.containsBackgroundPermission(activity, requestPermissions) ||
-            (isActivityLandscape(activity) && getPhysicalScreenSize(activity) < 9)) {
+        if (isActivityLandscape(activity) && getPhysicalScreenSize(activity) < 9) {
             mDescriptionWindowType = DESCRIPTION_WINDOW_TYPE_DIALOG;
         } else {
             mDescriptionWindowType = DESCRIPTION_WINDOW_TYPE_POPUP;
+            for (IPermission permission : requestPermissions) {
+                if (permission.getPermissionPageType(activity) == PermissionPageType.OPAQUE_ACTIVITY) {
+                    mDescriptionWindowType = DESCRIPTION_WINDOW_TYPE_DIALOG;
+                }
+            }
         }
 
         if (mDescriptionWindowType == DESCRIPTION_WINDOW_TYPE_POPUP) {
@@ -229,7 +231,7 @@ public final class PermissionDescription implements OnPermissionDescription {
     }
 
     /**
-     * 判断当前 Activity 是否是竖屏显示
+     * 判断当前 Activity 是否是横盘显示
      */
     public static boolean isActivityLandscape(@NonNull Activity activity) {
         return activity.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
