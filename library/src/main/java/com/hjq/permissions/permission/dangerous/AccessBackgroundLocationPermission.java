@@ -94,6 +94,12 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
     }
 
     @Override
+    public boolean isBackgroundPermission(@NonNull Context context) {
+        // 表示当前权限是后台权限
+        return true;
+    }
+
+    @Override
     protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
         if (PermissionVersion.isAndroid12()) {
             // 在 Android 12 及之后的版本，前台定位权限既可以用精确定位权限也可以用模糊定位权限

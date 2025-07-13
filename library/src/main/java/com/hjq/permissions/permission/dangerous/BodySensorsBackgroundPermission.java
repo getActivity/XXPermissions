@@ -83,6 +83,12 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
     }
 
     @Override
+    public boolean isBackgroundPermission(@NonNull Context context) {
+        // 表示当前权限是后台权限
+        return true;
+    }
+
+    @Override
     protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
         // 判断后台传感器权限授予之前，需要先判断前台传感器权限是否授予，如果前台传感器权限没有授予，那么后台传感器权限就算授予了也没用
         if (!PermissionLists.getBodySensorsPermission().isGrantedPermission(context, skipRequest)) {
