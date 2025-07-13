@@ -85,12 +85,9 @@ public final class PermissionDescription implements OnPermissionDescription {
 
         showDialog(activity, activity.getString(R.string.common_permission_description_title),
             generatePermissionDescription(activity, requestPermissions),
-            activity.getString(R.string.common_permission_granted), (dialog, which) -> {
+            activity.getString(R.string.common_permission_confirm), (dialog, which) -> {
                 dialog.dismiss();
                 continueRequestRunnable.run();
-            }, activity.getString(R.string.common_permission_denied), (dialog, which) -> {
-                dialog.dismiss();
-                breakRequestRunnable.run();
             });
     }
 
@@ -135,12 +132,9 @@ public final class PermissionDescription implements OnPermissionDescription {
      * @param dialogMessage             对话框消息
      * @param confirmButtonText         对话框确认按钮文本
      * @param confirmListener           对话框确认按钮点击事件
-     * @param cancelButtonText          对话框取消按钮文本
-     * @param cancelListener            对话框取消按钮点击事件
      */
     private void showDialog(@NonNull Activity activity, @Nullable String dialogTitle, @Nullable String dialogMessage,
-                            @Nullable String confirmButtonText, @Nullable DialogInterface.OnClickListener confirmListener,
-                            @Nullable String cancelButtonText, @Nullable DialogInterface.OnClickListener cancelListener) {
+                            @Nullable String confirmButtonText, @Nullable DialogInterface.OnClickListener confirmListener) {
         if (mPermissionDialog != null) {
             dismissDialog();
         }
@@ -158,7 +152,6 @@ public final class PermissionDescription implements OnPermissionDescription {
                 // 对话框一定要设置成不可取消的
                 .setCancelable(false)
                 .setPositiveButton(confirmButtonText, confirmListener)
-                .setNegativeButton(cancelButtonText, cancelListener)
                 .create();
         } else {
             mPermissionDialog = new AlertDialog.Builder(activity)
@@ -167,7 +160,6 @@ public final class PermissionDescription implements OnPermissionDescription {
                 // 对话框一定要设置成不可取消的
                 .setCancelable(false)
                 .setPositiveButton(confirmButtonText, confirmListener)
-                .setNegativeButton(cancelButtonText, cancelListener)
                 .create();
         }
         mPermissionDialog.show();

@@ -2,8 +2,7 @@
 <resources>
 
     <string name="common_permission_description_title">Permission description</string>
-    <string name="common_permission_granted">Granted</string>
-    <string name="common_permission_denied">Denied</string>
+    <string name="common_permission_confirm">Confirm</string>
 
     <string name="common_permission_alert">Authorization prompt</string>
 

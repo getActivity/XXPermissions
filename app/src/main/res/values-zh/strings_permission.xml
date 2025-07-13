@@ -2,8 +2,7 @@
 <resources>
 
     <string name="common_permission_description_title">权限说明</string>
-    <string name="common_permission_granted">授予</string>
-    <string name="common_permission_denied">取消</string>
+    <string name="common_permission_confirm">确定</string>
 
     <string name="common_permission_alert">授权提醒</string>
 
