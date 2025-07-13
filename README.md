@@ -191,18 +191,6 @@ XXPermissions.getGrantedPermissions(@NonNull Context context, @NonNull List<IPer
 XXPermissions.getDeniedPermissions(@NonNull Context context, @NonNull IPermission[] permissions);
 XXPermissions.getDeniedPermissions(@NonNull Context context, @NonNull List<IPermission> permissions);
 
-// 判断某个权限是否为特殊权限
-XXPermissions.isSpecialPermission(@NonNull IPermission permission);
-// 判断权限列表中是否包含特殊权限
-XXPermissions.containsSpecialPermission(@NonNull IPermission[] permissions);
-XXPermissions.containsSpecialPermission(@NonNull List<IPermission> permissions);
-
-// 判断某个权限是否为后台权限
-XXPermissions.isBackgroundPermission(@NonNull Context context, @NonNull IPermission permission);
-// 判断权限列表中是否包含后台权限
-XXPermissions.containsBackgroundPermission(@NonNull Context context, @NonNull IPermission[] permissions);
-XXPermissions.containsBackgroundPermission(@NonNull Context context, @NonNull List<IPermission> permissions);
-
 // 判断两个权限是否相等
 XXPermissions.equalsPermission(@NonNull IPermission permission, @NonNull IPermission permission2);
 XXPermissions.equalsPermission(@NonNull IPermission permission, @NonNull String permissionName);

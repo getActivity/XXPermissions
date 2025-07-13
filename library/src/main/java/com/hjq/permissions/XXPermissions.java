@@ -14,11 +14,11 @@ import com.hjq.permissions.manifest.AndroidManifestParser;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.start.StartActivityAgent;
-import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionApi;
 import com.hjq.permissions.tools.PermissionChecker;
 import com.hjq.permissions.tools.PermissionSettingPage;
 import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -373,42 +373,6 @@ public final class XXPermissions {
 
     public static List<IPermission> getDeniedPermissions(@NonNull Context context, @NonNull List<IPermission> permissions) {
         return PermissionApi.getDeniedPermissions(context, permissions);
-    }
-
-    /**
-     * 判断某个权限是否为特殊权限
-     */
-    public static boolean isSpecialPermission(@NonNull IPermission permission) {
-        return permission.getPermissionType() == PermissionType.SPECIAL;
-    }
-
-    /**
-     * 判断权限列表中是否包含特殊权限
-     */
-    public static boolean containsSpecialPermission(@NonNull IPermission[] permissions) {
-        return containsSpecialPermission(PermissionUtils.asArrayList(permissions));
-    }
-
-    public static boolean containsSpecialPermission(@NonNull List<IPermission> permissions) {
-        return PermissionApi.containsSpecialPermission(permissions);
-    }
-
-    /**
-     * 判断某个权限是否为后台权限
-     */
-    public static boolean isBackgroundPermission(@NonNull Context context, @NonNull IPermission permission) {
-        return permission.isBackgroundPermission(context);
-    }
-
-    /**
-     * 判断权限列表中是否包含后台权限
-     */
-    public static boolean containsBackgroundPermission(@NonNull Context context, @NonNull IPermission[] permissions) {
-        return containsBackgroundPermission(context, PermissionUtils.asArrayList(permissions));
-    }
-
-    public static boolean containsBackgroundPermission(@NonNull Context context, @NonNull List<IPermission> permissions) {
-        return PermissionApi.containsBackgroundPermission(context, permissions);
     }
 
     /**

@@ -183,18 +183,6 @@ XXPermissions.getGrantedPermissions(@NonNull Context context, @NonNull List<IPer
 XXPermissions.getDeniedPermissions(@NonNull Context context, @NonNull IPermission[] permissions);
 XXPermissions.getDeniedPermissions(@NonNull Context context, @NonNull List<IPermission> permissions);
 
-// Check if a permission is a special permission
-XXPermissions.isSpecialPermission(@NonNull IPermission permission);
-// Check if a permission list contains any special permissions
-XXPermissions.containsSpecialPermission(@NonNull IPermission[] permissions);
-XXPermissions.containsSpecialPermission(@NonNull List<IPermission> permissions);
-
-// Check if a permission is a background permission
-XXPermissions.isBackgroundPermission(@NonNull Context context, @NonNull IPermission permission);
-// Check if a permission list contains any background permissions
-XXPermissions.containsBackgroundPermission(@NonNull Context context, @NonNull IPermission[] permissions);
-XXPermissions.containsBackgroundPermission(@NonNull Context context, @NonNull List<IPermission> permissions);
-
 // Determine whether the two permissions are equal
 XXPermissions.equalsPermission(@NonNull IPermission permission, @NonNull IPermission permission2);
 XXPermissions.equalsPermission(@NonNull IPermission permission, @NonNull String permissionName);

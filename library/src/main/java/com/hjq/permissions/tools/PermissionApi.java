@@ -35,22 +35,6 @@ public final class PermissionApi {
     }
 
     /**
-     * 判断某个权限集合是否包含后台权限
-     */
-    public static boolean containsBackgroundPermission(@NonNull Context context, @Nullable List<IPermission> permissions) {
-        if (permissions == null || permissions.isEmpty()) {
-            return false;
-        }
-
-        for (IPermission permission : permissions) {
-            if (permission.isBackgroundPermission(context)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * 判断某些权限是否全部被授予
      */
     public static boolean isGrantedPermissions(@NonNull Context context, @NonNull List<IPermission> permissions) {
