@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
+import com.hjq.permissions.manager.AlreadyRequestPermissionsManager;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.BasePermission;
 import com.hjq.permissions.tools.PermissionSettingPage;
@@ -77,7 +78,22 @@ public abstract class DangerousPermission extends BasePermission {
         if (!PermissionVersion.isAndroid6()) {
             return false;
         }
-        return !checkSelfPermission(activity, getPermissionName()) &&
+        // 判断用户是否勾选了不再询问选项的前提条件
+        // 1. 必须是本次运行状态已经申请过的权限
+        // 2. 必须是未授权的权限
+        // 通过以上两个条件就可以判断用户在拒绝的时候是否勾选了《不再询问》的选项，你可能会说为什么要写得那么麻烦？
+        // 这是因为 Google 把 shouldShowRequestPermissionRationale 设计得很坑，用户在没有勾选《不再询问》的选项情况下，
+        // shouldShowRequestPermissionRationale 也可能返回 false，这种情况就是你本次运行状态下没有申请过这个权限就调用它，
+        // 这是 Google 压根不想让你知道用户是不是勾选了《不再询问》的选项，你只能在本次运行状态申请过这个权限才能知道，否则没有其他方法。
+        // 目前框架针对这个问题进行了一些优化，主要针对在同时申请了前台权限和后台权限的场景，用户在明确拒绝了前台权限的条件下，
+        // 与之对应的后台权限框架并没有继续去申请（因为申请了必然失败），就会导致 shouldShowRequestPermissionRationale 判断出现不准的问题。
+        // 但是这样做仍然是有瑕疵的，就是应用本次运行状态如果没有申请过这个权限，直接用 shouldShowRequestPermissionRationale 判断是有问题的，
+        // 只有在应用本次运行状态申请过一次这个权限才能用 shouldShowRequestPermissionRationale 准确判断用户是否勾选了《不再询问》的选项。
+        // 你可能会说：为什么不永久存储 shouldShowRequestPermissionRationale 状态到磁盘上面？这样不是比你这种做法更加 very good？
+        // 这个问题其实别人已经提过了，这里就不再重复解答了，传送地址：https://github.com/getActivity/XXPermissions/issues/154，
+        // 目前这套处理方案是目前能想到的最佳解决方案了，如果你还有更好的做法，欢迎通过 issue 告诉我，我会持续跟进并优化这个问题。
+        return AlreadyRequestPermissionsManager.isAlreadyRequestPermissions(this) &&
+            !checkSelfPermission(activity, getPermissionName()) &&
             !shouldShowRequestPermissionRationale(activity, getPermissionName());
     }
 

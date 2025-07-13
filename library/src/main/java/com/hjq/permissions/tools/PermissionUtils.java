@@ -239,6 +239,22 @@ public final class PermissionUtils {
     /**
      * 判断权限集合中是否包含某个权限
      */
+    public static boolean containsPermission(@NonNull List<String> permissions, @NonNull String permission) {
+        if (permissions.isEmpty()) {
+            return false;
+        }
+        for (String item : permissions) {
+            // 使用 equalsPermission 来判断可以提升代码执行效率
+            if (equalsPermission(permission, item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断权限集合中是否包含某个权限
+     */
     public static boolean containsPermission(@NonNull Collection<IPermission> permissions, @NonNull String permissionName) {
         if (permissions.isEmpty()) {
             return false;

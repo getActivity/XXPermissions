@@ -17,8 +17,8 @@ import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
-import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionSettingPage;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -112,8 +112,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
         if (PermissionVersion.isAndroid6() && isSupportRequestPermissionBySystem(activity)) {
             // 如果支持申请，那么再去判断权限是否永久拒绝
-            return !checkSelfPermission(activity, getPermissionName()) &&
-                !shouldShowRequestPermissionRationale(activity, getPermissionName());
+            return isDoNotAskAgainPermissionByStandardVersion(activity);
         }
 
         if (PermissionVersion.isAndroid4_4() && PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
