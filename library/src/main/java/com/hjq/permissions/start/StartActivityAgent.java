@@ -56,6 +56,12 @@ public final class StartActivityAgent {
             iterator.remove();
         }
 
+        // 当所有的 Intent 都不存在的时候，那么就默认添加一个 Android 系统设置的 Intent，这样写的原因如下：
+        // 不至于用户一点申请权限就立马提示失败，用户会一头雾水，这样的体验太差了，最起码跳转一下 Android 系统设置页，这样效果会好很多
+        if (intentList.isEmpty()) {
+            intentList.add(PermissionSettingPage.getAndroidSettingsIntent());
+        }
+
         // 由于 Iterator 接口中没有重置索引的方法，所以这里只能重新获取一次 Iterator 对象
         iterator = intentList.iterator();
         while (iterator.hasNext()) {
