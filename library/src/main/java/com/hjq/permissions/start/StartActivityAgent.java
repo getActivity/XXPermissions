@@ -135,6 +135,8 @@ public final class StartActivityAgent {
                 // 跳转成功，结束循环
                 break;
             } catch (Exception e) {
+                // android.content.ActivityNotFoundException: No Activity found to handle Intent { act=android.settings.APPLICATION_DETAILS_SETTINGS dat=package:xxx.xxx.xxx }
+                // java.lang.SecurityException: Permission Denial: starting Intent { act=android.settings.MANAGE_UNKNOWN_APP_SOURCES (has data) cmp=xxxx/.xxx }
                 e.printStackTrace();
                 // 如果下一个 Intent 不为空才去触发失败结果的回调，这是因为如果下一个 Intent 为空，则证明已经没有下一个 Intent 可以再试了，
                 // 那么就不需要记录这次跳转失败的次数，这样前面 startActivityForResult 失败就会导致系统触发 onActivityResult 回调，形成闭环
