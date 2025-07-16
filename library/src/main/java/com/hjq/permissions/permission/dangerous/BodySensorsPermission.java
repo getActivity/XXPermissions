@@ -13,29 +13,29 @@ import com.hjq.permissions.tools.PermissionVersion;
  *    time   : 2025/07/16
  *    desc   : 传感器权限类
  */
-public final class SensorsPermission extends DangerousPermission {
+public final class BodySensorsPermission extends DangerousPermission {
 
     /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
     public static final String PERMISSION_NAME = PermissionNames.BODY_SENSORS;
 
-    public static final Creator<SensorsPermission> CREATOR = new Creator<SensorsPermission>() {
+    public static final Creator<BodySensorsPermission> CREATOR = new Creator<BodySensorsPermission>() {
 
         @Override
-        public SensorsPermission createFromParcel(Parcel source) {
-            return new SensorsPermission(source);
+        public BodySensorsPermission createFromParcel(Parcel source) {
+            return new BodySensorsPermission(source);
         }
 
         @Override
-        public SensorsPermission[] newArray(int size) {
-            return new SensorsPermission[size];
+        public BodySensorsPermission[] newArray(int size) {
+            return new BodySensorsPermission[size];
         }
     };
 
-    public SensorsPermission() {
+    public BodySensorsPermission() {
         // default implementation ignored
     }
 
-    private SensorsPermission(Parcel in) {
+    private BodySensorsPermission(Parcel in) {
         super(in);
     }
 
