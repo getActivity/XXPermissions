@@ -24,6 +24,7 @@ import com.hjq.permissions.permission.dangerous.ReadMediaImagesPermission;
 import com.hjq.permissions.permission.dangerous.ReadMediaVideoPermission;
 import com.hjq.permissions.permission.dangerous.ReadMediaVisualUserSelectedPermission;
 import com.hjq.permissions.permission.dangerous.ReadPhoneNumbersPermission;
+import com.hjq.permissions.permission.dangerous.SensorsPermission;
 import com.hjq.permissions.permission.dangerous.WriteExternalStoragePermission;
 import com.hjq.permissions.permission.special.AccessNotificationPolicyPermission;
 import com.hjq.permissions.permission.special.BindAccessibilityServicePermission;
@@ -860,12 +861,11 @@ public final class PermissionLists {
      */
     @NonNull
     public static IPermission getBodySensorsPermission() {
-        String permissionName = PermissionNames.BODY_SENSORS;
-        IPermission permission = getCachePermission(permissionName);
+        IPermission permission = getCachePermission(SensorsPermission.PERMISSION_NAME);
         if (permission != null) {
             return permission;
         }
-        return putCachePermission(new StandardDangerousPermission(permissionName, PermissionGroups.SENSORS, PermissionVersion.ANDROID_6));
+        return putCachePermission(new SensorsPermission());
     }
 
     /**
