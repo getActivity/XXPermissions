@@ -76,7 +76,7 @@ public final class BindVpnServicePermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context, boolean skipRequest) {
         List<Intent> intentList = new ArrayList<>(2);
         intentList.add(VpnService.prepare(context));
         intentList.add(getAndroidSettingIntent());

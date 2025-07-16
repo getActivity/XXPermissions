@@ -139,7 +139,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context, boolean skipRequest) {
         List<Intent> intentList = new ArrayList<>();
         Intent intent;
 

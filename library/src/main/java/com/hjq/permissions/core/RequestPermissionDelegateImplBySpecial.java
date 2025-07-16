@@ -31,7 +31,7 @@ public final class RequestPermissionDelegateImplBySpecial extends RequestPermiss
     void startPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> permissions,
                                 @IntRange(from = 1, to = 65535) int requestCode) {
         StartActivityAgent.startActivityForResult(activity, getStartActivityDelegate(),
-                                PermissionApi.getBestPermissionSettingIntent(activity, permissions),
+                                PermissionApi.getBestPermissionSettingIntent(activity, permissions, false),
                                 requestCode, () -> mIgnoreActivityResultCount++);
     }
 

@@ -441,7 +441,7 @@ public final class XXPermissions {
             startPermissionActivity(activity, permissions);
             return;
         }
-        StartActivityAgent.startActivity(context, PermissionApi.getBestPermissionSettingIntent(context, permissions));
+        StartActivityAgent.startActivity(context, PermissionApi.getBestPermissionSettingIntent(context, permissions, true));
     }
 
     /* android.app.Activity */
@@ -464,7 +464,7 @@ public final class XXPermissions {
                                                @NonNull List<IPermission> permissions,
                                                @IntRange(from = 1, to = 65535) int requestCode) {
         StartActivityAgent.startActivityForResult(activity,
-            PermissionApi.getBestPermissionSettingIntent(activity, permissions), requestCode);
+            PermissionApi.getBestPermissionSettingIntent(activity, permissions, true), requestCode);
     }
 
     public static void startPermissionActivity(@NonNull Activity activity,
@@ -523,7 +523,7 @@ public final class XXPermissions {
             return;
         }
         StartActivityAgent.startActivityForResult(appFragment,
-            PermissionApi.getBestPermissionSettingIntent(activity, permissions), requestCode);
+            PermissionApi.getBestPermissionSettingIntent(activity, permissions, true), requestCode);
     }
 
     public static void startPermissionActivity(@NonNull Fragment appFragment,
@@ -586,7 +586,7 @@ public final class XXPermissions {
             return;
         }
         StartActivityAgent.startActivityForResult(supportFragment,
-            PermissionApi.getBestPermissionSettingIntent(activity, permissions), requestCode);
+            PermissionApi.getBestPermissionSettingIntent(activity, permissions, true), requestCode);
     }
 
     public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,

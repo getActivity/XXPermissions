@@ -90,7 +90,7 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
 
     @NonNull
     @Override
-    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context, boolean skipRequest) {
         List<Intent> intentList = new ArrayList<>(3);
         Intent intent;
 

@@ -76,9 +76,9 @@ public final class PostNotificationsPermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context, boolean skipRequest) {
         // Github issue 地址：https://github.com/getActivity/XXPermissions/issues/208
         // POST_NOTIFICATIONS 要跳转到权限设置页和 NOTIFICATION_SERVICE 权限是一样的
-        return PermissionLists.getNotificationServicePermission().getPermissionSettingIntents(context);
+        return PermissionLists.getNotificationServicePermission().getPermissionSettingIntents(context, skipRequest);
     }
 }

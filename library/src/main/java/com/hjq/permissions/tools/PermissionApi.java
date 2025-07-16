@@ -96,7 +96,7 @@ public final class PermissionApi {
      * 根据传入的权限自动选择最合适的权限设置页的意图
      */
     @NonNull
-    public static List<Intent> getBestPermissionSettingIntent(@NonNull Context context, @Nullable List<IPermission> permissions) {
+    public static List<Intent> getBestPermissionSettingIntent(@NonNull Context context, @Nullable List<IPermission> permissions, boolean skipRequest) {
         // 如果失败的权限里面不包含特殊权限
         if (permissions == null || permissions.isEmpty()) {
             return PermissionSettingPage.getCommonPermissionSettingIntent(context);
@@ -127,12 +127,12 @@ public final class PermissionApi {
         }
 
         if (realPermissions.size() == 1) {
-            return realPermissions.get(0).getPermissionSettingIntents(context);
+            return realPermissions.get(0).getPermissionSettingIntents(context, skipRequest);
         }
 
-        List<Intent> prePermissionIntentList = realPermissions.get(0).getPermissionSettingIntents(context);
+        List<Intent> prePermissionIntentList = realPermissions.get(0).getPermissionSettingIntents(context, skipRequest);
         for (int i = 1; i < realPermissions.size(); i++) {
-            List<Intent> currentPermissionIntentList = realPermissions.get(i).getPermissionSettingIntents(context);
+            List<Intent> currentPermissionIntentList = realPermissions.get(i).getPermissionSettingIntents(context, skipRequest);
             // 对比这两个 Intent 列表的内容是否一致
             if (!PermissionUtils.equalsIntentList(currentPermissionIntentList, prePermissionIntentList)) {
                 // 如果不一致，就结束循环

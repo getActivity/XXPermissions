@@ -110,7 +110,7 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
 
     @NonNull
     @Override
-    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context, boolean skipRequest) {
         List<Intent> intentList = new ArrayList<>(2);
         // 这里解释一下为什么只能跳转到无障碍设置页？而不是当前应用的无障碍设置页？
         // 这是因为系统没有开放这个途径给应用层去实现，所以实现不了，你可能会说，这不是瞎扯？

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcel;
-import android.os.Parcelable;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -28,7 +27,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
     /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
     public static final String PERMISSION_NAME = PermissionNames.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS;
 
-    public static final Parcelable.Creator<RequestIgnoreBatteryOptimizationsPermission> CREATOR = new Parcelable.Creator<RequestIgnoreBatteryOptimizationsPermission>() {
+    public static final Creator<RequestIgnoreBatteryOptimizationsPermission> CREATOR = new Creator<RequestIgnoreBatteryOptimizationsPermission>() {
 
         @Override
         public RequestIgnoreBatteryOptimizationsPermission createFromParcel(Parcel source) {
@@ -95,30 +94,58 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
     @SuppressLint("BatteryLife")
     @NonNull
     @Override
-    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context, boolean skipRequest) {
         List<Intent> intentList = new ArrayList<>(7);
-        Intent intent;
 
+        Intent requestIgnoreBatteryOptimizationsIntent = null;
         if (PermissionVersion.isAndroid6()) {
-            intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-            intent.setData(getPackageNameUri(context));
-            intentList.add(intent);
+            requestIgnoreBatteryOptimizationsIntent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+            requestIgnoreBatteryOptimizationsIntent.setData(getPackageNameUri(context));
         }
 
+        Intent advancedPowerUsageDetailIntent = null;
         if (PermissionVersion.isAndroid12()) {
             // 应用的电池使用情况详情页：Settings.ACTION_VIEW_ADVANCED_POWER_USAGE_DETAIL
             // 虽然 ACTION_VIEW_ADVANCED_POWER_USAGE_DETAIL 是 Android 10 的源码才出现的
             // 但是经过测试，在 Android 10 上面是无法跳转的，只有到了 Android 12 才能跳转
-            intent = new Intent("android.settings.VIEW_ADVANCED_POWER_USAGE_DETAIL");
-            intent.setData(getPackageNameUri(context));
-            intentList.add(intent);
+            advancedPowerUsageDetailIntent = new Intent("android.settings.VIEW_ADVANCED_POWER_USAGE_DETAIL");
+            advancedPowerUsageDetailIntent.setData(getPackageNameUri(context));
         }
 
+        Intent ignoreBatteryOptimizationSettingsIntent = null;
         if (PermissionVersion.isAndroid6()) {
-            intent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
-            intentList.add(intent);
+            ignoreBatteryOptimizationSettingsIntent = new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
         }
 
+        // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
+        // 然而在 Android 11 之后的，这个权限页面被小米改成了自己定制化的页面
+        if (skipRequest && !(PermissionVersion.isAndroid11() && (PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui()))) {
+            if (advancedPowerUsageDetailIntent != null) {
+                intentList.add(advancedPowerUsageDetailIntent);
+            }
+            if (ignoreBatteryOptimizationSettingsIntent != null) {
+                intentList.add(ignoreBatteryOptimizationSettingsIntent);
+            }
+            if (requestIgnoreBatteryOptimizationsIntent != null) {
+                intentList.add(requestIgnoreBatteryOptimizationsIntent);
+            }
+        } else {
+            // 实测在 miui 在上面可以跳转到小米定制的请求忽略电池优化选项权限设置页，但是有一个前提条件，不能是已授权的状态发起跳转，
+            // 否则就会导致存在这个 Intent，也可以跳转过去，但是这个权限设置页就会立马 finish，就会导致代码实际跳转了但是用户没有感觉到有跳转，
+            // 目前测试在澎湃 1.0.3.0 已经没有这个问题，大概率是在澎湃系统上面系统开发人员修改了这个页面，被迫触发了自测这个功能，所以给修复了
+            if (requestIgnoreBatteryOptimizationsIntent != null &&
+                !(PhoneRomUtils.isMiui() && PermissionVersion.isAndroid11() && isGrantedPermission(context, skipRequest))) {
+                intentList.add(requestIgnoreBatteryOptimizationsIntent);
+            }
+            if (advancedPowerUsageDetailIntent != null) {
+                intentList.add(advancedPowerUsageDetailIntent);
+            }
+            if (ignoreBatteryOptimizationSettingsIntent != null) {
+                intentList.add(ignoreBatteryOptimizationSettingsIntent);
+            }
+        }
+
+        Intent intent;
         // 经过测试，得出结论，miui 和澎湃支持在应用详情页设置该权限：
         // 1. miui 应用详情页 -> 省电策略
         // 2. Hyper 应用详情页 -> 电量消耗
@@ -176,8 +203,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
             return xiaomiPhoneDefaultWaitTime;
         }
 
-        if (PhoneRomUtils.isMiui() && PermissionVersion.isAndroid11() &&
-            PermissionVersion.getCurrentVersion() >= getFromAndroidVersion()) {
+        if (PhoneRomUtils.isMiui() && PermissionVersion.isAndroid11()) {
             // 经过测试，发现小米 Android 11 及以上的版本，申请这个权限需要 1000 毫秒才能判断到（测试了 800 毫秒还不行）
             // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
             // 然而在 Android 11 之后的，这个权限页面被小米改成了自己定制化的页面

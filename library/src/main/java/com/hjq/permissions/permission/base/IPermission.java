@@ -107,7 +107,7 @@ public interface IPermission extends Parcelable {
     /**
      * 判断当前权限是否授予
      *
-     * @param skipRequest       是否跳过申请直接判断的？
+     * @param skipRequest       是否跳过申请直接判断的权限状态
      */
     boolean isGrantedPermission(@NonNull Context context, boolean skipRequest);
 
@@ -118,15 +118,25 @@ public interface IPermission extends Parcelable {
 
     /**
      * 获取当前权限所有可用的设置页意图
+     */
+    @NonNull
+    default List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+        return getPermissionSettingIntents(context, true);
+    }
+
+    /**
+     * 获取当前权限所有可用的设置页意图
      *
      * 需要注意的是：无需在此方法中判断设置页的意图是否存在再添加，
      *             因为框架在跳转的时候框架会先过滤一遍不存在的意图，
      *             另外通过代码事先判断出来存在的意图也有可能会跳转失败，
      *             如果出现跳转失败会自动使用下一个意图进行跳转，
      *             总结：不存在的意图铁定会跳转失败，存在的意图不一定 100% 会跳转成功。
+     *
+     * @param skipRequest       是否跳过申请直接获取的 Intent
      */
     @NonNull
-    List<Intent> getPermissionSettingIntents(@NonNull Context context);
+    List<Intent> getPermissionSettingIntents(@NonNull Context context, boolean skipRequest);
 
     /**
      * 获取权限请求的间隔时间

@@ -113,7 +113,7 @@ public abstract class DangerousPermission extends BasePermission {
 
     @NonNull
     @Override
-    public List<Intent> getPermissionSettingIntents(@NonNull Context context) {
+    public List<Intent> getPermissionSettingIntents(@NonNull Context context, boolean skipRequest) {
         List<Intent> intentList = new ArrayList<>(5);
         Intent intent;
 
