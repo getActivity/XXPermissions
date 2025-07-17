@@ -63,7 +63,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
         if (PermissionVersion.isAndroid11() && (PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui())) {
             return PermissionPageType.OPAQUE_ACTIVITY;
         }
-        if (PermissionVersion.isAndroid6()) {
+        if (PermissionVersion.isAndroid6() && !isGrantedPermission(context)) {
             Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
             intent.setData(getPackageNameUri(context));
             if (PermissionUtils.areActivityIntent(context, intent)) {
@@ -101,6 +101,12 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
         if (PermissionVersion.isAndroid6()) {
             requestIgnoreBatteryOptimizationsIntent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
             requestIgnoreBatteryOptimizationsIntent.setData(getPackageNameUri(context));
+            // 经过测试，如果是已经授权的情况下，是不能再跳转到这个 Intent 的，否则就会导致存在这个 Intent，也可以跳转过去，
+            // 但是这个权限设置页就会立马 finish，就会导致代码实际跳转了但是用户没有感觉到有跳转权限设置页的问题
+            // 经过测试，发现有澎湃就算授权了也可以跳转过去，但 miui 就不行，Android 原生也不行，所以这里要排除一下澎湃
+            if (isGrantedPermission(context, skipRequest) && !PhoneRomUtils.isHyperOs()) {
+                requestIgnoreBatteryOptimizationsIntent = null;
+            }
         }
 
         Intent advancedPowerUsageDetailIntent = null;
@@ -130,11 +136,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
                 intentList.add(requestIgnoreBatteryOptimizationsIntent);
             }
         } else {
-            // 实测在 miui 在上面可以跳转到小米定制的请求忽略电池优化选项权限设置页，但是有一个前提条件，不能是已授权的状态发起跳转，
-            // 否则就会导致存在这个 Intent，也可以跳转过去，但是这个权限设置页就会立马 finish，就会导致代码实际跳转了但是用户没有感觉到有跳转，
-            // 目前测试在澎湃 1.0.3.0 已经没有这个问题，大概率是在澎湃系统上面系统开发人员修改了这个页面，被迫触发了自测这个功能，所以给修复了
-            if (requestIgnoreBatteryOptimizationsIntent != null &&
-                !(PhoneRomUtils.isMiui() && PermissionVersion.isAndroid11() && isGrantedPermission(context, skipRequest))) {
+            if (requestIgnoreBatteryOptimizationsIntent != null) {
                 intentList.add(requestIgnoreBatteryOptimizationsIntent);
             }
             if (advancedPowerUsageDetailIntent != null) {
