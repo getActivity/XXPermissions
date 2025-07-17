@@ -14,8 +14,8 @@ import com.hjq.permissions.permission.PermissionLists;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
-import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.util.List;
 
 /**
@@ -70,7 +70,7 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
 
     @Override
     protected boolean isGrantedPermissionByStandardVersion(@NonNull Context context, boolean skipRequest) {
-        if (PermissionVersion.isAndroid13() && PermissionVersion.getCurrentVersion() >= PermissionVersion.ANDROID_13) {
+        if (PermissionVersion.isAndroid13() && PermissionVersion.getTargetVersion(context) >= PermissionVersion.ANDROID_13) {
             return PermissionLists.getReadMediaImagesPermission().isGrantedPermission(context, skipRequest) &&
                 PermissionLists.getReadMediaVideoPermission().isGrantedPermission(context, skipRequest) &&
                 PermissionLists.getReadMediaAudioPermission().isGrantedPermission(context, skipRequest);
@@ -80,7 +80,7 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
 
     @Override
     protected boolean isDoNotAskAgainPermissionByStandardVersion(@NonNull Activity activity) {
-        if (PermissionVersion.isAndroid13() && PermissionVersion.getCurrentVersion() >= PermissionVersion.ANDROID_13) {
+        if (PermissionVersion.isAndroid13() && PermissionVersion.getTargetVersion(activity) >= PermissionVersion.ANDROID_13) {
             return PermissionLists.getReadMediaImagesPermission().isDoNotAskAgainPermission(activity) &&
                 PermissionLists.getReadMediaVideoPermission().isDoNotAskAgainPermission(activity) &&
                 PermissionLists.getReadMediaAudioPermission().isDoNotAskAgainPermission(activity);
