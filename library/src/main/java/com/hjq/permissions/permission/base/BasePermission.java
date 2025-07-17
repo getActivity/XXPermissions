@@ -28,6 +28,9 @@ import java.util.List;
  */
 public abstract class BasePermission implements IPermission {
 
+    /** Op 权限模式：未知模式 */
+    public static final int MODE_UNKNOWN = -1;
+
     protected BasePermission() {
         // default implementation ignored
     }
@@ -269,7 +272,7 @@ public abstract class BasePermission implements IPermission {
     @RequiresApi(PermissionVersion.ANDROID_4_4)
     public static boolean checkOpPermission(@NonNull Context context, @NonNull String opName, boolean defaultGranted) {
         int opMode = getOpPermissionMode(context, opName);
-        if (opMode == AppOpsManager.MODE_ERRORED) {
+        if (opMode == MODE_UNKNOWN) {
             return defaultGranted;
         }
         return opMode == AppOpsManager.MODE_ALLOWED;
@@ -285,7 +288,7 @@ public abstract class BasePermission implements IPermission {
     @RequiresApi(PermissionVersion.ANDROID_4_4)
     public static boolean checkOpPermission(Context context, String opFieldName, int opDefaultValue, boolean defaultGranted) {
         int opMode = getOpPermissionMode(context, opFieldName, opDefaultValue);
-        if (opMode == AppOpsManager.MODE_ERRORED) {
+        if (opMode == MODE_UNKNOWN) {
             return defaultGranted;
         }
         return opMode == AppOpsManager.MODE_ALLOWED;
@@ -307,7 +310,7 @@ public abstract class BasePermission implements IPermission {
         }
         // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
         if (appOpsManager == null) {
-            return AppOpsManager.MODE_ERRORED;
+            return MODE_UNKNOWN;
         }
         try {
             if (PermissionVersion.isAndroid10()) {
@@ -317,7 +320,7 @@ public abstract class BasePermission implements IPermission {
             }
         } catch (Throwable e) {
             e.printStackTrace();
-            return AppOpsManager.MODE_ERRORED;
+            return MODE_UNKNOWN;
         }
     }
 
@@ -338,7 +341,7 @@ public abstract class BasePermission implements IPermission {
         }
         // 虽然这个 SystemService 永远不为空，但是不怕一万，就怕万一，开展防御性编程
         if (appOpsManager == null) {
-            return AppOpsManager.MODE_ERRORED;
+            return MODE_UNKNOWN;
         }
         try {
             Class<?> appOpsClass = Class.forName(AppOpsManager.class.getName());
@@ -353,7 +356,7 @@ public abstract class BasePermission implements IPermission {
             return ((int) checkOpNoThrowMethod.invoke(appOpsManager, opValue, context.getApplicationInfo().uid, context.getPackageName()));
         } catch (Exception e) {
             e.printStackTrace();
-            return AppOpsManager.MODE_ERRORED;
+            return MODE_UNKNOWN;
         }
     }
 
