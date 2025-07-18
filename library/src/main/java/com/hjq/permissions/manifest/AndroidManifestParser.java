@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.node.ActivityManifestInfo;
 import com.hjq.permissions.manifest.node.ApplicationManifestInfo;
 import com.hjq.permissions.manifest.node.BroadcastReceiverManifestInfo;
+import com.hjq.permissions.manifest.node.IntentFilterManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.manifest.node.ServiceManifestInfo;
 import com.hjq.permissions.manifest.node.UsesSdkManifestInfo;
@@ -17,6 +18,7 @@ import com.hjq.permissions.tools.PermissionUtils;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import org.xmlpull.v1.XmlPullParserException;
 
 /**
@@ -47,6 +49,10 @@ public final class AndroidManifestParser {
     private static final String TAG_ACTIVITY_ALIAS = "activity-alias";
     private static final String TAG_SERVICE = "service";
     private static final String TAG_RECEIVER = "receiver";
+
+    private static final String TAG_INTENT_FILTER = "intent-filter";
+    private static final String TAG_ACTION = "action";
+    private static final String TAG_CATEGORY = "category";
 
     private static final String ATTR_PACKAGE = "package";
     private static final String ATTR_NAME = "name";
@@ -235,30 +241,103 @@ public final class AndroidManifestParser {
     }
 
     @NonNull
-    private static ActivityManifestInfo parseActivityFromXml(@NonNull XmlResourceParser parser) {
+    private static ActivityManifestInfo parseActivityFromXml(@NonNull XmlResourceParser parser) throws IOException, XmlPullParserException {
         ActivityManifestInfo activityManifestInfo = new ActivityManifestInfo();
         String activityClassName = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
         activityManifestInfo.name = activityClassName != null ? activityClassName : "";
         activityManifestInfo.supportsPictureInPicture = parser.getAttributeBooleanValue(
             ANDROID_NAMESPACE_URI, ATTR_SUPPORTS_PICTURE_IN_PICTURE, false);
+
+        while (true) {
+            int nextTagType = parser.next();
+            String tagName = parser.getName();
+            if (nextTagType == XmlResourceParser.END_TAG &&
+                (PermissionUtils.equalsString(TAG_ACTIVITY, tagName) ||
+                    PermissionUtils.equalsString(TAG_ACTIVITY_ALIAS, tagName))) {
+                break;
+            }
+
+            if (nextTagType == XmlResourceParser.START_TAG && PermissionUtils.equalsString(TAG_INTENT_FILTER, tagName)) {
+                if (activityManifestInfo.intentFilterManifestInfoList == null) {
+                    activityManifestInfo.intentFilterManifestInfoList = new ArrayList<>();
+                }
+                activityManifestInfo.intentFilterManifestInfoList.add(parseIntentFilterFromXml(parser));
+            }
+        }
+
         return activityManifestInfo;
     }
 
     @NonNull
-    private static ServiceManifestInfo parseServerFromXml(@NonNull XmlResourceParser parser) {
+    private static ServiceManifestInfo parseServerFromXml(@NonNull XmlResourceParser parser) throws IOException, XmlPullParserException {
         ServiceManifestInfo serviceManifestInfo = new ServiceManifestInfo();
         String serviceClassName = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
         serviceManifestInfo.name = serviceClassName != null ? serviceClassName : "";
         serviceManifestInfo.permission = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_PERMISSION);
+
+        while (true) {
+            int nextTagType = parser.next();
+            String tagName = parser.getName();
+            if (nextTagType == XmlResourceParser.END_TAG && PermissionUtils.equalsString(TAG_SERVICE, tagName)) {
+                break;
+            }
+
+            if (nextTagType == XmlResourceParser.START_TAG && PermissionUtils.equalsString(TAG_INTENT_FILTER, tagName)) {
+                if (serviceManifestInfo.intentFilterManifestInfoList == null) {
+                    serviceManifestInfo.intentFilterManifestInfoList = new ArrayList<>();
+                }
+                serviceManifestInfo.intentFilterManifestInfoList.add(parseIntentFilterFromXml(parser));
+            }
+        }
+
         return serviceManifestInfo;
     }
 
     @NonNull
-    private static BroadcastReceiverManifestInfo parseBroadcastReceiverFromXml(@NonNull XmlResourceParser parser) {
+    private static BroadcastReceiverManifestInfo parseBroadcastReceiverFromXml(@NonNull XmlResourceParser parser) throws IOException, XmlPullParserException {
         BroadcastReceiverManifestInfo broadcastReceiverManifestInfo = new BroadcastReceiverManifestInfo();
         String broadcastReceiverClassName = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
         broadcastReceiverManifestInfo.name = broadcastReceiverClassName != null ? broadcastReceiverClassName : "";
         broadcastReceiverManifestInfo.permission = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_PERMISSION);
+
+        while (true) {
+            int nextTagType = parser.next();
+            String tagName = parser.getName();
+            if (nextTagType == XmlResourceParser.END_TAG && PermissionUtils.equalsString(TAG_RECEIVER, tagName)) {
+                break;
+            }
+
+            if (nextTagType == XmlResourceParser.START_TAG && PermissionUtils.equalsString(TAG_INTENT_FILTER, tagName)) {
+                if (broadcastReceiverManifestInfo.intentFilterManifestInfoList == null) {
+                    broadcastReceiverManifestInfo.intentFilterManifestInfoList = new ArrayList<>();
+                }
+                broadcastReceiverManifestInfo.intentFilterManifestInfoList.add(parseIntentFilterFromXml(parser));
+            }
+        }
+
         return broadcastReceiverManifestInfo;
+    }
+
+    @NonNull
+    private static IntentFilterManifestInfo parseIntentFilterFromXml(@NonNull XmlResourceParser parser) throws IOException, XmlPullParserException {
+        IntentFilterManifestInfo intentFilterManifestInfo = new IntentFilterManifestInfo();
+        while (true) {
+            int nextTagType = parser.next();
+            String tagName = parser.getName();
+            if (nextTagType == XmlResourceParser.END_TAG && PermissionUtils.equalsString(TAG_INTENT_FILTER, tagName)) {
+                break;
+            }
+
+            if (nextTagType != XmlResourceParser.START_TAG) {
+                continue;
+            }
+
+            if (PermissionUtils.equalsString(TAG_ACTION, tagName)) {
+                intentFilterManifestInfo.actionList.add(parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME));
+            } else if (PermissionUtils.equalsString(TAG_CATEGORY, tagName)) {
+                intentFilterManifestInfo.categoryList.add(parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME));
+            }
+        }
+        return intentFilterManifestInfo;
     }
 }
