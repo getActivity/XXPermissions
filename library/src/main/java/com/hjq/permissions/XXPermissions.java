@@ -18,7 +18,6 @@ import com.hjq.permissions.tools.PermissionApi;
 import com.hjq.permissions.tools.PermissionChecker;
 import com.hjq.permissions.tools.PermissionSettingPage;
 import com.hjq.permissions.tools.PermissionUtils;
-import com.hjq.permissions.tools.PermissionVersion;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -283,46 +282,6 @@ public final class XXPermissions {
 
         // 申请没有授予过的权限
         permissionInterceptor.launchPermissionRequest(activity, permissions, fragmentFactory, permissionDescription, callback);
-    }
-
-    /**
-     * 撤销权限并杀死当前进程
-     *
-     * @return          返回 true 代表成功，返回 false 代表失败
-     */
-    public boolean revokeOnKill() {
-        final Context context = mContext;
-
-        if (context == null) {
-            return false;
-        }
-
-        final List<IPermission> permissions = mPermissions;
-
-        if (permissions.isEmpty()) {
-            return false;
-        }
-
-        if (!PermissionVersion.isAndroid13()) {
-            return false;
-        }
-
-        try {
-            if (permissions.size() == 1) {
-                // API 文档：https://developer.android.google.cn/reference/android/content/Context#revokeSelfPermissionOnKill(java.lang.String)
-                context.revokeSelfPermissionOnKill(permissions.get(0).getPermissionName());
-            } else {
-                // API 文档：https://developer.android.google.cn/reference/android/content/Context#revokeSelfPermissionsOnKill(java.util.Collection%3Cjava.lang.String%3E)
-                context.revokeSelfPermissionsOnKill(PermissionUtils.convertPermissionList(permissions));
-            }
-            return true;
-        } catch (IllegalArgumentException e) {
-            if (isCheckMode(context)) {
-                throw e;
-            }
-            e.printStackTrace();
-            return false;
-        }
     }
 
     /**
