@@ -154,6 +154,9 @@ public final class RequestPermissionLogicPresenter {
                             // 所有的前台权限中，只要有任一一个授权了，就算它是前台权限是申请通过的
                             grantedForegroundPermission = true;
                         }
+                    } else {
+                        // 如果某个权限是后台权限，但是没有返回它对应的前台权限，就默认它的前台权限是已经授予状态，然后申请后台权限
+                        grantedForegroundPermission = true;
                     }
 
                     if (!grantedForegroundPermission) {
