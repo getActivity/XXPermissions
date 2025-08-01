@@ -128,7 +128,7 @@ public abstract class DangerousPermission extends BasePermission {
             // 实测在 2.0.6.0 这个问题才被解决，但是澎湃 1.0 无论是什么版本都没有这个问题，所以基本锁定这个问题是在 2.0.0.0 ~ 2.0.5.0 的版本
             // 这是因为小米在刚开始做澎湃 2.0 的时候，小米特有的权限设置页还是一个半成品，跳转后里面没有危险权限的选项，只有一个《其他权限》的选项
             // 并且其他权限的选项点进去后还只有可伶的几个权限：桌面快捷方式、通知类短信、锁屏显示、后台弹出界面、显示悬浮窗
-            if (romVersionName != null && !romVersionName.matches("^2\\.0\\.[012345]\\.\\d+$")) {
+            if (romVersionName != null && !romVersionName.matches("^2\\.0\\.[0-5]\\.\\d+$")) {
                 intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
                 intentList.add(intent);
             }
