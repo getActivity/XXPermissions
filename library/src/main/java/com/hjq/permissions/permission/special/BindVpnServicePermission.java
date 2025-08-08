@@ -17,6 +17,7 @@ import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PermissionVersion;
+import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +62,10 @@ public final class BindVpnServicePermission extends SpecialPermission {
     @NonNull
     @Override
     public PermissionPageType getPermissionPageType(@NonNull Context context) {
+        // VPN 权限在 Android 15 及以上版本的 OPPO 系统上面是一个不透明的 Activity 页面
+        if (PhoneRomUtils.isColorOs() && PermissionVersion.isAndroid15()) {
+            return PermissionPageType.OPAQUE_ACTIVITY;
+        }
         return VpnService.prepare(context) != null ? PermissionPageType.TRANSPARENT_ACTIVITY : PermissionPageType.OPAQUE_ACTIVITY;
     }
 
