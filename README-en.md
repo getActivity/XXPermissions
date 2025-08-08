@@ -20,6 +20,8 @@
 
 ![](picture/en/demo_request_accessibility_service_permission.jpg) ![](picture/en/demo_request_device_admin_permission.jpg) ![](picture/en/demo_request_picture_in_picture_permission.jpg)
 
+![](picture/en/demo_request_health_data_permission_1.jpg) ![](picture/en/demo_request_health_data_permission_2.jpg)
+
 #### Integration steps
 
 * If your project Gradle configuration is in `7.0` below, needs to be in `build.gradle` file added
@@ -191,6 +193,9 @@ XXPermissions.equalsPermission(@NonNull String permissionName1, @NonNull String 
 // Determine whether a certain permission is included in the permission list
 XXPermissions.containsPermission(@NonNull List<IPermission> permissions, @NonNull IPermission permission);
 XXPermissions.containsPermission(@NonNull List<IPermission> permissions, @NonNull String permissionName);
+
+// Check if a permission is a health permission
+XXPermissions.isHealthPermission(@NonNull IPermission permission);
 
 // Check if a permission has been denied with the "Never ask again" option selected 
 // (Must be called within the permission request callback to be effective)
@@ -371,7 +376,7 @@ XXPermissions.setCheckMode(false);
 
 #### Framework highlights
 
-* Take the lead: the first permission request framework adapted to Android 14
+* Take the lead: the first permission request framework adapted to Android 16
 
 * Concise and easy to use: using the method of chain call, only one line of code is needed to use
 
@@ -421,7 +426,7 @@ XXPermissions.setCheckMode(false);
 
 * Studio boutique plugins: [StudioPlugins](https://github.com/getActivity/StudioPlugins)![](https://img.shields.io/github/stars/getActivity/StudioPlugins.svg)![](https://img.shields.io/github/forks/getActivity/StudioPlugins.svg)
 
-* Emoji collection: [emoji pa c shadow](https://github.com/getActivity/EmojiPackage)![](https://img.shields.io/github/stars/getActivity/EmojiPackage.svg)![](https://img.shields.io/github/forks/getActivity/EmojiPackage.svg)
+* Emoji collection: [EmojiPackage](https://github.com/getActivity/EmojiPackage)![](https://img.shields.io/github/stars/getActivity/EmojiPackage.svg)![](https://img.shields.io/github/forks/getActivity/EmojiPackage.svg)
 
 * China provinces json: [ProvinceJson](https://github.com/getActivity/ProvinceJson)![](https://img.shields.io/github/stars/getActivity/ProvinceJson.svg)![](https://img.shields.io/github/forks/getActivity/ProvinceJson.svg)
 

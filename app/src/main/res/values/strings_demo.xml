@@ -12,6 +12,7 @@
     <string name="demo_android_11_manage_storage_permission_hint">The current version is not Android 11 and above, it will automatically change to the old version of the request method</string>
     <string name="demo_android_13_post_notification_permission_hint">The current version is not Android 13 and above, it will automatically change to the old version of the request method</string>
     <string name="demo_android_14_full_screen_notifications_permission_hint">The current version is not Android 14 and above, it will automatically change to the old version of the request method</string>
+    <string name="demo_android_14_health_permission_hint">The current version is not Android 14 or above, and it will be replaced with sensor permissions to request</string>
 
     <string name="demo_notification_listener_toast">A new notification message was listened for with the title: %s and the content: %s</string>
 
@@ -24,7 +25,7 @@
     <string name="demo_request_single_dangerous_permission">Request single dangerous permission</string>
     <string name="demo_request_multiple_dangerous_permission">Request multiple dangerous permission</string>
     <string name="demo_request_location_permission">Request location permission</string>
-    <string name="demo_request_sensors_permission">Request sensors permission</string>
+    <string name="demo_request_health_data_permission">Request fitness and wellness data permission</string>
     <string name="demo_request_activity_recognition_permission">Request activity recognition permission</string>
     <string name="demo_request_bluetooth_permission">Request bluetooth permission</string>
     <string name="demo_request_wifi_permission">Request wifi permission</string>
@@ -49,5 +50,20 @@
     <string name="demo_request_get_installed_apps_permission">Request get installed application information permission</string>
     <string name="demo_request_multiple_type_permission">Request dangerous permission and special permission</string>
     <string name="demo_start_app_details_activity">Start app details activity</string>
+
+    <string name="privacy_policy_title">Health Data Privacy Policy</string>
+
+    <string name="privacy_policy_content">
+        1. How We Collect and Use Your Health Data\n\n
+        Based on the permissions you granted in 「Health Data Sharing」 (e.g., step count, sleep, heart rate), application is only used to provide health management services. We will not use the data for unauthorized commercial purposes.\n\n
+        2. Data Storage and Protection\n\n
+        Your health data (e.g., medical treatment records, vaccination history) will be encrypted and stored with strict access restrictions to ensure data security.\n\n
+        3. Permission Changes and Withdrawal\n\n
+        You can adjust or disable health data access permissions at any time in 「App Permission Settings」, and we will immediately stop collecting and using the corresponding data.\n\n
+        4. Third-Party Cooperation Instructions\n\n
+        If involving third-party services (e.g., data analysis), we will ensure they follow the same privacy standards and will not disclose your sensitive health information (e.g., personal medical history, pregnancy status, etc.).\n\n
+        5. Minor Privacy Protection\n\n
+        If you are a minor, you need to authorize health data (e.g., height, weight related to growth and development) with the guardian’s consent. Guardians can assist in managing permissions.
+    </string>
 
 </resources>

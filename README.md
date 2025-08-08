@@ -26,7 +26,7 @@
 
 ![](picture/zh/demo_request_picture_in_picture_permission.jpg) ![](picture/zh/demo_request_accessibility_service_permission.jpg) ![](picture/zh/demo_request_device_admin_permission.jpg) 
 
-![](picture/zh/demo_request_get_installed_apps_permission.jpg)
+![](picture/zh/demo_request_get_installed_apps_permission.jpg) ![](picture/zh/demo_request_health_data_permission_1.jpg) ![](picture/zh/demo_request_health_data_permission_2.jpg)
 
 #### 集成步骤
 
@@ -199,6 +199,9 @@ XXPermissions.equalsPermission(@NonNull String permissionName1, @NonNull String 
 // 判断权限列表中是否包含某个权限
 XXPermissions.containsPermission(@NonNull List<IPermission> permissions, @NonNull IPermission permission);
 XXPermissions.containsPermission(@NonNull List<IPermission> permissions, @NonNull String permissionName);
+
+// 判断某个权限是否为健康权限
+XXPermissions.isHealthPermission(@NonNull IPermission permission);
 
 // 判断一个或多个权限是否被勾选了《不再询问》的选项（一定要在权限申请的回调方法中调用才有效果）
 XXPermissions.isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull IPermission permission);
@@ -408,7 +411,7 @@ XXPermissions.setCheckMode(false);
 
 #### 框架亮点
 
-* 一马当先：首款适配 Android 14 的权限请求框架
+* 一马当先：首款适配 Android 16 的权限请求框架
 
 * 简洁易用：采用链式调用的方式，使用只需一句代码
 

@@ -1,9 +1,10 @@
-package com.hjq.permissions.permission.common;
+package com.hjq.permissions.permission.dangerous;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.hjq.permissions.permission.common.DangerousPermission;
 
 /**
  *    author : Android 轮子哥

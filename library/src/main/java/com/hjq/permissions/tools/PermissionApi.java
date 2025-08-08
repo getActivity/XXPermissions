@@ -19,6 +19,13 @@ import java.util.List;
 public final class PermissionApi {
 
     /**
+     * 判断某个权限是否为健康权限
+     */
+    public static boolean isHealthPermission(@NonNull IPermission permission) {
+        return permission.getPermissionName().startsWith("android.permission.health.");
+    }
+
+    /**
      * 判断某个权限集合是否包含特殊权限
      */
     public static boolean containsSpecialPermission(@Nullable List<IPermission> permissions) {

@@ -139,6 +139,13 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
     @Override
     protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
         super.checkSelfByRequestPermissions(activity, requestPermissions);
+        // 当项目 targetSdkVersion >= 36 时，不能申请 BODY_SENSORS_BACKGROUND 权限，应该请求在后台读取健康数据权限：READ_HEALTH_DATA_IN_BACKGROUND
+        if (PermissionVersion.getTargetVersion(activity) >= PermissionVersion.ANDROID_16) {
+            throw new IllegalArgumentException("When the project targetSdkVersion is greater than or equal to " + PermissionVersion.ANDROID_16 +
+                                                ", the \"" + getPermissionName() + "\" permission cannot be requested, but the \"" +
+                                                PermissionNames.READ_HEALTH_DATA_IN_BACKGROUND + "\" permission should be requested instead");
+        }
+
         // 必须要申请前台传感器权限才能申请后台传感器权限
         if (!PermissionUtils.containsPermission(requestPermissions, PermissionNames.BODY_SENSORS)) {
             throw new IllegalArgumentException("Applying for background sensor permissions must contain \"" + PermissionNames.BODY_SENSORS + "\"");

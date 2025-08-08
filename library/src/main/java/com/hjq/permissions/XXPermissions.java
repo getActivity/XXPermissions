@@ -361,6 +361,13 @@ public final class XXPermissions {
     }
 
     /**
+     * 判断某个权限是否为健康权限
+     */
+    public static boolean isHealthPermission(@NonNull IPermission permission) {
+        return PermissionApi.isHealthPermission(permission);
+    }
+
+    /**
      * 判断一个或多个权限是否被勾选了不再询问的选项
      *
      * 注意不能在请求权限之前调用，一定要在 {@link OnPermissionCallback#onDenied(List, boolean)} 方法中调用

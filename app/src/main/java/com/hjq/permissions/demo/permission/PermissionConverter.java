@@ -73,12 +73,34 @@ public final class PermissionConverter {
         PERMISSION_NAME_MAP.put(PermissionNames.ACCESS_BACKGROUND_LOCATION, R.string.common_permission_location_background);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_location_background, R.string.common_permission_location_background_description);
 
-        PERMISSION_NAME_MAP.put(PermissionGroups.SENSORS, R.string.common_permission_body_sensors);
-        PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_body_sensors, R.string.common_permission_body_sensors_description);
+        int sensorsPermissionNameStringId;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            sensorsPermissionNameStringId = R.string.common_permission_health_data;
+        } else {
+            sensorsPermissionNameStringId = R.string.common_permission_body_sensors;
+        }
+        PERMISSION_NAME_MAP.put(PermissionGroups.SENSORS, sensorsPermissionNameStringId);
+        PERMISSION_DESCRIPTION_MAP.put(sensorsPermissionNameStringId, R.string.common_permission_body_sensors_description);
 
         // 后台传感器权限虽然属于传感器权限组，但是只要是属于后台权限，都有独属于自己的一套规则
-        PERMISSION_NAME_MAP.put(PermissionNames.BODY_SENSORS_BACKGROUND, R.string.common_permission_body_sensors_background);
-        PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_body_sensors_background, R.string.common_permission_body_sensors_background_description);
+        int bodySensorsBackgroundPermissionNameStringId;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            bodySensorsBackgroundPermissionNameStringId = R.string.common_permission_health_data_background;
+        } else {
+            bodySensorsBackgroundPermissionNameStringId = R.string.common_permission_body_sensors_background;
+        }
+        PERMISSION_NAME_MAP.put(PermissionNames.BODY_SENSORS_BACKGROUND, bodySensorsBackgroundPermissionNameStringId);
+        PERMISSION_DESCRIPTION_MAP.put(bodySensorsBackgroundPermissionNameStringId, R.string.common_permission_body_sensors_background_description);
+
+        // Android 16 这个版本开始，传感器权限被进行了精细化拆分，拆分成了无数个健康权限
+        PERMISSION_NAME_MAP.put(PermissionGroups.HEALTH, R.string.common_permission_health_data);
+        PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_health_data, R.string.common_permission_health_data_description);
+
+        PERMISSION_NAME_MAP.put(PermissionNames.READ_HEALTH_DATA_IN_BACKGROUND, R.string.common_permission_health_data_background);
+        PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_health_data_background, R.string.common_permission_health_data_background_description);
+
+        PERMISSION_NAME_MAP.put(PermissionNames.READ_HEALTH_DATA_HISTORY, R.string.common_permission_health_data_past);
+        PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_health_data_past, R.string.common_permission_health_data_past_description);
 
         PERMISSION_NAME_MAP.put(PermissionGroups.CALL_LOG, R.string.common_permission_call_logs);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_call_logs, R.string.common_permission_call_logs_description);
@@ -283,12 +305,13 @@ public final class PermissionConverter {
     public static Integer getPermissionNickNameStringId(@NonNull Context context, @NonNull IPermission permission) {
         String permissionName = permission.getPermissionName();
         String permissionGroup = permission.getPermissionGroup();
-        Integer permissionNameStringId;
-        if (!permission.isBackgroundPermission(context) && !TextUtils.isEmpty(permissionGroup)) {
-            // 这个权限必须有组别，并且不是后台权限，才能用组别来获取
-            permissionNameStringId = PERMISSION_NAME_MAP.get(permissionGroup);
-        } else {
-            permissionNameStringId = PERMISSION_NAME_MAP.get(permissionName);
+        Integer permissionNameStringId = PERMISSION_NAME_MAP.get(permissionName);
+        if (permissionNameStringId != null && permissionNameStringId > 0) {
+            return permissionNameStringId;
+        }
+        Integer permissionGroupStringId = PERMISSION_NAME_MAP.get(permissionGroup);
+        if (permissionGroupStringId != null && permissionGroupStringId > 0) {
+            return permissionGroupStringId;
         }
         return permissionNameStringId;
     }

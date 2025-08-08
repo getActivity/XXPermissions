@@ -9,24 +9,19 @@
     <string name="common_permission_fail_assign_hint_1">申请权限失败，请手动授予%s</string>
     <string name="common_permission_fail_assign_hint_2">申请权限失败，请正确授予%s</string>
 
-    <string name="common_permission_location_fail_hint_1">申请后台定位权限失败，请在定位权限中选择 \“%s\” 选项</string>
-    <string name="common_permission_location_fail_hint_2">申请后台定位权限失败，请选择 \“%s\” 选项</string>
-    <string name="common_permission_location_fail_hint_3">申请精确的定位权限失败，请在定位权限中开启 \“确切位置\” 选项</string>
-    <string name="common_permission_location_fail_hint_4">申请精确的定位权限失败，请选择 \“确切位置\” 选项</string>
-    <string name="common_permission_location_fail_hint_5">申请定位权限失败，请在定位权限中选择 \“%s\” 并开启 \“确切位置\” 选项</string>
-    <string name="common_permission_location_fail_hint_6">申请定位权限失败，请在定位权限中选择 \“%s\” 选项</string>
+    <string name="common_permission_fail_hint_1">申请%s失败，请选择 \“%s\” 选项</string>
+    <string name="common_permission_fail_hint_2">申请%s失败，请选择 \“%s\” 并开启 \“%s\” 选项</string>
+    <string name="common_permission_fail_hint_3">申请%s失败，请开启 \“%s\” 选项</string>
 
-    <string name="common_permission_sensors_fail_hint_1">申请后台身体传感器权限失败，请在身体传感器权限中选择 \“%s\” 选项</string>
-    <string name="common_permission_sensors_fail_hint_2">申请后台身体传感器权限失败，请选择 \“%s\” 选项</string>
-    <string name="common_permission_sensors_fail_hint_3">申请身体传感器权限失败，请在身体传感器权限中选择 \“%s\” 选项</string>
-
-    <string name="common_permission_background_default_option_label_api29">一律允许</string>
-    <string name="common_permission_background_default_option_label_api30">始终允许</string>
+    <string name="common_permission_allow_all_option">全部允许</string>
+    <string name="common_permission_allow_all_the_time_option_api29">一律允许</string>
+    <string name="common_permission_allow_all_the_time_option_api30">始终允许</string>
 
     <string name="common_permission_go_to_authorization">前往授权</string>
 
     <string name="common_permission_comma">、</string>
     <string name="common_permission_colon">：</string>
+    <string name="common_permission_and">、</string>
 
     <string name="common_permission_unknown">权限</string>
     <string name="common_permission_unknown_description">需要先申请该权限，才能继续使用该业务</string>
@@ -42,6 +37,9 @@
 
     <string name="common_permission_location">定位权限</string>
     <string name="common_permission_location_description">用于获取您的实时位置，例如显示附近的服务、导航路线规划或基于位置推荐内容。</string>
+
+    <string name="common_permission_location_fine">精确定位权限</string>
+    <string name="common_permission_location_fine_option">确切位置</string>
 
     <string name="common_permission_location_background">后台定位权限</string>
     <string name="common_permission_location_background_description">用于在后台持续获取位置信息，例如实时轨迹记录、后台导航或紧急情况下的位置共享。</string>
@@ -63,6 +61,17 @@
 
     <string name="common_permission_body_sensors_background">后台身体传感器权限</string>
     <string name="common_permission_body_sensors_background_description">用于在后台持续获取生理数据，例如睡眠监测、全天候健康追踪或紧急健康状况预警。</string>
+
+    <string name="common_permission_health_data">健康数据共享权限</string>
+    <string name="common_permission_health_data_description">@string/common_permission_body_sensors_description</string>
+
+    <string name="common_permission_health_data_background">后台健康数据共享权限</string>
+    <string name="common_permission_health_data_background_option">在后台访问健身与健康数据</string>
+    <string name="common_permission_health_data_background_description">@string/common_permission_body_sensors_background_description</string>
+
+    <string name="common_permission_health_data_past">过往的健身与健康数据权限</string>
+    <string name="common_permission_health_data_past_option">访问过往的健身与健康数据</string>
+    <string name="common_permission_health_data_past_description">访问过往的健身与健康数据以判断当前身体状态。</string>
 
     <string name="common_permission_activity_recognition_api29">健身运动权限</string>
     <string name="common_permission_activity_recognition_api30">身体活动权限</string>
@@ -132,6 +141,6 @@
     <string name="common_permission_accessibility_service_description">用于帮助残障用户使用手机，例如语音播报、手势辅助或自动点击。（请在已下载的应用或者服务列表中找到并开启）</string>
 
     <string name="common_permission_vpn">\tVPN\t权限</string>
-    <string name="common_permission_vpn_description">用于创建和管理VPN连接，例如访问内网资源、网络代理或加密网络传输。</string>
+    <string name="common_permission_vpn_description">用于创建和管理 VPN 连接，例如访问内网资源、网络代理或加密网络传输。</string>
 
 </resources>

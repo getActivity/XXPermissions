@@ -9,23 +9,18 @@
     <string name="common_permission_fail_assign_hint_1">Failed to request permission, please grant \"%s\" manually</string>
     <string name="common_permission_fail_assign_hint_2">Failed to request permission, please agree to grant %s</string>
 
-    <string name="common_permission_location_fail_hint_1">Failed to request the background location permission, please select \"%s\" option in the location permission</string>
-    <string name="common_permission_location_fail_hint_2">Failed to request background location permission,please select \"%s\" option</string>
-    <string name="common_permission_location_fail_hint_3">Failed to request the precise location permission. please enable the \"precise location\" option in the location permission</string>
-    <string name="common_permission_location_fail_hint_4">Failed to request the precise location permission. please select the \"precise location\" option</string>
-    <string name="common_permission_location_fail_hint_5">Failed to request the location permission. please select \"%s\" in the location permission and enable the \"precise location\" option</string>
-    <string name="common_permission_location_fail_hint_6">Failed to request the location permission, please select \"%s\" option in the location permission</string>
+    <string name="common_permission_fail_hint_1">Failed to request the %s，please select \"%s\" option</string>
+    <string name="common_permission_fail_hint_2">Failed to request the %s，please select \"%s\" option and enable the \"%s\" option</string>
+    <string name="common_permission_fail_hint_3">Failed to request the %s，please enable the \"%s\" option</string>
 
-    <string name="common_permission_sensors_fail_hint_1">Failed to request the background body sensor permission, please select \"%s\" option in the body sensor permission</string>
-    <string name="common_permission_sensors_fail_hint_2">Failed to request background body sensor permission, please select \"%s\" option</string>
-    <string name="common_permission_sensors_fail_hint_3">Failed to request the body sensor permission, please select \"%s\" option in the body sensor permission</string>
-
-    <string name="common_permission_background_default_option_label_api29">allow all the time</string>
-    <string name="common_permission_background_default_option_label_api30">@string/common_permission_background_default_option_label_api29</string>
+    <string name="common_permission_allow_all_option">Allow all</string>
+    <string name="common_permission_allow_all_the_time_option_api29">Allow all the time</string>
+    <string name="common_permission_allow_all_the_time_option_api30">@string/common_permission_allow_all_the_time_option_api29</string>
     <string name="common_permission_go_to_authorization">Go to authorization</string>
 
     <string name="common_permission_comma">, </string>
     <string name="common_permission_colon">: </string>
+    <string name="common_permission_and"> and </string>
 
     <string name="common_permission_unknown">permission</string>
     <string name="common_permission_unknown_description">you need to apply for this permission first before you can continue to use this service</string>
@@ -41,6 +36,9 @@
 
     <string name="common_permission_location">location permission</string>
     <string name="common_permission_location_description">allows accessing real-time location to display nearby services, plan navigation routes, or recommend location-based content.</string>
+
+    <string name="common_permission_location_fine">precise location permission</string>
+    <string name="common_permission_location_fine_option">precise location</string>
 
     <string name="common_permission_location_background">background location permission</string>
     <string name="common_permission_location_background_description">allows continuous location access in the background for real-time track recording, background navigation, or emergency location sharing.</string>
@@ -62,6 +60,17 @@
 
     <string name="common_permission_body_sensors_background">background body sensors permission</string>
     <string name="common_permission_body_sensors_background_description">allows continuous physiological data access in the background for sleep monitoring, 24/7 health tracking, or emergency health alerts.</string>
+
+    <string name="common_permission_health_data">fitness and wellness data permission</string>
+    <string name="common_permission_health_data_description">@string/common_permission_body_sensors_description</string>
+
+    <string name="common_permission_health_data_background">background fitness and wellness data permission</string>
+    <string name="common_permission_health_data_background_option">Access fitness and wellness data in the background</string>
+    <string name="common_permission_health_data_background_description">@string/common_permission_body_sensors_background_description</string>
+
+    <string name="common_permission_health_data_past">past fitness and wellness data permission</string>
+    <string name="common_permission_health_data_past_option">Access past fitness and wellness data</string>
+    <string name="common_permission_health_data_past_description">access past fitness and health data to determine your current physical condition.</string>
 
     <string name="common_permission_activity_recognition_api29">physical activity permission</string>
     <string name="common_permission_activity_recognition_api30">physical activity permission</string>

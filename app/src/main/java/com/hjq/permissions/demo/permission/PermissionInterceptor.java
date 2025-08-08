@@ -122,6 +122,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
         int deniedPermissionCount = deniedPermissions.size();
         int deniedLocationPermissionCount = 0;
         int deniedSensorsPermissionCount = 0;
+        int deniedHealthPermissionCount = 0;
         for (IPermission deniedPermission : deniedPermissions) {
             String permissionGroup = deniedPermission.getPermissionGroup();
             if (TextUtils.isEmpty(permissionGroup)) {
@@ -131,52 +132,112 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
                 deniedLocationPermissionCount++;
             } else if (PermissionGroups.SENSORS.equals(permissionGroup)) {
                 deniedSensorsPermissionCount++;
+            } else if (XXPermissions.isHealthPermission(deniedPermission)) {
+                deniedHealthPermissionCount++;
             }
         }
 
-        if (deniedLocationPermissionCount == deniedPermissionCount) {
+        if (deniedLocationPermissionCount == deniedPermissionCount && VERSION.SDK_INT >= VERSION_CODES.Q) {
             if (deniedLocationPermissionCount == 1) {
-                if (VERSION.SDK_INT >= VERSION_CODES.Q &&
-                    XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.ACCESS_BACKGROUND_LOCATION)) {
-                    return activity.getString(doNotAskAgain ? R.string.common_permission_location_fail_hint_1 :
-                                                                R.string.common_permission_location_fail_hint_2,
-                                                                getBackgroundPermissionOptionLabel(activity));
+                if (XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.ACCESS_BACKGROUND_LOCATION)) {
+                    return activity.getString(R.string.common_permission_fail_hint_1,
+                                            activity.getString(R.string.common_permission_location_background),
+                                            getBackgroundPermissionOptionLabel(activity));
                 } else if (VERSION.SDK_INT >= VERSION_CODES.S &&
                     XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.ACCESS_FINE_LOCATION)) {
                     // 如果请求的定位权限中，既包含了精确定位权限，又包含了模糊定位权限或者后台定位权限，
                     // 但是用户只同意了模糊定位权限的情况或者后台定位权限，并没有同意精确定位权限的情况，就提示用户开启确切位置选项
                     // 需要注意的是 Android 12 才将模糊定位权限和精确定位权限的授权选项进行分拆，之前的版本没有区分得那么仔细
-                    return activity.getString(doNotAskAgain ? R.string.common_permission_location_fail_hint_3 :
-                                                                R.string.common_permission_location_fail_hint_4);
+                    return activity.getString(R.string.common_permission_fail_hint_3,
+                                            activity.getString(R.string.common_permission_location_fine),
+                                            activity.getString(R.string.common_permission_location_fine_option));
                 }
             } else {
-                if (VERSION.SDK_INT >= VERSION_CODES.Q && doNotAskAgain &&
-                    XXPermissions.containsPermission(deniedPermissions, PermissionNames.ACCESS_BACKGROUND_LOCATION)) {
+                if (XXPermissions.containsPermission(deniedPermissions, PermissionNames.ACCESS_BACKGROUND_LOCATION)) {
                     if (VERSION.SDK_INT >= VERSION_CODES.S &&
                         XXPermissions.containsPermission(deniedPermissions, PermissionNames.ACCESS_FINE_LOCATION)) {
-                        return activity.getString(R.string.common_permission_location_fail_hint_5,
-                            getBackgroundPermissionOptionLabel(activity));
+                        return activity.getString(R.string.common_permission_fail_hint_2,
+                                                activity.getString(R.string.common_permission_location),
+                                                getBackgroundPermissionOptionLabel(activity),
+                                                activity.getString(R.string.common_permission_location_fine_option));
                     } else {
-                        return activity.getString(R.string.common_permission_location_fail_hint_6,
-                            getBackgroundPermissionOptionLabel(activity));
+                        return activity.getString(R.string.common_permission_fail_hint_1,
+                                                activity.getString(R.string.common_permission_location),
+                                                getBackgroundPermissionOptionLabel(activity));
                     }
                 }
             }
-
-        } else if (deniedSensorsPermissionCount == deniedPermissionCount) {
+        } else if (deniedSensorsPermissionCount == deniedPermissionCount && VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
             if (deniedPermissionCount == 1) {
-                if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU &&
-                    XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.BODY_SENSORS_BACKGROUND)) {
-                    return activity.getString(doNotAskAgain ? R.string.common_permission_sensors_fail_hint_1 :
-                                                             R.string.common_permission_sensors_fail_hint_2,
-                                                            getBackgroundPermissionOptionLabel(activity));
+                if (XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.BODY_SENSORS_BACKGROUND)) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+                        return activity.getString(R.string.common_permission_fail_hint_1,
+                                                activity.getString(R.string.common_permission_health_data_background),
+                                                activity.getString(R.string.common_permission_health_data_background_option));
+                    } else {
+                        return activity.getString(R.string.common_permission_fail_hint_1,
+                                                activity.getString(R.string.common_permission_body_sensors_background),
+                                                getBackgroundPermissionOptionLabel(activity));
+                    }
                 }
             } else {
-                if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU && doNotAskAgain) {
-                    return activity.getString(R.string.common_permission_sensors_fail_hint_3,
-                        getBackgroundPermissionOptionLabel(activity));
+                if (doNotAskAgain) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+                        return activity.getString(R.string.common_permission_fail_hint_1,
+                                                activity.getString(R.string.common_permission_health_data),
+                                                activity.getString(R.string.common_permission_allow_all_option));
+                    } else {
+                        return activity.getString(R.string.common_permission_fail_hint_1,
+                                                activity.getString(R.string.common_permission_body_sensors),
+                                                getBackgroundPermissionOptionLabel(activity));
+                    }
                 }
             }
+        } else if (deniedHealthPermissionCount == deniedPermissionCount && VERSION.SDK_INT >= VERSION_CODES.BAKLAVA) {
+            
+            switch (deniedPermissionCount) {
+                case 1:
+                    if (XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.READ_HEALTH_DATA_IN_BACKGROUND)) {
+                        return activity.getString(R.string.common_permission_fail_hint_3,
+                                                activity.getString(R.string.common_permission_health_data_background),
+                                                activity.getString(R.string.common_permission_health_data_background_option));
+                    } else if (XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.READ_HEALTH_DATA_HISTORY)) {
+                        return activity.getString(R.string.common_permission_fail_hint_3,
+                                                activity.getString(R.string.common_permission_health_data_past),
+                                                activity.getString(R.string.common_permission_health_data_past_option));
+                    }
+                    break;
+                case 2:
+                    if (XXPermissions.containsPermission(deniedPermissions, PermissionNames.READ_HEALTH_DATA_HISTORY) &&
+                        XXPermissions.containsPermission(deniedPermissions, PermissionNames.READ_HEALTH_DATA_IN_BACKGROUND)) {
+                        return activity.getString(R.string.common_permission_fail_hint_3,
+                            activity.getString(R.string.common_permission_health_data_past) + activity.getString(R.string.common_permission_and) + activity.getString(R.string.common_permission_health_data_background),
+                            activity.getString(R.string.common_permission_health_data_past_option) + activity.getString(R.string.common_permission_and) + activity.getString(R.string.common_permission_health_data_background_option));
+                    } else if (XXPermissions.containsPermission(deniedPermissions, PermissionNames.READ_HEALTH_DATA_HISTORY)) {
+                        return activity.getString(R.string.common_permission_fail_hint_2,
+                                        activity.getString(R.string.common_permission_health_data) + activity.getString(R.string.common_permission_and) + activity.getString(R.string.common_permission_health_data_past),
+                                                    activity.getString(R.string.common_permission_allow_all_option),
+                                                    activity.getString(R.string.common_permission_health_data_background_option));
+                    } else if (XXPermissions.containsPermission(deniedPermissions, PermissionNames.READ_HEALTH_DATA_IN_BACKGROUND)) {
+                        return activity.getString(R.string.common_permission_fail_hint_2,
+                                                activity.getString(R.string.common_permission_health_data) + activity.getString(R.string.common_permission_and) + activity.getString(R.string.common_permission_health_data_background),
+                                                activity.getString(R.string.common_permission_allow_all_option),
+                                                activity.getString(R.string.common_permission_health_data_background_option));
+                    }
+                    break;
+                default:
+                    if (XXPermissions.containsPermission(deniedPermissions, PermissionNames.READ_HEALTH_DATA_HISTORY) &&
+                        XXPermissions.containsPermission(deniedPermissions, PermissionNames.READ_HEALTH_DATA_IN_BACKGROUND)) {
+                        return activity.getString(R.string.common_permission_fail_hint_2,
+                            activity.getString(R.string.common_permission_health_data) + activity.getString(R.string.common_permission_and) + activity.getString(R.string.common_permission_health_data_past) + activity.getString(R.string.common_permission_and) + activity.getString(R.string.common_permission_health_data_background),
+                            activity.getString(R.string.common_permission_allow_all_option),
+                            activity.getString(R.string.common_permission_health_data_past_option) + activity.getString(R.string.common_permission_and) + activity.getString(R.string.common_permission_health_data_background_option));
+                    }
+                    break;
+            }
+            return activity.getString(R.string.common_permission_fail_hint_1,
+                                    activity.getString(R.string.common_permission_health_data),
+                                    activity.getString(R.string.common_permission_allow_all_option));
         }
 
         return activity.getString(doNotAskAgain ? R.string.common_permission_fail_assign_hint_1 :
@@ -198,9 +259,9 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return context.getString(R.string.common_permission_background_default_option_label_api30);
+            return context.getString(R.string.common_permission_allow_all_the_time_option_api30);
         } else {
-            return context.getString(R.string.common_permission_background_default_option_label_api29);
+            return context.getString(R.string.common_permission_allow_all_the_time_option_api29);
         }
     }
 }

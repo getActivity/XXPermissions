@@ -3,6 +3,7 @@ package com.hjq.permissions.demo;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -12,12 +13,21 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.health.connect.HealthConnectException;
+import android.health.connect.HealthConnectManager;
+import android.health.connect.ReadRecordsRequest;
+import android.health.connect.ReadRecordsRequestUsingFilters;
+import android.health.connect.ReadRecordsResponse;
+import android.health.connect.TimeInstantRangeFilter;
+import android.health.connect.TimeRangeFilter;
+import android.health.connect.datatypes.HeartRateRecord;
 import android.location.Address;
 import android.location.Geocoder;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.OutcomeReceiver;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -42,9 +52,12 @@ import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.toast.Toaster;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Executors;
 
 /**
  *    author : Android 轮子哥
@@ -88,12 +101,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_group_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_multiple_type_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_location_permission).setOnClickListener(this);
-        findViewById(R.id.btn_main_request_sensors_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_activity_recognition_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_bluetooth_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_wifi_devices_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_read_media_location_information_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_read_media_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_health_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_manage_storage_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_install_packages_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_system_alert_window_permission).setOnClickListener(this);
@@ -176,24 +189,83 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         }
                     });
 
-        } else if (viewId == R.id.btn_main_request_sensors_permission) {
+        } else if (viewId == R.id.btn_main_request_health_permission) {
 
-            XXPermissions.with(this)
-                    .permission(PermissionLists.getBodySensorsPermission())
-                    .permission(PermissionLists.getBodySensorsBackgroundPermission())
-                    .interceptor(new PermissionInterceptor())
-                    .description(new PermissionDescription())
-                    .request(new OnPermissionCallback() {
+            long delayMillis = 0;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                delayMillis = 2000;
+                toast(getString(R.string.demo_android_14_health_permission_hint));
+            }
 
-                        @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
-                                return;
-                            }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
+            view.postDelayed(new Runnable() {
+
+                @Override
+                public void run() {
+                    XXPermissions.with(MainActivity.this)
+                        .permission(PermissionLists.getReadSleepPermission())
+                        .permission(PermissionLists.getReadActiveCaloriesBurnedPermission())
+                        .permission(PermissionLists.getReadExercisePermission())
+                        .permission(PermissionLists.getReadHeartRatePermission())
+                        .permission(PermissionLists.getWriteHeartRatePermission())
+                        .permission(PermissionLists.getReadHealthDataHistoryPermission())
+                        .permission(PermissionLists.getReadHealthDataInBackgroundPermission())
+                        .interceptor(new PermissionInterceptor())
+                        .description(new PermissionDescription())
+                        .request(new OnPermissionCallback() {
+
+                            @Override
+                            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
+                                if (!allGranted) {
+                                    return;
+                                }
+                                toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
                                     PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
-                        }
-                    });
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                    HealthConnectManager healthConnectManager = (HealthConnectManager) getSystemService(Context.HEALTHCONNECT_SERVICE);
+                                    ZonedDateTime lastDay = ZonedDateTime.now()
+                                        .truncatedTo(ChronoUnit.DAYS)
+                                        .minusDays(1)
+                                        .withHour(12);
+                                    ZonedDateTime firstDay = lastDay.minusDays(7);
+
+                                    TimeRangeFilter timeRangeFilter = new TimeInstantRangeFilter.Builder()
+                                        .setStartTime(firstDay.toInstant())
+                                        .setEndTime(lastDay.toInstant())
+                                        .build();
+
+                                    ReadRecordsRequest<HeartRateRecord> readRecordsRequest = new ReadRecordsRequestUsingFilters.Builder<>(
+                                        HeartRateRecord.class)
+                                        .setTimeRangeFilter(timeRangeFilter)
+                                        .setAscending(false)
+                                        .build();
+
+                                    healthConnectManager.readRecords(readRecordsRequest, Executors.newSingleThreadExecutor(),
+                                        new OutcomeReceiver<ReadRecordsResponse<HeartRateRecord>, HealthConnectException>() {
+
+                                            @Override
+                                            public void onResult(ReadRecordsResponse<HeartRateRecord> result) {
+                                                Log.i("XXPermissions", "获取到的健康数据数量为：" + result.getRecords().size());
+                                            }
+
+                                            @Override
+                                            public void onError(@NonNull HealthConnectException e) {
+                                                Log.e("XXPermissions", "获取健康数据失败", e);
+                                            }
+                                        });
+                                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+                                    SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+                                    Sensor heartRateSensor = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE);
+                                    if (heartRateSensor != null) {
+                                        Log.i("XXPermissions", "获取心率传感器成功");
+                                    } else {
+                                        Log.i("XXPermissions", "获取心率传感器失败");
+                                    }
+                                }
+                            }
+                        });
+                }
+            }, delayMillis);
 
         } else if (viewId == R.id.btn_main_request_activity_recognition_permission) {
 
