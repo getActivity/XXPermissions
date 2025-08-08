@@ -68,6 +68,10 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
         if (PhoneRomUtils.isMagicOs()) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
+        // 后台定位权限在鸿蒙系统上面一直是透明的 Activity
+        if (PhoneRomUtils.isHarmonyOs()) {
+            return PermissionPageType.TRANSPARENT_ACTIVITY;
+        }
         // 后台定位权限申请页在 Android 10 还是透明的 Activity，到了 Android 11 就变成了不透明的 Activity
         if (PermissionVersion.isAndroid10() && !PermissionVersion.isAndroid11()) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
