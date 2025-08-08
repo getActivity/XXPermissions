@@ -63,6 +63,10 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
         if (PermissionVersion.isAndroid11() && (PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui())) {
             return PermissionPageType.OPAQUE_ACTIVITY;
         }
+        // 请求忽略电池优化选项权限在 Android 15 及以上版本的 OPPO 系统上面是一个不透明的 Activity 页面
+        if (PhoneRomUtils.isColorOs() && PermissionVersion.isAndroid15()) {
+            return PermissionPageType.OPAQUE_ACTIVITY;
+        }
         if (PermissionVersion.isAndroid6() && !isGrantedPermission(context)) {
             Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
             intent.setData(getPackageNameUri(context));
