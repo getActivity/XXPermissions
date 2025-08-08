@@ -60,7 +60,12 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
     @NonNull
     @Override
     public PermissionPageType getPermissionPageType(@NonNull Context context) {
+        // 后台定位权限在澎湃或者 miui 上面一直是透明的 Activity
         if (PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui()) {
+            return PermissionPageType.TRANSPARENT_ACTIVITY;
+        }
+        // 后台定位权限在荣耀系统上面一直是透明的 Activity
+        if (PhoneRomUtils.isMagicOs()) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
         // 后台定位权限申请页在 Android 10 还是透明的 Activity，到了 Android 11 就变成了不透明的 Activity
