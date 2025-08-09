@@ -76,8 +76,8 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
                 @Override
                 public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
                     List<IPermission> latestDeniedList = XXPermissions.getDeniedPermissions(activity, requestList);
-
-                    if (!latestDeniedList.isEmpty()) {
+                    boolean allGranted = latestDeniedList.isEmpty();
+                    if (!allGranted) {
                         // 递归显示对话框，让提示用户授权，只不过对话框是可取消的，用户不想授权了，随时可以点击返回键或者对话框蒙层来取消显示
                         showPermissionSettingDialog(activity, requestList, latestDeniedList, callback,
                             generatePermissionHint(activity, latestDeniedList, true));

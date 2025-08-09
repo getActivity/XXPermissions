@@ -109,18 +109,27 @@ The framework has automatically added the framework's obfuscation rules for you 
 
 ```java
 XXPermissions.with(this)
-        // Request multiple permission
-        .permission(PermissionLists.getRecordAudioPermission())
-        .permission(PermissionLists.getCameraPermission())
-        // Setting does not trigger error detection mechanism (local setting)
-        //.unchecked()
-        .request(new OnPermissionCallback() {
+    // Request multiple permission
+    .permission(PermissionLists.getRecordAudioPermission())
+    .permission(PermissionLists.getCameraPermission())
+    // Setting does not trigger error detection mechanism (local setting)
+    //.unchecked()
+    .request(new OnPermissionCallback() {
 
-            @Override
-            public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
-                
+        @Override
+        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+            boolean allGranted = deniedList.isEmpty();
+            if (!allGranted) {
+                // Determine whether the permissions that failed requests have been checked by the user to no longer ask
+                boolean doNotAskAgain = XXPermissions.isDoNotAskAgainPermissions(activity, deniedList);
+                // The logic for failing to handle permission requests here
+                ......
+                return;
             }
-        });
+            // The logic for handling permission requests here is successful
+            ......
+        }
+    });
 ```
 
 * Kotlin code example
@@ -134,9 +143,18 @@ XXPermissions.with(this)
     // Setting does not trigger error detection mechanism (local setting)
     //.unchecked()
     .request(object : OnPermissionCallback {
-        
+
         override fun onResult(grantedList: MutableList<IPermission>, deniedList: MutableList<IPermission>) {
-            
+            val allGranted = deniedList.isEmpty()
+            if (!allGranted) {
+                // Determine whether the permissions that failed requests have been checked by the user to no longer ask
+                val doNotAskAgain = XXPermissions.isDoNotAskAgainPermissions(activity, deniedList)
+                // The logic for failing to handle permission requests here
+                // ......
+                return
+            }
+            // The logic for handling permission requests here is successful
+            // ......
         }
     })
 ```

@@ -168,15 +168,16 @@ XXPermissions.with(this)
 
         @Override
         public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
-            if (deniedList.isEmpty()) {
-                toast("获取录音和日历权限成功");
+            boolean allGranted = deniedList.isEmpty();
+            if (!allGranted) {
+                IPermission recordAudioPermission = PermissionLists.getRecordAudioPermission();
+                if (deniedList.contains(recordAudioPermission) &&
+                    XXPermissions.isDoNotAskAgainPermission(activity, recordAudioPermission)) {
+                    toast("录音权限请求被拒绝了，并且用户勾选了不再询问");
+                }
                 return;
             }
-            IPermission recordAudioPermission = PermissionLists.getRecordAudioPermission();
-            if (deniedList.contains(recordAudioPermission) &&
-                XXPermissions.isDoNotAskAgainPermission(activity, recordAudioPermission)) {
-                toast("录音权限请求被拒绝了，并且用户勾选了不再询问");
-            }
+            toast("获取录音和日历权限成功");
         }
     });
 ```
@@ -219,19 +220,19 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 
     @Override
     public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
-        if (deniedList.isEmpty()) {
-            toast("获取拍照权限成功");
+        boolean allGranted = deniedList.isEmpty();
+        if (!allGranted) {
+            boolean doNotAskAgain = XXPermissions.isDoNotAskAgainPermissions(activity, deniedList);
+            if (doNotAskAgain) {
+                toast("被永久拒绝授权，请手动授予拍照权限"");
+                // 如果是被永久拒绝就跳转到应用权限系统设置页面
+                XXPermissions.startPermissionActivity(activity, deniedList);
+            } else {
+                requestCameraPermission();
+            }
             return;
         }
-
-        boolean doNotAskAgain = XXPermissions.isDoNotAskAgainPermissions(MainActivity.this, deniedList);
-        if (doNotAskAgain) {
-            toast("被永久拒绝授权，请手动授予拍照权限");
-            // 如果是被永久拒绝就跳转到应用权限系统设置页面
-            XXPermissions.startPermissionActivity(activity, deniedList);
-        } else {
-            requestCameraPermission();
-        }
+        toast("获取拍照权限成功");
     }
     
     @Override

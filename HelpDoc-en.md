@@ -162,15 +162,16 @@ XXPermissions.with(this)
 
         @Override
         public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
-            if (deniedList.isEmpty()) {
-                toast("Acquired recording and calendar permissions successfully");
+            boolean allGranted = deniedList.isEmpty();
+            if (!allGranted) {
+                IPermission recordAudioPermission = PermissionLists.getRecordAudioPermission();
+                if (deniedList.contains(recordAudioPermission) &&
+                    XXPermissions.isDoNotAskAgainPermission(activity, recordAudioPermission)) {
+                    toast("The recording permission request was denied, and the user checked Do not ask");
+                }
                 return;
             }
-            IPermission recordAudioPermission = PermissionLists.getRecordAudioPermission();
-            if (deniedList.contains(recordAudioPermission) &&
-                XXPermissions.isDoNotAskAgainPermission(activity, recordAudioPermission)) {
-                toast("The recording permission request was denied, and the user checked Do not ask");
-            }
+            toast("Acquired recording and calendar permissions successfully");
         }
     });
 ```
@@ -205,19 +206,19 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
 
     @Override
     public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
-        if (deniedList.isEmpty()) {
-            toast("Successfully obtained permission to take camera");
+        boolean allGranted = deniedList.isEmpty();
+        if (!allGranted) {
+            boolean doNotAskAgain = XXPermissions.isDoNotAskAgainPermissions(activity, deniedList);
+            if (doNotAskAgain) {
+                toast("Authorization is permanently denied, please manually grant permission to take camera");
+                // If it is permanently denied, jump to the application permission system settings page
+                XXPermissions.startPermissionActivity(activity, deniedList);
+            } else {
+                requestCameraPermission();
+            }
             return;
         }
-
-        boolean doNotAskAgain = XXPermissions.isDoNotAskAgainPermissions(MainActivity.this, deniedList);
-        if (doNotAskAgain) {
-            toast("Authorization is permanently denied, please manually grant permission to take camera");
-            // If it is permanently denied, jump to the application permission system settings page
-            XXPermissions.startPermissionActivity(activity, deniedList);
-        } else {
-            requestCameraPermission();
-        }
+        toast("Successfully obtained permission to take camera");
     }
     
     @Override

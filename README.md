@@ -115,18 +115,27 @@ android.enableJetifier = true
 
 ```java
 XXPermissions.with(this)
-        // 申请多个权限
-        .permission(PermissionLists.getRecordAudioPermission())
-        .permission(PermissionLists.getCameraPermission())
-        // 设置不触发错误检测机制（局部设置）
-        //.unchecked()
-        .request(new OnPermissionCallback() {
+    // 申请多个权限
+    .permission(PermissionLists.getRecordAudioPermission())
+    .permission(PermissionLists.getCameraPermission())
+    // 设置不触发错误检测机制（局部设置）
+    //.unchecked()
+    .request(new OnPermissionCallback() {
 
-            @Override
-            public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
-                
+        @Override
+        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+            boolean allGranted = deniedList.isEmpty();
+            if (!allGranted) {
+                // 判断请求失败的权限是否被用户勾选了不再询问的选项
+                boolean doNotAskAgain = XXPermissions.isDoNotAskAgainPermissions(activity, deniedList);
+                // 在这里处理权限请求失败的逻辑
+                ......
+                return;
             }
-        });
+            // 在这里处理权限请求成功的逻辑
+            ......
+        }
+    });
 ```
 
 * Kotlin 用法示例
@@ -142,7 +151,16 @@ XXPermissions.with(this)
     .request(object : OnPermissionCallback {
         
         override fun onResult(grantedList: MutableList<IPermission>, deniedList: MutableList<IPermission>) {
-            
+            val allGranted = deniedList.isEmpty()
+            if (!allGranted) {
+                // 判断请求失败的权限是否被用户勾选了不再询问的选项
+                val doNotAskAgain = XXPermissions.isDoNotAskAgainPermissions(activity, deniedList)
+                // 在这里处理权限请求失败的逻辑
+                // ......
+                return
+            }
+            // 在这里处理权限请求成功的逻辑
+            // ......
         }
     })
 ```
