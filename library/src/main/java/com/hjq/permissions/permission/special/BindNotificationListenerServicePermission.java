@@ -171,9 +171,9 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestList,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
-                                            @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
-                                            @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
-        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
+                                            @NonNull List<PermissionManifestInfo> permissionInfoList,
+                                            @Nullable PermissionManifestInfo currentPermissionInfo) {
+        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionInfoList, currentPermissionInfo);
 
         List<ServiceManifestInfo> serviceManifestInfoList = androidManifestInfo.serviceManifestInfoList;
         for (ServiceManifestInfo serviceManifestInfo : serviceManifestInfoList) {

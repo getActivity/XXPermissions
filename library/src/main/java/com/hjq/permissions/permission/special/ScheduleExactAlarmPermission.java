@@ -116,9 +116,9 @@ public final class ScheduleExactAlarmPermission extends SpecialPermission {
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestList,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
-                                            @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
-                                            @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
-        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
+                                            @NonNull List<PermissionManifestInfo> permissionInfoList,
+                                            @Nullable PermissionManifestInfo currentPermissionInfo) {
+        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionInfoList, currentPermissionInfo);
         String useExactAlarmPermissionName;
         if (PermissionVersion.isAndroid13()) {
             useExactAlarmPermissionName = permission.USE_EXACT_ALARM;
@@ -127,15 +127,15 @@ public final class ScheduleExactAlarmPermission extends SpecialPermission {
         }
 
         if (PermissionVersion.getTargetVersion(activity) >= PermissionVersion.ANDROID_13 &&
-            findPermissionInfoByList(permissionManifestInfoList, useExactAlarmPermissionName) != null) {
+            findPermissionInfoByList(permissionInfoList, useExactAlarmPermissionName) != null) {
             // 如果当前项目适配了 Android 13 的话，并且在清单文件中注册了 USE_EXACT_ALARM 权限，那么 SCHEDULE_EXACT_ALARM 权限在清单文件中可以这样注册
             // <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
             // 相关文档地址：https://developer.android.google.cn/reference/android/Manifest.permission#USE_EXACT_ALARM
             // 如果你的应用要上架 GooglePlay，那么需要慎重添加 USE_EXACT_ALARM 权限，因为不是日历、闹钟、时钟这类应用添加 USE_EXACT_ALARM 权限很难通过 GooglePlay 上架审核
-            checkPermissionRegistrationStatus(permissionManifestInfoList, getPermissionName(), PermissionVersion.ANDROID_12_L);
+            checkPermissionRegistrationStatus(permissionInfoList, getPermissionName(), PermissionVersion.ANDROID_12_L);
             return;
         }
 
-        checkPermissionRegistrationStatus(permissionManifestInfoList, getPermissionName());
+        checkPermissionRegistrationStatus(permissionInfoList, getPermissionName());
     }
 }

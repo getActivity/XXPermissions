@@ -100,9 +100,9 @@ public abstract class BasePermission implements IPermission {
         checkSelfByTargetSdkVersion(activity);
         // 检查 AndroidManifest.xml 是否符合要求
         if (androidManifestInfo != null) {
-            List<PermissionManifestInfo> permissionManifestInfoList = androidManifestInfo.permissionManifestInfoList;
-            PermissionManifestInfo currentPermissionManifestInfo = findPermissionInfoByList(permissionManifestInfoList, getPermissionName());
-            checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
+            List<PermissionManifestInfo> permissionInfoList = androidManifestInfo.permissionInfoList;
+            PermissionManifestInfo currentPermissionInfo = findPermissionInfoByList(permissionInfoList, getPermissionName());
+            checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionInfoList, currentPermissionInfo);
         }
         // 检查请求的权限列表是否符合要求
         checkSelfByRequestPermissions(activity, requestList);
@@ -135,13 +135,13 @@ public abstract class BasePermission implements IPermission {
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                            @NonNull List<IPermission> requestList,
                                            @NonNull AndroidManifestInfo androidManifestInfo,
-                                           @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
-                                           @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
+                                           @NonNull List<PermissionManifestInfo> permissionInfoList,
+                                           @Nullable PermissionManifestInfo currentPermissionInfo) {
         if (!isRegisterPermissionByManifestFile()) {
             return;
         }
         // 检查当前权限有没有在清单文件中静态注册，如果有注册，还要检查注册 maxSdkVersion 属性有没有问题
-        checkPermissionRegistrationStatus(currentPermissionManifestInfo, getPermissionName());
+        checkPermissionRegistrationStatus(currentPermissionInfo, getPermissionName());
     }
 
     /**
@@ -159,14 +159,14 @@ public abstract class BasePermission implements IPermission {
         checkPermissionRegistrationStatus(permissionManifestInfo, checkPermission, Integer.MAX_VALUE);
     }
 
-    protected static void checkPermissionRegistrationStatus(@Nullable List<PermissionManifestInfo> permissionManifestInfoList, @NonNull String checkPermission) {
-        checkPermissionRegistrationStatus(permissionManifestInfoList, checkPermission, Integer.MAX_VALUE);
+    protected static void checkPermissionRegistrationStatus(@Nullable List<PermissionManifestInfo> permissionInfoList, @NonNull String checkPermission) {
+        checkPermissionRegistrationStatus(permissionInfoList, checkPermission, Integer.MAX_VALUE);
     }
 
-    protected static void checkPermissionRegistrationStatus(@Nullable List<PermissionManifestInfo> permissionManifestInfoList, @NonNull String checkPermission, int lowestMaxSdkVersion) {
+    protected static void checkPermissionRegistrationStatus(@Nullable List<PermissionManifestInfo> permissionInfoList, @NonNull String checkPermission, int lowestMaxSdkVersion) {
         PermissionManifestInfo permissionManifestInfo = null;
-        if (permissionManifestInfoList != null) {
-            permissionManifestInfo = findPermissionInfoByList(permissionManifestInfoList, checkPermission);
+        if (permissionInfoList != null) {
+            permissionManifestInfo = findPermissionInfoByList(permissionInfoList, checkPermission);
         }
         checkPermissionRegistrationStatus(permissionManifestInfo, checkPermission, lowestMaxSdkVersion);
     }
@@ -218,9 +218,9 @@ public abstract class BasePermission implements IPermission {
      * 从权限列表中获取指定的权限信息
      */
     @Nullable
-    public static PermissionManifestInfo findPermissionInfoByList(@NonNull List<PermissionManifestInfo> permissionManifestInfoList, @NonNull String permissionName) {
+    public static PermissionManifestInfo findPermissionInfoByList(@NonNull List<PermissionManifestInfo> permissionInfoList, @NonNull String permissionName) {
         PermissionManifestInfo permissionManifestInfo = null;
-        for (PermissionManifestInfo info : permissionManifestInfoList) {
+        for (PermissionManifestInfo info : permissionInfoList) {
             if (PermissionUtils.equalsPermission(info.name, permissionName)) {
                 permissionManifestInfo = info;
                 break;

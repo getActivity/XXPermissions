@@ -29,7 +29,7 @@ public final class AndroidManifestInfo {
 
     /** 权限节点信息 */
     @NonNull
-    public final List<PermissionManifestInfo> permissionManifestInfoList = new ArrayList<>();
+    public final List<PermissionManifestInfo> permissionInfoList = new ArrayList<>();
 
     /** 查询包名列表 */
     @NonNull

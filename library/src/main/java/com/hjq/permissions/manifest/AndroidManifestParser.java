@@ -175,7 +175,7 @@ public final class AndroidManifestParser {
                 if (PermissionUtils.equalsString(TAG_USES_PERMISSION, tagName) ||
                     PermissionUtils.equalsString(TAG_USES_PERMISSION_SDK_23, tagName) ||
                     PermissionUtils.equalsString(TAG_USES_PERMISSION_SDK_M, tagName)) {
-                    manifestInfo.permissionManifestInfoList.add(parsePermissionFromXml(parser));
+                    manifestInfo.permissionInfoList.add(parsePermissionFromXml(parser));
                 }
 
                 if (PermissionUtils.equalsString(TAG_QUERIES, tagName)) {
