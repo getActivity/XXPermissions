@@ -370,9 +370,9 @@ public final class XXPermissions {
     /**
      * 判断一个或多个权限是否被勾选了不再询问的选项
      *
-     * 注意不能在请求权限之前调用，一定要在 {@link OnPermissionCallback#onResult(List, List)} 方法中调用
-     * 如果你在应用启动后，没有申请过这个权限，然后去判断它有没有勾选不再询问的选项，这样系统会一直返回 true，也就是不再询问
-     * 但是实际上还能继续申请，系统只是不想让你知道权限是否勾选了不再询问的选项，你必须要申请过这个权限，才能去判断这个权限是否勾选了不再询问的选项
+     * 如果判断的权限中包含了危险权限，则需要特别注意：
+     * 2. 如果在应用启动后，没有向系统申请过这个危险权限，而是直接去判断它有没有勾选不再询问的选项，这样得到的结果是不准的，建议在权限回调方法中调用，除此之外没有更好的解决方法
+     * 3. 如果危险权限在申请的过程中，如果用户不是通过点击《不允许》选项来取消权限，而是通过点击返回键或者点击系统授权框外层区域来取消授权的，这样得到的结果是不准的，这个问题无解
      */
     public static boolean isDoNotAskAgainPermission(@NonNull Activity activity, @NonNull IPermission permission) {
         return permission.isDoNotAskAgainPermission(activity);
