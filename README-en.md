@@ -117,23 +117,8 @@ XXPermissions.with(this)
         .request(new OnPermissionCallback() {
 
             @Override
-            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                if (!allGranted) {
-                    toast("Some permissions were obtained successfully, but some permissions were not granted normally");
-                    return;
-                }
-                toast("Acquired recording and calendar permissions successfully");
-            }
-
-            @Override
-            public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
-                if (doNotAskAgain) {
-                    toast("Authorization denied permanently, please grant recording and calendar permissions manually");
-                    // If it is permanently denied, jump to the application permission system settings page
-                    XXPermissions.startPermissionActivity(context, permissions);
-                } else {
-                    toast("Failed to get recording and calendar permissions");
-                }
+            public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                
             }
         });
 ```
@@ -141,6 +126,7 @@ XXPermissions.with(this)
 * Kotlin code example
 
 ```kotlin
+
 XXPermissions.with(this)
     // Request multiple permission
     .permission(PermissionLists.getRecordAudioPermission())
@@ -148,23 +134,9 @@ XXPermissions.with(this)
     // Setting does not trigger error detection mechanism (local setting)
     //.unchecked()
     .request(object : OnPermissionCallback {
-
-        override fun onGranted(permissions: MutableList<IPermission>, allGranted: Boolean) {
-            if (!allGranted) {
-                toast("Some permissions were obtained successfully, but some permissions were not granted normally")
-                return
-            }
-            toast("Acquired recording and calendar permissions successfully")
-        }
-
-        override fun onDenied(permissions: MutableList<IPermission>, doNotAskAgain: Boolean) {
-            if (doNotAskAgain) {
-                toast("Authorization denied permanently, please grant recording and calendar permissions manually")
-                // If it is permanently denied, jump to the application permission system settings page
-                XXPermissions.startPermissionActivity(context, permissions)
-            } else {
-                toast("Failed to get recording and calendar permissions")
-            }
+        
+        override fun onResult(grantedList: MutableList<IPermission>, deniedList: MutableList<IPermission>) {
+            
         }
     })
 ```
@@ -213,24 +185,24 @@ XXPermissions.startPermissionActivity(@NonNull Activity activity);
 XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull IPermission... permissions);
 XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions);
 XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
-XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull IPermission permission, @Nullable OnPermissionPageCallback callback);
-XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions, @Nullable OnPermissionPageCallback callback);
+XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
+XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
 
 // Navigate to the permission settings page (App Fragment version)
 XXPermissions.startPermissionActivity(@NonNull Fragment appFragment);
 XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull IPermission... permissions);
 XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions);
 XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull IPermission permission, @Nullable OnPermissionPageCallback callback);
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionPageCallback callback);
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
 
 // Navigate to the permission settings page (Support Fragment version)
 XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment);
 XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull IPermission... permissions);
 XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions);
 XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull IPermission permission, @Nullable OnPermissionPageCallback callback);
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionPageCallback callback);
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
 
 // Set the permission description provider (Global setting)
 XXPermissions.setPermissionDescription(Class<? extends OnPermissionDescription> clazz);
@@ -242,17 +214,7 @@ XXPermissions.setPermissionInterceptor(Class<? extends OnPermissionInterceptor> 
 XXPermissions.setCheckMode(false);
 ```
 
-#### About the permission monitoring callback parameter description
-
-* We all know that if the user grants all it will only call `onGranted` method, which will only be called if the user rejects all `onDenied` method.
-
-* But there is another situation. If multiple permissions are requested, these permissions are not all granted or all denied, but some of the authorizations are partially denied. How will the framework handle the callback?
-
-* The framework will call first `onDenied` method, then call `onGranted` method. of which we can pass `onGranted` in the method `allGranted` parameters to determine whether all permissions are granted.
-
-* If you want to know whether a permission in the callback is granted or denied, you can call `List` in class `contains(PermissionLists.XXX)` method to determine whether this permission is included in this collection.
-
-## [For other frequently asked questions, please click here](HelpDoc-en.md)
+#### [For other frequently asked questions, please click here](HelpDoc-en.md)
 
 #### Comparison between similar permission request frameworks
 

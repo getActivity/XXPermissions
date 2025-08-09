@@ -13,18 +13,10 @@ import java.util.List;
 public interface OnPermissionCallback {
 
     /**
-     * 有权限被同意授予时回调
+     * 权限请求结果回调
      *
-     * @param permissions           请求成功的权限组
-     * @param allGranted            是否全部授予了
+     * @param grantedList               授予权限列表
+     * @param deniedList                拒绝权限列表
      */
-    void onGranted(@NonNull List<IPermission> permissions, boolean allGranted);
-
-    /**
-     * 有权限被拒绝授予时回调
-     *
-     * @param permissions            请求失败的权限组
-     * @param doNotAskAgain          是否勾选了不再询问选项
-     */
-    default void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {}
+    void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList);
 }

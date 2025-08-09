@@ -157,8 +157,8 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
     }
 
     @Override
-    public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions, @Nullable AndroidManifestInfo androidManifestInfo) {
-        super.checkCompliance(activity, requestPermissions, androidManifestInfo);
+    public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestList, @Nullable AndroidManifestInfo androidManifestInfo) {
+        super.checkCompliance(activity, requestList, androidManifestInfo);
         if (TextUtils.isEmpty(mNotificationListenerServiceClassName)) {
             throw new IllegalArgumentException("Pass the ServiceClass parameter as empty");
         }
@@ -169,11 +169,11 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
 
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
-                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull List<IPermission> requestList,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
+        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
 
         List<ServiceManifestInfo> serviceManifestInfoList = androidManifestInfo.serviceManifestInfoList;
         for (ServiceManifestInfo serviceManifestInfo : serviceManifestInfoList) {

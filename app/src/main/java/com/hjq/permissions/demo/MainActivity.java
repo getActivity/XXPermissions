@@ -31,7 +31,6 @@ import android.os.OutcomeReceiver;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -139,12 +138,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 .request(new OnPermissionCallback() {
 
                     @Override
-                    public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                        if (!allGranted) {
+                    public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                        if (!deniedList.isEmpty()) {
                             return;
                         }
-                        toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                            PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                        showGrantedPermissionsToast(grantedList);
                     }
                 });
 
@@ -159,12 +157,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
+                        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                            if (!deniedList.isEmpty()) {
                                 return;
                             }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            showGrantedPermissionsToast(grantedList);
                         }
                     });
 
@@ -180,12 +177,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
+                        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                            if (!deniedList.isEmpty()) {
                                 return;
                             }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            showGrantedPermissionsToast(grantedList);
                         }
                     });
 
@@ -214,12 +210,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         .request(new OnPermissionCallback() {
 
                             @Override
-                            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                                if (!allGranted) {
+                            public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                                if (!deniedList.isEmpty()) {
                                     return;
                                 }
-                                toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                                showGrantedPermissionsToast(grantedList);
 
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                                     HealthConnectManager healthConnectManager = (HealthConnectManager) getSystemService(Context.HEALTHCONNECT_SERVICE);
@@ -276,12 +271,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
+                        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                            if (!deniedList.isEmpty()) {
                                 return;
                             }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            showGrantedPermissionsToast(grantedList);
                             addCountStepListener();
                         }
                     });
@@ -307,12 +301,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                                    if (!allGranted) {
+                                public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                                    if (!deniedList.isEmpty()) {
                                         return;
                                     }
-                                    toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                                    showGrantedPermissionsToast(grantedList);
                                 }
                             });
                 }
@@ -337,12 +330,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                                    if (!allGranted) {
+                                public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                                    if (!deniedList.isEmpty()) {
                                         return;
                                     }
-                                    toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                                    showGrantedPermissionsToast(grantedList);
                                 }
                             });
                 }
@@ -377,12 +369,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                                    if (!allGranted) {
+                                public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                                    if (!deniedList.isEmpty()) {
                                         return;
                                     }
-                                    toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                                    showGrantedPermissionsToast(grantedList);
                                     new Thread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -420,12 +411,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                                    if (!allGranted) {
+                                public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                                    if (!deniedList.isEmpty()) {
                                         return;
                                     }
-                                    toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                                    showGrantedPermissionsToast(grantedList);
                                     getAllImagesFromGallery(false);
                                 }
                             });
@@ -455,12 +445,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                                    if (!allGranted) {
+                                public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                                    if (!deniedList.isEmpty()) {
                                         return;
                                     }
-                                    toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                                    showGrantedPermissionsToast(grantedList);
                                 }
                             });
                 }
@@ -475,12 +464,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
+                        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                            if (!deniedList.isEmpty()) {
                                 return;
                             }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            showGrantedPermissionsToast(grantedList);
                         }
                     });
 
@@ -493,12 +481,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
+                        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                            if (!deniedList.isEmpty()) {
                                 return;
                             }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            showGrantedPermissionsToast(grantedList);
                         }
                     });
 
@@ -511,12 +498,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
+                        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                            if (!deniedList.isEmpty()) {
                                 return;
                             }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            showGrantedPermissionsToast(grantedList);
                         }
                     });
 
@@ -540,12 +526,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
+                        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                            if (!deniedList.isEmpty()) {
                                 return;
                             }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            showGrantedPermissionsToast(grantedList);
                         }
                     });
 
@@ -568,12 +553,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             .request(new OnPermissionCallback() {
 
                                 @Override
-                                public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                                    if (!allGranted) {
+                                public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                                    if (!deniedList.isEmpty()) {
                                         return;
                                     }
-                                    toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                                    showGrantedPermissionsToast(grantedList);
                                 }
                             });
                 }
@@ -589,12 +573,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
+                        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                            if (!deniedList.isEmpty()) {
                                 return;
                             }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            showGrantedPermissionsToast(grantedList);
                             toggleNotificationListenerService();
                         }
                     });
@@ -608,12 +591,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
+                        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                            if (!deniedList.isEmpty()) {
                                 return;
                             }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            showGrantedPermissionsToast(grantedList);
                         }
                     });
 
@@ -626,12 +608,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
+                        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                            if (!deniedList.isEmpty()) {
                                 return;
                             }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            showGrantedPermissionsToast(grantedList);
                         }
                     });
 
@@ -644,12 +625,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
+                        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                            if (!deniedList.isEmpty()) {
                                 return;
                             }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            showGrantedPermissionsToast(grantedList);
                         }
                     });
 
@@ -662,12 +642,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .request(new OnPermissionCallback() {
 
                         @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
+                        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                            if (!deniedList.isEmpty()) {
                                 return;
                             }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            showGrantedPermissionsToast(grantedList);
                         }
                     });
 
@@ -678,14 +657,13 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
-
+    
                         @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
+                        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                            if (!deniedList.isEmpty()) {
                                 return;
                             }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            showGrantedPermissionsToast(grantedList);
                         }
                     });
 
@@ -696,14 +674,13 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
-
+    
                         @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
+                        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                            if (!deniedList.isEmpty()) {
                                 return;
                             }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            showGrantedPermissionsToast(grantedList);
                         }
                     });
 
@@ -729,12 +706,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                         .request(new OnPermissionCallback() {
 
                             @Override
-                            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                                if (!allGranted) {
+                            public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                                if (!deniedList.isEmpty()) {
                                     return;
                                 }
-                                toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                                showGrantedPermissionsToast(grantedList);
                             }
                         });
                 }
@@ -751,12 +727,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 .request(new OnPermissionCallback() {
 
                     @Override
-                    public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                        if (!allGranted) {
+                    public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                        if (!deniedList.isEmpty()) {
                             return;
                         }
-                        toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                            PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                        showGrantedPermissionsToast(grantedList);
                     }
                 });
 
@@ -770,12 +745,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 .request(new OnPermissionCallback() {
 
                     @Override
-                    public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                        if (!allGranted) {
+                    public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                        if (!deniedList.isEmpty()) {
                             return;
                         }
-                        toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                            PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                        showGrantedPermissionsToast(grantedList);
                     }
                 });
 
@@ -786,14 +760,13 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                     .interceptor(new PermissionInterceptor())
                     .description(new PermissionDescription())
                     .request(new OnPermissionCallback() {
-
+    
                         @Override
-                        public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                            if (!allGranted) {
+                        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                            if (!deniedList.isEmpty()) {
                                 return;
                             }
-                            toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                                    PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                            showGrantedPermissionsToast(grantedList);
                             getAppList();
                         }
                     });
@@ -809,12 +782,11 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                 .request(new OnPermissionCallback() {
 
                     @Override
-                    public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                        if (!allGranted) {
+                    public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                        if (!deniedList.isEmpty()) {
                             return;
                         }
-                        toast(String.format(getString(R.string.demo_obtain_permission_success_hint),
-                            PermissionConverter.getNickNamesByPermissions(MainActivity.this, permissions)));
+                        showGrantedPermissionsToast(grantedList);
                     }
                 });
 
@@ -833,11 +805,14 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         toast(getString(R.string.demo_return_activity_result_hint));
     }
 
+    public void showGrantedPermissionsToast(List<IPermission> grantedList) {
+        toast(String.format(getString(R.string.demo_obtain_permission_success_hint), PermissionConverter.getNickNamesByPermissions(MainActivity.this, grantedList)));
+    }
+
     public void toast(CharSequence text) {
         Toaster.show(text);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void toggleNotificationListenerService() {
         PackageManager packageManager = getPackageManager();
         packageManager.setComponentEnabledSetting(

@@ -165,11 +165,11 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
 
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
-                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull List<IPermission> requestList,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
+        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
         // 如果您的应用以 Android 12 为目标平台并且您请求 ACCESS_FINE_LOCATION 权限
         // 则还必须请求 ACCESS_COARSE_LOCATION 权限。您必须在单个运行时请求中包含这两项权限
         // 如果您尝试仅请求 ACCESS_FINE_LOCATION，则系统会忽略该请求并在 Logcat 中记录以下错误消息：
@@ -184,16 +184,16 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
     }
 
     @Override
-    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
-        super.checkSelfByRequestPermissions(activity, requestPermissions);
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
+        super.checkSelfByRequestPermissions(activity, requestList);
         // 如果您的应用以 Android 12 为目标平台并且您请求 ACCESS_FINE_LOCATION 权限
         // 则还必须请求 ACCESS_COARSE_LOCATION 权限。您必须在单个运行时请求中包含这两项权限
         // 如果您尝试仅请求 ACCESS_FINE_LOCATION，则系统会忽略该请求并在 Logcat 中记录以下错误消息：
         // ACCESS_FINE_LOCATION must be requested with ACCESS_COARSE_LOCATION
         // 官方适配文档：https://developer.android.google.cn/develop/sensors-and-location/location/permissions/runtime?hl=zh-cn#approximate-request
         if (PermissionVersion.getTargetVersion(activity) >= PermissionVersion.ANDROID_12 &&
-            PermissionUtils.containsPermission(requestPermissions, PermissionNames.ACCESS_COARSE_LOCATION) &&
-            !PermissionUtils.containsPermission(requestPermissions, PermissionNames.ACCESS_FINE_LOCATION)) {
+            PermissionUtils.containsPermission(requestList, PermissionNames.ACCESS_COARSE_LOCATION) &&
+            !PermissionUtils.containsPermission(requestList, PermissionNames.ACCESS_FINE_LOCATION)) {
             // 申请后台定位权限可以不包含模糊定位权限，但是一定要包含精确定位权限，否则后台定位权限会无法申请
             // 也就是会导致无法弹出授权弹窗，经过实践，在 Android 12 上这个问题已经被解决了
             // 在 Android 12 及之后的版本，申请后台定位权限既可以用精确定位权限也可以用模糊定位权限作为前台定位权限
@@ -206,8 +206,8 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
         int thisPermissionIndex = -1;
         int accessFineLocationPermissionIndex = -1;
         int accessCoarseLocationPermissionIndex = -1;
-        for (int i = 0; i < requestPermissions.size(); i++) {
-            IPermission permission = requestPermissions.get(i);
+        for (int i = 0; i < requestList.size(); i++) {
+            IPermission permission = requestList.get(i);
             if (PermissionUtils.equalsPermission(permission, this)) {
                 thisPermissionIndex = i;
             } else if (PermissionUtils.equalsPermission(permission, PermissionNames.ACCESS_FINE_LOCATION)) {

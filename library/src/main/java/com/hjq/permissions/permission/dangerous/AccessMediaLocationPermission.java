@@ -97,8 +97,8 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
     }
 
     @Override
-    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
-        super.checkSelfByRequestPermissions(activity, requestPermissions);
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
+        super.checkSelfByRequestPermissions(activity, requestList);
 
         int thisPermissionIndex = -1;
         int readMediaImagesPermissionIndex = -1;
@@ -107,8 +107,8 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
         int manageExternalStoragePermissionIndex = -1;
         int readExternalStoragePermissionIndex = -1;
         int writeExternalStoragePermissionIndex = -1;
-        for (int i = 0; i < requestPermissions.size(); i++) {
-            IPermission permission = requestPermissions.get(i);
+        for (int i = 0; i < requestList.size(); i++) {
+            IPermission permission = requestList.get(i);
             if (PermissionUtils.equalsPermission(permission, this)) {
                 thisPermissionIndex = i;
             } else if (PermissionUtils.equalsPermission(permission, PermissionNames.READ_MEDIA_IMAGES)) {
@@ -165,9 +165,9 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
         // 判断当前项目是否适配了 Android 13
         if (PermissionVersion.getTargetVersion(activity) >= PermissionVersion.ANDROID_13) {
             // 判断请求的权限中是否包含了某些特定权限
-            if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_MEDIA_IMAGES) ||
-                PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_MEDIA_VIDEO) ||
-                PermissionUtils.containsPermission(requestPermissions, PermissionNames.MANAGE_EXTERNAL_STORAGE)) {
+            if (PermissionUtils.containsPermission(requestList, PermissionNames.READ_MEDIA_IMAGES) ||
+                PermissionUtils.containsPermission(requestList, PermissionNames.READ_MEDIA_VIDEO) ||
+                PermissionUtils.containsPermission(requestList, PermissionNames.MANAGE_EXTERNAL_STORAGE)) {
                 // 如果请求的权限中，包含了上面这些权限，就不往下执行
                 return;
             }
@@ -179,8 +179,8 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
         }
 
         // 如果当前项目还没有适配 Android 13，就判断请求的权限中是否包含了某些特定权限
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_EXTERNAL_STORAGE) ||
-            PermissionUtils.containsPermission(requestPermissions, PermissionNames.MANAGE_EXTERNAL_STORAGE)) {
+        if (PermissionUtils.containsPermission(requestList, PermissionNames.READ_EXTERNAL_STORAGE) ||
+            PermissionUtils.containsPermission(requestList, PermissionNames.MANAGE_EXTERNAL_STORAGE)) {
             // 如果请求的权限中，包含了上面这些权限，就不往下执行
             return;
         }

@@ -123,23 +123,8 @@ XXPermissions.with(this)
         .request(new OnPermissionCallback() {
 
             @Override
-            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                if (!allGranted) {
-                    toast("获取部分权限成功，但部分权限未正常授予");
-                    return;
-                }
-                toast("获取录音和日历权限成功");
-            }
-
-            @Override
-            public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
-                if (doNotAskAgain) {
-                    toast("被永久拒绝授权，请手动授予录音和日历权限");
-                    // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                    XXPermissions.startPermissionActivity(context, permissions);
-                } else {
-                    toast("获取录音和日历权限失败");
-                }
+            public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                
             }
         });
 ```
@@ -147,6 +132,7 @@ XXPermissions.with(this)
 * Kotlin 用法示例
 
 ```kotlin
+
 XXPermissions.with(this)
     // 申请多个权限
     .permission(PermissionLists.getRecordAudioPermission())
@@ -154,23 +140,9 @@ XXPermissions.with(this)
     // 设置不触发错误检测机制（局部设置）
     //.unchecked()
     .request(object : OnPermissionCallback {
-
-        override fun onGranted(permissions: MutableList<IPermission>, allGranted: Boolean) {
-            if (!allGranted) {
-                toast("获取部分权限成功，但部分权限未正常授予")
-                return
-            }
-            toast("获取录音和日历权限成功")
-        }
-
-        override fun onDenied(permissions: MutableList<IPermission>, doNotAskAgain: Boolean) {
-            if (doNotAskAgain) {
-                toast("被永久拒绝授权，请手动授予录音和日历权限")
-                // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                XXPermissions.startPermissionActivity(context, permissions)
-            } else {
-                toast("获取录音和日历权限失败")
-            }
+        
+        override fun onResult(grantedList: MutableList<IPermission>, deniedList: MutableList<IPermission>) {
+            
         }
     })
 ```
@@ -218,24 +190,24 @@ XXPermissions.startPermissionActivity(@NonNull Activity activity);
 XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull IPermission... permissions);
 XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions);
 XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
-XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull IPermission permission, @Nullable OnPermissionPageCallback callback);
-XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions, @Nullable OnPermissionPageCallback callback);
+XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
+XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
 
 // 跳转到权限设置页（App Fragment 版本）
 XXPermissions.startPermissionActivity(@NonNull Fragment appFragment);
 XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull IPermission... permissions);
 XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions);
 XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull IPermission permission, @Nullable OnPermissionPageCallback callback);
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionPageCallback callback);
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
+XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
 
 // 跳转到权限设置页（Support Fragment 版本）
 XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment);
 XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull IPermission... permissions);
 XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions);
 XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull IPermission permission, @Nullable OnPermissionPageCallback callback);
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionPageCallback callback);
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
+XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
 
 // 设置权限描述器（全局设置）
 XXPermissions.setPermissionDescription(Class<? extends OnPermissionDescription> clazz);
@@ -247,17 +219,7 @@ XXPermissions.setPermissionInterceptor(Class<? extends OnPermissionInterceptor> 
 XXPermissions.setCheckMode(false);
 ```
 
-#### 关于权限监听回调参数说明
-
-* 我们都知道，如果用户全部授予只会调用 `onGranted` 方法，如果用户全部拒绝只会调用 `onDenied` 方法。
-
-* 但是还有一种情况，如果在请求多个权限的情况下，这些权限不是被全部授予或者全部拒绝了，而是部分授权部分拒绝这种情况，框架会如何处理回调呢？
-
-* 框架会先调用 `onDenied` 方法，再调用 `onGranted` 方法。其中我们可以通过 `onGranted` 方法中的 `allGranted` 参数来判断权限是否全部授予了。
-
-* 如果想知道回调中的某个权限是否被授权或者拒绝，可以调用 `List` 类中的 `contains(PermissionLists.XXX)` 方法来判断这个集合中是否包含了这个权限。
-
-## [其他常见疑问请点击此处查看](HelpDoc-zh.md)
+#### [其他常见疑问请点击此处查看](HelpDoc-zh.md)
 
 #### 同类权限请求框架之间的对比
 

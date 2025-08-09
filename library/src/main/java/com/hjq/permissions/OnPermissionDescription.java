@@ -16,29 +16,26 @@ public interface OnPermissionDescription {
     /**
      * 询问是否要发起权限请求
      *
-     * @param activity                      Activity 对象
-     * @param requestPermissions            请求的权限
+     * @param requestList                   请求的权限列表
      * @param continueRequestRunnable       继续请求任务对象
      * @param breakRequestRunnable          中断请求任务对象
      */
     void askWhetherRequestPermission(@NonNull Activity activity,
-                                    @NonNull List<IPermission> requestPermissions,
-                                    @NonNull Runnable continueRequestRunnable,
-                                    @NonNull Runnable breakRequestRunnable);
+                                     @NonNull List<IPermission> requestList,
+                                     @NonNull Runnable continueRequestRunnable,
+                                     @NonNull Runnable breakRequestRunnable);
 
     /**
      * 权限请求开始
      *
-     * @param activity                      Activity 对象
-     * @param requestPermissions            请求的权限
+     * @param requestList                   请求的权限列表
      */
-    void onRequestPermissionStart(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions);
+    void onRequestPermissionStart(@NonNull Activity activity, @NonNull List<IPermission> requestList);
 
     /**
      * 权限请求结束
      *
-     * @param activity                      Activity 对象
-     * @param requestPermissions            请求的权限
+     * @param requestList                   请求的权限列表
      */
-    void onRequestPermissionEnd(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions);
+    void onRequestPermissionEnd(@NonNull Activity activity, @NonNull List<IPermission> requestList);
 }

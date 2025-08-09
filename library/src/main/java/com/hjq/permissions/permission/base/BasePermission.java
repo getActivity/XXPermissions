@@ -95,18 +95,17 @@ public abstract class BasePermission implements IPermission {
     }
 
     @Override
-    public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions, @Nullable AndroidManifestInfo androidManifestInfo) {
+    public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestList, @Nullable AndroidManifestInfo androidManifestInfo) {
         // 检查 targetSdkVersion 是否符合要求
         checkSelfByTargetSdkVersion(activity);
         // 检查 AndroidManifest.xml 是否符合要求
         if (androidManifestInfo != null) {
             List<PermissionManifestInfo> permissionManifestInfoList = androidManifestInfo.permissionManifestInfoList;
             PermissionManifestInfo currentPermissionManifestInfo = findPermissionInfoByList(permissionManifestInfoList, getPermissionName());
-            checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
-                currentPermissionManifestInfo);
+            checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
         }
         // 检查请求的权限列表是否符合要求
-        checkSelfByRequestPermissions(activity, requestPermissions);
+        checkSelfByRequestPermissions(activity, requestList);
     }
 
     /**
@@ -134,7 +133,7 @@ public abstract class BasePermission implements IPermission {
      * 检查 AndroidManifest.xml 是否符合要求，如果不合规则会抛出异常
      */
     protected void checkSelfByManifestFile(@NonNull Activity activity,
-                                           @NonNull List<IPermission> requestPermissions,
+                                           @NonNull List<IPermission> requestList,
                                            @NonNull AndroidManifestInfo androidManifestInfo,
                                            @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
                                            @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
@@ -148,7 +147,7 @@ public abstract class BasePermission implements IPermission {
     /**
      * 检查请求的权限列表是否符合要求，如果不合规则会抛出异常
      */
-    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
         // default implementation ignored
         // 默认无任何实现，交由子类自己去实现
     }

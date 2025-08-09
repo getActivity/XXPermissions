@@ -63,8 +63,10 @@ public final class PermissionDescription implements OnPermissionDescription {
     private Dialog mPermissionDialog;
 
     @Override
-    public void askWhetherRequestPermission(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
-                                            @NonNull Runnable continueRequestRunnable, @NonNull Runnable breakRequestRunnable) {
+    public void askWhetherRequestPermission(@NonNull Activity activity,
+                                            @NonNull List<IPermission> requestList,
+                                            @NonNull Runnable continueRequestRunnable,
+                                            @NonNull Runnable breakRequestRunnable) {
         // 以下情况使用 Dialog 来展示权限说明弹窗，否则使用 PopupWindow 来展示权限说明弹窗
         // 1. 如果请求的权限显示的系统界面是不透明的 Activity
         // 2. 如果当前 Activity 的屏幕是竖屏的话，并且设备的物理屏幕尺寸还小于 9 寸（目前大多数小屏平板大多数集中在 8、8.7、8.8、10 寸）
@@ -73,7 +75,7 @@ public final class PermissionDescription implements OnPermissionDescription {
             mDescriptionWindowType = DESCRIPTION_WINDOW_TYPE_DIALOG;
         } else {
             mDescriptionWindowType = DESCRIPTION_WINDOW_TYPE_POPUP;
-            for (IPermission permission : requestPermissions) {
+            for (IPermission permission : requestList) {
                 if (permission.getPermissionPageType(activity) == PermissionPageType.OPAQUE_ACTIVITY) {
                     mDescriptionWindowType = DESCRIPTION_WINDOW_TYPE_DIALOG;
                 }
@@ -86,7 +88,7 @@ public final class PermissionDescription implements OnPermissionDescription {
         }
 
         showDialog(activity, activity.getString(R.string.common_permission_description_title),
-            generatePermissionDescription(activity, requestPermissions),
+            generatePermissionDescription(activity, requestList),
             activity.getString(R.string.common_permission_confirm), (dialog, which) -> {
                 dialog.dismiss();
                 continueRequestRunnable.run();
@@ -94,12 +96,12 @@ public final class PermissionDescription implements OnPermissionDescription {
     }
 
     @Override
-    public void onRequestPermissionStart(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
+    public void onRequestPermissionStart(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
         if (mDescriptionWindowType != DESCRIPTION_WINDOW_TYPE_POPUP) {
             return;
         }
 
-        Runnable showPopupRunnable = () -> showPopupWindow(activity, generatePermissionDescription(activity, requestPermissions));
+        Runnable showPopupRunnable = () -> showPopupWindow(activity, generatePermissionDescription(activity, requestList));
         // 这里解释一下为什么要延迟一段时间再显示 PopupWindow，这是因为系统没有开放任何 API 给外层直接获取权限是否永久拒绝
         // 目前只有申请过了权限才能通过 shouldShowRequestPermissionRationale 判断是不是永久拒绝，如果此前没有申请过权限，则无法判断
         // 针对这个问题能想到最佳的解决方案是：先申请权限，如果极短的时间内，权限申请没有结束，则证明权限之前没有被用户勾选了《不再询问》
@@ -111,7 +113,7 @@ public final class PermissionDescription implements OnPermissionDescription {
     }
 
     @Override
-    public void onRequestPermissionEnd(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
+    public void onRequestPermissionEnd(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
         // 移除跟这个 Token 有关但是没有还没有执行的消息
         HANDLER.removeCallbacksAndMessages(mHandlerToken);
         // 销毁当前正在显示的弹窗
@@ -122,14 +124,13 @@ public final class PermissionDescription implements OnPermissionDescription {
     /**
      * 生成权限描述文案
      */
-    private String generatePermissionDescription(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
-        return PermissionConverter.getDescriptionsByPermissions(activity, requestPermissions);
+    private String generatePermissionDescription(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
+        return PermissionConverter.getDescriptionsByPermissions(activity, requestList);
     }
 
     /**
      * 显示 Dialog
      *
-     * @param activity                  Activity 对象
      * @param dialogTitle               对话框标题
      * @param dialogMessage             对话框消息
      * @param confirmButtonText         对话框确认按钮文本
@@ -187,7 +188,6 @@ public final class PermissionDescription implements OnPermissionDescription {
     /**
      * 显示 PopupWindow
      *
-     * @param activity              Activity 对象
      * @param content               弹窗显示的内容
      */
     private void showPopupWindow(@NonNull Activity activity, @NonNull String content) {

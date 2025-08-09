@@ -8,8 +8,8 @@ import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
-import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.util.List;
 
 /**
@@ -69,11 +69,11 @@ public final class ReadMediaVisualUserSelectedPermission extends DangerousPermis
     }
 
     @Override
-    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
-        super.checkSelfByRequestPermissions(activity, requestPermissions);
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
+        super.checkSelfByRequestPermissions(activity, requestList);
 
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_MEDIA_IMAGES) ||
-            PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_MEDIA_VIDEO)) {
+        if (PermissionUtils.containsPermission(requestList, PermissionNames.READ_MEDIA_IMAGES) ||
+            PermissionUtils.containsPermission(requestList, PermissionNames.READ_MEDIA_VIDEO)) {
             return;
         }
         // 不能单独请求 READ_MEDIA_VISUAL_USER_SELECTED 权限，需要加上 READ_MEDIA_IMAGES 或者 READ_MEDIA_VIDEO 任一权限，又或者两个都有，否则权限申请会被系统直接拒绝

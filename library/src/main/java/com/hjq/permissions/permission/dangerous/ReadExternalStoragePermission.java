@@ -90,14 +90,13 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
 
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
-                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull List<IPermission> requestList,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
-            currentPermissionManifestInfo);
+        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
         // 如果申请的是 Android 10 获取媒体位置权限，则绕过本次检查
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.ACCESS_MEDIA_LOCATION)) {
+        if (PermissionUtils.containsPermission(requestList, PermissionNames.ACCESS_MEDIA_LOCATION)) {
             return;
         }
 
@@ -133,8 +132,8 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
     }
 
     @Override
-    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
-        super.checkSelfByRequestPermissions(activity, requestPermissions);
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
+        super.checkSelfByRequestPermissions(activity, requestList);
 
         if (PermissionVersion.getTargetVersion(activity) >= PermissionVersion.ANDROID_13) {
             /*

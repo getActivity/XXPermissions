@@ -156,6 +156,6 @@ public interface IPermission extends Parcelable {
      * 检查权限请求是否合规
      */
     default void checkCompliance(@NonNull Activity activity,
-                            @NonNull List<IPermission> requestPermissions,
-                            @Nullable AndroidManifestInfo androidManifestInfo) {}
+                                 @NonNull List<IPermission> requestList,
+                                 @Nullable AndroidManifestInfo androidManifestInfo) {}
 }

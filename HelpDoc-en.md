@@ -80,13 +80,7 @@ XXPermissions.with(MainActivity.this)
         // Not yet adapted to Android 11 scoped storage needs to be called like this
         .permission(PermissionLists.getManageExternalStoragePermission())
         .request(new OnPermissionCallback() {
-
-            @Override
-            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                if (allGranted) {
-                    toast("获取存储权限成功");
-                }
-            }
+            ......
         });
 ```
 
@@ -136,16 +130,7 @@ XXPermissions.with(this)
         // Set permission request interceptor (local settings)
         .interceptor(new PermissionInterceptor())
         .request(new OnPermissionCallback() {
-
-            @Override
-            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                ......
-            }
-
-            @Override
-            public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
-                ......
-            }
+            ......
         });
 ```
 
@@ -170,26 +155,24 @@ public class XxxApplication extends Application {
 
 ```java
 XXPermissions.with(this)
-        .permission(PermissionLists.getRecordAudioPermission())
-        .permission(PermissionLists.getReadCalendarPermission())
-        .permission(PermissionLists.getWriteCalendarPermission())
-        .request(new OnPermissionCallback() {
+    .permission(PermissionLists.getRecordAudioPermission())
+    .permission(PermissionLists.getReadCalendarPermission())
+    .permission(PermissionLists.getWriteCalendarPermission())
+    .request(new OnPermissionCallback() {
 
-            @Override
-            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                if (allGranted) {
-                    toast("Acquired recording and calendar permissions successfully");
-                }
+        @Override
+        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+            if (deniedList.isEmpty()) {
+                toast("Acquired recording and calendar permissions successfully");
+                return;
             }
-
-            @Override
-            public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
-                if (doNotAskAgain && permissions.contains(PermissionLists.getRecordAudioPermission()) &&
-                        XXPermissions.isDoNotAskAgainPermissions(MainActivity.this, Permission.RECORD_AUDIO)) {
-                    toast("The recording permission request was denied, and the user checked Do not ask");
-                }
+            IPermission recordAudioPermission = PermissionLists.getRecordAudioPermission();
+            if (deniedList.contains(recordAudioPermission) &&
+                XXPermissions.isDoNotAskAgainPermission(activity, recordAudioPermission)) {
+                toast("The recording permission request was denied, and the user checked Do not ask");
             }
-        });
+        }
+    });
 ```
 
 #### Why does the new version of the framework remove the function of automatically applying for AndroidManifest permissions
@@ -221,18 +204,17 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
     }
 
     @Override
-    public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-        if (allGranted) {
+    public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+        if (deniedList.isEmpty()) {
             toast("Successfully obtained permission to take camera");
+            return;
         }
-    }
 
-    @Override
-    public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
+        boolean doNotAskAgain = XXPermissions.isDoNotAskAgainPermissions(MainActivity.this, deniedList);
         if (doNotAskAgain) {
             toast("Authorization is permanently denied, please manually grant permission to take camera");
             // If it is permanently denied, jump to the application permission system settings page
-            XXPermissions.startPermissionActivity(MainActivity.this, permissions);
+            XXPermissions.startPermissionActivity(activity, deniedList);
         } else {
             requestCameraPermission();
         }

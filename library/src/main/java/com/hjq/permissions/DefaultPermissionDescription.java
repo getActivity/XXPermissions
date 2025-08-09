@@ -14,19 +14,21 @@ import java.util.List;
 final class DefaultPermissionDescription implements OnPermissionDescription {
 
     @Override
-    public void askWhetherRequestPermission(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
-                                            @NonNull Runnable continueRequestRunnable, @NonNull Runnable breakRequestRunnable) {
+    public void askWhetherRequestPermission(@NonNull Activity activity,
+                                            @NonNull List<IPermission> requestList,
+                                            @NonNull Runnable continueRequestRunnable,
+                                            @NonNull Runnable breakRequestRunnable) {
         // 继续执行请求任务
         continueRequestRunnable.run();
     }
 
     @Override
-    public void onRequestPermissionStart(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
+    public void onRequestPermissionStart(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
         // default implementation ignored
     }
 
     @Override
-    public void onRequestPermissionEnd(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
+    public void onRequestPermissionEnd(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
         // default implementation ignored
     }
 }

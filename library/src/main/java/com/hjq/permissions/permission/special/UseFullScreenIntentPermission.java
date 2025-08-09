@@ -11,8 +11,8 @@ import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PhoneRomUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -120,11 +120,11 @@ public final class UseFullScreenIntentPermission extends SpecialPermission {
     }
 
     @Override
-    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
-        super.checkSelfByRequestPermissions(activity, requestPermissions);
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
+        super.checkSelfByRequestPermissions(activity, requestList);
         // 全屏通知权限需要通知权限一起使用（NOTIFICATION_SERVICE 或者 POST_NOTIFICATIONS）
-        if (!PermissionUtils.containsPermission(requestPermissions, PermissionNames.NOTIFICATION_SERVICE) &&
-            !PermissionUtils.containsPermission(requestPermissions, PermissionNames.POST_NOTIFICATIONS)) {
+        if (!PermissionUtils.containsPermission(requestList, PermissionNames.NOTIFICATION_SERVICE) &&
+            !PermissionUtils.containsPermission(requestList, PermissionNames.POST_NOTIFICATIONS)) {
             throw new IllegalArgumentException("The \"" + getPermissionName() + "\" needs to be used together with the notification permission. "
                 + "(\"" + PermissionNames.NOTIFICATION_SERVICE + "\" or \"" + PermissionNames.POST_NOTIFICATIONS + "\")");
         }
@@ -132,8 +132,8 @@ public final class UseFullScreenIntentPermission extends SpecialPermission {
         int thisPermissionIndex = -1;
         int notificationServicePermissionIndex = -1;
         int postNotificationsPermissionIndex = -1;
-        for (int i = 0; i < requestPermissions.size(); i++) {
-            IPermission permission = requestPermissions.get(i);
+        for (int i = 0; i < requestList.size(); i++) {
+            IPermission permission = requestList.get(i);
             if (PermissionUtils.equalsPermission(permission, getPermissionName())) {
                 thisPermissionIndex = i;
             } else if (PermissionUtils.equalsPermission(permission, PermissionNames.NOTIFICATION_SERVICE)) {

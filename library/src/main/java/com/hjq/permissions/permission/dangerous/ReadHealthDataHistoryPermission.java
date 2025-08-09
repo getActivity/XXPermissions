@@ -54,13 +54,13 @@ public final class ReadHealthDataHistoryPermission extends HealthDataBasePermiss
     }
 
     @Override
-    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
-        super.checkSelfByRequestPermissions(activity, requestPermissions);
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
+        super.checkSelfByRequestPermissions(activity, requestList);
 
         int thisPermissionIndex = -1;
         int otherHealthDataPermissionIndex = -1;
-        for (int i = 0; i < requestPermissions.size(); i++) {
-            IPermission permission = requestPermissions.get(i);
+        for (int i = 0; i < requestList.size(); i++) {
+            IPermission permission = requestList.get(i);
             if (PermissionUtils.equalsPermission(permission, this)) {
                 thisPermissionIndex = i;
             } else if (PermissionApi.isHealthPermission(permission) &&
@@ -72,7 +72,7 @@ public final class ReadHealthDataHistoryPermission extends HealthDataBasePermiss
         if (otherHealthDataPermissionIndex != -1 && otherHealthDataPermissionIndex > thisPermissionIndex) {
             // 请把 READ_HEALTH_DATA_HISTORY 权限放置在其他健康数据权限的后面
             throw new IllegalArgumentException("Please place the \"" + getPermissionName() +
-                "\" permission after the \"" + requestPermissions.get(otherHealthDataPermissionIndex) + "\" permission");
+                "\" permission after the \"" + requestList.get(otherHealthDataPermissionIndex) + "\" permission");
         }
     }
 }

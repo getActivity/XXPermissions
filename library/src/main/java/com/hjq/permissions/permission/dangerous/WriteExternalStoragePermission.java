@@ -14,8 +14,8 @@ import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
-import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.util.List;
 
 /**
@@ -108,12 +108,11 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
 
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
-                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull List<IPermission> requestList,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
-            currentPermissionManifestInfo);
+        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
         ApplicationManifestInfo applicationManifestInfo = androidManifestInfo.applicationManifestInfo;
         if (applicationManifestInfo == null) {
             return;
@@ -140,7 +139,7 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
         }
 
         // 如果申请的是 Android 10 获取媒体位置权限，则跳过后面的检查
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.ACCESS_MEDIA_LOCATION)) {
+        if (PermissionUtils.containsPermission(requestList, PermissionNames.ACCESS_MEDIA_LOCATION)) {
             return;
         }
 

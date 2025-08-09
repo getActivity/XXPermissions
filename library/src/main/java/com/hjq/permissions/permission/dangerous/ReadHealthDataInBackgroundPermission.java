@@ -73,11 +73,11 @@ public final class ReadHealthDataInBackgroundPermission extends HealthDataBasePe
 
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
-                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull List<IPermission> requestList,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
+        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
         if (getFromAndroidVersion() > getMinSdkVersion(activity, androidManifestInfo)) {
             checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.BODY_SENSORS_BACKGROUND, PermissionVersion.ANDROID_14);
@@ -85,14 +85,14 @@ public final class ReadHealthDataInBackgroundPermission extends HealthDataBasePe
     }
 
     @Override
-    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
-        super.checkSelfByRequestPermissions(activity, requestPermissions);
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
+        super.checkSelfByRequestPermissions(activity, requestList);
 
         int thisPermissionIndex = -1;
         int readHealthDataHistoryPermissionIndex = -1;
         int otherHealthDataPermissionIndex = -1;
-        for (int i = 0; i < requestPermissions.size(); i++) {
-            IPermission permission = requestPermissions.get(i);
+        for (int i = 0; i < requestList.size(); i++) {
+            IPermission permission = requestList.get(i);
             if (PermissionUtils.equalsPermission(permission, this)) {
                 thisPermissionIndex = i;
             } else if (PermissionUtils.equalsPermission(permission, PermissionNames.READ_HEALTH_DATA_HISTORY)) {
@@ -111,7 +111,7 @@ public final class ReadHealthDataInBackgroundPermission extends HealthDataBasePe
         if (otherHealthDataPermissionIndex != -1 && otherHealthDataPermissionIndex > thisPermissionIndex) {
             // 请把 READ_HEALTH_DATA_IN_BACKGROUND 权限放置在其他健康数据权限的后面
             throw new IllegalArgumentException("Please place the \"" + getPermissionName() +
-                "\" permission after the \"" + requestPermissions.get(otherHealthDataPermissionIndex) + "\" permission");
+                "\" permission after the \"" + requestList.get(otherHealthDataPermissionIndex) + "\" permission");
         }
     }
 }

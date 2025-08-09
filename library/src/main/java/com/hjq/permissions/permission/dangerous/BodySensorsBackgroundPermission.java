@@ -126,19 +126,18 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
 
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
-                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull List<IPermission> requestList,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
-            currentPermissionManifestInfo);
+        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
         // 申请后台的传感器权限必须要先注册前台的传感器权限
         checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.BODY_SENSORS);
     }
 
     @Override
-    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
-        super.checkSelfByRequestPermissions(activity, requestPermissions);
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
+        super.checkSelfByRequestPermissions(activity, requestList);
         // 当项目 targetSdkVersion >= 36 时，不能申请 BODY_SENSORS_BACKGROUND 权限，应该请求在后台读取健康数据权限：READ_HEALTH_DATA_IN_BACKGROUND
         if (PermissionVersion.getTargetVersion(activity) >= PermissionVersion.ANDROID_16) {
             throw new IllegalArgumentException("When the project targetSdkVersion is greater than or equal to " + PermissionVersion.ANDROID_16 +
@@ -147,14 +146,14 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
         }
 
         // 必须要申请前台传感器权限才能申请后台传感器权限
-        if (!PermissionUtils.containsPermission(requestPermissions, PermissionNames.BODY_SENSORS)) {
+        if (!PermissionUtils.containsPermission(requestList, PermissionNames.BODY_SENSORS)) {
             throw new IllegalArgumentException("Applying for background sensor permissions must contain \"" + PermissionNames.BODY_SENSORS + "\"");
         }
 
         int thisPermissionIndex = -1;
         int bodySensorsPermissionindex = -1;
-        for (int i = 0; i < requestPermissions.size(); i++) {
-            IPermission permission = requestPermissions.get(i);
+        for (int i = 0; i < requestList.size(); i++) {
+            IPermission permission = requestList.get(i);
             if (PermissionUtils.equalsPermission(permission, this)) {
                 thisPermissionIndex = i;
             } else if (PermissionUtils.equalsPermission(permission, PermissionNames.BODY_SENSORS)) {

@@ -86,13 +86,7 @@ XXPermissions.with(MainActivity.this)
         // 不适配 Android 11 分区存储这样写
         .permission(PermissionLists.getManageExternalStoragePermission())
         .request(new OnPermissionCallback() {
-
-            @Override
-            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                if (allGranted) {
-                    toast("获取存储权限成功");
-                }
-            }
+            ......
         });
 ```
 
@@ -142,16 +136,7 @@ XXPermissions.with(this)
         // 设置权限请求拦截器（局部设置）
         .interceptor(new PermissionInterceptor())
         .request(new OnPermissionCallback() {
-
-            @Override
-            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                ......
-            }
-
-            @Override
-            public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
-                ......
-            }
+            ......
         });
 ```
 
@@ -176,26 +161,24 @@ public class XxxApplication extends Application {
 
 ```java
 XXPermissions.with(this)
-        .permission(PermissionLists.getRecordAudioPermission())
-        .permission(PermissionLists.getReadCalendarPermission())
-        .permission(PermissionLists.getWriteCalendarPermission())
-        .request(new OnPermissionCallback() {
+    .permission(PermissionLists.getRecordAudioPermission())
+    .permission(PermissionLists.getReadCalendarPermission())
+    .permission(PermissionLists.getWriteCalendarPermission())
+    .request(new OnPermissionCallback() {
 
-            @Override
-            public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-                if (allGranted) {
-                    toast("获取录音和日历权限成功");
-                }
+        @Override
+        public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+            if (deniedList.isEmpty()) {
+                toast("获取录音和日历权限成功");
+                return;
             }
-
-            @Override
-            public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
-                if (doNotAskAgain && permissions.contains(PermissionLists.getRecordAudioPermission()) &&
-                        XXPermissions.isDoNotAskAgainPermissions(MainActivity.this, Permission.RECORD_AUDIO)) {
-                    toast("录音权限请求被拒绝了，并且用户勾选了不再询问");
-                }
+            IPermission recordAudioPermission = PermissionLists.getRecordAudioPermission();
+            if (deniedList.contains(recordAudioPermission) &&
+                XXPermissions.isDoNotAskAgainPermission(activity, recordAudioPermission)) {
+                toast("录音权限请求被拒绝了，并且用户勾选了不再询问");
             }
-        });
+        }
+    });
 ```
 
 #### 为什么不兼容 Android 6.0 以下的危险权限申请
@@ -235,18 +218,17 @@ public class PermissionActivity extends AppCompatActivity implements OnPermissio
     }
 
     @Override
-    public void onGranted(@NonNull List<IPermission> permissions, boolean allGranted) {
-        if (allGranted) {
+    public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+        if (deniedList.isEmpty()) {
             toast("获取拍照权限成功");
+            return;
         }
-    }
 
-    @Override
-    public void onDenied(@NonNull List<IPermission> permissions, boolean doNotAskAgain) {
+        boolean doNotAskAgain = XXPermissions.isDoNotAskAgainPermissions(MainActivity.this, deniedList);
         if (doNotAskAgain) {
             toast("被永久拒绝授权，请手动授予拍照权限");
             // 如果是被永久拒绝就跳转到应用权限系统设置页面
-            XXPermissions.startPermissionActivity(MainActivity.this, permissions);
+            XXPermissions.startPermissionActivity(activity, deniedList);
         } else {
             requestCameraPermission();
         }
@@ -348,46 +330,24 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
     private static final String SP_NAME_PERMISSION_REQUEST_TIME_RECORD = "permission_request_time_record";
 
     @Override
-    public void launchPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
-                                        @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
-                                        @NonNull OnPermissionDescription permissionDescription, 
-                                        @Nullable OnPermissionCallback callback) {
+    public void onRequestPermissionStart(@NonNull Activity activity,
+                                         @NonNull List<IPermission> requestList,
+                                         @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
+                                         @NonNull OnPermissionDescription permissionDescription,
+                                         @Nullable OnPermissionCallback callback) {
         SharedPreferences sharedPreferences = activity.getSharedPreferences(SP_NAME_PERMISSION_REQUEST_TIME_RECORD, Context.MODE_PRIVATE);
-        String permissionKey = String.valueOf(requestPermissions);
+        String permissionKey = String.valueOf(requestList);
         long lastRequestPermissionTime = sharedPreferences.getLong(permissionKey, 0);
         if (System.currentTimeMillis() - lastRequestPermissionTime <= 1000 * 60 * 60 * 24 * 2) {
-            List<IPermission> deniedPermissions = XXPermissions.getDeniedPermissions(activity, requestPermissions);
-            List<IPermission> grantedPermissions = new ArrayList<>(requestPermissions);
-            grantedPermissions.removeAll(deniedPermissions);
-            deniedPermissionRequest(activity, requestPermissions, deniedPermissions, true, callback);
-            if (!grantedPermissions.isEmpty()) {
-                grantedPermissionRequest(activity, requestPermissions, grantedPermissions, false, callback);
-            }
+            List<IPermission> deniedList = XXPermissions.getDeniedPermissions(activity, requestList);
+            List<IPermission> grantedList = new ArrayList<>(requestList);
+            grantedList.removeAll(deniedList);
+            onRequestPermissionEnd(activity, true, requestList, grantedList, deniedList, callback);
             return;
         }
         sharedPreferences.edit().putLong(permissionKey, System.currentTimeMillis()).apply();
         // 如果之前没有申请过权限，或者距离上次申请已经超过了 48 个小时，则进行申请权限
-        dispatchPermissionRequest(activity, requestPermissions, fragmentFactory, permissionDescription, callback);
-    }
-
-    @Override
-    public void grantedPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
-                                         @NonNull List<IPermission> grantedPermissions, boolean allGranted,
-                                         @Nullable OnPermissionCallback callback) {
-        if (callback == null) {
-            return;
-        }
-        callback.onGranted(grantedPermissions, allGranted);
-    }
-
-    @Override
-    public void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
-                                        @NonNull List<IPermission> deniedPermissions, boolean doNotAskAgain,
-                                        @Nullable OnPermissionCallback callback) {
-        if (callback == null) {
-            return;
-        }
-        callback.onDenied(deniedPermissions, doNotAskAgain);
+        dispatchPermissionRequest(activity, requestList, fragmentFactory, permissionDescription, callback);
     }
 }
 ```

@@ -117,11 +117,11 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
 
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
-                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull List<IPermission> requestList,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
+        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionManifestInfoList,
             currentPermissionManifestInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
         if (getFromAndroidVersion() > getMinSdkVersion(activity, androidManifestInfo)) {
@@ -130,7 +130,7 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
         }
 
         // 如果申请的是 Android 10 获取媒体位置权限，则绕过本次检查
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.ACCESS_MEDIA_LOCATION)) {
+        if (PermissionUtils.containsPermission(requestList, PermissionNames.ACCESS_MEDIA_LOCATION)) {
             return;
         }
 
@@ -151,21 +151,21 @@ public final class ManageExternalStoragePermission extends SpecialPermission {
     }
 
     @Override
-    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
-        super.checkSelfByRequestPermissions(activity, requestPermissions);
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
+        super.checkSelfByRequestPermissions(activity, requestList);
         // 检测是否有旧版的存储权限，有的话直接抛出异常，请不要自己动态申请这两个权限
         // 框架会在 Android 10 以下的版本上自动添加并申请这两个权限
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_EXTERNAL_STORAGE) ||
-            PermissionUtils.containsPermission(requestPermissions, PermissionNames.WRITE_EXTERNAL_STORAGE)) {
+        if (PermissionUtils.containsPermission(requestList, PermissionNames.READ_EXTERNAL_STORAGE) ||
+            PermissionUtils.containsPermission(requestList, PermissionNames.WRITE_EXTERNAL_STORAGE)) {
             throw new IllegalArgumentException("If you have applied for \"" + getPermissionName() + "\" permissions, " +
                                                 "do not apply for the \"" + PermissionNames.READ_EXTERNAL_STORAGE +
                                                 "\" or \"" + PermissionNames.WRITE_EXTERNAL_STORAGE + "\" permissions");
         }
 
         // 因为 MANAGE_EXTERNAL_STORAGE 权限范围很大，有了它就可以读取媒体文件，不需要再叠加申请媒体权限
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_MEDIA_IMAGES) ||
-            PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_MEDIA_VIDEO) ||
-            PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_MEDIA_AUDIO)) {
+        if (PermissionUtils.containsPermission(requestList, PermissionNames.READ_MEDIA_IMAGES) ||
+            PermissionUtils.containsPermission(requestList, PermissionNames.READ_MEDIA_VIDEO) ||
+            PermissionUtils.containsPermission(requestList, PermissionNames.READ_MEDIA_AUDIO)) {
             throw new IllegalArgumentException("Because the \"" + getPermissionName() + "\" permission range is very large, "
                 + "you can read media files with it, and there is no need to apply for additional media permissions.");
         }

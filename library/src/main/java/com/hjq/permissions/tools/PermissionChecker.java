@@ -83,17 +83,17 @@ public final class PermissionChecker {
     /**
      * 检查传入的权限是否符合要求
      */
-    public static void checkPermissionList(@NonNull Activity activity, @Nullable List<IPermission> requestPermissions, @Nullable AndroidManifestInfo androidManifestInfo) {
-        if (requestPermissions == null || requestPermissions.isEmpty()) {
+    public static void checkPermissionList(@NonNull Activity activity, @Nullable List<IPermission> requestList, @Nullable AndroidManifestInfo androidManifestInfo) {
+        if (requestList == null || requestList.isEmpty()) {
             // 不传任何权限，就想动态申请权限？
             throw new IllegalArgumentException("The requested permission cannot be empty");
         }
 
-        for (IPermission permission : requestPermissions) {
+        for (IPermission permission : requestList) {
             // 检查权限序列化实现是否有问题
             checkPermissionParcelable(permission);
             // 让权限自己检查一下自己
-            permission.checkCompliance(activity, requestPermissions, androidManifestInfo);
+            permission.checkCompliance(activity, requestList, androidManifestInfo);
         }
     }
 

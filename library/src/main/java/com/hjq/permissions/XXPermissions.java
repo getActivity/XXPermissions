@@ -115,7 +115,7 @@ public final class XXPermissions {
 
     /** 申请的权限列表 */
     @NonNull
-    private final List<IPermission> mPermissions = new ArrayList<>();
+    private final List<IPermission> mRequestList = new ArrayList<>();
 
     /** Context 对象 */
     @Nullable
@@ -160,8 +160,8 @@ public final class XXPermissions {
      */
     public XXPermissions permission(@NonNull IPermission permission) {
         // 这种写法的作用：如果出现重复添加的权限，则以最后添加的权限为主
-        mPermissions.remove(permission);
-        mPermissions.add(permission);
+        mRequestList.remove(permission);
+        mRequestList.add(permission);
         return this;
     }
 
@@ -234,7 +234,7 @@ public final class XXPermissions {
         final OnPermissionDescription permissionDescription = mPermissionDescription;
 
         // 权限请求列表（为什么直接不用字段？因为框架要兼容新旧权限，在低版本下会自动添加旧权限申请，为了避免重复添加）
-        List<IPermission> permissions = new ArrayList<>(mPermissions);
+        List<IPermission> requestList = new ArrayList<>(mRequestList);
 
         // 从 Context 对象中获得 Activity 对象
         Activity activity = PermissionUtils.findActivity(context);
@@ -248,7 +248,7 @@ public final class XXPermissions {
                 PermissionChecker.checkSupportFragmentStatus(supportFragment);
             }
             // 检查传入的权限是否正常
-            PermissionChecker.checkPermissionList(activity, permissions, AndroidManifestParser.getAndroidManifestInfo(context));
+            PermissionChecker.checkPermissionList(activity, requestList, AndroidManifestParser.getAndroidManifestInfo(context));
         }
 
         // 检查 Activity 是不是不可用
@@ -257,13 +257,13 @@ public final class XXPermissions {
         }
 
         // 优化所申请的权限列表
-        PermissionApi.addOldPermissionsByNewPermissions(activity, permissions);
+        PermissionApi.addOldPermissionsByNewPermissions(activity, requestList);
 
         // 判断要申请的权限是否都授予了
-        if (PermissionApi.isGrantedPermissions(context, permissions)) {
+        if (PermissionApi.isGrantedPermissions(context, requestList)) {
             // 如果是的话，就不申请权限，而是通知权限申请成功
-            permissionInterceptor.grantedPermissionRequest(activity, permissions, permissions, true, callback);
-            permissionInterceptor.finishPermissionRequest(activity, permissions, true, callback);
+            permissionInterceptor.onRequestPermissionEnd(activity, true, requestList,
+                                                          requestList, new ArrayList<>(), callback);
             return;
         }
 
@@ -281,7 +281,7 @@ public final class XXPermissions {
         final PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, supportFragment, appFragment);
 
         // 申请没有授予过的权限
-        permissionInterceptor.launchPermissionRequest(activity, permissions, fragmentFactory, permissionDescription, callback);
+        permissionInterceptor.onRequestPermissionStart(activity, requestList, fragmentFactory, permissionDescription, callback);
     }
 
     /**
@@ -370,7 +370,7 @@ public final class XXPermissions {
     /**
      * 判断一个或多个权限是否被勾选了不再询问的选项
      *
-     * 注意不能在请求权限之前调用，一定要在 {@link OnPermissionCallback#onDenied(List, boolean)} 方法中调用
+     * 注意不能在请求权限之前调用，一定要在 {@link OnPermissionCallback#onResult(List, List)} 方法中调用
      * 如果你在应用启动后，没有申请过这个权限，然后去判断它有没有勾选不再询问的选项，这样系统会一直返回 true，也就是不再询问
      * 但是实际上还能继续申请，系统只是不想让你知道权限是否勾选了不再询问的选项，你必须要申请过这个权限，才能去判断这个权限是否勾选了不再询问的选项
      */
@@ -435,13 +435,13 @@ public final class XXPermissions {
 
     public static void startPermissionActivity(@NonNull Activity activity,
                                                @NonNull IPermission permission,
-                                               @Nullable OnPermissionPageCallback callback) {
+                                               @Nullable OnPermissionCallback callback) {
         startPermissionActivity(activity, PermissionUtils.asArrayList(permission), callback);
     }
 
     public static void startPermissionActivity(@NonNull Activity activity,
                                                @NonNull List<IPermission> permissions,
-                                               @Nullable OnPermissionPageCallback callback) {
+                                               @Nullable OnPermissionCallback callback) {
         if (PermissionUtils.isActivityUnavailable(activity)) {
             return;
         }
@@ -494,13 +494,13 @@ public final class XXPermissions {
 
     public static void startPermissionActivity(@NonNull Fragment appFragment,
                                                 @NonNull IPermission permission,
-                                                @Nullable OnPermissionPageCallback callback) {
+                                                @Nullable OnPermissionCallback callback) {
         startPermissionActivity(appFragment, PermissionUtils.asArrayList(permission), callback);
     }
 
     public static void startPermissionActivity(@NonNull Fragment appFragment,
                                                @NonNull List<IPermission> permissions,
-                                               @Nullable OnPermissionPageCallback callback) {
+                                               @Nullable OnPermissionCallback callback) {
         if (PermissionUtils.isFragmentUnavailable(appFragment)) {
             return;
         }
@@ -557,13 +557,13 @@ public final class XXPermissions {
 
     public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
                                                @NonNull IPermission permission,
-                                               @Nullable OnPermissionPageCallback callback) {
+                                               @Nullable OnPermissionCallback callback) {
         startPermissionActivity(supportFragment, PermissionUtils.asArrayList(permission), callback);
     }
 
     public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
                                                @NonNull List<IPermission> permissions,
-                                               @Nullable OnPermissionPageCallback callback) {
+                                               @Nullable OnPermissionCallback callback) {
         if (PermissionUtils.isFragmentUnavailable(supportFragment)) {
             return;
         }
@@ -623,15 +623,21 @@ public final class XXPermissions {
      * 派发权限设置页回调
      */
     private static void dispatchPermissionPageCallback(@NonNull Context context,
-                                                        @NonNull List<IPermission> permissions,
-                                                        @Nullable OnPermissionPageCallback callback) {
+                                                       @NonNull List<IPermission> permissions,
+                                                       @Nullable OnPermissionCallback callback) {
         if (callback == null) {
             return;
         }
-        if (isGrantedPermissions(context, permissions)) {
-            callback.onGranted();
-        } else {
-            callback.onDenied();
+        List<IPermission> grantedList = new ArrayList<>(permissions.size());
+        List<IPermission> deniedList = new ArrayList<>(permissions.size());
+        // 遍历请求的权限，并且根据权限的授权状态进行分类
+        for (IPermission permission : permissions) {
+            if (permission.isGrantedPermission(context, false)) {
+                grantedList.add(permission);
+            } else {
+                deniedList.add(permission);
+            }
         }
+        callback.onResult(grantedList, deniedList);
     }
 }

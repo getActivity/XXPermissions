@@ -8,12 +8,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
-import com.hjq.permissions.tools.PermissionVersion;
-import com.hjq.permissions.tools.PermissionUtils;
-import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionLists;
+import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
+import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.util.List;
 
 /**
@@ -78,12 +78,11 @@ public final class ReadMediaAudioPermission extends DangerousPermission {
 
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
-                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull List<IPermission> requestList,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList,
-            currentPermissionManifestInfo);
+        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
         if (getFromAndroidVersion() > getMinSdkVersion(activity, androidManifestInfo)) {
             checkPermissionRegistrationStatus(permissionManifestInfoList, PermissionNames.READ_EXTERNAL_STORAGE, PermissionVersion.ANDROID_12_L);
@@ -91,10 +90,10 @@ public final class ReadMediaAudioPermission extends DangerousPermission {
     }
 
     @Override
-    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions) {
-        super.checkSelfByRequestPermissions(activity, requestPermissions);
+    protected void checkSelfByRequestPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
+        super.checkSelfByRequestPermissions(activity, requestList);
         // 检测是否有添加读取外部存储权限，有的话直接抛出异常，请不要自己手动添加这个权限，框架会在 Android 13 以下的版本上自动添加并申请这个权限
-        if (PermissionUtils.containsPermission(requestPermissions, PermissionNames.READ_EXTERNAL_STORAGE)) {
+        if (PermissionUtils.containsPermission(requestList, PermissionNames.READ_EXTERNAL_STORAGE)) {
             throw new IllegalArgumentException("You have added the \"" + getPermissionName() + "\" permission, "
                 + "please do not add the \"" + PermissionNames.READ_EXTERNAL_STORAGE + "\" permission, "
                 + "this conflicts with the framework's automatic compatibility policy.");

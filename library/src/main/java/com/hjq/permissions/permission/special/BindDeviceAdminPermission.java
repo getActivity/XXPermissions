@@ -114,8 +114,8 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
     }
 
     @Override
-    public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions, @Nullable AndroidManifestInfo androidManifestInfo) {
-        super.checkCompliance(activity, requestPermissions, androidManifestInfo);
+    public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestList, @Nullable AndroidManifestInfo androidManifestInfo) {
+        super.checkCompliance(activity, requestList, androidManifestInfo);
         if (TextUtils.isEmpty(mDeviceAdminReceiverClassName)) {
             throw new IllegalArgumentException("Pass the BroadcastReceiverClass parameter as empty");
         }
@@ -126,11 +126,11 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
 
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
-                                            @NonNull List<IPermission> requestPermissions,
+                                            @NonNull List<IPermission> requestList,
                                             @NonNull AndroidManifestInfo androidManifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionManifestInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionManifestInfo) {
-        super.checkSelfByManifestFile(activity, requestPermissions, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
+        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionManifestInfoList, currentPermissionManifestInfo);
 
         List<BroadcastReceiverManifestInfo> broadcastReceiverManifestInfoList = androidManifestInfo.broadcastReceiverManifestInfoList;
         for (BroadcastReceiverManifestInfo broadcastReceiverManifestInfo : broadcastReceiverManifestInfoList) {

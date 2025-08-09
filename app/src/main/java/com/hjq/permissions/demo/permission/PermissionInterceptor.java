@@ -16,7 +16,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.OnPermissionInterceptor;
-import com.hjq.permissions.OnPermissionPageCallback;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.permissions.demo.R;
 import com.hjq.permissions.demo.WindowLifecycleManager;
@@ -35,15 +34,20 @@ import java.util.List;
 public final class PermissionInterceptor implements OnPermissionInterceptor {
 
     @Override
-    public void deniedPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
-                                        @NonNull List<IPermission> deniedPermissions, boolean doNotAskAgain,
-                                        @Nullable OnPermissionCallback callback) {
+    public void onRequestPermissionEnd(@NonNull Activity activity, boolean skipRequest,
+                                       @NonNull List<IPermission> requestList,
+                                       @NonNull List<IPermission> grantedList,
+                                       @NonNull List<IPermission> deniedList,
+                                       @Nullable OnPermissionCallback callback) {
         if (callback != null) {
-            // 回调失败给外层监听器
-            callback.onDenied(deniedPermissions, doNotAskAgain);
+            callback.onResult(grantedList, deniedList);
         }
 
-        String permissionHint = generatePermissionHint(activity, deniedPermissions, doNotAskAgain);
+        if (deniedList.isEmpty()) {
+            return;
+        }
+        boolean doNotAskAgain = XXPermissions.isDoNotAskAgainPermissions(activity, deniedList);
+        String permissionHint = generatePermissionHint(activity, deniedList, doNotAskAgain);
         if (!doNotAskAgain) {
             // 如果没有勾选不再询问选项，就弹 Toast 提示给用户
             Toaster.show(permissionHint);
@@ -51,12 +55,14 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
         }
 
         // 如果勾选了不再询问选项，就弹 Dialog 引导用户去授权
-        showPermissionSettingDialog(activity, requestPermissions, deniedPermissions, callback, permissionHint);
+        showPermissionSettingDialog(activity, requestList, deniedList, callback, permissionHint);
     }
 
-    private void showPermissionSettingDialog(@NonNull Activity activity, @NonNull List<IPermission> requestPermissions,
-                                            @NonNull List<IPermission> deniedPermissions, @Nullable OnPermissionCallback callback,
-                                            @NonNull String permissionHint) {
+    private void showPermissionSettingDialog(@NonNull Activity activity, 
+                                             @NonNull List<IPermission> requestList,
+                                             @NonNull List<IPermission> deniedList,
+                                             @Nullable OnPermissionCallback callback,
+                                             @NonNull String permissionHint) {
         if (activity.isFinishing() || activity.isDestroyed()) {
             return;
         }
@@ -65,23 +71,24 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
         String confirmButtonText = activity.getString(R.string.common_permission_go_to_authorization);
         DialogInterface.OnClickListener confirmListener = (dialog, which) -> {
             dialog.dismiss();
-            XXPermissions.startPermissionActivity(activity, deniedPermissions, new OnPermissionPageCallback() {
+            XXPermissions.startPermissionActivity(activity, deniedList, new OnPermissionCallback() {
 
                 @Override
-                public void onGranted() {
+                public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                    List<IPermission> latestDeniedList = XXPermissions.getDeniedPermissions(activity, requestList);
+
+                    if (!latestDeniedList.isEmpty()) {
+                        // 递归显示对话框，让提示用户授权，只不过对话框是可取消的，用户不想授权了，随时可以点击返回键或者对话框蒙层来取消显示
+                        showPermissionSettingDialog(activity, requestList, latestDeniedList, callback,
+                            generatePermissionHint(activity, latestDeniedList, true));
+                        return;
+                    }
+
                     if (callback == null) {
                         return;
                     }
                     // 用户全部授权了，回调成功给外层监听器，免得用户还要再发起权限申请
-                    callback.onGranted(requestPermissions, true);
-                }
-
-                @Override
-                public void onDenied() {
-                    List<IPermission> latestDeniedPermissions = XXPermissions.getDeniedPermissions(activity, requestPermissions);
-                    // 递归显示对话框，让提示用户授权，只不过对话框是可取消的，用户不想授权了，随时可以点击返回键或者对话框蒙层来取消显示
-                    showPermissionSettingDialog(activity, requestPermissions, latestDeniedPermissions, callback,
-                        generatePermissionHint(activity, latestDeniedPermissions, true));
+                    callback.onResult(requestList, latestDeniedList);
                 }
             });
         };
@@ -118,12 +125,12 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
      * 生成权限提示文案
      */
     @NonNull
-    private String generatePermissionHint(@NonNull Activity activity, @NonNull List<IPermission> deniedPermissions, boolean doNotAskAgain) {
-        int deniedPermissionCount = deniedPermissions.size();
+    private String generatePermissionHint(@NonNull Activity activity, @NonNull List<IPermission> deniedList, boolean doNotAskAgain) {
+        int deniedPermissionCount = deniedList.size();
         int deniedLocationPermissionCount = 0;
         int deniedSensorsPermissionCount = 0;
         int deniedHealthPermissionCount = 0;
-        for (IPermission deniedPermission : deniedPermissions) {
+        for (IPermission deniedPermission : deniedList) {
             String permissionGroup = deniedPermission.getPermissionGroup();
             if (TextUtils.isEmpty(permissionGroup)) {
                 continue;
@@ -139,12 +146,12 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
 
         if (deniedLocationPermissionCount == deniedPermissionCount && VERSION.SDK_INT >= VERSION_CODES.Q) {
             if (deniedLocationPermissionCount == 1) {
-                if (XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.ACCESS_BACKGROUND_LOCATION)) {
+                if (XXPermissions.equalsPermission(deniedList.get(0), PermissionNames.ACCESS_BACKGROUND_LOCATION)) {
                     return activity.getString(R.string.common_permission_fail_hint_1,
                                             activity.getString(R.string.common_permission_location_background),
                                             getBackgroundPermissionOptionLabel(activity));
                 } else if (VERSION.SDK_INT >= VERSION_CODES.S &&
-                    XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.ACCESS_FINE_LOCATION)) {
+                    XXPermissions.equalsPermission(deniedList.get(0), PermissionNames.ACCESS_FINE_LOCATION)) {
                     // 如果请求的定位权限中，既包含了精确定位权限，又包含了模糊定位权限或者后台定位权限，
                     // 但是用户只同意了模糊定位权限的情况或者后台定位权限，并没有同意精确定位权限的情况，就提示用户开启确切位置选项
                     // 需要注意的是 Android 12 才将模糊定位权限和精确定位权限的授权选项进行分拆，之前的版本没有区分得那么仔细
@@ -153,9 +160,9 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
                                             activity.getString(R.string.common_permission_location_fine_option));
                 }
             } else {
-                if (XXPermissions.containsPermission(deniedPermissions, PermissionNames.ACCESS_BACKGROUND_LOCATION)) {
+                if (XXPermissions.containsPermission(deniedList, PermissionNames.ACCESS_BACKGROUND_LOCATION)) {
                     if (VERSION.SDK_INT >= VERSION_CODES.S &&
-                        XXPermissions.containsPermission(deniedPermissions, PermissionNames.ACCESS_FINE_LOCATION)) {
+                        XXPermissions.containsPermission(deniedList, PermissionNames.ACCESS_FINE_LOCATION)) {
                         return activity.getString(R.string.common_permission_fail_hint_2,
                                                 activity.getString(R.string.common_permission_location),
                                                 getBackgroundPermissionOptionLabel(activity),
@@ -169,7 +176,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
             }
         } else if (deniedSensorsPermissionCount == deniedPermissionCount && VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
             if (deniedPermissionCount == 1) {
-                if (XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.BODY_SENSORS_BACKGROUND)) {
+                if (XXPermissions.equalsPermission(deniedList.get(0), PermissionNames.BODY_SENSORS_BACKGROUND)) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
                         return activity.getString(R.string.common_permission_fail_hint_1,
                                                 activity.getString(R.string.common_permission_health_data_background),
@@ -197,28 +204,28 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
             
             switch (deniedPermissionCount) {
                 case 1:
-                    if (XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.READ_HEALTH_DATA_IN_BACKGROUND)) {
+                    if (XXPermissions.equalsPermission(deniedList.get(0), PermissionNames.READ_HEALTH_DATA_IN_BACKGROUND)) {
                         return activity.getString(R.string.common_permission_fail_hint_3,
                                                 activity.getString(R.string.common_permission_health_data_background),
                                                 activity.getString(R.string.common_permission_health_data_background_option));
-                    } else if (XXPermissions.equalsPermission(deniedPermissions.get(0), PermissionNames.READ_HEALTH_DATA_HISTORY)) {
+                    } else if (XXPermissions.equalsPermission(deniedList.get(0), PermissionNames.READ_HEALTH_DATA_HISTORY)) {
                         return activity.getString(R.string.common_permission_fail_hint_3,
                                                 activity.getString(R.string.common_permission_health_data_past),
                                                 activity.getString(R.string.common_permission_health_data_past_option));
                     }
                     break;
                 case 2:
-                    if (XXPermissions.containsPermission(deniedPermissions, PermissionNames.READ_HEALTH_DATA_HISTORY) &&
-                        XXPermissions.containsPermission(deniedPermissions, PermissionNames.READ_HEALTH_DATA_IN_BACKGROUND)) {
+                    if (XXPermissions.containsPermission(deniedList, PermissionNames.READ_HEALTH_DATA_HISTORY) &&
+                        XXPermissions.containsPermission(deniedList, PermissionNames.READ_HEALTH_DATA_IN_BACKGROUND)) {
                         return activity.getString(R.string.common_permission_fail_hint_3,
                             activity.getString(R.string.common_permission_health_data_past) + activity.getString(R.string.common_permission_and) + activity.getString(R.string.common_permission_health_data_background),
                             activity.getString(R.string.common_permission_health_data_past_option) + activity.getString(R.string.common_permission_and) + activity.getString(R.string.common_permission_health_data_background_option));
-                    } else if (XXPermissions.containsPermission(deniedPermissions, PermissionNames.READ_HEALTH_DATA_HISTORY)) {
+                    } else if (XXPermissions.containsPermission(deniedList, PermissionNames.READ_HEALTH_DATA_HISTORY)) {
                         return activity.getString(R.string.common_permission_fail_hint_2,
                                         activity.getString(R.string.common_permission_health_data) + activity.getString(R.string.common_permission_and) + activity.getString(R.string.common_permission_health_data_past),
                                                     activity.getString(R.string.common_permission_allow_all_option),
                                                     activity.getString(R.string.common_permission_health_data_background_option));
-                    } else if (XXPermissions.containsPermission(deniedPermissions, PermissionNames.READ_HEALTH_DATA_IN_BACKGROUND)) {
+                    } else if (XXPermissions.containsPermission(deniedList, PermissionNames.READ_HEALTH_DATA_IN_BACKGROUND)) {
                         return activity.getString(R.string.common_permission_fail_hint_2,
                                                 activity.getString(R.string.common_permission_health_data) + activity.getString(R.string.common_permission_and) + activity.getString(R.string.common_permission_health_data_background),
                                                 activity.getString(R.string.common_permission_allow_all_option),
@@ -226,8 +233,8 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
                     }
                     break;
                 default:
-                    if (XXPermissions.containsPermission(deniedPermissions, PermissionNames.READ_HEALTH_DATA_HISTORY) &&
-                        XXPermissions.containsPermission(deniedPermissions, PermissionNames.READ_HEALTH_DATA_IN_BACKGROUND)) {
+                    if (XXPermissions.containsPermission(deniedList, PermissionNames.READ_HEALTH_DATA_HISTORY) &&
+                        XXPermissions.containsPermission(deniedList, PermissionNames.READ_HEALTH_DATA_IN_BACKGROUND)) {
                         return activity.getString(R.string.common_permission_fail_hint_2,
                             activity.getString(R.string.common_permission_health_data) + activity.getString(R.string.common_permission_and) + activity.getString(R.string.common_permission_health_data_past) + activity.getString(R.string.common_permission_and) + activity.getString(R.string.common_permission_health_data_background),
                             activity.getString(R.string.common_permission_allow_all_option),
@@ -242,7 +249,7 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
 
         return activity.getString(doNotAskAgain ? R.string.common_permission_fail_assign_hint_1 :
                                                 R.string.common_permission_fail_assign_hint_2,
-                                                PermissionConverter.getNickNamesByPermissions(activity, deniedPermissions));
+                                                PermissionConverter.getNickNamesByPermissions(activity, deniedList));
     }
 
     /**
