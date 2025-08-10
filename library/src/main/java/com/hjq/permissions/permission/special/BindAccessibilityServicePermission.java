@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.IntentFilterManifestInfo;
+import com.hjq.permissions.manifest.node.MetaDataManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.manifest.node.ServiceManifestInfo;
 import com.hjq.permissions.permission.PermissionNames;
@@ -172,16 +173,37 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
                 }
             }
 
-            if (registeredAccessibilityServiceAction) {
-                // 符合要求，中断所有的循环并返回，避免走到后面的抛异常代码
-                return;
+            if (!registeredAccessibilityServiceAction) {
+                String xmlCode = "\t\t<intent-filter>\n"
+                               + "\t\t    <action android:name=\"" + action + "\" />\n"
+                               + "\t\t</intent-filter>";
+                throw new IllegalArgumentException("Please add an intent filter for \"" + mAccessibilityServiceClassName +
+                                                    "\" in the AndroidManifest.xml file.\n" + xmlCode);
             }
 
-            String xmlCode = "\t\t<intent-filter>\n"
-                           + "\t\t    <action android:name=\"" + action + "\" />\n"
-                           + "\t\t</intent-filter>";
-            throw new IllegalArgumentException("Please add an intent filter for \"" + mAccessibilityServiceClassName +
-                                               "\" in the AndroidManifest.xml file.\n" + xmlCode);
+            String metaDataName = AccessibilityService.SERVICE_META_DATA;
+            // 当前是否注册了无障碍服务的 MetaData
+            boolean registeredAccessibilityServiceMetaData = false;
+            List<MetaDataManifestInfo> metaDataInfoList = serviceManifestInfo.metaDataInfoList;
+            if (metaDataInfoList != null) {
+                for (MetaDataManifestInfo metaDataInfo : metaDataInfoList) {
+                    if (metaDataName.equals(metaDataInfo.name) && metaDataInfo.resource != 0) {
+                        registeredAccessibilityServiceMetaData = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!registeredAccessibilityServiceMetaData) {
+                String xmlCode = "\t\t<meta-data>\n"
+                               + "\t\t    android:name=\"" + metaDataName + "\"\n"
+                               + "\t\t    android:resource=\"@xml/accessibility_service_config" + "\""+ " />";
+                throw new IllegalArgumentException("Please add an meta data for \"" + mAccessibilityServiceClassName +
+                                                   "\" in the AndroidManifest.xml file.\n" + xmlCode);
+            }
+
+            // 符合要求，中断所有的循环并返回，避免走到后面的抛异常代码
+            return;
         }
 
         // 这个 Service 组件没有在清单文件中注册
