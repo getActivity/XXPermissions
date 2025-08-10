@@ -11,13 +11,14 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
+import com.hjq.permissions.manifest.node.IntentFilterManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.manifest.node.ServiceManifestInfo;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -142,19 +143,45 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
 
         List<ServiceManifestInfo> serviceManifestInfoList = androidManifestInfo.serviceManifestInfoList;
         for (ServiceManifestInfo serviceManifestInfo : serviceManifestInfoList) {
+
             if (serviceManifestInfo == null) {
                 continue;
             }
+
             if (!PermissionUtils.reverseEqualsString(mAccessibilityServiceClassName, serviceManifestInfo.name)) {
                 // 不是目标的 Service，继续循环
                 continue;
             }
+
             if (serviceManifestInfo.permission == null || !PermissionUtils.equalsPermission(this, serviceManifestInfo.permission)) {
                 // 这个 Service 组件注册的 permission 节点为空或者错误
                 throw new IllegalArgumentException("Please register permission node in the AndroidManifest.xml file, for example: "
                     + "<service android:name=\"" + mAccessibilityServiceClassName + "\" android:permission=\"" + getPermissionName() + "\" />");
             }
-            return;
+
+            String action = "android.accessibilityservice.AccessibilityService";
+            // 当前是否注册了无障碍服务的意图
+            boolean registeredAccessibilityServiceAction = false;
+            List<IntentFilterManifestInfo> intentFilterManifestInfoList = serviceManifestInfo.intentFilterManifestInfoList;
+            if (intentFilterManifestInfoList != null) {
+                for (IntentFilterManifestInfo intentFilterManifestInfo : intentFilterManifestInfoList) {
+                    if (intentFilterManifestInfo.actionList.contains(action)) {
+                        registeredAccessibilityServiceAction = true;
+                        break;
+                    }
+                }
+            }
+
+            if (registeredAccessibilityServiceAction) {
+                // 符合要求，中断所有的循环并返回，避免走到后面的抛异常代码
+                return;
+            }
+
+            String xmlCode = "\t\t<intent-filter>\n"
+                           + "\t\t    <action android:name=\"" + action + "\" />\n"
+                           + "\t\t</intent-filter>";
+            throw new IllegalArgumentException("Please add an intent filter for \"" + mAccessibilityServiceClassName +
+                                               "\" in the AndroidManifest.xml file.\n" + xmlCode);
         }
 
         // 这个 Service 组件没有在清单文件中注册
