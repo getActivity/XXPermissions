@@ -12,12 +12,13 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.BroadcastReceiverManifestInfo;
+import com.hjq.permissions.manifest.node.IntentFilterManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,19 +135,45 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
 
         List<BroadcastReceiverManifestInfo> broadcastReceiverManifestInfoList = androidManifestInfo.broadcastReceiverManifestInfoList;
         for (BroadcastReceiverManifestInfo broadcastReceiverManifestInfo : broadcastReceiverManifestInfoList) {
+
             if (broadcastReceiverManifestInfo == null) {
                 continue;
             }
+
             if (!PermissionUtils.reverseEqualsString(mDeviceAdminReceiverClassName, broadcastReceiverManifestInfo.name)) {
                 // 不是目标的 BroadcastReceiver，继续循环
                 continue;
             }
+
             if (broadcastReceiverManifestInfo.permission == null || !PermissionUtils.equalsPermission(this, broadcastReceiverManifestInfo.permission)) {
                 // 这个 BroadcastReceiver 组件注册的 permission 节点为空或者错误
                 throw new IllegalArgumentException("Please register permission node in the AndroidManifest.xml file, for example: "
                     + "<receiver android:name=\"" + mDeviceAdminReceiverClassName + "\" android:permission=\"" + getPermissionName() + "\" />");
             }
-            return;
+
+            String action = DeviceAdminReceiver.ACTION_DEVICE_ADMIN_ENABLED;
+            // 当前是否注册了设备管理器广播的意图
+            boolean registeredDeviceAdminReceiverAction = false;
+            List<IntentFilterManifestInfo> intentFilterManifestInfoList = broadcastReceiverManifestInfo.intentFilterManifestInfoList;
+            if (intentFilterManifestInfoList != null) {
+                for (IntentFilterManifestInfo intentFilterManifestInfo : intentFilterManifestInfoList) {
+                    if (intentFilterManifestInfo.actionList.contains(action)) {
+                        registeredDeviceAdminReceiverAction = true;
+                        break;
+                    }
+                }
+            }
+
+            if (registeredDeviceAdminReceiverAction) {
+                // 符合要求，中断所有的循环并返回，避免走到后面的抛异常代码
+                return;
+            }
+
+            String xmlCode = "\t\t<intent-filter>\n"
+                           + "\t\t    <action android:name=\"" + action + "\" />\n"
+                           + "\t\t</intent-filter>";
+            throw new IllegalArgumentException("Please add an intent filter for \"" + mDeviceAdminReceiverClassName +
+                                               "\" in the AndroidManifest.xml file.\n" + xmlCode);
         }
 
         // 这个 BroadcastReceiver 组件没有在清单文件中注册
