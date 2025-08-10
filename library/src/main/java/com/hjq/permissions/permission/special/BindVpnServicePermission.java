@@ -9,6 +9,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
+import com.hjq.permissions.manifest.node.IntentFilterManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.manifest.node.ServiceManifestInfo;
 import com.hjq.permissions.permission.PermissionNames;
@@ -98,14 +99,40 @@ public final class BindVpnServicePermission extends SpecialPermission {
         // 判断有没有 Service 类注册了 android:permission="android.permission.BIND_VPN_SERVICE" 属性
         List<ServiceManifestInfo> serviceManifestInfoList = androidManifestInfo.serviceManifestInfoList;
         for (int i = 0; i < serviceManifestInfoList.size(); i++) {
-            String permission = serviceManifestInfoList.get(i).permission;
+
+            ServiceManifestInfo serviceManifestInfo = serviceManifestInfoList.get(i);
+            String permission = serviceManifestInfo.permission;
+
             if (permission == null) {
                 continue;
             }
-            if (PermissionUtils.equalsPermission(this, permission)) {
-                // 发现有 Service 注册过，终止循环并返回，避免走到抛异常的情况
+
+            if (!PermissionUtils.equalsPermission(this, permission)) {
+                continue;
+            }
+
+            String action = "android.net.VpnService";
+            // 当前是否注册了 VPN 服务的意图
+            boolean registeredVpnServiceAction = false;
+            List<IntentFilterManifestInfo> intentFilterManifestInfoList = serviceManifestInfo.intentFilterManifestInfoList;
+            if (intentFilterManifestInfoList != null) {
+                for (IntentFilterManifestInfo intentFilterManifestInfo : intentFilterManifestInfoList) {
+                    if (intentFilterManifestInfo.actionList.contains(action)) {
+                        registeredVpnServiceAction = true;
+                        break;
+                    }
+                }
+            }
+            if (registeredVpnServiceAction) {
+                // 符合要求，中断所有的循环并返回，避免走到后面的抛异常代码
                 return;
             }
+
+            String xmlCode = "\t\t<intent-filter>\n"
+                           + "\t\t    <action android:name=\"" + action + "\" />\n"
+                           + "\t\t</intent-filter>";
+            throw new IllegalArgumentException("Please add an intent filter for \"" + serviceManifestInfo.name +
+                                               "\" in the AndroidManifest.xml file.\n" + xmlCode);
         }
 
         /*
