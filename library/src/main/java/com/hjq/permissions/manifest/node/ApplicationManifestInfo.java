@@ -1,6 +1,8 @@
 package com.hjq.permissions.manifest.node;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import java.util.List;
 
 /**
  *    author : Android 轮子哥
@@ -20,4 +22,10 @@ public final class ApplicationManifestInfo {
      * 是否忽略分区存储特性
      */
     public boolean requestLegacyExternalStorage;
+
+    /**
+     * MetaData 列表
+     */
+    @Nullable
+    public List<MetaDataManifestInfo> metaDataInfoList;
 }

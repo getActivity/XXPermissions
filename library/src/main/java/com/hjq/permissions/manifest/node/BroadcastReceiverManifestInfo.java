@@ -29,4 +29,10 @@ public final class BroadcastReceiverManifestInfo {
      */
     @Nullable
     public List<IntentFilterManifestInfo> intentFilterInfoList;
+
+    /**
+     * MetaData 列表
+     */
+    @Nullable
+    public List<MetaDataManifestInfo> metaDataInfoList;
 }

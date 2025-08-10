@@ -28,4 +28,10 @@ public final class ActivityManifestInfo {
      */
     @Nullable
     public List<IntentFilterManifestInfo> intentFilterInfoList;
+
+    /**
+     * MetaData 列表
+     */
+    @Nullable
+    public List<MetaDataManifestInfo> metaDataInfoList;
 }

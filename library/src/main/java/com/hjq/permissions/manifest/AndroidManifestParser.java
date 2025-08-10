@@ -10,11 +10,12 @@ import com.hjq.permissions.manifest.node.ActivityManifestInfo;
 import com.hjq.permissions.manifest.node.ApplicationManifestInfo;
 import com.hjq.permissions.manifest.node.BroadcastReceiverManifestInfo;
 import com.hjq.permissions.manifest.node.IntentFilterManifestInfo;
+import com.hjq.permissions.manifest.node.MetaDataManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.manifest.node.ServiceManifestInfo;
 import com.hjq.permissions.manifest.node.UsesSdkManifestInfo;
-import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -54,8 +55,12 @@ public final class AndroidManifestParser {
     private static final String TAG_ACTION = "action";
     private static final String TAG_CATEGORY = "category";
 
+    private static final String TAG_META_DATA = "meta-data";
+
     private static final String ATTR_PACKAGE = "package";
     private static final String ATTR_NAME = "name";
+    private static final String ATTR_VALUE = "value";
+    private static final String ATTR_RESOURCE = "resource";
     private static final String ATTR_MAX_SDK_VERSION = "maxSdkVersion";
     private static final String ATTR_MIN_SDK_VERSION = "minSdkVersion";
     private static final String ATTR_USES_PERMISSION_FLAGS = "usesPermissionFlags";
@@ -199,6 +204,13 @@ public final class AndroidManifestParser {
                     manifestInfo.receiverInfoList.add(parseBroadcastReceiverFromXml(parser));
                 }
 
+                if (PermissionUtils.equalsString(TAG_META_DATA, tagName) && manifestInfo.applicationInfo != null) {
+                    if (manifestInfo.applicationInfo.metaDataInfoList == null) {
+                        manifestInfo.applicationInfo.metaDataInfoList = new ArrayList<>();
+                    }
+                    manifestInfo.applicationInfo.metaDataInfoList.add(parseMetaDataFromXml(parser));
+                }
+
             } while (parser.next() != XmlResourceParser.END_DOCUMENT);
         }
 
@@ -262,6 +274,11 @@ public final class AndroidManifestParser {
                     activityManifestInfo.intentFilterInfoList = new ArrayList<>();
                 }
                 activityManifestInfo.intentFilterInfoList.add(parseIntentFilterFromXml(parser));
+            } else if (nextTagType == XmlResourceParser.START_TAG && PermissionUtils.equalsString(TAG_META_DATA, tagName)) {
+                if (activityManifestInfo.metaDataInfoList == null) {
+                    activityManifestInfo.metaDataInfoList = new ArrayList<>();
+                }
+                activityManifestInfo.metaDataInfoList.add(parseMetaDataFromXml(parser));
             }
         }
 
@@ -287,6 +304,11 @@ public final class AndroidManifestParser {
                     serviceManifestInfo.intentFilterInfoList = new ArrayList<>();
                 }
                 serviceManifestInfo.intentFilterInfoList.add(parseIntentFilterFromXml(parser));
+            } else if (nextTagType == XmlResourceParser.START_TAG && PermissionUtils.equalsString(TAG_META_DATA, tagName)) {
+                if (serviceManifestInfo.metaDataInfoList == null) {
+                    serviceManifestInfo.metaDataInfoList = new ArrayList<>();
+                }
+                serviceManifestInfo.metaDataInfoList.add(parseMetaDataFromXml(parser));
             }
         }
 
@@ -312,6 +334,11 @@ public final class AndroidManifestParser {
                     broadcastReceiverManifestInfo.intentFilterInfoList = new ArrayList<>();
                 }
                 broadcastReceiverManifestInfo.intentFilterInfoList.add(parseIntentFilterFromXml(parser));
+            } else if (nextTagType == XmlResourceParser.START_TAG && PermissionUtils.equalsString(TAG_META_DATA, tagName)) {
+                if (broadcastReceiverManifestInfo.metaDataInfoList == null) {
+                    broadcastReceiverManifestInfo.metaDataInfoList = new ArrayList<>();
+                }
+                broadcastReceiverManifestInfo.metaDataInfoList.add(parseMetaDataFromXml(parser));
             }
         }
 
@@ -339,5 +366,14 @@ public final class AndroidManifestParser {
             }
         }
         return intentFilterManifestInfo;
+    }
+
+    @NonNull
+    private static MetaDataManifestInfo parseMetaDataFromXml(@NonNull XmlResourceParser parser) throws IOException, XmlPullParserException {
+        MetaDataManifestInfo metaDataInfo = new MetaDataManifestInfo();
+        metaDataInfo.name = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
+        metaDataInfo.value = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_VALUE);
+        metaDataInfo.resource = parser.getAttributeResourceValue(ANDROID_NAMESPACE_URI, ATTR_RESOURCE, 0);
+        return metaDataInfo;
     }
 }
