@@ -14,8 +14,7 @@
     <string name="common_permission_fail_hint_3">Failed to request the %s，please enable the \"%s\" option</string>
 
     <string name="common_permission_allow_all_option">Allow all</string>
-    <string name="common_permission_allow_all_the_time_option_api29">Allow all the time</string>
-    <string name="common_permission_allow_all_the_time_option_api30">@string/common_permission_allow_all_the_time_option_api29</string>
+    <string name="common_permission_allow_all_the_time_option">Allow all the time</string>
     <string name="common_permission_go_to_authorization">Go to authorization</string>
 
     <string name="common_permission_comma">, </string>

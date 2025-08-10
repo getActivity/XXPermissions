@@ -265,10 +265,6 @@ public final class PermissionInterceptor implements OnPermissionInterceptor {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return context.getString(R.string.common_permission_allow_all_the_time_option_api30);
-        } else {
-            return context.getString(R.string.common_permission_allow_all_the_time_option_api29);
-        }
+        return context.getString(R.string.common_permission_allow_all_the_time_option);
     }
 }

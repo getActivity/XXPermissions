@@ -14,8 +14,7 @@
     <string name="common_permission_fail_hint_3">申请%s失败，请开启 \“%s\” 选项</string>
 
     <string name="common_permission_allow_all_option">全部允许</string>
-    <string name="common_permission_allow_all_the_time_option_api29">一律允许</string>
-    <string name="common_permission_allow_all_the_time_option_api30">始终允许</string>
+    <string name="common_permission_allow_all_the_time_option">始终允许</string>
 
     <string name="common_permission_go_to_authorization">前往授权</string>
 
