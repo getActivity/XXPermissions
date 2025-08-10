@@ -8,10 +8,8 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.PackageManager.ResolveInfoFlags;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -108,25 +106,6 @@ public final class PermissionUtils {
     @SuppressWarnings("deprecation")
     public static boolean isFragmentUnavailable(@Nullable Fragment appFragment) {
         return appFragment == null || !appFragment.isAdded() || appFragment.isRemoving();
-    }
-
-    /**
-     * 通过 MetaData 获得布尔值
-     *
-     * @param metaKey               Meta Key 值
-     * @param defaultValue          当获取不到时返回的默认值
-     */
-    public static boolean getBooleanByMetaData(@NonNull Context context, @NonNull String metaKey, boolean defaultValue) {
-        try {
-            Bundle metaData = context.getPackageManager().getApplicationInfo(
-                context.getPackageName(), PackageManager.GET_META_DATA).metaData;
-            if (metaData != null && metaData.containsKey(metaKey)) {
-                return metaData.getBoolean(metaKey);
-            }
-        } catch (NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return defaultValue;
     }
 
     /**

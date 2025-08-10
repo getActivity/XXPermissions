@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.ApplicationManifestInfo;
+import com.hjq.permissions.manifest.node.MetaDataManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.PermissionLists;
@@ -106,8 +107,16 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
         }
 
         int targetSdkVersion = PermissionVersion.getTargetVersion(activity);
-        // 是否适配了分区存储
-        boolean scopedStorage = PermissionUtils.getBooleanByMetaData(activity, ReadExternalStoragePermission.META_DATA_KEY_SCOPED_STORAGE, false);
+        // 是否适配了分区存储（默认是没有的）
+        boolean scopedStorage = false;
+        if (applicationInfo.metaDataInfoList != null) {
+            for (MetaDataManifestInfo metaDataManifestInfo : applicationInfo.metaDataInfoList) {
+                if (META_DATA_KEY_SCOPED_STORAGE.equals(metaDataManifestInfo.name)) {
+                    scopedStorage = Boolean.parseBoolean(metaDataManifestInfo.value);
+                    break;
+                }
+            }
+        }
         // 如果在已经适配 Android 10 的情况下
         if (targetSdkVersion >= PermissionVersion.ANDROID_10 && !applicationInfo.requestLegacyExternalStorage && !scopedStorage) {
             // 请在清单文件 Application 节点中注册 android:requestLegacyExternalStorage="true" 属性

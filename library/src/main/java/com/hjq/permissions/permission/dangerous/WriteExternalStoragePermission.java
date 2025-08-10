@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.ApplicationManifestInfo;
+import com.hjq.permissions.manifest.node.MetaDataManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.permission.PermissionGroups;
 import com.hjq.permissions.permission.PermissionNames;
@@ -28,6 +29,8 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
 
     /** 当前权限名称，注意：该常量字段仅供框架内部使用，不提供给外部引用，如果需要获取权限名称的字符串，请直接通过 {@link PermissionNames} 类获取 */
     public static final String PERMISSION_NAME = PermissionNames.WRITE_EXTERNAL_STORAGE;
+    /** 分区存储的 Meta Data Key（仅供内部调用） */
+    static final String META_DATA_KEY_SCOPED_STORAGE = ReadExternalStoragePermission.META_DATA_KEY_SCOPED_STORAGE;
 
     public static final Parcelable.Creator<WriteExternalStoragePermission> CREATOR = new Parcelable.Creator<WriteExternalStoragePermission>() {
 
@@ -144,8 +147,16 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
         }
 
         int targetSdkVersion = PermissionVersion.getTargetVersion(activity);
-        // 是否适配了分区存储
-        boolean scopedStorage = PermissionUtils.getBooleanByMetaData(activity, ReadExternalStoragePermission.META_DATA_KEY_SCOPED_STORAGE, false);
+        // 是否适配了分区存储（默认是没有的）
+        boolean scopedStorage = false;
+        if (applicationInfo.metaDataInfoList != null) {
+            for (MetaDataManifestInfo metaDataManifestInfo : applicationInfo.metaDataInfoList) {
+                if (META_DATA_KEY_SCOPED_STORAGE.equals(metaDataManifestInfo.name)) {
+                    scopedStorage = Boolean.parseBoolean(metaDataManifestInfo.value);
+                    break;
+                }
+            }
+        }
         // 如果在已经适配 Android 10 的情况下
         if (targetSdkVersion >= PermissionVersion.ANDROID_10 && !applicationInfo.requestLegacyExternalStorage && !scopedStorage) {
             // 请在清单文件 Application 节点中注册 android:requestLegacyExternalStorage="true" 属性
