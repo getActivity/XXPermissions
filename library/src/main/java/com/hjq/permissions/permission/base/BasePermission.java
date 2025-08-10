@@ -208,10 +208,10 @@ public abstract class BasePermission implements IPermission {
             return context.getApplicationInfo().minSdkVersion;
         }
 
-        if (androidManifestInfo == null || androidManifestInfo.usesSdkManifestInfo == null) {
+        if (androidManifestInfo == null || androidManifestInfo.usesSdkInfo == null) {
             return PermissionVersion.ANDROID_4_2;
         }
-        return androidManifestInfo.usesSdkManifestInfo.minSdkVersion;
+        return androidManifestInfo.usesSdkInfo.minSdkVersion;
     }
 
     /**

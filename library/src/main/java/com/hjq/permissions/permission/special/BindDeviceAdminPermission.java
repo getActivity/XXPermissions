@@ -133,8 +133,8 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
                                             @Nullable PermissionManifestInfo currentPermissionInfo) {
         super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionInfoList, currentPermissionInfo);
 
-        List<BroadcastReceiverManifestInfo> broadcastReceiverManifestInfoList = androidManifestInfo.broadcastReceiverManifestInfoList;
-        for (BroadcastReceiverManifestInfo broadcastReceiverManifestInfo : broadcastReceiverManifestInfoList) {
+        List<BroadcastReceiverManifestInfo> receiverInfoList = androidManifestInfo.receiverInfoList;
+        for (BroadcastReceiverManifestInfo broadcastReceiverManifestInfo : receiverInfoList) {
 
             if (broadcastReceiverManifestInfo == null) {
                 continue;
@@ -154,9 +154,9 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
             String action = DeviceAdminReceiver.ACTION_DEVICE_ADMIN_ENABLED;
             // 当前是否注册了设备管理器广播的意图
             boolean registeredDeviceAdminReceiverAction = false;
-            List<IntentFilterManifestInfo> intentFilterManifestInfoList = broadcastReceiverManifestInfo.intentFilterManifestInfoList;
-            if (intentFilterManifestInfoList != null) {
-                for (IntentFilterManifestInfo intentFilterManifestInfo : intentFilterManifestInfoList) {
+            List<IntentFilterManifestInfo> intentFilterInfoList = broadcastReceiverManifestInfo.intentFilterInfoList;
+            if (intentFilterInfoList != null) {
+                for (IntentFilterManifestInfo intentFilterManifestInfo : intentFilterInfoList) {
                     if (intentFilterManifestInfo.actionList.contains(action)) {
                         registeredDeviceAdminReceiverAction = true;
                         break;

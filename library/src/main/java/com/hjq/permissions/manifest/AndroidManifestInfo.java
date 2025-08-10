@@ -25,7 +25,7 @@ public final class AndroidManifestInfo {
 
     /** 使用 sdk 信息 */
     @Nullable
-    public UsesSdkManifestInfo usesSdkManifestInfo;
+    public UsesSdkManifestInfo usesSdkInfo;
 
     /** 权限节点信息 */
     @NonNull
@@ -37,17 +37,17 @@ public final class AndroidManifestInfo {
 
     /** Application 节点信息 */
     @Nullable
-    public ApplicationManifestInfo applicationManifestInfo;
+    public ApplicationManifestInfo applicationInfo;
 
     /** Activity 节点信息 */
     @NonNull
-    public final List<ActivityManifestInfo> activityManifestInfoList = new ArrayList<>();
+    public final List<ActivityManifestInfo> activityInfoList = new ArrayList<>();
 
     /** Service 节点信息 */
     @NonNull
-    public final List<ServiceManifestInfo> serviceManifestInfoList = new ArrayList<>();
+    public final List<ServiceManifestInfo> serviceInfoList = new ArrayList<>();
 
     /** BroadcastReceiver 节点信息 */
     @NonNull
-    public final List<BroadcastReceiverManifestInfo> broadcastReceiverManifestInfoList = new ArrayList<>();
+    public final List<BroadcastReceiverManifestInfo> receiverInfoList = new ArrayList<>();
 }

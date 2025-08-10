@@ -100,8 +100,8 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
             return;
         }
 
-        ApplicationManifestInfo applicationManifestInfo = androidManifestInfo.applicationManifestInfo;
-        if (applicationManifestInfo == null) {
+        ApplicationManifestInfo applicationInfo = androidManifestInfo.applicationInfo;
+        if (applicationInfo == null) {
             return;
         }
 
@@ -109,7 +109,7 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
         // 是否适配了分区存储
         boolean scopedStorage = PermissionUtils.getBooleanByMetaData(activity, ReadExternalStoragePermission.META_DATA_KEY_SCOPED_STORAGE, false);
         // 如果在已经适配 Android 10 的情况下
-        if (targetSdkVersion >= PermissionVersion.ANDROID_10 && !applicationManifestInfo.requestLegacyExternalStorage && !scopedStorage) {
+        if (targetSdkVersion >= PermissionVersion.ANDROID_10 && !applicationInfo.requestLegacyExternalStorage && !scopedStorage) {
             // 请在清单文件 Application 节点中注册 android:requestLegacyExternalStorage="true" 属性
             // 否则就算申请了权限，也无法在 Android 10 的设备上正常读写外部存储上的文件
             // 如果你的项目已经全面适配了分区存储，请在清单文件中注册一个 meta-data 属性

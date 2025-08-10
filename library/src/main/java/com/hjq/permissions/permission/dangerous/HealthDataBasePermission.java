@@ -111,12 +111,12 @@ public abstract class HealthDataBasePermission extends DangerousPermission {
 
         // 当前是否注册了健康隐私政策页面的意图
         boolean registeredHealthPrivacyPolicyAction = false;
-        for (ActivityManifestInfo activityManifestInfo : androidManifestInfo.activityManifestInfoList) {
-            List<IntentFilterManifestInfo> intentFilterManifestInfoList = activityManifestInfo.intentFilterManifestInfoList;
-            if (intentFilterManifestInfoList == null) {
+        for (ActivityManifestInfo activityManifestInfo : androidManifestInfo.activityInfoList) {
+            List<IntentFilterManifestInfo> intentFilterInfoList = activityManifestInfo.intentFilterInfoList;
+            if (intentFilterInfoList == null) {
                 continue;
             }
-            for (IntentFilterManifestInfo intentFilterManifestInfo : intentFilterManifestInfoList) {
+            for (IntentFilterManifestInfo intentFilterManifestInfo : intentFilterInfoList) {
                 if (intentFilterManifestInfo.actionList.contains(healthAction) &&
                     intentFilterManifestInfo.categoryList.contains(healthCategory)) {
                     registeredHealthPrivacyPolicyAction = true;

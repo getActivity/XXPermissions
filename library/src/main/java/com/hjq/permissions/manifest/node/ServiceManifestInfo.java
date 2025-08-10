@@ -28,5 +28,5 @@ public final class ServiceManifestInfo {
      * 意图过滤器列表
      */
     @Nullable
-    public List<IntentFilterManifestInfo> intentFilterManifestInfoList;
+    public List<IntentFilterManifestInfo> intentFilterInfoList;
 }

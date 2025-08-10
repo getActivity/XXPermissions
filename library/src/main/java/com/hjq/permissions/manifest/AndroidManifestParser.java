@@ -169,7 +169,7 @@ public final class AndroidManifestParser {
                 }
 
                 if (PermissionUtils.equalsString(TAG_USES_SDK, tagName)) {
-                    manifestInfo.usesSdkManifestInfo = parseUsesSdkFromXml(parser);
+                    manifestInfo.usesSdkInfo = parseUsesSdkFromXml(parser);
                 }
 
                 if (PermissionUtils.equalsString(TAG_USES_PERMISSION, tagName) ||
@@ -183,20 +183,20 @@ public final class AndroidManifestParser {
                 }
 
                 if (PermissionUtils.equalsString(TAG_APPLICATION, tagName)) {
-                    manifestInfo.applicationManifestInfo = parseApplicationFromXml(parser);
+                    manifestInfo.applicationInfo = parseApplicationFromXml(parser);
                 }
 
                 if (PermissionUtils.equalsString(TAG_ACTIVITY, tagName) ||
                     PermissionUtils.equalsString(TAG_ACTIVITY_ALIAS, tagName)) {
-                    manifestInfo.activityManifestInfoList.add(parseActivityFromXml(parser));
+                    manifestInfo.activityInfoList.add(parseActivityFromXml(parser));
                 }
 
                 if (PermissionUtils.equalsString(TAG_SERVICE, tagName)) {
-                    manifestInfo.serviceManifestInfoList.add(parseServerFromXml(parser));
+                    manifestInfo.serviceInfoList.add(parseServerFromXml(parser));
                 }
 
                 if (PermissionUtils.equalsString(TAG_RECEIVER, tagName)) {
-                    manifestInfo.broadcastReceiverManifestInfoList.add(parseBroadcastReceiverFromXml(parser));
+                    manifestInfo.receiverInfoList.add(parseBroadcastReceiverFromXml(parser));
                 }
 
             } while (parser.next() != XmlResourceParser.END_DOCUMENT);
@@ -213,10 +213,10 @@ public final class AndroidManifestParser {
 
     @NonNull
     private static UsesSdkManifestInfo parseUsesSdkFromXml(@NonNull XmlResourceParser parser) {
-        UsesSdkManifestInfo usesSdkManifestInfo = new UsesSdkManifestInfo();
-        usesSdkManifestInfo.minSdkVersion = parser.getAttributeIntValue(ANDROID_NAMESPACE_URI,
+        UsesSdkManifestInfo usesSdkInfo = new UsesSdkManifestInfo();
+        usesSdkInfo.minSdkVersion = parser.getAttributeIntValue(ANDROID_NAMESPACE_URI,
             ATTR_MIN_SDK_VERSION, 0);
-        return usesSdkManifestInfo;
+        return usesSdkInfo;
     }
 
     @NonNull
@@ -232,12 +232,12 @@ public final class AndroidManifestParser {
 
     @NonNull
     private static ApplicationManifestInfo parseApplicationFromXml(@NonNull XmlResourceParser parser) {
-        ApplicationManifestInfo applicationManifestInfo = new ApplicationManifestInfo();
+        ApplicationManifestInfo applicationInfo = new ApplicationManifestInfo();
         String applicationClassName = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
-        applicationManifestInfo.name = applicationClassName != null ? applicationClassName : "";
-        applicationManifestInfo.requestLegacyExternalStorage = parser.getAttributeBooleanValue(
+        applicationInfo.name = applicationClassName != null ? applicationClassName : "";
+        applicationInfo.requestLegacyExternalStorage = parser.getAttributeBooleanValue(
             ANDROID_NAMESPACE_URI, ATTR_REQUEST_LEGACY_EXTERNAL_STORAGE, false);
-        return applicationManifestInfo;
+        return applicationInfo;
     }
 
     @NonNull
@@ -258,10 +258,10 @@ public final class AndroidManifestParser {
             }
 
             if (nextTagType == XmlResourceParser.START_TAG && PermissionUtils.equalsString(TAG_INTENT_FILTER, tagName)) {
-                if (activityManifestInfo.intentFilterManifestInfoList == null) {
-                    activityManifestInfo.intentFilterManifestInfoList = new ArrayList<>();
+                if (activityManifestInfo.intentFilterInfoList == null) {
+                    activityManifestInfo.intentFilterInfoList = new ArrayList<>();
                 }
-                activityManifestInfo.intentFilterManifestInfoList.add(parseIntentFilterFromXml(parser));
+                activityManifestInfo.intentFilterInfoList.add(parseIntentFilterFromXml(parser));
             }
         }
 
@@ -283,10 +283,10 @@ public final class AndroidManifestParser {
             }
 
             if (nextTagType == XmlResourceParser.START_TAG && PermissionUtils.equalsString(TAG_INTENT_FILTER, tagName)) {
-                if (serviceManifestInfo.intentFilterManifestInfoList == null) {
-                    serviceManifestInfo.intentFilterManifestInfoList = new ArrayList<>();
+                if (serviceManifestInfo.intentFilterInfoList == null) {
+                    serviceManifestInfo.intentFilterInfoList = new ArrayList<>();
                 }
-                serviceManifestInfo.intentFilterManifestInfoList.add(parseIntentFilterFromXml(parser));
+                serviceManifestInfo.intentFilterInfoList.add(parseIntentFilterFromXml(parser));
             }
         }
 
@@ -308,10 +308,10 @@ public final class AndroidManifestParser {
             }
 
             if (nextTagType == XmlResourceParser.START_TAG && PermissionUtils.equalsString(TAG_INTENT_FILTER, tagName)) {
-                if (broadcastReceiverManifestInfo.intentFilterManifestInfoList == null) {
-                    broadcastReceiverManifestInfo.intentFilterManifestInfoList = new ArrayList<>();
+                if (broadcastReceiverManifestInfo.intentFilterInfoList == null) {
+                    broadcastReceiverManifestInfo.intentFilterInfoList = new ArrayList<>();
                 }
-                broadcastReceiverManifestInfo.intentFilterManifestInfoList.add(parseIntentFilterFromXml(parser));
+                broadcastReceiverManifestInfo.intentFilterInfoList.add(parseIntentFilterFromXml(parser));
             }
         }
 

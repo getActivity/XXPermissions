@@ -141,8 +141,8 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
                                             @Nullable PermissionManifestInfo currentPermissionInfo) {
         super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionInfoList, currentPermissionInfo);
 
-        List<ServiceManifestInfo> serviceManifestInfoList = androidManifestInfo.serviceManifestInfoList;
-        for (ServiceManifestInfo serviceManifestInfo : serviceManifestInfoList) {
+        List<ServiceManifestInfo> serviceInfoList = androidManifestInfo.serviceInfoList;
+        for (ServiceManifestInfo serviceManifestInfo : serviceInfoList) {
 
             if (serviceManifestInfo == null) {
                 continue;
@@ -162,9 +162,9 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
             String action = "android.accessibilityservice.AccessibilityService";
             // 当前是否注册了无障碍服务的意图
             boolean registeredAccessibilityServiceAction = false;
-            List<IntentFilterManifestInfo> intentFilterManifestInfoList = serviceManifestInfo.intentFilterManifestInfoList;
-            if (intentFilterManifestInfoList != null) {
-                for (IntentFilterManifestInfo intentFilterManifestInfo : intentFilterManifestInfoList) {
+            List<IntentFilterManifestInfo> intentFilterInfoList = serviceManifestInfo.intentFilterInfoList;
+            if (intentFilterInfoList != null) {
+                for (IntentFilterManifestInfo intentFilterManifestInfo : intentFilterInfoList) {
                     if (intentFilterManifestInfo.actionList.contains(action)) {
                         registeredAccessibilityServiceAction = true;
                         break;

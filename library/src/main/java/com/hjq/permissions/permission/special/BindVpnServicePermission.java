@@ -97,10 +97,10 @@ public final class BindVpnServicePermission extends SpecialPermission {
                                             @Nullable PermissionManifestInfo currentPermissionInfo) {
         super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionInfoList, currentPermissionInfo);
         // 判断有没有 Service 类注册了 android:permission="android.permission.BIND_VPN_SERVICE" 属性
-        List<ServiceManifestInfo> serviceManifestInfoList = androidManifestInfo.serviceManifestInfoList;
-        for (int i = 0; i < serviceManifestInfoList.size(); i++) {
+        List<ServiceManifestInfo> serviceInfoList = androidManifestInfo.serviceInfoList;
+        for (int i = 0; i < serviceInfoList.size(); i++) {
 
-            ServiceManifestInfo serviceManifestInfo = serviceManifestInfoList.get(i);
+            ServiceManifestInfo serviceManifestInfo = serviceInfoList.get(i);
             String permission = serviceManifestInfo.permission;
 
             if (permission == null) {
@@ -114,9 +114,9 @@ public final class BindVpnServicePermission extends SpecialPermission {
             String action = "android.net.VpnService";
             // 当前是否注册了 VPN 服务的意图
             boolean registeredVpnServiceAction = false;
-            List<IntentFilterManifestInfo> intentFilterManifestInfoList = serviceManifestInfo.intentFilterManifestInfoList;
-            if (intentFilterManifestInfoList != null) {
-                for (IntentFilterManifestInfo intentFilterManifestInfo : intentFilterManifestInfoList) {
+            List<IntentFilterManifestInfo> intentFilterInfoList = serviceManifestInfo.intentFilterInfoList;
+            if (intentFilterInfoList != null) {
+                for (IntentFilterManifestInfo intentFilterManifestInfo : intentFilterInfoList) {
                     if (intentFilterManifestInfo.actionList.contains(action)) {
                         registeredVpnServiceAction = true;
                         break;
