@@ -248,20 +248,8 @@ public final class PermissionUtils {
     }
 
     /**
-     * 将 List<IPermission> 转换成 List<String> 对象
+     * 将 IPermission[] 转换成 List<String> 对象
      */
-    @NonNull
-    public static List<String> convertPermissionList(@Nullable List<IPermission> permissions) {
-        List<String> list = new ArrayList<>();
-        if (permissions == null || permissions.isEmpty()) {
-            return list;
-        }
-        for (IPermission permission : permissions) {
-            list.add(permission.getPermissionName());
-        }
-        return list;
-    }
-
     @NonNull
     public static List<String> convertPermissionList(@Nullable IPermission[] permissions) {
         List<String> list = new ArrayList<>();
