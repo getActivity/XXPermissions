@@ -92,16 +92,16 @@ public final class BindVpnServicePermission extends SpecialPermission {
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestList,
-                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull AndroidManifestInfo manifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
         // 判断有没有 Service 类注册了 android:permission="android.permission.BIND_VPN_SERVICE" 属性
-        List<ServiceManifestInfo> serviceInfoList = androidManifestInfo.serviceInfoList;
+        List<ServiceManifestInfo> serviceInfoList = manifestInfo.serviceInfoList;
         for (int i = 0; i < serviceInfoList.size(); i++) {
 
-            ServiceManifestInfo serviceManifestInfo = serviceInfoList.get(i);
-            String permission = serviceManifestInfo.permission;
+            ServiceManifestInfo serviceInfo = serviceInfoList.get(i);
+            String permission = serviceInfo.permission;
 
             if (permission == null) {
                 continue;
@@ -114,10 +114,10 @@ public final class BindVpnServicePermission extends SpecialPermission {
             String action = "android.net.VpnService";
             // 当前是否注册了 VPN 服务的意图
             boolean registeredVpnServiceAction = false;
-            List<IntentFilterManifestInfo> intentFilterInfoList = serviceManifestInfo.intentFilterInfoList;
+            List<IntentFilterManifestInfo> intentFilterInfoList = serviceInfo.intentFilterInfoList;
             if (intentFilterInfoList != null) {
-                for (IntentFilterManifestInfo intentFilterManifestInfo : intentFilterInfoList) {
-                    if (intentFilterManifestInfo.actionList.contains(action)) {
+                for (IntentFilterManifestInfo intentFilterInfo : intentFilterInfoList) {
+                    if (intentFilterInfo.actionList.contains(action)) {
                         registeredVpnServiceAction = true;
                         break;
                     }
@@ -131,7 +131,7 @@ public final class BindVpnServicePermission extends SpecialPermission {
             String xmlCode = "\t\t<intent-filter>\n"
                            + "\t\t    <action android:name=\"" + action + "\" />\n"
                            + "\t\t</intent-filter>";
-            throw new IllegalArgumentException("Please add an intent filter for \"" + serviceManifestInfo.name +
+            throw new IllegalArgumentException("Please add an intent filter for \"" + serviceInfo.name +
                                                "\" in the AndroidManifest.xml file.\n" + xmlCode);
         }
 

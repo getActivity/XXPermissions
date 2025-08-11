@@ -124,8 +124,8 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
     }
 
     @Override
-    public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestList, @Nullable AndroidManifestInfo androidManifestInfo) {
-        super.checkCompliance(activity, requestList, androidManifestInfo);
+    public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestList, @Nullable AndroidManifestInfo manifestInfo) {
+        super.checkCompliance(activity, requestList, manifestInfo);
         if (TextUtils.isEmpty(mAccessibilityServiceClassName)) {
             throw new IllegalArgumentException("Pass the ServiceClass parameter as empty");
         }
@@ -137,24 +137,24 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestList,
-                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull AndroidManifestInfo manifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
 
-        List<ServiceManifestInfo> serviceInfoList = androidManifestInfo.serviceInfoList;
-        for (ServiceManifestInfo serviceManifestInfo : serviceInfoList) {
+        List<ServiceManifestInfo> serviceInfoList = manifestInfo.serviceInfoList;
+        for (ServiceManifestInfo serviceInfo : serviceInfoList) {
 
-            if (serviceManifestInfo == null) {
+            if (serviceInfo == null) {
                 continue;
             }
 
-            if (!PermissionUtils.reverseEqualsString(mAccessibilityServiceClassName, serviceManifestInfo.name)) {
+            if (!PermissionUtils.reverseEqualsString(mAccessibilityServiceClassName, serviceInfo.name)) {
                 // 不是目标的 Service，继续循环
                 continue;
             }
 
-            if (serviceManifestInfo.permission == null || !PermissionUtils.equalsPermission(this, serviceManifestInfo.permission)) {
+            if (serviceInfo.permission == null || !PermissionUtils.equalsPermission(this, serviceInfo.permission)) {
                 // 这个 Service 组件注册的 permission 节点为空或者错误
                 throw new IllegalArgumentException("Please register permission node in the AndroidManifest.xml file, for example: "
                     + "<service android:name=\"" + mAccessibilityServiceClassName + "\" android:permission=\"" + getPermissionName() + "\" />");
@@ -163,10 +163,10 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
             String action = "android.accessibilityservice.AccessibilityService";
             // 当前是否注册了无障碍服务的意图
             boolean registeredAccessibilityServiceAction = false;
-            List<IntentFilterManifestInfo> intentFilterInfoList = serviceManifestInfo.intentFilterInfoList;
+            List<IntentFilterManifestInfo> intentFilterInfoList = serviceInfo.intentFilterInfoList;
             if (intentFilterInfoList != null) {
-                for (IntentFilterManifestInfo intentFilterManifestInfo : intentFilterInfoList) {
-                    if (intentFilterManifestInfo.actionList.contains(action)) {
+                for (IntentFilterManifestInfo intentFilterInfo : intentFilterInfoList) {
+                    if (intentFilterInfo.actionList.contains(action)) {
                         registeredAccessibilityServiceAction = true;
                         break;
                     }
@@ -184,7 +184,7 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
             String metaDataName = AccessibilityService.SERVICE_META_DATA;
             // 当前是否注册了无障碍服务的 MetaData
             boolean registeredAccessibilityServiceMetaData = false;
-            List<MetaDataManifestInfo> metaDataInfoList = serviceManifestInfo.metaDataInfoList;
+            List<MetaDataManifestInfo> metaDataInfoList = serviceInfo.metaDataInfoList;
             if (metaDataInfoList != null) {
                 for (MetaDataManifestInfo metaDataInfo : metaDataInfoList) {
                     if (metaDataName.equals(metaDataInfo.name) && metaDataInfo.resource != 0) {

@@ -112,11 +112,11 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestList,
-                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull AndroidManifestInfo manifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionInfoList, currentPermissionInfo);
-        ApplicationManifestInfo applicationInfo = androidManifestInfo.applicationInfo;
+        super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
+        ApplicationManifestInfo applicationInfo = manifestInfo.applicationInfo;
         if (applicationInfo == null) {
             return;
         }

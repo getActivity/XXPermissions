@@ -90,10 +90,10 @@ public abstract class HealthDataBasePermission extends DangerousPermission {
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestList,
-                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull AndroidManifestInfo manifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
 
         final String healthAction;
         if (PermissionVersion.isAndroid16()) {
@@ -111,14 +111,14 @@ public abstract class HealthDataBasePermission extends DangerousPermission {
 
         // 当前是否注册了健康隐私政策页面的意图
         boolean registeredHealthPrivacyPolicyAction = false;
-        for (ActivityManifestInfo activityManifestInfo : androidManifestInfo.activityInfoList) {
-            List<IntentFilterManifestInfo> intentFilterInfoList = activityManifestInfo.intentFilterInfoList;
+        for (ActivityManifestInfo activityInfo : manifestInfo.activityInfoList) {
+            List<IntentFilterManifestInfo> intentFilterInfoList = activityInfo.intentFilterInfoList;
             if (intentFilterInfoList == null) {
                 continue;
             }
-            for (IntentFilterManifestInfo intentFilterManifestInfo : intentFilterInfoList) {
-                if (intentFilterManifestInfo.actionList.contains(healthAction) &&
-                    intentFilterManifestInfo.categoryList.contains(healthCategory)) {
+            for (IntentFilterManifestInfo intentFilterInfo : intentFilterInfoList) {
+                if (intentFilterInfo.actionList.contains(healthAction) &&
+                    intentFilterInfo.categoryList.contains(healthCategory)) {
                     registeredHealthPrivacyPolicyAction = true;
                     break;
                 }

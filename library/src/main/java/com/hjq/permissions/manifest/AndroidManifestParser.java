@@ -81,19 +81,19 @@ public final class AndroidManifestParser {
             return null;
         }
 
-        AndroidManifestInfo androidManifestInfo = null;
+        AndroidManifestInfo manifestInfo = null;
         try {
-            androidManifestInfo = AndroidManifestParser.parseAndroidManifest(context, apkPathCookie);
+            manifestInfo = AndroidManifestParser.parseAndroidManifest(context, apkPathCookie);
             // 如果读取到的包名和当前应用的包名不是同一个的话，证明这个清单文件的内容不是当前应用的
             // 具体案例：https://github.com/getActivity/XXPermissions/issues/102
-            if (!PermissionUtils.reverseEqualsString(context.getPackageName(), androidManifestInfo.packageName)) {
+            if (!PermissionUtils.reverseEqualsString(context.getPackageName(), manifestInfo.packageName)) {
                 return null;
             }
         } catch (IOException | XmlPullParserException e) {
             e.printStackTrace();
         }
 
-        return androidManifestInfo;
+        return manifestInfo;
     }
 
     /**
@@ -233,13 +233,13 @@ public final class AndroidManifestParser {
 
     @NonNull
     private static PermissionManifestInfo parsePermissionFromXml(@NonNull XmlResourceParser parser) {
-        PermissionManifestInfo permissionManifestInfo = new PermissionManifestInfo();
-        permissionManifestInfo.name = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
-        permissionManifestInfo.maxSdkVersion = parser.getAttributeIntValue(ANDROID_NAMESPACE_URI,
+        PermissionManifestInfo permissionInfo = new PermissionManifestInfo();
+        permissionInfo.name = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
+        permissionInfo.maxSdkVersion = parser.getAttributeIntValue(ANDROID_NAMESPACE_URI,
             ATTR_MAX_SDK_VERSION, Integer.MAX_VALUE);
-        permissionManifestInfo.usesPermissionFlags = parser.getAttributeIntValue(ANDROID_NAMESPACE_URI,
+        permissionInfo.usesPermissionFlags = parser.getAttributeIntValue(ANDROID_NAMESPACE_URI,
             ATTR_USES_PERMISSION_FLAGS, 0);
-        return permissionManifestInfo;
+        return permissionInfo;
     }
 
     @NonNull
@@ -254,10 +254,10 @@ public final class AndroidManifestParser {
 
     @NonNull
     private static ActivityManifestInfo parseActivityFromXml(@NonNull XmlResourceParser parser) throws IOException, XmlPullParserException {
-        ActivityManifestInfo activityManifestInfo = new ActivityManifestInfo();
+        ActivityManifestInfo activityInfo = new ActivityManifestInfo();
         String activityClassName = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
-        activityManifestInfo.name = activityClassName != null ? activityClassName : "";
-        activityManifestInfo.supportsPictureInPicture = parser.getAttributeBooleanValue(
+        activityInfo.name = activityClassName != null ? activityClassName : "";
+        activityInfo.supportsPictureInPicture = parser.getAttributeBooleanValue(
             ANDROID_NAMESPACE_URI, ATTR_SUPPORTS_PICTURE_IN_PICTURE, false);
 
         while (true) {
@@ -270,27 +270,27 @@ public final class AndroidManifestParser {
             }
 
             if (nextTagType == XmlResourceParser.START_TAG && PermissionUtils.equalsString(TAG_INTENT_FILTER, tagName)) {
-                if (activityManifestInfo.intentFilterInfoList == null) {
-                    activityManifestInfo.intentFilterInfoList = new ArrayList<>();
+                if (activityInfo.intentFilterInfoList == null) {
+                    activityInfo.intentFilterInfoList = new ArrayList<>();
                 }
-                activityManifestInfo.intentFilterInfoList.add(parseIntentFilterFromXml(parser));
+                activityInfo.intentFilterInfoList.add(parseIntentFilterFromXml(parser));
             } else if (nextTagType == XmlResourceParser.START_TAG && PermissionUtils.equalsString(TAG_META_DATA, tagName)) {
-                if (activityManifestInfo.metaDataInfoList == null) {
-                    activityManifestInfo.metaDataInfoList = new ArrayList<>();
+                if (activityInfo.metaDataInfoList == null) {
+                    activityInfo.metaDataInfoList = new ArrayList<>();
                 }
-                activityManifestInfo.metaDataInfoList.add(parseMetaDataFromXml(parser));
+                activityInfo.metaDataInfoList.add(parseMetaDataFromXml(parser));
             }
         }
 
-        return activityManifestInfo;
+        return activityInfo;
     }
 
     @NonNull
     private static ServiceManifestInfo parseServerFromXml(@NonNull XmlResourceParser parser) throws IOException, XmlPullParserException {
-        ServiceManifestInfo serviceManifestInfo = new ServiceManifestInfo();
+        ServiceManifestInfo serviceInfo = new ServiceManifestInfo();
         String serviceClassName = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
-        serviceManifestInfo.name = serviceClassName != null ? serviceClassName : "";
-        serviceManifestInfo.permission = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_PERMISSION);
+        serviceInfo.name = serviceClassName != null ? serviceClassName : "";
+        serviceInfo.permission = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_PERMISSION);
 
         while (true) {
             int nextTagType = parser.next();
@@ -300,27 +300,27 @@ public final class AndroidManifestParser {
             }
 
             if (nextTagType == XmlResourceParser.START_TAG && PermissionUtils.equalsString(TAG_INTENT_FILTER, tagName)) {
-                if (serviceManifestInfo.intentFilterInfoList == null) {
-                    serviceManifestInfo.intentFilterInfoList = new ArrayList<>();
+                if (serviceInfo.intentFilterInfoList == null) {
+                    serviceInfo.intentFilterInfoList = new ArrayList<>();
                 }
-                serviceManifestInfo.intentFilterInfoList.add(parseIntentFilterFromXml(parser));
+                serviceInfo.intentFilterInfoList.add(parseIntentFilterFromXml(parser));
             } else if (nextTagType == XmlResourceParser.START_TAG && PermissionUtils.equalsString(TAG_META_DATA, tagName)) {
-                if (serviceManifestInfo.metaDataInfoList == null) {
-                    serviceManifestInfo.metaDataInfoList = new ArrayList<>();
+                if (serviceInfo.metaDataInfoList == null) {
+                    serviceInfo.metaDataInfoList = new ArrayList<>();
                 }
-                serviceManifestInfo.metaDataInfoList.add(parseMetaDataFromXml(parser));
+                serviceInfo.metaDataInfoList.add(parseMetaDataFromXml(parser));
             }
         }
 
-        return serviceManifestInfo;
+        return serviceInfo;
     }
 
     @NonNull
     private static BroadcastReceiverManifestInfo parseBroadcastReceiverFromXml(@NonNull XmlResourceParser parser) throws IOException, XmlPullParserException {
-        BroadcastReceiverManifestInfo broadcastReceiverManifestInfo = new BroadcastReceiverManifestInfo();
+        BroadcastReceiverManifestInfo receiverInfo = new BroadcastReceiverManifestInfo();
         String broadcastReceiverClassName = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
-        broadcastReceiverManifestInfo.name = broadcastReceiverClassName != null ? broadcastReceiverClassName : "";
-        broadcastReceiverManifestInfo.permission = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_PERMISSION);
+        receiverInfo.name = broadcastReceiverClassName != null ? broadcastReceiverClassName : "";
+        receiverInfo.permission = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_PERMISSION);
 
         while (true) {
             int nextTagType = parser.next();
@@ -330,24 +330,24 @@ public final class AndroidManifestParser {
             }
 
             if (nextTagType == XmlResourceParser.START_TAG && PermissionUtils.equalsString(TAG_INTENT_FILTER, tagName)) {
-                if (broadcastReceiverManifestInfo.intentFilterInfoList == null) {
-                    broadcastReceiverManifestInfo.intentFilterInfoList = new ArrayList<>();
+                if (receiverInfo.intentFilterInfoList == null) {
+                    receiverInfo.intentFilterInfoList = new ArrayList<>();
                 }
-                broadcastReceiverManifestInfo.intentFilterInfoList.add(parseIntentFilterFromXml(parser));
+                receiverInfo.intentFilterInfoList.add(parseIntentFilterFromXml(parser));
             } else if (nextTagType == XmlResourceParser.START_TAG && PermissionUtils.equalsString(TAG_META_DATA, tagName)) {
-                if (broadcastReceiverManifestInfo.metaDataInfoList == null) {
-                    broadcastReceiverManifestInfo.metaDataInfoList = new ArrayList<>();
+                if (receiverInfo.metaDataInfoList == null) {
+                    receiverInfo.metaDataInfoList = new ArrayList<>();
                 }
-                broadcastReceiverManifestInfo.metaDataInfoList.add(parseMetaDataFromXml(parser));
+                receiverInfo.metaDataInfoList.add(parseMetaDataFromXml(parser));
             }
         }
 
-        return broadcastReceiverManifestInfo;
+        return receiverInfo;
     }
 
     @NonNull
     private static IntentFilterManifestInfo parseIntentFilterFromXml(@NonNull XmlResourceParser parser) throws IOException, XmlPullParserException {
-        IntentFilterManifestInfo intentFilterManifestInfo = new IntentFilterManifestInfo();
+        IntentFilterManifestInfo intentFilterInfo = new IntentFilterManifestInfo();
         while (true) {
             int nextTagType = parser.next();
             String tagName = parser.getName();
@@ -360,12 +360,12 @@ public final class AndroidManifestParser {
             }
 
             if (PermissionUtils.equalsString(TAG_ACTION, tagName)) {
-                intentFilterManifestInfo.actionList.add(parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME));
+                intentFilterInfo.actionList.add(parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME));
             } else if (PermissionUtils.equalsString(TAG_CATEGORY, tagName)) {
-                intentFilterManifestInfo.categoryList.add(parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME));
+                intentFilterInfo.categoryList.add(parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME));
             }
         }
-        return intentFilterManifestInfo;
+        return intentFilterInfo;
     }
 
     @NonNull

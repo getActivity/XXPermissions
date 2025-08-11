@@ -127,10 +127,10 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestList,
-                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull AndroidManifestInfo manifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
         // 申请后台的传感器权限必须要先注册前台的传感器权限
         checkPermissionRegistrationStatus(permissionInfoList, PermissionNames.BODY_SENSORS);
     }

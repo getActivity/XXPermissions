@@ -106,11 +106,11 @@ public final class PictureInPicturePermission extends SpecialPermission {
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestList,
-                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull AndroidManifestInfo manifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionInfoList, currentPermissionInfo);
-        List<ActivityManifestInfo> activityInfoList = androidManifestInfo.activityInfoList;
+        super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
+        List<ActivityManifestInfo> activityInfoList = manifestInfo.activityInfoList;
         for (int i = 0; i < activityInfoList.size(); i++) {
             boolean supportsPictureInPicture = activityInfoList.get(i).supportsPictureInPicture;
             if (supportsPictureInPicture) {

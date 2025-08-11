@@ -116,8 +116,8 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
     }
 
     @Override
-    public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestList, @Nullable AndroidManifestInfo androidManifestInfo) {
-        super.checkCompliance(activity, requestList, androidManifestInfo);
+    public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestList, @Nullable AndroidManifestInfo manifestInfo) {
+        super.checkCompliance(activity, requestList, manifestInfo);
         if (TextUtils.isEmpty(mDeviceAdminReceiverClassName)) {
             throw new IllegalArgumentException("Pass the BroadcastReceiverClass parameter as empty");
         }
@@ -129,24 +129,24 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestList,
-                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull AndroidManifestInfo manifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
 
-        List<BroadcastReceiverManifestInfo> receiverInfoList = androidManifestInfo.receiverInfoList;
-        for (BroadcastReceiverManifestInfo broadcastReceiverManifestInfo : receiverInfoList) {
+        List<BroadcastReceiverManifestInfo> receiverInfoList = manifestInfo.receiverInfoList;
+        for (BroadcastReceiverManifestInfo receiverInfo : receiverInfoList) {
 
-            if (broadcastReceiverManifestInfo == null) {
+            if (receiverInfo == null) {
                 continue;
             }
 
-            if (!PermissionUtils.reverseEqualsString(mDeviceAdminReceiverClassName, broadcastReceiverManifestInfo.name)) {
+            if (!PermissionUtils.reverseEqualsString(mDeviceAdminReceiverClassName, receiverInfo.name)) {
                 // 不是目标的 BroadcastReceiver，继续循环
                 continue;
             }
 
-            if (broadcastReceiverManifestInfo.permission == null || !PermissionUtils.equalsPermission(this, broadcastReceiverManifestInfo.permission)) {
+            if (receiverInfo.permission == null || !PermissionUtils.equalsPermission(this, receiverInfo.permission)) {
                 // 这个 BroadcastReceiver 组件注册的 permission 节点为空或者错误
                 throw new IllegalArgumentException("Please register permission node in the AndroidManifest.xml file, for example: "
                     + "<receiver android:name=\"" + mDeviceAdminReceiverClassName + "\" android:permission=\"" + getPermissionName() + "\" />");
@@ -155,10 +155,10 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
             String action = DeviceAdminReceiver.ACTION_DEVICE_ADMIN_ENABLED;
             // 当前是否注册了设备管理器广播的意图
             boolean registeredDeviceAdminReceiverAction = false;
-            List<IntentFilterManifestInfo> intentFilterInfoList = broadcastReceiverManifestInfo.intentFilterInfoList;
+            List<IntentFilterManifestInfo> intentFilterInfoList = receiverInfo.intentFilterInfoList;
             if (intentFilterInfoList != null) {
-                for (IntentFilterManifestInfo intentFilterManifestInfo : intentFilterInfoList) {
-                    if (intentFilterManifestInfo.actionList.contains(action)) {
+                for (IntentFilterManifestInfo intentFilterInfo : intentFilterInfoList) {
+                    if (intentFilterInfo.actionList.contains(action)) {
                         registeredDeviceAdminReceiverAction = true;
                         break;
                     }
@@ -176,7 +176,7 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
             String metaDataName = DeviceAdminReceiver.DEVICE_ADMIN_META_DATA;
             // 当前是否注册了设备管理器广播的 MetaData
             boolean registeredDeviceAdminReceiverMetaData = false;
-            List<MetaDataManifestInfo> metaDataInfoList = broadcastReceiverManifestInfo.metaDataInfoList;
+            List<MetaDataManifestInfo> metaDataInfoList = receiverInfo.metaDataInfoList;
             if (metaDataInfoList != null) {
                 for (MetaDataManifestInfo metaDataInfo : metaDataInfoList) {
                     if (metaDataName.equals(metaDataInfo.name) && metaDataInfo.resource != 0) {

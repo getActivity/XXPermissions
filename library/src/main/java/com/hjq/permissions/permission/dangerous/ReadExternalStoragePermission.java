@@ -92,16 +92,16 @@ public final class ReadExternalStoragePermission extends DangerousPermission {
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestList,
-                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull AndroidManifestInfo manifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
         // 如果申请的是 Android 10 获取媒体位置权限，则绕过本次检查
         if (PermissionUtils.containsPermission(requestList, PermissionNames.ACCESS_MEDIA_LOCATION)) {
             return;
         }
 
-        ApplicationManifestInfo applicationInfo = androidManifestInfo.applicationInfo;
+        ApplicationManifestInfo applicationInfo = manifestInfo.applicationInfo;
         if (applicationInfo == null) {
             return;
         }

@@ -157,5 +157,5 @@ public interface IPermission extends Parcelable {
      */
     default void checkCompliance(@NonNull Activity activity,
                                  @NonNull List<IPermission> requestList,
-                                 @Nullable AndroidManifestInfo androidManifestInfo) {}
+                                 @Nullable AndroidManifestInfo manifestInfo) {}
 }

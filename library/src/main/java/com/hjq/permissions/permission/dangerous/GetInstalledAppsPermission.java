@@ -166,10 +166,10 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
                                             @NonNull List<IPermission> requestList,
-                                            @NonNull AndroidManifestInfo androidManifestInfo,
+                                            @NonNull AndroidManifestInfo manifestInfo,
                                             @NonNull List<PermissionManifestInfo> permissionInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionInfo) {
-        super.checkSelfByManifestFile(activity, requestList, androidManifestInfo, permissionInfoList, currentPermissionInfo);
+        super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
         // 当前 targetSdk 必须大于 Android 11，否则停止检查
         if (PermissionVersion.getTargetVersion(activity) < PermissionVersion.ANDROID_11) {
             return;
@@ -182,8 +182,8 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
             queryAllPackagesPermissionName = "android.permission.QUERY_ALL_PACKAGES";
         }
 
-        PermissionManifestInfo permissionManifestInfo = findPermissionInfoByList(permissionInfoList, queryAllPackagesPermissionName);
-        if (permissionManifestInfo != null || !androidManifestInfo.queriesPackageList.isEmpty()) {
+        PermissionManifestInfo permissionInfo = findPermissionInfoByList(permissionInfoList, queryAllPackagesPermissionName);
+        if (permissionInfo != null || !manifestInfo.queriesPackageList.isEmpty()) {
             return;
         }
 
