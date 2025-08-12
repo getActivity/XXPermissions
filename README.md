@@ -281,6 +281,7 @@ XXPermissions.setCheckMode(false);
 |     小米   |  Miui 13 或 HyperOs 1.0.0 及以上版本  |      是     |
 |     红米   |             和小米雷同             |   和小米雷同  |
 |     OPPO  |       (ColorOs 12 及以上版本 && Android 11+) 或者 </br> (ColorOs 11.1 及以上版本 && Android 12+)        |      否     |
+|     VIVO  |       OriginOS 4 && Android 14       |      否      |
 |     一加   |      和 OPPO 雷同  |    和 OPPO 雷同   |
 |     真我   |       realme UI 3.0 及以上版本         |      否     |
 
@@ -289,7 +290,6 @@ XXPermissions.setCheckMode(false);
 |   品牌    |   测试的手机机型    |             测试的版本                | 是否有申请该权限的入口 |
 | :------: | :---------------: | :---------------------------------: | :-----------------: |
 |     三星  |  三星 galaxy s22  |       One UI 5.0 && Android 13      |          否         |
-|    VIVO  |    iQOO Neo7 SE   |       OriginOS 3 && Android 13      |          否         |
 |     魅族  |     魅族 18x      |     Flyme 9.2.3.1A && Android 11    |          是         |
 |    锤子   |   坚果手机 Pro 2S  | Smartisan OS 7.2.0.2 && Android 8.1 |          否         |
 |    奇虎   |  360 手机 N7 Lite |      360 Os 3.0 && Android 8.1      |          否         |
