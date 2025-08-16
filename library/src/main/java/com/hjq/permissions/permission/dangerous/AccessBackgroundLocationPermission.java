@@ -16,7 +16,7 @@ import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PermissionVersion;
-import com.hjq.permissions.tools.PhoneRomUtils;
+import com.hjq.permissions.tools.DeviceOs;
 import java.util.List;
 
 /**
@@ -61,15 +61,15 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
     @Override
     public PermissionPageType getPermissionPageType(@NonNull Context context) {
         // 后台定位权限在澎湃或者 miui 上面一直是透明的 Activity
-        if (PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui()) {
+        if (DeviceOs.isHyperOsOrMiui()) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
         // 后台定位权限在荣耀系统上面一直是透明的 Activity
-        if (PhoneRomUtils.isMagicOs()) {
+        if (DeviceOs.isMagicOs()) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
         // 后台定位权限在鸿蒙系统上面一直是透明的 Activity
-        if (PhoneRomUtils.isHarmonyOs()) {
+        if (DeviceOs.isHarmonyOs()) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
         // 后台定位权限申请页在 Android 10 还是透明的 Activity，到了 Android 11 就变成了不透明的 Activity

@@ -8,9 +8,9 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
-import com.hjq.permissions.tools.PermissionVersion;
+import com.hjq.permissions.tools.DeviceOs;
 import com.hjq.permissions.tools.PermissionSettingPage;
-import com.hjq.permissions.tools.PhoneRomUtils;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,8 +88,8 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
             // 如果当前系统是 HyperOs，那么就不要跳转到 miui 权限设置页了，因为还要点一下《其他权限》入口才能找到悬浮窗权限设置选项
             // 这样的效果还不如直接跳转到所有应用的悬浮窗权限设置列表，然后再点进去来得更直观
             // 相关 Github issue 地址：https://github.com/getActivity/XXPermissions/issues/342
-            if (PermissionVersion.isAndroid11() && !PhoneRomUtils.isHyperOs() &&
-                        PhoneRomUtils.isMiui() && PhoneRomUtils.isXiaomiSystemOptimization()) {
+            if (PermissionVersion.isAndroid11() && !DeviceOs.isHyperOs() &&
+                        (DeviceOs.isMiui() && DeviceOs.isMiuiOptimization())) {
                 // 因为 Android 11 及后面的版本无法直接跳转到具体权限设置页面，只能跳转到悬浮窗权限应用列表，十分地麻烦的，这里做了一下简化
                 // miui 做得比较人性化的，不会出现跳转不过去的问题，其他厂商就不一定了，就是不想让你跳转过去
                 intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
@@ -108,7 +108,7 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
         } else {
 
             // 需要注意的是，这里不需要判断鸿蒙，因为鸿蒙 2.0 用代码判断是 API 等级是 29（Android 10）会直接走上面的逻辑，而不会走到下面来
-            if (PhoneRomUtils.isEmui()) {
+            if (DeviceOs.isEmui()) {
                 // EMUI 发展史：http://www.360doc.com/content/19/1017/10/9113704_867381705.shtml
                 // android 华为版本历史,一文看完华为EMUI发展史：https://blog.csdn.net/weixin_39959369/article/details/117351161
 
@@ -121,12 +121,9 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
                 notificationManagementActivityIntent.setClassName("com.huawei.systemmanager", "com.huawei.notificationmanager.ui.NotificationManagmentActivity");
 
                 // 获取厂商版本号
-                String romVersionName = PhoneRomUtils.getRomVersionName();
-                if (romVersionName == null) {
-                    romVersionName = "";
-                }
+                String osVersionName = DeviceOs.getOsVersionName();
 
-                if (romVersionName.startsWith("3.0")) {
+                if (osVersionName.startsWith("3.0")) {
                     // 3.0、3.0.1
                     intentList.add(notificationManagementActivityIntent);
                     intentList.add(addViewMonitorActivityIntent);
@@ -139,17 +136,17 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
                 // 华为手机管家主页
                 intentList.addAll(PermissionSettingPage.getHuaWeiMobileManagerAppIntent(context));
 
-            } else if (PhoneRomUtils.isMiui()) {
+            } else if (DeviceOs.isMiui()) {
                 // 假设关闭了 miui 优化，就不走这里的逻辑
                 // 小米手机也可以通过应用详情页开启悬浮窗权限（只不过会多一步操作）
-                if (PhoneRomUtils.isXiaomiSystemOptimization()) {
+                if (DeviceOs.isMiuiOptimization()) {
                     intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
                     intentList.add(intent);
 
                     // 小米手机管家主页
                     intentList.addAll(PermissionSettingPage.getXiaoMiMobileManagerAppIntent(context));
                 }
-            } else if (PhoneRomUtils.isColorOs()) {
+            } else if (DeviceOs.isColorOs()) {
                 // com.color.safecenter 是之前 oppo 安全中心的包名，而 com.oppo.safe 是 oppo 后面改的安全中心的包名
                 // 经过测试发现是在 ColorOs 2.1 的时候改的，Android 4.4 还是 com.color.safecenter，到了 Android 5.0 变成了 com.oppo.safe
 
@@ -180,7 +177,7 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
 
                 intentList.addAll(PermissionSettingPage.getOppoSafeCenterAppIntent(context));
 
-            } else if (PhoneRomUtils.isOriginOs()) {
+            } else if (DeviceOs.isFuntouchOs()) {
                 // java.lang.SecurityException: Permission Denial: starting Intent
                 // { cmp=com.iqoo.secure/.ui.phoneoptimize.FloatWindowManager (has extras) } from
                 // ProcessRecord{2c3023cf 21847:com.hjq.permissions.demo/u0a4633} (pid=21847, uid=14633) not exported from uid 10055
@@ -197,10 +194,10 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
                 // Vivo 手机管家主页
                 intentList.addAll(PermissionSettingPage.getVivoMobileManagerAppIntent(context));
 
-            } else if (PhoneRomUtils.isOneUi()) {
+            } else if (DeviceOs.isOneUi()) {
                 intent = PermissionSettingPage.getOneUiPermissionPageIntent(context);
                 intentList.add(intent);
-            } else if (PhoneRomUtils.isSmartisanOS() && !PermissionVersion.isAndroid5_1()) {
+            } else if (DeviceOs.isSmartisanOs() && !PermissionVersion.isAndroid5_1()) {
                 // 经过测试，锤子手机 5.1 及以上的手机的可以直接通过直接跳转到应用详情开启悬浮窗权限，但是 4.4 以下的手机就不行，需要跳转到安全中心
                 intentList.addAll(PermissionSettingPage.getSmartisanPermissionPageIntent());
                 intentList.addAll(PermissionSettingPage.getSmartisanSecurityCenterAppIntent(context));

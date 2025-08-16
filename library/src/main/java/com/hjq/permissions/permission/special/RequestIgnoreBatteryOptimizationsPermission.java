@@ -12,7 +12,7 @@ import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PermissionVersion;
-import com.hjq.permissions.tools.PhoneRomUtils;
+import com.hjq.permissions.tools.DeviceOs;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,11 +60,11 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
     public PermissionPageType getPermissionPageType(@NonNull Context context) {
         // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
         // 然而在 Android 11 之后的，这个权限页面被小米改成了自己定制化的页面
-        if (PermissionVersion.isAndroid11() && (PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui())) {
+        if (PermissionVersion.isAndroid11() && DeviceOs.isHyperOsOrMiui()) {
             return PermissionPageType.OPAQUE_ACTIVITY;
         }
         // 请求忽略电池优化选项权限在 Android 15 及以上版本的 OPPO 系统上面是一个不透明的 Activity 页面
-        if (PhoneRomUtils.isColorOs() && PermissionVersion.isAndroid15()) {
+        if (DeviceOs.isColorOs() && PermissionVersion.isAndroid15()) {
             return PermissionPageType.OPAQUE_ACTIVITY;
         }
         if (PermissionVersion.isAndroid6() && !isGrantedPermission(context)) {
@@ -108,7 +108,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
             // 经过测试，如果是已经授权的情况下，是不能再跳转到这个 Intent 的，否则就会导致存在这个 Intent，也可以跳转过去，
             // 但是这个权限设置页就会立马 finish，就会导致代码实际跳转了但是用户没有感觉到有跳转权限设置页的问题
             // 经过测试，发现有澎湃就算授权了也可以跳转过去，但 miui 就不行，Android 原生也不行，所以这里要排除一下澎湃
-            if (isGrantedPermission(context, skipRequest) && !PhoneRomUtils.isHyperOs()) {
+            if (isGrantedPermission(context, skipRequest) && !DeviceOs.isHyperOs()) {
                 requestIgnoreBatteryOptimizationsIntent = null;
             }
         }
@@ -129,7 +129,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
 
         // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
         // 然而在 Android 11 之后的，这个权限页面被小米改成了自己定制化的页面
-        if (skipRequest && !(PermissionVersion.isAndroid11() && (PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui()))) {
+        if (skipRequest && !(PermissionVersion.isAndroid11() && DeviceOs.isHyperOsOrMiui())) {
             if (advancedPowerUsageDetailIntent != null) {
                 intentList.add(advancedPowerUsageDetailIntent);
             }
@@ -155,7 +155,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
         // 经过测试，得出结论，miui 和澎湃支持在应用详情页设置该权限：
         // 1. miui 应用详情页 -> 省电策略
         // 2. Hyper 应用详情页 -> 电量消耗
-        if (PhoneRomUtils.isMiui() || PhoneRomUtils.isHyperOs()) {
+        if (DeviceOs.isHyperOsOrMiui()) {
             intent = getApplicationDetailsSettingIntent(context);
             intentList.add(intent);
 
@@ -180,7 +180,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
 
         // 小米手机默认等待时长
         final int xiaomiPhoneDefaultWaitTime = 1000;
-        if (PhoneRomUtils.isHyperOs()) {
+        if (DeviceOs.isHyperOs()) {
             // 1. 澎湃 Os 2.0.112.0，Android 15，小米 14，200 毫秒没有问题
             // 2. 澎湃 Os 2.0.8.0，Android 15，小米 12S Pro，200 毫秒没有问题
             // 3. 澎湃 Os 2.0.5.0，Android 15，红米 K60，200 毫秒没有问题
@@ -198,9 +198,9 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
             }
 
             if (PermissionVersion.isAndroid14()) {
-                int romBigVersionCode = PhoneRomUtils.getRomBigVersionCode();
+                int osBigVersionCode = DeviceOs.getOsBigVersionCode();
                 // 如果获取不到的大版本号又或者获取到的大版本号小于 2，就返回小米机型默认的等待时间
-                if (romBigVersionCode < 2) {
+                if (osBigVersionCode < 2) {
                     return xiaomiPhoneDefaultWaitTime;
                 }
                 return super.getResultWaitTime(context);
@@ -209,7 +209,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
             return xiaomiPhoneDefaultWaitTime;
         }
 
-        if (PhoneRomUtils.isMiui() && PermissionVersion.isAndroid11()) {
+        if (DeviceOs.isMiui() && PermissionVersion.isAndroid11()) {
             // 经过测试，发现小米 Android 11 及以上的版本，申请这个权限需要 1000 毫秒才能判断到（测试了 800 毫秒还不行）
             // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
             // 然而在 Android 11 之后的，这个权限页面被小米改成了自己定制化的页面

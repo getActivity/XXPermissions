@@ -8,7 +8,7 @@ import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.BasePermission;
 import com.hjq.permissions.tools.PermissionVersion;
-import com.hjq.permissions.tools.PhoneRomUtils;
+import com.hjq.permissions.tools.DeviceOs;
 
 /**
  *    author : Android 轮子哥
@@ -57,7 +57,7 @@ public abstract class SpecialPermission extends BasePermission {
             waitTime = 300;
         }
 
-        if (PhoneRomUtils.isEmui() || PhoneRomUtils.isHarmonyOs()) {
+        if (DeviceOs.isEmui() || DeviceOs.isHarmonyOs()) {
             // 需要加长时间等待，不然某些华为机型授权了但是获取不到权限
             if (PermissionVersion.isAndroid8()) {
                 waitTime = 300;

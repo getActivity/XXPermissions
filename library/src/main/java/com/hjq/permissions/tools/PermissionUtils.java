@@ -1,6 +1,5 @@
 package com.hjq.permissions.tools;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
@@ -10,21 +9,12 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.ResolveInfoFlags;
 import android.net.Uri;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.permission.base.IPermission;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Properties;
 
 /**
  *    author : Android 轮子哥
@@ -319,88 +309,5 @@ public final class PermissionUtils {
             }
         }
         return true;
-    }
-
-    /**
-     * 获取系统属性值（多种方式）
-     */
-    @NonNull
-    public static String getSystemPropertyValue(final String propertyName) {
-        String prop;
-        try {
-            prop = getSystemPropertyByReflect(propertyName);
-            if (prop != null && !prop.isEmpty()) {
-                return prop;
-            }
-        } catch (Exception ignored) {}
-
-        try {
-            prop = getSystemPropertyByShell(propertyName);
-            if (prop != null && !prop.isEmpty()) {
-                return prop;
-            }
-        } catch (IOException ignored) {}
-
-        try {
-            prop = getSystemPropertyByStream(propertyName);
-            if (prop != null && !prop.isEmpty()) {
-                return prop;
-            }
-        } catch (IOException ignored) {}
-
-        return "";
-    }
-
-    /**
-     * 获取系统属性值（通过反射系统类）
-     */
-    @SuppressLint("PrivateApi")
-    private static String getSystemPropertyByReflect(String key) throws ClassNotFoundException, InvocationTargetException,
-                                                                        NoSuchMethodException, IllegalAccessException  {
-        Class<?> clz = Class.forName("android.os.SystemProperties");
-        Method getMethod = clz.getMethod("get", String.class, String.class);
-        return (String) getMethod.invoke(clz, key, "");
-    }
-
-    /**
-     * 获取系统属性值（通过 shell 命令）
-     */
-    private static String getSystemPropertyByShell(final String propName) throws IOException {
-        BufferedReader input = null;
-        try {
-            Process p = Runtime.getRuntime().exec("getprop " + propName);
-            input = new BufferedReader(new InputStreamReader(p.getInputStream()), 1024);
-            String firstLine = input.readLine();
-            if (firstLine != null) {
-                return firstLine;
-            }
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException ignored) {}
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 获取系统属性值（通过读取系统文件）
-     */
-    private static String getSystemPropertyByStream(final String key) throws IOException {
-        FileInputStream inputStream = null;
-        try {
-            Properties prop = new Properties();
-            File file = new File(Environment.getRootDirectory(), "build.prop");
-            inputStream = new FileInputStream(file);
-            prop.load(inputStream);
-            return prop.getProperty(key, "");
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException ignored) {}
-            }
-        }
     }
 }

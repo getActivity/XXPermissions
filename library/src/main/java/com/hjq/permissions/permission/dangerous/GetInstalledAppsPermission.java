@@ -20,7 +20,7 @@ import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import com.hjq.permissions.tools.PermissionSettingPage;
 import com.hjq.permissions.tools.PermissionVersion;
-import com.hjq.permissions.tools.PhoneRomUtils;
+import com.hjq.permissions.tools.DeviceOs;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,9 +89,9 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
                 return true;
             }
 
-            if (PermissionVersion.isAndroid4_4() && PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
+            if (PermissionVersion.isAndroid4_4() && DeviceOs.isMiui() && isSupportRequestPermissionByMiui()) {
                 // 通过 miui 优化开关来决定是不是支持开启
-                return PhoneRomUtils.isXiaomiSystemOptimization();
+                return DeviceOs.isMiuiOptimization();
             }
         }
         return superMethodSupportRequestPermission;
@@ -103,8 +103,8 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
             return checkSelfPermission(context, getPermissionName());
         }
 
-        if (PermissionVersion.isAndroid4_4() && PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
-            if (!PhoneRomUtils.isXiaomiSystemOptimization()) {
+        if (PermissionVersion.isAndroid4_4() && DeviceOs.isMiui() && isSupportRequestPermissionByMiui()) {
+            if (!DeviceOs.isMiuiOptimization()) {
                 // 如果当前没有开启 miui 优化，则直接返回 true，表示已经授权，因为在这种情况下
                 // 就算跳转 miui 权限设置页，用户也授权了，用代码判断权限还是没有授予的状态
                 // 所以在没有开启 miui 优化的情况下，就告诉外层已经授予了，避免外层去引导用户跳转到权限设置页
@@ -125,8 +125,8 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
             return isDoNotAskAgainPermissionByStandardVersion(activity);
         }
 
-        if (PermissionVersion.isAndroid4_4() && PhoneRomUtils.isMiui() && isSupportRequestPermissionByMiui()) {
-            if (!PhoneRomUtils.isXiaomiSystemOptimization()) {
+        if (PermissionVersion.isAndroid4_4() && DeviceOs.isMiui() && isSupportRequestPermissionByMiui()) {
+            if (!DeviceOs.isMiuiOptimization()) {
                 return false;
             }
             // 如果在没有授权的情况下返回 true 表示永久拒绝，这样就能走后面的判断，让外层调用者跳转到小米定制的权限设置页面
@@ -143,7 +143,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         List<Intent> intentList = new ArrayList<>();
         Intent intent;
 
-        if ((PhoneRomUtils.isHyperOs() || PhoneRomUtils.isMiui()) && PhoneRomUtils.isXiaomiSystemOptimization()) {
+        if (DeviceOs.isHyperOsOrMiui() && DeviceOs.isHyperOsOrMiuiOptimization()) {
             intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
             intentList.add(intent);
         }

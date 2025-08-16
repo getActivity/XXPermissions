@@ -9,7 +9,7 @@ import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.PermissionVersion;
-import com.hjq.permissions.tools.PhoneRomUtils;
+import com.hjq.permissions.tools.DeviceOs;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,7 +88,7 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
         // 荣耀 80 Pro Android 12  MagicOs 7.0
         // 荣耀 X20 SE Android 11  MagicOs 4.1
         // 荣耀 Play5 Android 10  MagicOs 4.0
-        if (PermissionVersion.isAndroid10() && !PhoneRomUtils.isHarmonyOs() && !PhoneRomUtils.isMagicOs()) {
+        if (PermissionVersion.isAndroid10() && !(DeviceOs.isHarmonyOs() || DeviceOs.isMagicOs())) {
             // android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS
             intent = new Intent("android.settings.NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS");
             intent.setData(getPackageNameUri(context));

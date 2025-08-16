@@ -204,7 +204,7 @@ public final class PermissionSettingPage {
     public static Intent getApplicationDetailsSettingsIntent(@NonNull Context context, @Nullable IPermission... permissions) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.setData(PermissionUtils.getPackageNameUri(context));
-        if (permissions != null && permissions.length > 0 && PhoneRomUtils.isColorOs()) {
+        if (permissions != null && permissions.length > 0 && DeviceOs.isColorOs()) {
             // OPPO 应用权限受阻跳转优化适配：https://open.oppomobile.com/new/developmentDoc/info?id=12983
             Bundle bundle = new Bundle();
             List<String> permissionList = PermissionUtils.convertPermissionList(permissions);
