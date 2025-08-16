@@ -517,9 +517,6 @@ public final class DeviceOs {
      * 判断是否为国内版本的 MIUI
      */
     public static boolean isMiuiByChina() {
-        // https://github.com/getActivity/XXPermissions/issues/398#issuecomment-3181978796
-        // https://xiaomi.eu/community/threads/how-to-enable-the-region-option-in-settings-for-eu-roms.56303/
-        // https://github.com/search?q=+ro.miui.region+&type=code
         if (!isMiui()) {
             return false;
         }
@@ -539,6 +536,7 @@ public final class DeviceOs {
         // https://github.com/getActivity/XXPermissions/issues/398#issuecomment-3181978796
         // https://xiaomi.eu/community/threads/how-to-enable-the-region-option-in-settings-for-eu-roms.56303/
         // https://github.com/search?q=+ro.miui.region+&type=code
+        // https://c.mi.com/global/post/600955
         if (!isMiui()) {
             return false;
         }
