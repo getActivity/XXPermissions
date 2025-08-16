@@ -107,7 +107,7 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
 
         } else {
 
-            // 需要注意的是，这里不需要判断鸿蒙，因为鸿蒙 2.0 用代码判断是 API 等级是 29（Android 10）会直接走上面的逻辑，而不会走到下面来
+            // 需要注意的是，这里不需要判断 HarmonyOS，因为 HarmonyOS 2.0 用代码判断是 API 等级是 29（Android 10）会直接走上面的逻辑，而不会走到下面来
             if (DeviceOs.isEmui()) {
                 // EMUI 发展史：http://www.360doc.com/content/19/1017/10/9113704_867381705.shtml
                 // android 华为版本历史,一文看完华为EMUI发展史：https://blog.csdn.net/weixin_39959369/article/details/117351161

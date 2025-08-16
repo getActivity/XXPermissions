@@ -64,11 +64,11 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
         if (DeviceOs.isHyperOsOrMiui()) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
-        // 后台定位权限在荣耀系统上面一直是透明的 Activity
+        // 后台定位权限在 MagicOS 上面一直是透明的 Activity
         if (DeviceOs.isMagicOs()) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
-        // 后台定位权限在鸿蒙系统上面一直是透明的 Activity
+        // 后台定位权限在 HarmonyOS 上面一直是透明的 Activity
         if (DeviceOs.isHarmonyOs()) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
