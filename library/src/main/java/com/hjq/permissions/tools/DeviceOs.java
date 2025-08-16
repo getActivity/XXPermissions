@@ -477,7 +477,7 @@ public final class DeviceOs {
     /**
      * 判断澎湃是否为国内版本
      */
-    public static boolean isHyperOsChina() {
+    public static boolean isHyperOsByChina() {
         if (!isHyperOs()) {
             return false;
         }

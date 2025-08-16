@@ -119,10 +119,12 @@ public abstract class DangerousPermission extends BasePermission {
 
         // 如果当前厂商系统是澎湃或者 miui 的话，并且已经开启小米系统优化的前提下
         // 优先跳转到小米特有的应用权限设置页，这样做可以优化用户授权的体验
-        if (DeviceOs.isMiui() && DeviceOs.isMiuiOptimization()) {
+        // 需要注意的是，有人反馈 miui 国际版不能跳转到小米特有的权限设置页来设置危险权限
+        // Github 地址：https://github.com/getActivity/XXPermissions/issues/398
+        if (DeviceOs.isMiuiByChina() && DeviceOs.isMiuiOptimization()) {
             intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
             intentList.add(intent);
-        } else if (DeviceOs.isHyperOs() && DeviceOs.isHyperOsOptimization()) {
+        } else if (DeviceOs.isHyperOsByChina() && DeviceOs.isHyperOsOptimization()) {
             String osVersionName = DeviceOs.getOsVersionName();
             // 这里需要过滤 2.0.0.0 ~ 2.0.5.0 范围的版本，因为我在小米云测上面测试了，这个范围的版本直接跳转到小米特有的应用权限设置页有问题
             // 实测在 2.0.6.0 这个问题才被解决，但是澎湃 1.0 无论是什么版本都没有这个问题，所以基本锁定这个问题是在 2.0.0.0 ~ 2.0.5.0 的版本

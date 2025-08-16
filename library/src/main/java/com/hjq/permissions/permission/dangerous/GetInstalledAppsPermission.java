@@ -143,7 +143,8 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         List<Intent> intentList = new ArrayList<>();
         Intent intent;
 
-        if (DeviceOs.isHyperOsOrMiui() && DeviceOs.isHyperOsOrMiuiOptimization()) {
+        if ((DeviceOs.isHyperOsByChina() && DeviceOs.isHyperOsOptimization()) ||
+            (DeviceOs.isMiuiByChina() && DeviceOs.isMiuiOptimization())) {
             intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
             intentList.add(intent);
         }
