@@ -256,13 +256,13 @@ public final class PermissionUtils {
      * 将 List<IPermission> 转换成 String[] 对象
      */
     @NonNull
-    public static String[] convertPermissionArray(@Nullable List<IPermission> permissions) {
+    public static String[] convertPermissionArray(@NonNull Context context, @Nullable List<IPermission> permissions) {
         if (permissions == null || permissions.isEmpty()) {
             return new String[0];
         }
         String[] list = new String[permissions.size()];
         for (int i = 0; i < permissions.size(); i++) {
-            list[i] = permissions.get(i).getPermissionName();
+            list[i] = permissions.get(i).getRequestPermissionName(context);
         }
         return list;
     }

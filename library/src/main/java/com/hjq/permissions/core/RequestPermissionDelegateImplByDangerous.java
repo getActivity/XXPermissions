@@ -37,7 +37,7 @@ public final class RequestPermissionDelegateImplByDangerous extends RequestPermi
         }
 
         // 如果不需要的话就直接申请全部的危险权限
-        requestPermissions(PermissionUtils.convertPermissionArray(permissions), requestCode);
+        requestPermissions(PermissionUtils.convertPermissionArray(activity, permissions), requestCode);
         // 记录一下已申请过的权限（用于更加精准地判断用户是否勾选了《不再询问》）
         AlreadyRequestPermissionsManager.addAlreadyRequestPermissions(permissions);
     }

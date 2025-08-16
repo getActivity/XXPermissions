@@ -38,6 +38,8 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
     private static final String MIUI_OP_GET_INSTALLED_APPS_FIELD_NAME = "OP_GET_INSTALLED_APPS";
     private static final int MIUI_OP_GET_INSTALLED_APPS_DEFAULT_VALUE = 10022;
 
+    private static final String ONE_UI_GET_APP_LIST_PERMISSION_NAME = "com.samsung.android.permission.GET_APP_LIST";
+
     public static final Parcelable.Creator<GetInstalledAppsPermission> CREATOR = new Parcelable.Creator<GetInstalledAppsPermission>() {
 
         @Override
@@ -65,10 +67,20 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         return PERMISSION_NAME;
     }
 
+    @Override
+    public String getRequestPermissionName(Context context) {
+        if (PermissionVersion.isAndroid6() &&
+            !isSupportRequestPermissionBySystem(context) &&
+            isSupportRequestPermissionByOneUi(context)) {
+            return ONE_UI_GET_APP_LIST_PERMISSION_NAME;
+        }
+        return super.getRequestPermissionName(context);
+    }
+
     @NonNull
     @Override
     public PermissionPageType getPermissionPageType(@NonNull Context context) {
-        if (PermissionVersion.isAndroid6() && isSupportRequestPermissionBySystem(context)) {
+        if (PermissionVersion.isAndroid6() && (isSupportRequestPermissionBySystem(context) || isSupportRequestPermissionByOneUi(context))) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
         return PermissionPageType.OPAQUE_ACTIVITY;
@@ -84,7 +96,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         // 获取父类方法的返回值，看看它是不是支持申请的，这个是前提条件
         boolean superMethodSupportRequestPermission = super.isSupportRequestPermission(context);
         if (superMethodSupportRequestPermission) {
-            if (PermissionVersion.isAndroid6() && isSupportRequestPermissionBySystem(context)) {
+            if (PermissionVersion.isAndroid6() && (isSupportRequestPermissionBySystem(context) || isSupportRequestPermissionByOneUi(context))) {
                 // 表示支持申请
                 return true;
             }
@@ -99,11 +111,11 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (PermissionVersion.isAndroid6() && isSupportRequestPermissionBySystem(context)) {
-            return checkSelfPermission(context, getPermissionName());
+        if (PermissionVersion.isAndroid6() && (isSupportRequestPermissionBySystem(context) || isSupportRequestPermissionByOneUi(context))) {
+            return checkSelfPermission(context, getRequestPermissionName(context));
         }
 
-        if (PermissionVersion.isAndroid4_4() && DeviceOs.isMiui() && isSupportRequestPermissionByMiui()) {
+        if (PermissionVersion.isAndroid4_4() && isSupportRequestPermissionByMiui()) {
             if (!DeviceOs.isMiuiOptimization()) {
                 // 如果当前没有开启 miui 优化，则直接返回 true，表示已经授权，因为在这种情况下
                 // 就算跳转 miui 权限设置页，用户也授权了，用代码判断权限还是没有授予的状态
@@ -120,7 +132,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
-        if (PermissionVersion.isAndroid6() && isSupportRequestPermissionBySystem(activity)) {
+        if (PermissionVersion.isAndroid6() && (isSupportRequestPermissionBySystem(activity) || isSupportRequestPermissionByOneUi(activity))) {
             // 如果支持申请，那么再去判断权限是否永久拒绝
             return isDoNotAskAgainPermissionByStandardVersion(activity);
         }
@@ -171,6 +183,10 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
                                             @NonNull List<PermissionManifestInfo> permissionInfoList,
                                             @Nullable PermissionManifestInfo currentPermissionInfo) {
         super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
+        // 经过在三星的手机上面的测试，发现不需要在清单文件添加 com.samsung.android.permission.GET_APP_LIST 也能申请成功并且成功读取到应用列表
+        // PermissionManifestInfo oneUiGetAppListPermission = findPermissionInfoByList(permissionInfoList, ONE_UI_GET_APP_LIST_PERMISSION_NAME);
+        // checkPermissionRegistrationStatus(oneUiGetAppListPermission, ONE_UI_GET_APP_LIST_PERMISSION_NAME, Integer.MAX_VALUE);
+
         // 当前 targetSdk 必须大于 Android 11，否则停止检查
         if (PermissionVersion.getTargetVersion(activity) < PermissionVersion.ANDROID_11) {
             return;
@@ -228,7 +244,6 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
             // 没有这个系统属性时会抛出：android.provider.Settings$SettingNotFoundException: oem_installed_apps_runtime_permission_enable
             e.printStackTrace();
         }
-
         return false;
     }
 
@@ -237,6 +252,35 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
      */
     @RequiresApi(PermissionVersion.ANDROID_4_4)
     private static boolean isSupportRequestPermissionByMiui() {
+        if (!DeviceOs.isMiui()) {
+            return false;
+        }
         return isExistOpPermission(MIUI_OP_GET_INSTALLED_APPS_FIELD_NAME);
+    }
+
+    /**
+     * 判断当前 OneUI 版本是否支持申请读取应用列表权限
+     */
+    @RequiresApi(PermissionVersion.ANDROID_6)
+    private static boolean isSupportRequestPermissionByOneUi(@NonNull Context context) {
+        if (!DeviceOs.isOneUi()) {
+            return false;
+        }
+        try {
+            PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(ONE_UI_GET_APP_LIST_PERMISSION_NAME, 0);
+            if (permissionInfo != null) {
+                if (PermissionVersion.isAndroid9()) {
+                    return permissionInfo.getProtection() == PermissionInfo.PROTECTION_DANGEROUS;
+                } else {
+                    return (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_MASK_BASE) == PermissionInfo.PROTECTION_DANGEROUS;
+                }
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            // 没有这个权限时会抛出：android.content.pm.PackageManager$NameNotFoundException: com.samsung.android.permission.GET_APP_LIST
+            // 实测在 OneUI 5.1 上面没有这个权限，到了 OneUI 5.1.1 才发现有这个权限，
+            // 所以基本可以断定是在 OneUI 5.1.1 这个版本才开始支持申请这个权限
+            e.printStackTrace();
+        }
+        return false;
     }
 }

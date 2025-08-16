@@ -59,7 +59,7 @@ public abstract class DangerousPermission extends BasePermission {
         if (!PermissionVersion.isAndroid6()) {
             return true;
         }
-        return checkSelfPermission(context, getPermissionName());
+        return checkSelfPermission(context, getRequestPermissionName(context));
     }
 
     /**
@@ -100,8 +100,8 @@ public abstract class DangerousPermission extends BasePermission {
         // 这个问题其实别人已经提过了，这里就不再重复解答了，传送地址：https://github.com/getActivity/XXPermissions/issues/154，
         // 目前这套处理方案是目前能想到的最佳解决方案了，如果你还有更好的做法，欢迎通过 issue 告诉我，我会持续跟进并优化这个问题。
         return AlreadyRequestPermissionsManager.isAlreadyRequestPermissions(this) &&
-            !checkSelfPermission(activity, getPermissionName()) &&
-            !shouldShowRequestPermissionRationale(activity, getPermissionName());
+            !checkSelfPermission(activity, getRequestPermissionName(activity)) &&
+            !shouldShowRequestPermissionRationale(activity, getRequestPermissionName(activity));
     }
 
     /**

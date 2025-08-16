@@ -27,6 +27,13 @@ public interface IPermission extends Parcelable {
     String getPermissionName();
 
     /**
+     * 获取请求时的权限名称（默认为权限的名称）
+     */
+    default String getRequestPermissionName(Context context) {
+        return getPermissionName();
+    }
+
+    /**
      * 获取权限的类型
      */
     @NonNull
