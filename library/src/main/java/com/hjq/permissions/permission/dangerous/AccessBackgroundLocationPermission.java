@@ -60,7 +60,7 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
     @NonNull
     @Override
     public PermissionPageType getPermissionPageType(@NonNull Context context) {
-        // 后台定位权限在澎湃或者 miui 上面一直是透明的 Activity
+        // 后台定位权限在 HyperOS 或者 MIUI 上面一直是透明的 Activity
         if (DeviceOs.isHyperOsOrMiui()) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }

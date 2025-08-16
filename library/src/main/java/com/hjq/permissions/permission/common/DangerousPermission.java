@@ -117,9 +117,9 @@ public abstract class DangerousPermission extends BasePermission {
         List<Intent> intentList = new ArrayList<>(5);
         Intent intent;
 
-        // 如果当前厂商系统是澎湃或者 miui 的话，并且已经开启小米系统优化的前提下
+        // 如果当前厂商系统是 HyperOS 或者 MIUI 的话，并且已经开启小米系统优化的前提下
         // 优先跳转到小米特有的应用权限设置页，这样做可以优化用户授权的体验
-        // 需要注意的是，有人反馈 miui 国际版不能跳转到小米特有的权限设置页来设置危险权限
+        // 需要注意的是，有人反馈 MIUI 国际版不能跳转到小米特有的权限设置页来设置危险权限
         // Github 地址：https://github.com/getActivity/XXPermissions/issues/398
         if (DeviceOs.isMiuiByChina() && DeviceOs.isMiuiOptimization()) {
             intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
@@ -127,8 +127,8 @@ public abstract class DangerousPermission extends BasePermission {
         } else if (DeviceOs.isHyperOsByChina() && DeviceOs.isHyperOsOptimization()) {
             String osVersionName = DeviceOs.getOsVersionName();
             // 这里需要过滤 2.0.0.0 ~ 2.0.5.0 范围的版本，因为我在小米云测上面测试了，这个范围的版本直接跳转到小米特有的应用权限设置页有问题
-            // 实测在 2.0.6.0 这个问题才被解决，但是澎湃 1.0 无论是什么版本都没有这个问题，所以基本锁定这个问题是在 2.0.0.0 ~ 2.0.5.0 的版本
-            // 这是因为小米在刚开始做澎湃 2.0 的时候，小米特有的权限设置页还是一个半成品，跳转后里面没有危险权限的选项，只有一个《其他权限》的选项
+            // 实测在 2.0.6.0 这个问题才被解决，但是 HyperOS 1.0 无论是什么版本都没有这个问题，所以基本锁定这个问题是在 2.0.0.0 ~ 2.0.5.0 的版本
+            // 这是因为小米在刚开始做 HyperOS 2.0 的时候，小米特有的权限设置页还是一个半成品，跳转后里面没有危险权限的选项，只有一个《其他权限》的选项
             // 并且其他权限的选项点进去后还只有可伶的几个权限：桌面快捷方式、通知类短信、锁屏显示、后台弹出界面、显示悬浮窗
             if (!osVersionName.matches("^2\\.0\\.[0-5]\\.\\d+$")) {
                 intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);

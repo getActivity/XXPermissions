@@ -107,7 +107,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
             requestIgnoreBatteryOptimizationsIntent.setData(getPackageNameUri(context));
             // 经过测试，如果是已经授权的情况下，是不能再跳转到这个 Intent 的，否则就会导致存在这个 Intent，也可以跳转过去，
             // 但是这个权限设置页就会立马 finish，就会导致代码实际跳转了但是用户没有感觉到有跳转权限设置页的问题
-            // 经过测试，发现有澎湃就算授权了也可以跳转过去，但 miui 就不行，Android 原生也不行，所以这里要排除一下澎湃
+            // 经过测试，发现有 HyperOS 就算授权了也可以跳转过去，但 MIUI 就不行，Android 原生也不行，所以这里要排除一下 HyperOS
             if (isGrantedPermission(context, skipRequest) && !DeviceOs.isHyperOs()) {
                 requestIgnoreBatteryOptimizationsIntent = null;
             }
@@ -152,9 +152,9 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
         }
 
         Intent intent;
-        // 经过测试，得出结论，miui 和澎湃支持在应用详情页设置该权限：
-        // 1. miui 应用详情页 -> 省电策略
-        // 2. Hyper 应用详情页 -> 电量消耗
+        // 经过测试，得出结论，MIUI 和 HyperOS 支持在应用详情页设置该权限：
+        // 1. MIUI 应用详情页 -> 省电策略
+        // 2. HyperOS 应用详情页 -> 电量消耗
         if (DeviceOs.isHyperOsOrMiui()) {
             intent = getApplicationDetailsSettingIntent(context);
             intentList.add(intent);
@@ -181,18 +181,18 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
         // 小米手机默认等待时长
         final int xiaomiPhoneDefaultWaitTime = 1000;
         if (DeviceOs.isHyperOs()) {
-            // 1. 澎湃 Os 2.0.112.0，Android 15，小米 14，200 毫秒没有问题
-            // 2. 澎湃 Os 2.0.8.0，Android 15，小米 12S Pro，200 毫秒没有问题
-            // 3. 澎湃 Os 2.0.5.0，Android 15，红米 K60，200 毫秒没有问题
-            // 4. 澎湃 Os 2.0.1.0，Android 15，红米 14R，200 毫秒没有问题
-            // 5. 澎湃 Os 2.0.4.0，Android 14，小米平板 5，200 毫秒没有问题
-            // 6. 澎湃 Os 2.0.1.0，Android 14，小米 12 Pro 天玑版，200 毫秒没有问题
-            // 7. 澎湃 Os 1.0.7.0，Android 14，红米 Note 14，需要 1000 毫秒
-            // 大致结论：澎湃 2.0 及以上的系统没有问题，澎湃 2.0 的 Android 版本有 Android 15 和 Android 14 的，
-            //         Android 14 的澎湃只有 1.0 的，没有找到 Android 14 澎湃 2.0 的版本，
-            //         所以这个问题应该是在澎湃 2.0 上面修复了，大概率澎湃 2.0  UI 大改版改动到了（看到 UI 有明显变化）
+            // 1. HyperOS 2.0.112.0，Android 15，小米 14，200 毫秒没有问题
+            // 2. HyperOS 2.0.8.0，Android 15，小米 12S Pro，200 毫秒没有问题
+            // 3. HyperOS 2.0.5.0，Android 15，红米 K60，200 毫秒没有问题
+            // 4. HyperOS 2.0.1.0，Android 15，红米 14R，200 毫秒没有问题
+            // 5. HyperOS 2.0.4.0，Android 14，小米平板 5，200 毫秒没有问题
+            // 6. HyperOS 2.0.1.0，Android 14，小米 12 Pro 天玑版，200 毫秒没有问题
+            // 7. HyperOS 1.0.7.0，Android 14，红米 Note 14，需要 1000 毫秒
+            // 大致结论：HyperOS 2.0 及以上的系统没有问题，HyperOS 2.0 的 Android 版本有 Android 15 和 Android 14 的，
+            //         Android 14 的 HyperOS 只有 1.0 的，没有找到 Android 14 HyperOS 2.0 的版本，
+            //         所以这个问题应该是在 HyperOS 2.0 上面修复了，大概率 HyperOS 2.0  UI 大改版改动到了（看到 UI 有明显变化）
             //         结果测试人员发现了，开发人员不得不修，否则会影响自己的绩效，至此这个历史遗留 Bug 终于被发现并修复
-            //         Android 15 的澎湃 2.0 版本 200 毫秒没有问题，但是 Android 14 的版本澎湃 1.0 还有有问题
+            //         Android 15 的 HyperOS 2.0 版本 200 毫秒没有问题，但是 Android 14 的版本 HyperOS 1.0 还有有问题
             if (PermissionVersion.isAndroid15()) {
                 return super.getResultWaitTime(context);
             }

@@ -72,7 +72,7 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
             return true;
         }
 
-        // 经过测试在 vivo x7 Plus（Android 5.1）和 OPPO A53 （Android 5.1 ColorOs 2.1）的机子上面判断不准确
+        // 经过测试在 vivo x7 Plus（Android 5.1）和 OPPO A53 （Android 5.1 ColorOS 2.1）的机子上面判断不准确
         // 经过 debug 发现并不是 vivo 和 oppo 修改了 OP_SYSTEM_ALERT_WINDOW 的赋值导致的
         // 估计是 vivo 和 oppo 的机子修改了整个悬浮窗机制，这种就没有办法了
         return checkOpPermission(context, OP_SYSTEM_ALERT_WINDOW_FIELD_NAME, OP_SYSTEM_ALERT_WINDOW_DEFAULT_VALUE, true);
@@ -85,13 +85,13 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
         Intent intent;
 
         if (PermissionVersion.isAndroid6()) {
-            // 如果当前系统是 HyperOs，那么就不要跳转到 miui 权限设置页了，因为还要点一下《其他权限》入口才能找到悬浮窗权限设置选项
+            // 如果当前系统是 HyperOS，那么就不要跳转到 MIUI 权限设置页了，因为还要点一下《其他权限》入口才能找到悬浮窗权限设置选项
             // 这样的效果还不如直接跳转到所有应用的悬浮窗权限设置列表，然后再点进去来得更直观
             // 相关 Github issue 地址：https://github.com/getActivity/XXPermissions/issues/342
             if (PermissionVersion.isAndroid11() && !DeviceOs.isHyperOs() &&
                         (DeviceOs.isMiui() && DeviceOs.isMiuiOptimization())) {
                 // 因为 Android 11 及后面的版本无法直接跳转到具体权限设置页面，只能跳转到悬浮窗权限应用列表，十分地麻烦的，这里做了一下简化
-                // miui 做得比较人性化的，不会出现跳转不过去的问题，其他厂商就不一定了，就是不想让你跳转过去
+                // MIUI 做得比较人性化的，不会出现跳转不过去的问题，其他厂商就不一定了，就是不想让你跳转过去
                 intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
                 intentList.add(intent);
             }
@@ -113,11 +113,11 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
                 // android 华为版本历史,一文看完华为EMUI发展史：https://blog.csdn.net/weixin_39959369/article/details/117351161
 
                 Intent addViewMonitorActivityIntent = new Intent();
-                // emui 3.1 的适配（华为荣耀 7 Android 5.0、华为揽阅 M2 青春版 Android 5.1、华为畅享 5S Android 5.1）
+                // EMUI 3.1 的适配（华为荣耀 7 Android 5.0、华为揽阅 M2 青春版 Android 5.1、华为畅享 5S Android 5.1）
                 addViewMonitorActivityIntent.setClassName("com.huawei.systemmanager", "com.huawei.systemmanager.addviewmonitor.AddViewMonitorActivity");
 
                 Intent notificationManagementActivityIntent = new Intent();
-                // emui 3.0 的适配（华为麦芒 3S Android 4.4）
+                // EMUI 3.0 的适配（华为麦芒 3S Android 4.4）
                 notificationManagementActivityIntent.setClassName("com.huawei.systemmanager", "com.huawei.notificationmanager.ui.NotificationManagmentActivity");
 
                 // 获取厂商版本号
@@ -137,7 +137,7 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
                 intentList.addAll(PermissionSettingPage.getHuaWeiMobileManagerAppIntent(context));
 
             } else if (DeviceOs.isMiui()) {
-                // 假设关闭了 miui 优化，就不走这里的逻辑
+                // 假设关闭了 MIUI 优化，就不走这里的逻辑
                 // 小米手机也可以通过应用详情页开启悬浮窗权限（只不过会多一步操作）
                 if (DeviceOs.isMiuiOptimization()) {
                     intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);

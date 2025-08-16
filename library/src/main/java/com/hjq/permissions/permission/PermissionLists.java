@@ -107,13 +107,7 @@ public final class PermissionLists {
      *
      * 需要注意的是：
      *   1. 需要在清单文件中注册 QUERY_ALL_PACKAGES 权限或者注册 <queries> 节点，否则在 Android 11 上面就算申请成功也是获取不到已安装应用列表的
-     *   2. 这个权限在有的手机上面是授予状态，在有的手机上面是还没有授予，在有的手机上面是无法申请，能支持申请该权限的的厂商系统版本有：
-     *      华为：Harmony 3.0.0 及以上版本，Harmony 2.0.1 实测不行
-     *      荣耀：Magic UI 6.0 及以上版本，Magic UI 5.0 实测不行
-     *      小米：Miui 13 及以上版本，Miui 12 实测不行，经过验证 miui 上面默认会授予此权限，而 Hyper 任何版本都支持
-     *      OPPO：(ColorOs 12 及以上版本 && Android 11+) || (ColorOs 11.1 及以上版本 && Android 12+)
-     *      VIVO：虽然没有申请这个权限的通道，但是读取已安装第三方应用列表是没有问题的，没有任何限制
-     *      真我：realme UI 3.0 及以上版本，realme UI 2.0 实测不行
+     *   2. 这个权限在有的手机上面是授予状态，在有的手机上面是还没有授予，在有的手机上面是无法申请，要看手机厂商是否支持这个权限，支持了不一定默认授予
      *   3. 如果你贪图方便在清单文件中注册了 QUERY_ALL_PACKAGES 权限，并且 App 需要上架 GooglePlay，注意看一下 GooglePlay 的政策：
      *      https://support.google.com/googleplay/android-developer/answer/9888170?hl=zh-Hans
      */

@@ -85,7 +85,7 @@ public final class UseFullScreenIntentPermission extends SpecialPermission {
             intentList.add(intent);
         }
 
-        // 经过测试，miui 和 Hyper 不支持在通知界面设置全屏通知权限的，但是 Android 原生是可以的
+        // 经过测试，MIUI 和 HyperOS 不支持在通知界面设置全屏通知权限的，但是 Android 原生是可以的
         if (DeviceOs.isHyperOsOrMiui()) {
             intent = getAndroidSettingIntent();
             intentList.add(intent);

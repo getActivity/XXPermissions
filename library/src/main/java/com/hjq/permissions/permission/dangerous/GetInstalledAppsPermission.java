@@ -102,7 +102,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
             }
 
             if (PermissionVersion.isAndroid4_4() && DeviceOs.isMiui() && isSupportRequestPermissionByMiui()) {
-                // 通过 miui 优化开关来决定是不是支持开启
+                // 通过 MIUI 优化开关来决定是不是支持开启
                 return DeviceOs.isMiuiOptimization();
             }
         }
@@ -117,12 +117,12 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
         if (PermissionVersion.isAndroid4_4() && isSupportRequestPermissionByMiui()) {
             if (!DeviceOs.isMiuiOptimization()) {
-                // 如果当前没有开启 miui 优化，则直接返回 true，表示已经授权，因为在这种情况下
-                // 就算跳转 miui 权限设置页，用户也授权了，用代码判断权限还是没有授予的状态
-                // 所以在没有开启 miui 优化的情况下，就告诉外层已经授予了，避免外层去引导用户跳转到权限设置页
+                // 如果当前没有开启 MIUI 优化，则直接返回 true，表示已经授权，因为在这种情况下
+                // 就算跳转 MIUI 权限设置页，用户也授权了，用代码判断权限还是没有授予的状态
+                // 所以在没有开启 MIUI 优化的情况下，就告诉外层已经授予了，避免外层去引导用户跳转到权限设置页
                 return true;
             }
-            // 经过测试发现，OP_GET_INSTALLED_APPS 是小米在 Android 6.0 才加上的，看了 Android 5.0 的 miui 并没有出现读取应用列表的权限
+            // 经过测试发现，OP_GET_INSTALLED_APPS 是小米在 Android 6.0 才加上的，看了 Android 5.0 的 MIUI 并没有出现读取应用列表的权限
             return checkOpPermission(context, MIUI_OP_GET_INSTALLED_APPS_FIELD_NAME, MIUI_OP_GET_INSTALLED_APPS_DEFAULT_VALUE, true);
         }
 
@@ -248,7 +248,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
     }
 
     /**
-     * 判断当前 miui 版本是否支持申请读取应用列表权限
+     * 判断当前 MIUI 版本是否支持申请读取应用列表权限
      */
     @RequiresApi(PermissionVersion.ANDROID_4_4)
     private static boolean isSupportRequestPermissionByMiui() {

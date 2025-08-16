@@ -30,7 +30,7 @@ public final class RequestPermissionDelegateImplByDangerous extends RequestPermi
             // 如果当前系统是 Android 6.0 以下，则没有危险权限的概念，则直接回调权限监听
             // 有人看到这句代码，忍不住想吐槽了，你这不是太阳能手电筒，纯纯脱裤子放屁
             // 实则不然，也有例外的情况，GET_INSTALLED_APPS 权限虽然是危险权限
-            // 但是框架在 miui 上面兼容到了 Android 6.0 以下，但是由于无法调用 requestPermissions
+            // 但是框架在 MIUI 上面兼容到了 Android 6.0 以下，但是由于无法调用 requestPermissions
             // 只能通过跳转 Activity 授予该权限，所以只能告诉外层权限请求失败，迫使外层跳转 Activity 来授权
             sendTask(this::handlerPermissionCallback, 0);
             return;

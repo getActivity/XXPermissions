@@ -118,7 +118,7 @@ public final class DeviceOs {
 
     static final String OS_NAME_FUNTOUCH_OS = "FuntouchOS";
     // [ro.vivo.os.name]: [Funtouch]
-    // 不要用 ro.vivo.os.name 属性判断是否为 FuntouchOs 系统，因为在 FuntouchOs 和 OriginOs 系统上面获取到的值是 Funtouch
+    // 不要用 ro.vivo.os.name 属性判断是否为 FuntouchOS 系统，因为在 FuntouchOS 和 OriginOs 系统上面获取到的值是 Funtouch
     // static final String OS_CONDITIONS_FUNTOUCH_OS = "ro.vivo.os.name";
     /**
      * [ro.vivo.os.version]: [2.5]
@@ -141,16 +141,16 @@ public final class DeviceOs {
 
     /* ---------------------------------------- 下面是华为或者荣耀的系统 ---------------------------------------- */
 
-    static final String OS_NAME_MAGIC_OS = "MagicOs";
+    static final String OS_NAME_MAGIC_OS = "MagicOS";
     /**
      * 经过测试，得出以下结论
-     * Magic 7.0 存放系统版本的属性是 msc.config.magic.version，
-     * Magic 4.0 和 Magic 4.1 用的是 ro.build.version.magic 属性
+     * MagicOS 7.0 存放系统版本的属性是 msc.config.magic.version，
+     * MagicOS 4.0 和 Magic 4.1 用的是 ro.build.version.magic 属性
      */
     static final String[] OS_VERSION_NAME_MAGIC_OS = { "msc.config.magic.version",
                                                        "ro.build.version.magic" };
 
-    static final String OS_NAME_HARMONY_OS = "HarmonyOs";
+    static final String OS_NAME_HARMONY_OS = "HarmonyOS";
     /**
      * [ro.huawei.build.display.id]: [NOH-AN00 2.0.0.165(C00E160R6P2)]
      * [ro.build.display.id]: [NOH-AN00 2.0.0.165(C00E160R6P2)]
@@ -219,7 +219,7 @@ public final class DeviceOs {
     /* ---------------------------------------- 下面是中兴或者努比亚的系统 ---------------------------------------- */
 
     /**
-     * MyOs 系统返回：[ro.build.MiFavor_version]: [12]
+     * MyOS 系统返回：[ro.build.MiFavor_version]: [12]
      * MiFavor 系统返回：[ro.build.MiFavor_version]: [10.1]
      */
     static final String OS_VERSION_ZTE_OS = "ro.build.MiFavor_version" ;
@@ -295,8 +295,8 @@ public final class DeviceOs {
     }
 
     static {
-        // 需要注意的是：该逻辑需要在判断 miui 系统之前判断，因为在 HyperOs 系统上面判断当前系统是否为 miui 系统也会返回 true
-        // 这是因为 HyperOs 系统本身就是从 miui 系统演变而来，有这个问题也很正常，主要是厂商为了系统兼容性而保留的
+        // 需要注意的是：该逻辑需要在判断 MIUI 系统之前判断，因为在 HyperOS 系统上面判断当前系统是否为 MIUI 系统也会返回 true
+        // 这是因为 HyperOS 系统本身就是从 MIUI 系统演变而来，有这个问题也很正常，主要是厂商为了系统兼容性而保留的
         if (SystemPropertyCompat.isSystemPropertyAnyOneExist(OS_CONDITIONS_HYPER_OS)) {
             sCurrentOsName = OS_NAME_HYPER_OS;
             sCurrentOriginalOsVersionName = SystemPropertyCompat.getSystemPropertyValue(OS_VERSION_NAME_HYPER_OS);
@@ -468,14 +468,14 @@ public final class DeviceOs {
     }
 
     /**
-     * 判断当前厂商系统是否为澎湃系统（小米或者红米手机的系统）
+     * 判断当前厂商系统是否为 HyperOS（小米或者红米手机的系统）
      */
     public static boolean isHyperOs() {
         return PermissionUtils.equalsString(sCurrentOsName, OS_NAME_HYPER_OS);
     }
 
     /**
-     * 判断澎湃是否为国内版本
+     * 判断是否为国内版本的 HyperOS
      */
     public static boolean isHyperOsByChina() {
         if (!isHyperOs()) {
@@ -491,7 +491,7 @@ public final class DeviceOs {
     }
 
     /**
-     * 判断澎湃是否为国际版本
+     * 判断是否为国际版本的 HyperOS
      */
     public static boolean isHyperOsByGlobal() {
         if (!isHyperOs()) {
@@ -507,14 +507,14 @@ public final class DeviceOs {
     }
 
     /**
-     * 判断当前厂商系统是否为 miui（小米或者红米手机的系统）
+     * 判断当前厂商系统是否为 MIUI（小米或者红米手机的系统）
      */
     public static boolean isMiui() {
         return PermissionUtils.equalsString(sCurrentOsName, OS_NAME_MIUI);
     }
 
     /**
-     * 判断 miui 是否为国内版本
+     * 判断是否为国内版本的 MIUI
      */
     public static boolean isMiuiByChina() {
         // https://github.com/getActivity/XXPermissions/issues/398#issuecomment-3181978796
@@ -533,7 +533,7 @@ public final class DeviceOs {
     }
 
     /**
-     * 判断 miui 是否为国际版本
+     * 判断是否为国际版本的 MIUI
      */
     public static boolean isMiuiByGlobal() {
         // https://github.com/getActivity/XXPermissions/issues/398#issuecomment-3181978796
@@ -552,28 +552,28 @@ public final class DeviceOs {
     }
 
     /**
-     * 判断是否开启了 Miui 优化选项
+     * 判断是否开启了 MIUI 优化选项
      */
     public static boolean isMiuiOptimization() {
         return isXiaoMiSystemOptimization();
     }
 
     /**
-     * 判断是否开启了澎湃的系统优化选项
+     * 判断是否开启了 HyperOS 的系统优化选项
      */
     public static boolean isHyperOsOptimization() {
         return isXiaoMiSystemOptimization();
     }
 
     /**
-     * 判断当前厂商系统是否为澎湃或者 MIUI
+     * 判断当前厂商系统是否为 HyperOS 或者 MIUI
      */
     public static boolean isHyperOsOrMiui() {
         return isHyperOs() || isMiui();
     }
 
     /**
-     * 判断是否开启了澎湃或者 MIUI 的系统优化选项
+     * 判断是否开启了 HyperOS 或者 MIUI 的系统优化选项
      */
     public static boolean isHyperOsOrMiuiOptimization() {
         return isXiaoMiSystemOptimization();
@@ -582,11 +582,11 @@ public final class DeviceOs {
     /**
      * 判断小米手机是否开启了系统优化（默认开启）
      *
-     * Miui 关闭步骤为：开发者选项-> 启动 MIUI 优化 -> 点击关闭
-     * 澎湃的关闭步骤为：开发者选项-> 启用系统优化 -> 点击关闭
+     * MIUI 关闭步骤为：开发者选项-> 启动 MIUI 优化 -> 点击关闭
+     * HyperOS 的关闭步骤为：开发者选项-> 启用系统优化 -> 点击关闭
      *
      * 需要注意的是，关闭优化后，可以跳转到小米定制的权限请求页面，但是开启权限仍然是没有效果的
-     * 另外关于 miui 国际版开发者选项中是没有优化选项的，但是代码判断是有开启优化选项，也就是默认开启，这样是正确的
+     * 另外关于 MIUI 国际版开发者选项中是没有优化选项的，但是代码判断是有开启优化选项，也就是默认开启，这样是正确的
      * 相关 Github issue 地址：https://github.com/getActivity/XXPermissions/issues/38
      */
     @SuppressLint("PrivateApi")
