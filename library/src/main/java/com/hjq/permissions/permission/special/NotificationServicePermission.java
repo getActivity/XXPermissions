@@ -1,5 +1,6 @@
 package com.hjq.permissions.permission.special;
 
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -10,7 +11,10 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import com.hjq.permissions.manifest.AndroidManifestInfo;
+import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.permission.PermissionNames;
+import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.PermissionVersion;
 import java.util.ArrayList;
@@ -165,5 +169,20 @@ public final class NotificationServicePermission extends SpecialPermission {
     @Nullable
     public String getChannelId() {
         return mChannelId;
+    }
+
+    @Override
+    protected void checkSelfByManifestFile(@NonNull Activity activity,
+                                           @NonNull List<IPermission> requestList,
+                                           @NonNull AndroidManifestInfo manifestInfo,
+                                           @NonNull List<PermissionManifestInfo> permissionInfoList,
+                                           @Nullable PermissionManifestInfo currentPermissionInfo) {
+        super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
+
+        if (PermissionVersion.getTargetVersion(activity) >= PermissionVersion.ANDROID_13) {
+            // 如果当前项目已经适配了 Android 13，则需要在清单文件加入 POST_NOTIFICATIONS 权限，否则会导致无法申请通知栏权限
+            PermissionManifestInfo postNotificationsPermission = findPermissionInfoByList(permissionInfoList, PermissionNames.POST_NOTIFICATIONS);
+            checkPermissionRegistrationStatus(postNotificationsPermission, PermissionNames.POST_NOTIFICATIONS, Integer.MAX_VALUE);
+        }
     }
 }
