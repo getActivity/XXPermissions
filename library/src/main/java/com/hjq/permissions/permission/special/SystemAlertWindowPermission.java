@@ -137,15 +137,17 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
                 intentList.addAll(PermissionSettingPage.getHuaWeiMobileManagerAppIntent(context));
 
             } else if (DeviceOs.isMiui()) {
+
                 // 假设关闭了 MIUI 优化，就不走这里的逻辑
                 // 小米手机也可以通过应用详情页开启悬浮窗权限（只不过会多一步操作）
                 if (DeviceOs.isMiuiOptimization()) {
                     intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
                     intentList.add(intent);
-
-                    // 小米手机管家主页
-                    intentList.addAll(PermissionSettingPage.getXiaoMiMobileManagerAppIntent(context));
                 }
+
+                // 小米手机管家主页
+                intentList.addAll(PermissionSettingPage.getXiaoMiMobileManagerAppIntent(context));
+
             } else if (DeviceOs.isColorOs()) {
                 // com.color.safecenter 是之前 oppo 安全中心的包名，而 com.oppo.safe 是 oppo 后面改的安全中心的包名
                 // 经过测试发现是在 ColorOs 2.1 的时候改的，Android 4.4 还是 com.color.safecenter，到了 Android 5.0 变成了 com.oppo.safe
