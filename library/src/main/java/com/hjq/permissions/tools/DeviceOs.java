@@ -96,6 +96,14 @@ public final class DeviceOs {
      */
     static final String[] OS_REGION_MIUI = OS_REGION_MI;
 
+    /* ---------------------------------------- 下面是真我、OPPO 的系统 ---------------------------------------- */
+
+    static final String OS_NAME_REALME_UI = "RealmeUI";
+    /**
+     * [ro.build.version.realmeui]: [V5.0]
+     */
+    static final String OS_VERSION_NAME_REALME_UI = "ro.build.version.realmeui";
+
     static final String OS_NAME_COLOR_OS = "ColorOS";
     static final String[] OS_VERSION_NAME_COLOR_OS = { "ro.build.version.opporom",
                                                        "ro.build.version.oplusrom.display" };
@@ -130,14 +138,6 @@ public final class DeviceOs {
                                                           "ro.vivo.rom.version",
                                                           "ro.vivo.rom",
                                                           OS_CONDITIONS_VIVO_OS };
-
-    /* ---------------------------------------- 下面是真我的系统 ---------------------------------------- */
-
-    static final String OS_NAME_REALME_UI = "RealmeUI";
-    /**
-     * [ro.build.version.realmeui]: [V5.0]
-     */
-    static final String OS_VERSION_NAME_REALME_UI = "ro.build.version.realmeui";
 
     /* ---------------------------------------- 下面是华为或者荣耀的系统 ---------------------------------------- */
 
@@ -319,18 +319,17 @@ public final class DeviceOs {
         }
 
         if (sCurrentOsName == null) {
-            String colorOsVersion = SystemPropertyCompat.getSystemPropertyAnyOneValue(OS_VERSION_NAME_COLOR_OS);
-            if (!TextUtils.isEmpty(colorOsVersion)) {
-                sCurrentOsName = OS_NAME_COLOR_OS;
-                sCurrentOriginalOsVersionName = colorOsVersion;
-            }
-        }
-
-        if (sCurrentOsName == null) {
             String realmeUiVersion = SystemPropertyCompat.getSystemPropertyValue(OS_VERSION_NAME_REALME_UI);
+            // RealmeUI 一定要放在 ColorOS 之前判断，因为 RealmeUI 是 ColorOS 的另外一个分支
             if (!TextUtils.isEmpty(realmeUiVersion)) {
                 sCurrentOsName = OS_NAME_REALME_UI;
                 sCurrentOriginalOsVersionName = realmeUiVersion;
+            } else {
+                String colorOsVersion = SystemPropertyCompat.getSystemPropertyAnyOneValue(OS_VERSION_NAME_COLOR_OS);
+                if (!TextUtils.isEmpty(colorOsVersion)) {
+                    sCurrentOsName = OS_NAME_COLOR_OS;
+                    sCurrentOriginalOsVersionName = colorOsVersion;
+                }
             }
         }
 
