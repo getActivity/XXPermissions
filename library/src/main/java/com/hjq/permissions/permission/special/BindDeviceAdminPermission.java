@@ -22,6 +22,7 @@ import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PermissionVersion;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *    author : Android 轮子哥
@@ -62,7 +63,7 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
     }
 
     private BindDeviceAdminPermission(Parcel in) {
-        this(in.readString(), in.readString());
+        this(Objects.requireNonNull(in.readString()), in.readString());
     }
 
     @Override

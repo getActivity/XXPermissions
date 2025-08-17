@@ -2,6 +2,7 @@ package com.hjq.permissions.permission.dangerous;
 
 import android.os.Parcel;
 import android.support.annotation.NonNull;
+import java.util.Objects;
 
 /**
  *    author : Android 轮子哥
@@ -36,7 +37,7 @@ public final class StandardFitnessAndWellnessDataPermission extends HealthDataBa
     }
 
     private StandardFitnessAndWellnessDataPermission(Parcel in) {
-        this(in.readString(), in.readInt());
+        this(Objects.requireNonNull(in.readString()), in.readInt());
     }
 
     @Override

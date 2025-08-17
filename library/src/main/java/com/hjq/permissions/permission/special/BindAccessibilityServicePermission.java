@@ -22,6 +22,7 @@ import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PermissionVersion;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *    author : Android 轮子哥
@@ -60,7 +61,7 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
     }
 
     private BindAccessibilityServicePermission(Parcel in) {
-        this(in.readString());
+        this(Objects.requireNonNull(in.readString()));
     }
 
     @Override

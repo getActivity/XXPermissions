@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.permission.common.DangerousPermission;
+import java.util.Objects;
 
 /**
  *    author : Android 轮子哥
@@ -37,7 +38,7 @@ public final class StandardDangerousPermission extends DangerousPermission {
     private final int mFromAndroidVersion;
 
     private StandardDangerousPermission(Parcel in) {
-        this(in.readString(), in.readString(), in.readInt());
+        this(Objects.requireNonNull(in.readString()), in.readString(), in.readInt());
     }
 
     public StandardDangerousPermission(@NonNull String permissionName, int fromAndroidVersion) {
