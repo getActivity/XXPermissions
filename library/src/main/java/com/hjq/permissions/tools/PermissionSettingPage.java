@@ -73,12 +73,18 @@ public final class PermissionSettingPage {
      */
     @NonNull
     public static List<Intent> getXiaoMiMobileManagerAppIntent(Context context) {
-        List<Intent> intentList = new ArrayList<>(2);
+        List<Intent> intentList = new ArrayList<>(3);
         Intent intent;
 
+        // 小米手机管家 App -> 应用管理
+        intent = new Intent("miui.intent.action.APP_MANAGER");
+        intentList.add(intent);
+
+        // 小米手机管家 App -> 主页（隐式意图的形式）
         intent = new Intent("miui.intent.action.SECURITY_CENTER");
         intentList.add(intent);
 
+        // 小米手机管家 App -> 主页（指定包名的形式）
         intent = context.getPackageManager().getLaunchIntentForPackage(XiAO_MI_MOBILE_MANAGER_APP_PACKAGE_NAME);
         if (intent != null) {
             intentList.add(intent);
