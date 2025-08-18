@@ -194,10 +194,12 @@ public final class DeviceOs {
 
     static final String OS_NAME_OXYGEN_OS = "OxygenOS";
     static final String OS_VERSION_NAME_OXYGEN_OS = "ro.oxygen.version";
+
+    static final String OS_NAME_H2_OS = "H2OS";
     /**
      * Android 7.1.1：[ro.rom.version]: [H2OS V3.5]
+     * Android 11：[ro.rom.version]: [11.1.2.2]
      */
-    static final String OS_NAME_H2_OS = "H2OS";
     static final String OS_VERSION_NAME_H2_OS = "ro.rom.version";
 
     /* ---------------------------------------- 下面是魅族的系统 ---------------------------------------- */
@@ -263,19 +265,41 @@ public final class DeviceOs {
      */
     static final String OS_VERSION_NAME_EUI_OS = "ro.letv.release.version";
     /**
-     * [persist.sys.leui.bootreason]: [0]
-     * [ro.config.leui_ringtone_slot2]: [Default.ogg] [ro.leui_oem_unlock_enable]:[1]
      * [ro.letv.release.version_date]: [5.8.001D_09093]
      * [ro.product.letv_model]: [Le X620]
      * [ro.product.letv_name]：[乐2]
      * [sys.letv.fmodelaid]: [10120]
+     * [persist.sys.leui.bootreason]: [0]
+     * [ro.config.leui_ringtone_slot2]: [Default.ogg]
+     * [ro.leui_oem_unlock_enable]:[1]
      */
-    static final String[] OS_CONDITIONS_EUI_OS = { "persist.sys.leui.bootreason", "ro.config.leui_ringtone_slot2",
-                                                   OS_VERSION_NAME_SMARTISAN_OS,
+    static final String[] OS_CONDITIONS_EUI_OS = { OS_VERSION_NAME_EUI_OS,
                                                    "ro.letv.release.version_date",
                                                    "ro.product.letv_model",
                                                    "ro.product.letv_name",
-                                                   "sys.letv.fmodelaid" };
+                                                   "sys.letv.fmodelaid",
+                                                   "persist.sys.leui.bootreason",
+                                                   "ro.config.leui_ringtone_slot2",
+                                                   "ro.leui_oem_unlock_enable" };
+
+    /* ---------------------------------------- 下面是摩托罗拉的系统 ---------------------------------------- */
+
+    static final String OS_NAME_ZUI_OS = "ZUI";
+    /**
+     * [ro.com.zui.version]: [3.5]
+     */
+    static final String OS_VERSION_NAME_ZUI_OS = "ro.letv.release.version";
+    /**
+     * [ro.zui.version.status]: [ST]
+     * [ro.zui.hardware.displayid]: [H201]
+     * [persist.radio.zui.feature]: [true]
+     * [ro.config.zuisdk.enabled]: [true]
+     */
+    static final String[] OS_CONDITIONS_ZUI_OS = { OS_VERSION_NAME_ZUI_OS,
+                                                    "ro.zui.version.status",
+                                                    "ro.zui.hardware.displayid",
+                                                    "persist.radio.zui.feature",
+                                                    "ro.config.zuisdk.enabled" };
 
     /* ---------------------------------------- 下面是 360 的系统 ---------------------------------------- */
 
@@ -417,7 +441,7 @@ public final class DeviceOs {
 
         if (sCurrentOsName == null) {
             String h2OsVersion = SystemPropertyCompat.getSystemPropertyValue(OS_VERSION_NAME_H2_OS);
-            if (!TextUtils.isEmpty(h2OsVersion) && h2OsVersion.contains("H2OS")) {
+            if (!TextUtils.isEmpty(h2OsVersion)) {
                 sCurrentOsName = OS_NAME_H2_OS;
                 sCurrentOriginalOsVersionName = h2OsVersion;
             }
@@ -447,6 +471,11 @@ public final class DeviceOs {
         if (sCurrentOsName == null && SystemPropertyCompat.isSystemPropertyAnyOneExist(OS_CONDITIONS_EUI_OS)) {
             sCurrentOsName = OS_NAME_EUI_OS;
             sCurrentOriginalOsVersionName = SystemPropertyCompat.getSystemPropertyValue(OS_VERSION_NAME_EUI_OS);
+        }
+
+        if (sCurrentOsName == null && SystemPropertyCompat.isSystemPropertyAnyOneExist(OS_CONDITIONS_ZUI_OS)) {
+            sCurrentOsName = OS_NAME_ZUI_OS;
+            sCurrentOriginalOsVersionName = SystemPropertyCompat.getSystemPropertyValue(OS_VERSION_NAME_ZUI_OS);
         }
 
         if (sCurrentOsName == null) {
@@ -704,6 +733,13 @@ public final class DeviceOs {
      */
     public static boolean isEui() {
         return PermissionUtils.equalsString(sCurrentOsName, OS_NAME_EUI_OS);
+    }
+
+    /**
+     * 判断当前厂商系统是否为 ZUI（摩托罗拉手机的系统）
+     */
+    public static boolean isZui() {
+        return PermissionUtils.equalsString(sCurrentOsName, OS_NAME_ZUI_OS);
     }
 
     /**
