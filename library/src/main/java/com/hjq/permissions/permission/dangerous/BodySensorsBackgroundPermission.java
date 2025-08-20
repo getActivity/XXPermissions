@@ -6,6 +6,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.hjq.device.compat.DeviceOs;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.permission.PermissionGroups;
@@ -16,7 +17,6 @@ import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PermissionVersion;
-import com.hjq.permissions.tools.DeviceOs;
 import java.util.List;
 
 /**
@@ -60,7 +60,7 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
     @NonNull
     @Override
     public PermissionPageType getPermissionPageType(@NonNull Context context) {
-        if (DeviceOs.isHyperOsOrMiui()) {
+        if (DeviceOs.isHyperOs() || DeviceOs.isMiui()) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
         return PermissionPageType.OPAQUE_ACTIVITY;

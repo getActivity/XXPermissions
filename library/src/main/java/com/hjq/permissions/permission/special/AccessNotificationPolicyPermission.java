@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import com.hjq.device.compat.DeviceOs;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.PermissionVersion;
-import com.hjq.permissions.tools.DeviceOs;
 import java.util.ArrayList;
 import java.util.List;
 

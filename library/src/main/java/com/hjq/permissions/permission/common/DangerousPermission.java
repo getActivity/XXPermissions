@@ -5,13 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
+import com.hjq.device.compat.DeviceOs;
 import com.hjq.permissions.manager.AlreadyRequestPermissionsManager;
 import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.BasePermission;
 import com.hjq.permissions.tools.PermissionSettingPage;
 import com.hjq.permissions.tools.PermissionVersion;
-import com.hjq.permissions.tools.DeviceOs;
 import java.util.ArrayList;
 import java.util.List;
 

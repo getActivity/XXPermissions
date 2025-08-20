@@ -7,12 +7,12 @@ import android.os.Parcel;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import com.hjq.device.compat.DeviceOs;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.common.SpecialPermission;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PermissionVersion;
-import com.hjq.permissions.tools.DeviceOs;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +60,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
     public PermissionPageType getPermissionPageType(@NonNull Context context) {
         // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
         // 然而在 Android 11 之后的，这个权限页面被小米改成了自己定制化的页面
-        if (PermissionVersion.isAndroid11() && DeviceOs.isHyperOsOrMiui()) {
+        if (PermissionVersion.isAndroid11() && (DeviceOs.isHyperOs() || DeviceOs.isMiui())) {
             return PermissionPageType.OPAQUE_ACTIVITY;
         }
         // 请求忽略电池优化选项权限在 Android 15 及以上版本的 OPPO 系统上面是一个不透明的 Activity 页面
@@ -129,7 +129,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
 
         // 因为在 Android 10 的时候，这个特殊权限弹出的页面小米还是用谷歌原生的
         // 然而在 Android 11 之后的，这个权限页面被小米改成了自己定制化的页面
-        if (skipRequest && !(PermissionVersion.isAndroid11() && DeviceOs.isHyperOsOrMiui())) {
+        if (skipRequest && !(PermissionVersion.isAndroid11() && (DeviceOs.isHyperOs() || DeviceOs.isMiui()))) {
             if (advancedPowerUsageDetailIntent != null) {
                 intentList.add(advancedPowerUsageDetailIntent);
             }
@@ -155,7 +155,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
         // 经过测试，得出结论，MIUI 和 HyperOS 支持在应用详情页设置该权限：
         // 1. MIUI 应用详情页 -> 省电策略
         // 2. HyperOS 应用详情页 -> 电量消耗
-        if (DeviceOs.isHyperOsOrMiui()) {
+        if (DeviceOs.isHyperOs() || DeviceOs.isMiui()) {
             intent = getApplicationDetailsSettingIntent(context);
             intentList.add(intent);
 

@@ -4,11 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
+import com.hjq.device.compat.DeviceOs;
 import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.PermissionType;
 import com.hjq.permissions.permission.base.BasePermission;
 import com.hjq.permissions.tools.PermissionVersion;
-import com.hjq.permissions.tools.DeviceOs;
 
 /**
  *    author : Android 轮子哥

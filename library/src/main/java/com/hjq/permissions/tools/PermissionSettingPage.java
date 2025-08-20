@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.hjq.device.compat.DeviceOs;
 import com.hjq.permissions.permission.base.IPermission;
 import java.util.ArrayList;
 import java.util.List;
