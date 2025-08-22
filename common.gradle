@@ -7,7 +7,7 @@ android {
         // Android 版本适配指南：https://github.com/getActivity/AndroidVersionAdapter
         targetSdk 36
         versionCode 2600
-        versionName "26.0"
+        versionName "26.2"
     }
 
     // 支持 Java JDK 8
