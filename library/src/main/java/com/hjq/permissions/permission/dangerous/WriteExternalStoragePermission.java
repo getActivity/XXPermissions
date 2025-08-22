@@ -83,9 +83,11 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
             // 判断 WRITE_EXTERNAL_STORAGE 权限，结果无论是否授予，最终都会直接返回 true 给外层
             return true;
         }
-        if (PermissionVersion.isAndroid10() && PermissionVersion.getTargetVersion(context) >= PermissionVersion.ANDROID_10) {
-            // Environment.isExternalStorageLegacy API 解释：是否采用的是非分区存储的模式
-            return Environment.isExternalStorageLegacy();
+        // 如果当前项目 targetSdk > Android 10 并且运行在 Android 10 的设备上面，
+        // 但是在适配了分区存储的情况下，就直接返回 true 给外层（表示授予了该权限）
+        if (PermissionVersion.getTargetVersion(context) >= PermissionVersion.ANDROID_10 &&
+                PermissionVersion.isAndroid10() && !Environment.isExternalStorageLegacy()) {
+            return true;
         }
         return super.isGrantedPermissionByStandardVersion(context, skipRequest);
     }
@@ -95,9 +97,10 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
         if (PermissionVersion.isAndroid11() && PermissionVersion.getTargetVersion(activity) >= PermissionVersion.ANDROID_11) {
             return false;
         }
-        // Environment.isExternalStorageLegacy API 解释：是否采用的是非分区存储的模式
-        if (PermissionVersion.isAndroid10() && PermissionVersion.getTargetVersion(activity) >= PermissionVersion.ANDROID_10 &&
-                                                    Environment.isExternalStorageLegacy()) {
+        // 如果当前项目 targetSdk > Android 10 并且运行在 Android 10 的设备上面，
+        // 但是在适配了分区存储的情况下，就直接返回 false 给外层（表示没有勾选不再询问）
+        if (PermissionVersion.getTargetVersion(activity) >= PermissionVersion.ANDROID_10 &&
+                PermissionVersion.isAndroid10() && !Environment.isExternalStorageLegacy()) {
             return false;
         }
         return super.isDoNotAskAgainPermissionByStandardVersion(activity);
