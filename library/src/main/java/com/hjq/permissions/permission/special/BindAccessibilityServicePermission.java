@@ -97,12 +97,13 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
                 continue;
             }
             if (serviceClassName != null) {
-                // 精准匹配
-                if (serviceClassName.equals(componentName.getClassName())) {
+                // 精准匹配：匹配应用包名及 Service 类名
+                if (context.getPackageName().equals(componentName.getPackageName()) &&
+                    serviceClassName.equals(componentName.getClassName())) {
                     return true;
                 }
             } else {
-                // 模糊匹配
+                // 模糊匹配：仅匹配应用包名
                 if (context.getPackageName().equals(componentName.getPackageName())) {
                     return true;
                 }
