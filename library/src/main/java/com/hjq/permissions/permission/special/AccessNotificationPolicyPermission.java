@@ -89,7 +89,8 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
         // 荣耀 80 Pro Android 12  MagicOS 7.0
         // 荣耀 X20 SE Android 11  MagicOS 4.1
         // 荣耀 Play5 Android 10  MagicOS 4.0
-        if (PermissionVersion.isAndroid10() && !(DeviceOs.isHarmonyOs() || DeviceOs.isMagicOs())) {
+        // 华为 nova 8 Android 10  EMUI 11.0
+        if (PermissionVersion.isAndroid10() && !(DeviceOs.isHarmonyOs() || DeviceOs.isMagicOs() || DeviceOs.isEmui())) {
             // android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS
             intent = new Intent("android.settings.NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS");
             intent.setData(getPackageNameUri(context));
