@@ -64,6 +64,8 @@ android {
 }
 
 dependencies {
+    // 设备兼容框架：https://github.com/getActivity/DeviceCompat
+    implementation 'com.github.getActivity:DeviceCompat:1.0'
     // 权限请求框架：https://github.com/getActivity/XXPermissions
     implementation 'com.github.getActivity:XXPermissions:26.2'
 }

@@ -7,35 +7,37 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import com.hjq.permissions.fragment.IFragmentMethod;
-import com.hjq.permissions.core.OnPermissionFlowCallback;
+import com.hjq.permissions.core.OnPermissionFragmentCallback;
 
 /**
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/05/20
- *    desc   : 权限 Fragment 类（Support 包下 Fragment）
+ *    desc   : 权限 Fragment 类（ {@link android.support.v4.app.Fragment} ）
  */
-public abstract class PermissionFragmentSupport extends Fragment implements
-    IFragmentMethod<FragmentActivity, FragmentManager> {
+public abstract class PermissionSupportFragment extends Fragment implements IFragmentMethod<FragmentActivity, FragmentManager> {
 
     /**
      * 设置回调对象
      */
-    public void setCallback(@Nullable OnPermissionFlowCallback callback) {
-        getRequestPermissionDelegateImpl().setCallback(callback);
+    @Override
+    public void setPermissionFragmentCallback(@Nullable OnPermissionFragmentCallback callback) {
+        getPermissionChannelImpl().setPermissionFragmentCallback(callback);
     }
 
     /**
-     * 设置请求 Flag
+     * 设置非系统重启标记
      */
-    public void setRequestFlag(boolean flag) {
-        getRequestPermissionDelegateImpl().setRequestFlag(flag);
+    @Override
+    public void setNonSystemRestartMark(boolean nonSystemRestartMark) {
+        getPermissionChannelImpl().setNonSystemRestartMark(nonSystemRestartMark);
     }
 
     /**
-     * 提交绑定
+     * 提交 Fragment 绑定
      */
-    public void commitAttach(@Nullable FragmentManager fragmentManager) {
+    @Override
+    public void commitFragmentAttach(@Nullable FragmentManager fragmentManager) {
         if (fragmentManager == null) {
             return;
         }
@@ -43,9 +45,10 @@ public abstract class PermissionFragmentSupport extends Fragment implements
     }
 
     /**
-     * 提交解绑
+     * 提交 Fragment 解绑
      */
-    public void commitDetach() {
+    @Override
+    public void commitFragmentDetach() {
         FragmentManager fragmentManager = getFragmentManager();
         if (fragmentManager == null) {
             return;
@@ -56,24 +59,24 @@ public abstract class PermissionFragmentSupport extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        getRequestPermissionDelegateImpl().onFragmentResume();
+        getPermissionChannelImpl().onFragmentResume();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        getRequestPermissionDelegateImpl().onFragmentDestroy();
+        getPermissionChannelImpl().onFragmentDestroy();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        getRequestPermissionDelegateImpl().onFragmentRequestPermissionsResult(requestCode, permissions, grantResults);
+        getPermissionChannelImpl().onFragmentRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        getRequestPermissionDelegateImpl().onFragmentActivityResult(requestCode, resultCode, data);
+        getPermissionChannelImpl().onFragmentActivityResult(requestCode, resultCode, data);
     }
 }

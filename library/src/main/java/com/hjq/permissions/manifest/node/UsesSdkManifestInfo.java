@@ -8,8 +8,6 @@ package com.hjq.permissions.manifest.node;
  */
 public final class UsesSdkManifestInfo {
 
-    /**
-     * 最小安装版本要求
-     **/
+    /** 最小安装版本要求 **/
     public int minSdkVersion;
 }

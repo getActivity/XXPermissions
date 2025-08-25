@@ -58,6 +58,8 @@ android {
 }
 
 dependencies {
+    // Device compatibility framework：https://github.com/getActivity/DeviceCompat
+    implementation 'com.github.getActivity:DeviceCompat:1.0'
     // Permission request framework：https://github.com/getActivity/XXPermissions
     implementation 'com.github.getActivity:XXPermissions:26.2'
 }

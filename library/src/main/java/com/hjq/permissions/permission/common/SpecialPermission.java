@@ -6,7 +6,7 @@ import android.os.Parcel;
 import android.support.annotation.NonNull;
 import com.hjq.device.compat.DeviceOs;
 import com.hjq.permissions.permission.PermissionPageType;
-import com.hjq.permissions.permission.PermissionType;
+import com.hjq.permissions.permission.PermissionChannel;
 import com.hjq.permissions.permission.base.BasePermission;
 import com.hjq.permissions.tools.PermissionVersion;
 
@@ -28,8 +28,8 @@ public abstract class SpecialPermission extends BasePermission {
 
     @NonNull
     @Override
-    public PermissionType getPermissionType() {
-        return PermissionType.SPECIAL;
+    public PermissionChannel getPermissionChannel(@NonNull Context context) {
+        return PermissionChannel.START_ACTIVITY_FOR_RESULT;
     }
 
     @NonNull

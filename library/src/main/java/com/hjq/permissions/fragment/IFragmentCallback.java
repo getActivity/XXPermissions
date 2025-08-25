@@ -18,8 +18,12 @@ public interface IFragmentCallback {
     void onFragmentDestroy();
 
     /** Fragment onRequestPermissionsResult 方法回调 */
-    default void onFragmentRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {}
+    default void onFragmentRequestPermissionsResult(int requestCode, @Nullable String[] permissions, @Nullable int[] grantResults) {
+        // default implementation ignored
+    }
 
     /** Fragment onActivityResult 方法回调 */
-    default void onFragmentActivityResult(int requestCode, int resultCode, @Nullable Intent data) {}
+    default void onFragmentActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        // default implementation ignored
+    }
 }

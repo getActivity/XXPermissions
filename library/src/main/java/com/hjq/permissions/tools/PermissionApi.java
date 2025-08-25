@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.permission.PermissionType;
+import com.hjq.permissions.permission.PermissionChannel;
 import com.hjq.permissions.permission.base.IPermission;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,15 +26,15 @@ public final class PermissionApi {
     }
 
     /**
-     * 判断某个权限集合是否包含特殊权限
+     * 判断某个权限集合是否包含需要通过 startActivityForResult 授权的权限
      */
-    public static boolean containsSpecialPermission(@Nullable List<IPermission> permissions) {
+    public static boolean containsPermissionByStartActivityForResult(@NonNull Context context, @Nullable List<IPermission> permissions) {
         if (permissions == null || permissions.isEmpty()) {
             return false;
         }
 
         for (IPermission permission : permissions) {
-            if (permission.getPermissionType() == PermissionType.SPECIAL) {
+            if (permission.getPermissionChannel(context) == PermissionChannel.START_ACTIVITY_FOR_RESULT) {
                 return true;
             }
         }
@@ -111,19 +111,20 @@ public final class PermissionApi {
         // 创建一个新的集合对象，避免复用对象可能引发外层的冲突
         List<IPermission> realPermissions = new ArrayList<>(permissions);
         for (IPermission permission : permissions) {
-            if (permission.getFromAndroidVersion() > PermissionVersion.getCurrentVersion()) {
+            if (permission.getFromAndroidVersion(context) > PermissionVersion.getCurrentVersion()) {
                 // 如果当前权限是高版本才出现的权限，则进行剔除
                 realPermissions.remove(permission);
                 continue;
             }
 
             List<IPermission> oldPermissions = permission.getOldPermissions(context);
-            // 1. 如果旧版本列表不为空，并且当前权限是特殊权限，就剔除它对应的旧版本权限
+            // 1. 如果旧版本列表不为空，并且当前权限是需要通过 startActivityForResult 授权的权限，就剔除它对应的旧版本权限
             // 例如：MANAGE_EXTERNAL_STORAGE -> READ_EXTERNAL_STORAGE、WRITE_EXTERNAL_STORAGE
-            // 2. 如果旧版本列表不为空，并且当前权限对应的旧版本权限包含了特殊权限，就剔除它对应的旧版本权限
+            // 2. 如果旧版本列表不为空，并且当前权限对应的旧版本权限包含了需要通过 startActivityForResult 授权的权限，就剔除它对应的旧版本权限
             // 例如：POST_NOTIFICATIONS -> NOTIFICATION_SERVICE
             if (oldPermissions != null && !oldPermissions.isEmpty() &&
-                (permission.getPermissionType() == PermissionType.SPECIAL || containsSpecialPermission(oldPermissions))) {
+                (permission.getPermissionChannel(context) == PermissionChannel.START_ACTIVITY_FOR_RESULT ||
+                    containsPermissionByStartActivityForResult(context, oldPermissions))) {
                 realPermissions.removeAll(oldPermissions);
             }
         }
@@ -166,7 +167,7 @@ public final class PermissionApi {
         while (++index < requestList.size()) {
             IPermission permission = requestList.get(index);
             // 如果当前运行的 Android 版本大于权限出现的 Android 版本，则证明这个权限在当前设备上不用添加旧权限
-            if (PermissionVersion.getCurrentVersion() >= permission.getFromAndroidVersion()) {
+            if (PermissionVersion.getCurrentVersion() >= permission.getFromAndroidVersion(context)) {
                 continue;
             }
             // 通过新权限查询到对应的旧权限
@@ -183,18 +184,6 @@ public final class PermissionApi {
                 requestList.add(++index, oldPermission);
             }
         }
-    }
-
-    /**
-     * 判断传入的权限组是不是都是危险权限
-     */
-    public static boolean areAllDangerousPermission(@NonNull List<IPermission> permissions) {
-        for (IPermission permission : permissions) {
-            if (permission.getPermissionType() == PermissionType.SPECIAL) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**

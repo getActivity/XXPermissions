@@ -22,7 +22,7 @@ import java.util.List;
  *    time   : 2025/05/20
  *    desc   : 请求权限实现类
  */
-public abstract class RequestPermissionDelegateImpl implements IFragmentCallback {
+public abstract class PermissionChannelImpl implements IFragmentCallback {
 
     /** 请求的权限 */
     public static final String REQUEST_PERMISSIONS = "request_permissions";
@@ -34,8 +34,8 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
     @NonNull
     private final Object mTaskToken = new Object();
 
-    /** 权限申请标记（防止系统杀死应用后重新触发请求的问题） */
-    private boolean mRequestFlag;
+    /** 非系统重启标记 */
+    private boolean mNonSystemRestartMark;
 
     /** 权限请求是否已经发起 */
     private boolean mAlreadyRequest;
@@ -49,43 +49,43 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
 
     /** 权限回调对象 */
     @Nullable
-    private OnPermissionFlowCallback mCallBack;
+    private OnPermissionFragmentCallback mPermissionFragmentCallback;
 
-    RequestPermissionDelegateImpl(@NonNull IFragmentMethod<?, ?> fragmentMethod) {
+    protected PermissionChannelImpl(@NonNull IFragmentMethod<?, ?> fragmentMethod) {
         mFragmentMethod = fragmentMethod;
     }
 
-    public void setRequestFlag(boolean flag) {
-        mRequestFlag = flag;
+    public void setNonSystemRestartMark(boolean nonSystemRestartMark) {
+        mNonSystemRestartMark = nonSystemRestartMark;
     }
 
-    public void setCallback(@Nullable OnPermissionFlowCallback callback) {
-        mCallBack = callback;
-    }
-
-    @Nullable
-    OnPermissionFlowCallback getCallBack() {
-        return mCallBack;
+    public void setPermissionFragmentCallback(@Nullable OnPermissionFragmentCallback callback) {
+        mPermissionFragmentCallback = callback;
     }
 
     @Nullable
-    Activity getActivity() {
+    private OnPermissionFragmentCallback getPermissionFragmentCallback() {
+        return mPermissionFragmentCallback;
+    }
+
+    @Nullable
+    private Activity getActivity() {
         return mFragmentMethod.getActivity();
     }
 
-    void commitDetach() {
+    private void commitFragmentDetach() {
         mManualDetach = true;
-        mFragmentMethod.commitDetach();
+        mFragmentMethod.commitFragmentDetach();
     }
 
-    boolean isFragmentUnavailable() {
+    private boolean isFragmentUnavailable() {
         // 如果用户离开太久，会导致 Activity 被回收掉
         // 所以这里要判断当前 Fragment 是否有被添加到 Activity
         // 可在开发者模式中开启不保留活动来复现这个 Bug
         return !mFragmentMethod.isAdded() || mFragmentMethod.isRemoving();
     }
 
-    void requestPermissions(@NonNull String[] permissions, @IntRange(from = 1, to = 65535) int requestCode) {
+    protected void requestPermissions(@NonNull String[] permissions, @IntRange(from = 1, to = 65535) int requestCode) {
         try {
             mFragmentMethod.requestPermissions(permissions, requestCode);
         } catch (Exception e) {
@@ -104,6 +104,7 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
             // 发现无论是 onRequestPermissionsResult 还是 onActivityResult，回调它们的都是 dispatchActivityResult 方法，
             // 在那种极端情况下，既然 onActivityResult 能被回调，那么就证明 dispatchActivityResult 肯定有被系统正常调用的，
             // 同理 onRequestPermissionsResult 也肯定会被 dispatchActivityResult 正常调用，从而形成一个完整的逻辑闭环。
+            // 补充测试结论：我在 debug 了 Activity.requestPermissions 方法，偷偷修改权限请求 Intent 的 Action 成错误的，结果权限回调能正常回调。
             // 如果真的出现这种极端情况，所有危险权限的申请必然会走失败的回调，但是框架要做的是：尽量让应用不要崩溃，并且能走完整个权限申请的流程。
             // 涉及到此问题相关 Github issue 地址：
             //   1. https://github.com/getActivity/XXPermissions/issues/153
@@ -131,7 +132,7 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
 
     @SuppressWarnings("deprecation")
     @Nullable
-    List<IPermission> getPermissionRequestList() {
+    protected List<IPermission> getPermissionRequestList() {
         Bundle arguments = mFragmentMethod.getArguments();
         if (arguments == null) {
             return null;
@@ -143,7 +144,7 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
         }
     }
 
-    int getPermissionRequestCode() {
+    protected int getPermissionRequestCode() {
         Bundle arguments = mFragmentMethod.getArguments();
         if (arguments == null) {
             return 0;
@@ -151,29 +152,30 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
         return arguments.getInt(REQUEST_CODE);
     }
 
-    void sendTask(@NonNull Runnable runnable, long delayMillis) {
+    protected void sendTask(@NonNull Runnable runnable, long delayMillis) {
         PermissionTaskHandler.sendTask(runnable, mTaskToken, delayMillis);
     }
 
-    void cancelTask() {
+    protected void cancelTask() {
         PermissionTaskHandler.cancelTask(mTaskToken);
     }
 
-    IStartActivityDelegate getStartActivityDelegate() {
+    protected IStartActivityDelegate getStartActivityDelegate() {
         return mFragmentMethod;
     }
 
     /**
      * 开启权限请求
      */
-    abstract void startPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> permissions,
+    protected abstract void startPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> permissions,
                                          @IntRange(from = 1, to = 65535) int requestCode);
 
     @Override
     public void onFragmentResume() {
         // 如果当前 Fragment 是通过系统重启应用触发的，则不进行权限申请
-        if (!mRequestFlag) {
-            mFragmentMethod.commitDetach();
+        // 防止系统杀死应用后重新触发请求权限的问题
+        if (!mNonSystemRestartMark) {
+            mFragmentMethod.commitFragmentDetach();
             return;
         }
 
@@ -198,7 +200,7 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
             return;
         }
         startPermissionRequest(activity, permissions, requestCode);
-        OnPermissionFlowCallback callback = getCallBack();
+        OnPermissionFragmentCallback callback = getPermissionFragmentCallback();
         if (callback == null) {
             return;
         }
@@ -209,13 +211,13 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
     public void onFragmentDestroy() {
         // 取消执行任务
         cancelTask();
-        OnPermissionFlowCallback callBack = getCallBack();
+        OnPermissionFragmentCallback callback = getPermissionFragmentCallback();
         // 如果回调还没有置空，则证明前面没有回调权限回调完成
-        if (callBack != null) {
+        if (callback != null) {
             // 告诉外层本次权限回调有异常
-            callBack.onRequestPermissionAnomaly();
+            callback.onRequestPermissionAnomaly();
             // 释放回调对象，避免内存泄漏
-            setCallback(null);
+            setPermissionFragmentCallback(null);
         }
         if (mManualDetach) {
             return;
@@ -255,15 +257,15 @@ public abstract class RequestPermissionDelegateImpl implements IFragmentCallback
             return;
         }
 
-        OnPermissionFlowCallback callback = getCallBack();
+        OnPermissionFragmentCallback callback = getPermissionFragmentCallback();
         // 释放监听对象的引用
-        setCallback(null);
+        setPermissionFragmentCallback(null);
 
         if (callback != null) {
             callback.onRequestPermissionFinish();
         }
 
-        // 将 Fragment 从 Activity 移除
-        commitDetach();
+        // 将 Fragment 移除
+        commitFragmentDetach();
     }
 }

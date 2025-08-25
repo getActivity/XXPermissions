@@ -45,7 +45,9 @@ public abstract class BasePermission implements IPermission {
     }
 
     @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {}
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        // default implementation ignored
+    }
 
     @NonNull
     @Override
@@ -95,7 +97,9 @@ public abstract class BasePermission implements IPermission {
     }
 
     @Override
-    public void checkCompliance(@NonNull Activity activity, @NonNull List<IPermission> requestList, @Nullable AndroidManifestInfo manifestInfo) {
+    public void checkCompliance(@NonNull Activity activity,
+                                @NonNull List<IPermission> requestList,
+                                @Nullable AndroidManifestInfo manifestInfo) {
         // 检查 targetSdkVersion 是否符合要求
         checkSelfByTargetSdkVersion(activity);
         // 检查 AndroidManifest.xml 是否符合要求
@@ -112,7 +116,7 @@ public abstract class BasePermission implements IPermission {
      * 检查 targetSdkVersion 是否符合要求，如果不合规则会抛出异常
      */
     protected void checkSelfByTargetSdkVersion(@NonNull Context context) {
-        int minTargetSdkVersion = getMinTargetSdkVersion();
+        int minTargetSdkVersion = getMinTargetSdkVersion(context);
         // 必须设置正确的 targetSdkVersion 才能正常检测权限
         if (PermissionVersion.getTargetVersion(context) >= minTargetSdkVersion) {
             return;
@@ -155,15 +159,19 @@ public abstract class BasePermission implements IPermission {
     /**
      * 检查权限的注册状态，如果是则会抛出异常
      */
-    protected static void checkPermissionRegistrationStatus(@Nullable PermissionManifestInfo permissionInfo, @NonNull String checkPermission) {
-        checkPermissionRegistrationStatus(permissionInfo, checkPermission, Integer.MAX_VALUE);
+    protected static void checkPermissionRegistrationStatus(@Nullable PermissionManifestInfo permissionInfo,
+                                                            @NonNull String checkPermission) {
+        checkPermissionRegistrationStatus(permissionInfo, checkPermission, PermissionManifestInfo.DEFAULT_MAX_SDK_VERSION);
     }
 
-    protected static void checkPermissionRegistrationStatus(@Nullable List<PermissionManifestInfo> permissionInfoList, @NonNull String checkPermission) {
-        checkPermissionRegistrationStatus(permissionInfoList, checkPermission, Integer.MAX_VALUE);
+    protected static void checkPermissionRegistrationStatus(@Nullable List<PermissionManifestInfo> permissionInfoList,
+                                                            @NonNull String checkPermission) {
+        checkPermissionRegistrationStatus(permissionInfoList, checkPermission, PermissionManifestInfo.DEFAULT_MAX_SDK_VERSION);
     }
 
-    protected static void checkPermissionRegistrationStatus(@Nullable List<PermissionManifestInfo> permissionInfoList, @NonNull String checkPermission, int lowestMaxSdkVersion) {
+    protected static void checkPermissionRegistrationStatus(@Nullable List<PermissionManifestInfo> permissionInfoList,
+                                                            @NonNull String checkPermission,
+                                                            int lowestMaxSdkVersion) {
         PermissionManifestInfo permissionInfo = null;
         if (permissionInfoList != null) {
             permissionInfo = findPermissionInfoByList(permissionInfoList, checkPermission);
@@ -171,7 +179,9 @@ public abstract class BasePermission implements IPermission {
         checkPermissionRegistrationStatus(permissionInfo, checkPermission, lowestMaxSdkVersion);
     }
 
-    protected static void checkPermissionRegistrationStatus(@Nullable PermissionManifestInfo permissionInfo, @NonNull String checkPermission, int lowestMaxSdkVersion) {
+    protected static void checkPermissionRegistrationStatus(@Nullable PermissionManifestInfo permissionInfo,
+                                                            @NonNull String checkPermission,
+                                                            int lowestMaxSdkVersion) {
         if (permissionInfo == null) {
             // 动态申请的权限没有在清单文件中注册，分为以下两种情况：
             // 1. 如果你的项目没有在清单文件中注册这个权限，请直接在清单文件中注册一下即可
@@ -194,7 +204,7 @@ public abstract class BasePermission implements IPermission {
                 "<uses-permission android:name=\"" + checkPermission +
                 "\" android:maxSdkVersion=\"" + manifestMaxSdkVersion +
                 "\" /> does not meet the requirements, " +
-                (lowestMaxSdkVersion != Integer.MAX_VALUE ?
+                (lowestMaxSdkVersion != PermissionManifestInfo.DEFAULT_MAX_SDK_VERSION ?
                     "the minimum requirement for maxSdkVersion is " + lowestMaxSdkVersion :
                     "please delete the android:maxSdkVersion=\"" + manifestMaxSdkVersion + "\" attribute"));
         }
@@ -218,7 +228,8 @@ public abstract class BasePermission implements IPermission {
      * 从权限列表中获取指定的权限信息
      */
     @Nullable
-    public static PermissionManifestInfo findPermissionInfoByList(@NonNull List<PermissionManifestInfo> permissionInfoList, @NonNull String permissionName) {
+    public static PermissionManifestInfo findPermissionInfoByList(@NonNull List<PermissionManifestInfo> permissionInfoList,
+                                                                  @NonNull String permissionName) {
         PermissionManifestInfo permissionInfo = null;
         for (PermissionManifestInfo info : permissionInfoList) {
             if (PermissionUtils.equalsPermission(info.name, permissionName)) {
@@ -285,7 +296,10 @@ public abstract class BasePermission implements IPermission {
      * @param defaultGranted            当判断不了该权限状态的时候，是否返回已授予状态
      */
     @RequiresApi(PermissionVersion.ANDROID_4_4)
-    public static boolean checkOpPermission(Context context, String opFieldName, int opDefaultValue, boolean defaultGranted) {
+    public static boolean checkOpPermission(@NonNull Context context,
+                                            @NonNull String opFieldName,
+                                            int opDefaultValue,
+                                            boolean defaultGranted) {
         int opMode = getOpPermissionMode(context, opFieldName, opDefaultValue);
         if (opMode == MODE_UNKNOWN) {
             return defaultGranted;

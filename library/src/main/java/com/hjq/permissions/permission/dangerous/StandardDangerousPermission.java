@@ -1,5 +1,6 @@
 package com.hjq.permissions.permission.dangerous;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -67,12 +68,12 @@ public final class StandardDangerousPermission extends DangerousPermission {
 
     @Nullable
     @Override
-    public String getPermissionGroup() {
+    public String getPermissionGroup(@NonNull Context context) {
         return mPermissionGroup;
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return mFromAndroidVersion;
     }
 }

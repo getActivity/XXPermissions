@@ -60,7 +60,10 @@ import com.hjq.permissions.tools.PermissionVersion;
  */
 public final class PermissionLists {
 
-    private PermissionLists() {}
+    /** 私有化构造函数 */
+    private PermissionLists() {
+        // default implementation ignored
+    }
 
     /** 权限数量 */
     private static final int PERMISSION_COUNT = 151;

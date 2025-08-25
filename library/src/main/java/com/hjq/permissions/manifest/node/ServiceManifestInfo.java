@@ -12,27 +12,19 @@ import java.util.List;
  */
 public final class ServiceManifestInfo {
 
-    /**
-     * 服务的类名
-     */
+    /** Service 的类名 */
     @NonNull
     public String name = "";
 
-    /**
-     * 服务所使用到的权限
-     */
+    /** 所使用到的权限 */
     @Nullable
     public String permission;
 
-    /**
-     * 意图过滤器列表
-     */
+    /** 意图过滤器列表 */
     @Nullable
     public List<IntentFilterManifestInfo> intentFilterInfoList;
 
-    /**
-     * MetaData 列表
-     */
+    /** MetaData 列表 */
     @Nullable
     public List<MetaDataManifestInfo> metaDataInfoList;
 }

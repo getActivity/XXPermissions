@@ -80,7 +80,7 @@ public final class BindDeviceAdminPermission extends SpecialPermission {
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_2_2;
     }
 

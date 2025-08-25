@@ -83,7 +83,7 @@ public final class PermissionUtils {
     }
 
     /**
-     * 判断 Fragment 是不是不可用（Support 包版本）
+     * 判断 Fragment 是不是不可用（Support 库的版本）
      */
     @SuppressWarnings("deprecation")
     public static boolean isFragmentUnavailable(@Nullable android.support.v4.app.Fragment supportFragment) {
@@ -91,7 +91,7 @@ public final class PermissionUtils {
     }
 
     /**
-     * 判断 Fragment 是不是不可用（App 包版本）
+     * 判断 Fragment 是不是不可用（App 包的版本）
      */
     @SuppressWarnings("deprecation")
     public static boolean isFragmentUnavailable(@Nullable Fragment appFragment) {

@@ -60,12 +60,12 @@ public final class WriteExternalStoragePermission extends DangerousPermission {
     }
 
     @Override
-    public String getPermissionGroup() {
+    public String getPermissionGroup(@NonNull Context context) {
         return PermissionGroups.STORAGE;
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_6;
     }
 

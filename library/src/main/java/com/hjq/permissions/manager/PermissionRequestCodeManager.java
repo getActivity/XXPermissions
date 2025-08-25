@@ -27,7 +27,9 @@ public final class PermissionRequestCodeManager {
     private static final Random RANDOM = new Random();
 
     /** 私有化构造函数 */
-    private PermissionRequestCodeManager() {}
+    private PermissionRequestCodeManager() {
+        // default implementation ignored
+    }
 
     /**
      * 随机生成一个请求码
@@ -40,8 +42,8 @@ public final class PermissionRequestCodeManager {
         // 2. 请求码不能等于 XXPermissions.REQUEST_CODE
         // 3. 尽量避免和当前项目的请求码出现冲突，所以需要抛弃小值的请求码，经过测试，发现以下问题：
         //    a. 使用 App 包下的 Fragment 进行权限申请，不会触发宿主 Activity 回调 onActivityResult 和 onRequestPermissionsResult
-        //    b. 使用 Support 包下的 Fragment 进行权限申请，会触发宿主 Activity 回调 onActivityResult 和 onRequestPermissionsResult
-        //    这是因为 Support 包 Fragment 权限相关的回调是通过重写 Activity 类的 onActivityResult 和 onRequestPermissionsResult 实现的
+        //    b. 使用 Support 库中的 Fragment 进行权限申请，会触发宿主 Activity 回调 onActivityResult 和 onRequestPermissionsResult
+        //    这是因为 Support 库中的 Fragment 权限相关的回调是通过重写 Activity 类的 onActivityResult 和 onRequestPermissionsResult 实现的
         //    而 App 包下 Fragment 的 onActivityResult 和 onRequestPermissionsResult 回调是直接在 Activity 类中的 dispatchActivityResult 中实现的
         do {
             // maxRequestCode 目前只有两种值，255 和 65535
@@ -53,8 +55,7 @@ public final class PermissionRequestCodeManager {
             // 就算最终出现了问题，因为数量占比会很少，加上不是必现（因为是通过随机数生成的），这个问题的影响程度会大大降低，这也是目前能想到的最佳处理方案
             int minRequestCode = maxRequestCode > 20000 ? maxRequestCode - 10000 : maxRequestCode / 2;
             requestCode = RANDOM.nextInt(maxRequestCode - minRequestCode) + minRequestCode;
-        } while (requestCode == XXPermissions.REQUEST_CODE ||
-                REQUEST_CODE_ARRAY.contains(requestCode));
+        } while (requestCode == XXPermissions.REQUEST_CODE || REQUEST_CODE_ARRAY.contains(requestCode));
 
         // 标记这个请求码已经被占用
         REQUEST_CODE_ARRAY.add(requestCode);

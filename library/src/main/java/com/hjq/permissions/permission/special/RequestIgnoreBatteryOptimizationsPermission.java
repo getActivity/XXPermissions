@@ -78,7 +78,7 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_6;
     }
 

@@ -53,7 +53,7 @@ public final class PostNotificationsPermission extends DangerousPermission {
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_13;
     }
 

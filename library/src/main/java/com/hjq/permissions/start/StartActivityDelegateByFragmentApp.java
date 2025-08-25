@@ -9,7 +9,7 @@ import android.support.annotation.NonNull;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/05/20
- *    desc   : startActivity 委托 App 包下的 Fragment 实现
+ *    desc   : {@link android.app.Fragment} 跳转 Activity 实现
  */
 @SuppressWarnings("deprecation")
 public final class StartActivityDelegateByFragmentApp implements IStartActivityDelegate {
@@ -22,18 +22,12 @@ public final class StartActivityDelegateByFragmentApp implements IStartActivityD
     }
 
     @Override
-    public void startActivity(Intent intent) {
-        if (intent == null) {
-            return;
-        }
+    public void startActivity(@NonNull Intent intent) {
         mFragment.startActivity(intent);
     }
 
     @Override
-    public void startActivityForResult(Intent intent, @IntRange(from = 1, to = 65535) int requestCode) {
-        if (intent == null) {
-            return;
-        }
+    public void startActivityForResult(@NonNull Intent intent, @IntRange(from = 1, to = 65535) int requestCode) {
         mFragment.startActivityForResult(intent, requestCode);
     }
 }

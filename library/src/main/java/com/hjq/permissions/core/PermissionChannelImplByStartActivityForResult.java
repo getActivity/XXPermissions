@@ -16,20 +16,21 @@ import java.util.List;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/05/20
- *    desc   : 请求权限实现类（基于特殊权限）
+ *    desc   : 请求权限实现类（通过 {@link android.app.Activity#startActivityForResult(Intent, int)} 实现）
  */
-public final class RequestPermissionDelegateImplBySpecial extends RequestPermissionDelegateImpl {
+public final class PermissionChannelImplByStartActivityForResult extends PermissionChannelImpl {
 
     /** 忽略 onActivityResult 回调的总次数 */
     private int mIgnoreActivityResultCount = 0;
 
-    public RequestPermissionDelegateImplBySpecial(@NonNull IFragmentMethod<?, ?> fragmentMethod) {
+    public PermissionChannelImplByStartActivityForResult(@NonNull IFragmentMethod<?, ?> fragmentMethod) {
         super(fragmentMethod);
     }
 
     @Override
-    void startPermissionRequest(@NonNull Activity activity, @NonNull List<IPermission> permissions,
-                                @IntRange(from = 1, to = 65535) int requestCode) {
+    protected void startPermissionRequest(@NonNull Activity activity,
+                                          @NonNull List<IPermission> permissions,
+                                          @IntRange(from = 1, to = 65535) int requestCode) {
         StartActivityAgent.startActivityForResult(activity, getStartActivityDelegate(),
                                 PermissionApi.getBestPermissionSettingIntent(activity, permissions, false),
                                 requestCode, () -> mIgnoreActivityResultCount++);

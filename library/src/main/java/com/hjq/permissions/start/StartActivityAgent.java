@@ -66,6 +66,9 @@ public final class StartActivityAgent {
         iterator = intentList.iterator();
         while (iterator.hasNext()) {
             Intent intent = iterator.next();
+            if (intent == null) {
+                continue;
+            }
             try {
                 delegate.startActivity(intent);
                 // 跳转成功，结束循环
@@ -130,6 +133,9 @@ public final class StartActivityAgent {
         iterator = intentList.iterator();
         while (iterator.hasNext()) {
             Intent intent = iterator.next();
+            if (intent == null) {
+                continue;
+            }
             try {
                 delegate.startActivityForResult(intent, requestCode);
                 // 跳转成功，结束循环

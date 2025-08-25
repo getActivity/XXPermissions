@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.fragment.factory.PermissionFragmentFactory;
-import com.hjq.permissions.core.RequestPermissionLogicPresenter;
+import com.hjq.permissions.core.PermissionRequestMainLogic;
 import com.hjq.permissions.permission.base.IPermission;
 import java.util.List;
 
@@ -62,7 +62,7 @@ public interface OnPermissionInterceptor {
                                            @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                                            @NonNull OnPermissionDescription permissionDescription,
                                            @Nullable OnPermissionCallback callback) {
-        new RequestPermissionLogicPresenter(activity, requestList, fragmentFactory, this, permissionDescription, callback)
+        new PermissionRequestMainLogic(activity, requestList, fragmentFactory, this, permissionDescription, callback)
             .request();
     }
 }

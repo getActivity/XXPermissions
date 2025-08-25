@@ -217,7 +217,7 @@ public final class PermissionConverter {
         for (IPermission permission : permissions) {
             // 如果当前设置了过滤高版本权限，并且这个权限是高版本系统才出现的权限，则不继续往下执行
             // 避免出现在低版本上面执行拒绝权限后，连带高版本的名称也一起显示出来，但是在低版本上面是没有这个权限的
-            if (filterHighVersionPermissions && permission.getFromAndroidVersion() > Build.VERSION.SDK_INT) {
+            if (filterHighVersionPermissions && permission.getFromAndroidVersion(context) > Build.VERSION.SDK_INT) {
                 continue;
             }
             String permissionName = getNickNameByPermission(context, permission);
@@ -304,7 +304,7 @@ public final class PermissionConverter {
     @Nullable
     public static Integer getPermissionNickNameStringId(@NonNull Context context, @NonNull IPermission permission) {
         String permissionName = permission.getPermissionName();
-        String permissionGroup = permission.getPermissionGroup();
+        String permissionGroup = permission.getPermissionGroup(context);
         Integer permissionNameStringId = PERMISSION_NAME_MAP.get(permissionName);
         if (permissionNameStringId != null && permissionNameStringId > 0) {
             return permissionNameStringId;

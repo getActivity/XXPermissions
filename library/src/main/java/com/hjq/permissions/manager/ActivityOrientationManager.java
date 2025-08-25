@@ -23,7 +23,9 @@ public final class ActivityOrientationManager {
     private static final Map<Integer, Integer> ACTIVITY_ORIENTATION_MAP = new HashMap<>();
 
     /** 私有化构造函数 */
-    private ActivityOrientationManager() {}
+    private ActivityOrientationManager() {
+        // default implementation ignored
+    }
 
     /**
      * 锁定 Activity 方向

@@ -9,8 +9,6 @@ package com.hjq.permissions.permission;
 @SuppressWarnings("unused")
 public final class PermissionNames {
 
-    private PermissionNames() {}
-
     /**
      * 读取应用列表权限字符串常量，如需权限对象请调用 {@link PermissionLists#getGetInstalledAppsPermission()} 获取
      */
@@ -771,4 +769,9 @@ public final class PermissionNames {
      * 写入所有健康记录数据权限，如需权限对象请调用 {@link PermissionLists#getWriteMedicalDataPermission()} 获取
      */
     public static final String WRITE_MEDICAL_DATA = "android.permission.health.WRITE_MEDICAL_DATA";
+
+    /** 私有化构造函数 */
+    private PermissionNames() {
+        // default implementation ignored
+    }
 }

@@ -46,7 +46,7 @@ public abstract class HealthDataBasePermission extends DangerousPermission {
     }
 
     @Override
-    public String getPermissionGroup() {
+    public String getPermissionGroup(@NonNull Context context) {
         return PermissionGroups.HEALTH;
     }
 
@@ -89,10 +89,10 @@ public abstract class HealthDataBasePermission extends DangerousPermission {
 
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
-                                            @NonNull List<IPermission> requestList,
-                                            @NonNull AndroidManifestInfo manifestInfo,
-                                            @NonNull List<PermissionManifestInfo> permissionInfoList,
-                                            @Nullable PermissionManifestInfo currentPermissionInfo) {
+                                           @NonNull List<IPermission> requestList,
+                                           @NonNull AndroidManifestInfo manifestInfo,
+                                           @NonNull List<PermissionManifestInfo> permissionInfoList,
+                                           @Nullable PermissionManifestInfo currentPermissionInfo) {
         super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
 
         final String healthAction;

@@ -77,7 +77,7 @@ public final class BindAccessibilityServicePermission extends SpecialPermission 
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_4_1;
     }
 

@@ -17,6 +17,7 @@ import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionPageType;
+import com.hjq.permissions.permission.PermissionChannel;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import com.hjq.permissions.tools.PermissionSettingPage;
@@ -79,15 +80,24 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @NonNull
     @Override
-    public PermissionPageType getPermissionPageType(@NonNull Context context) {
+    public PermissionChannel getPermissionChannel(@NonNull Context context) {
         if (PermissionVersion.isAndroid6() && (isSupportRequestPermissionBySystem(context) || isSupportRequestPermissionByOneUi(context))) {
+            return PermissionChannel.REQUEST_PERMISSIONS;
+        }
+        return PermissionChannel.START_ACTIVITY_FOR_RESULT;
+    }
+
+    @NonNull
+    @Override
+    public PermissionPageType getPermissionPageType(@NonNull Context context) {
+        if (this.getPermissionChannel(context) == PermissionChannel.REQUEST_PERMISSIONS) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
         return PermissionPageType.OPAQUE_ACTIVITY;
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_4_2;
     }
 
@@ -178,14 +188,14 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @Override
     protected void checkSelfByManifestFile(@NonNull Activity activity,
-                                            @NonNull List<IPermission> requestList,
-                                            @NonNull AndroidManifestInfo manifestInfo,
-                                            @NonNull List<PermissionManifestInfo> permissionInfoList,
-                                            @Nullable PermissionManifestInfo currentPermissionInfo) {
+                                           @NonNull List<IPermission> requestList,
+                                           @NonNull AndroidManifestInfo manifestInfo,
+                                           @NonNull List<PermissionManifestInfo> permissionInfoList,
+                                           @Nullable PermissionManifestInfo currentPermissionInfo) {
         super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
         // 经过在三星的手机上面的测试，发现不需要在清单文件添加 com.samsung.android.permission.GET_APP_LIST 也能申请成功并且成功读取到应用列表
         // PermissionManifestInfo oneUiGetAppListPermission = findPermissionInfoByList(permissionInfoList, ONE_UI_GET_APP_LIST_PERMISSION_NAME);
-        // checkPermissionRegistrationStatus(oneUiGetAppListPermission, ONE_UI_GET_APP_LIST_PERMISSION_NAME, Integer.MAX_VALUE);
+        // checkPermissionRegistrationStatus(oneUiGetAppListPermission, ONE_UI_GET_APP_LIST_PERMISSION_NAME, PermissionManifestInfo.DEFAULT_MAX_SDK_VERSION);
 
         // 当前 targetSdk 必须大于 Android 11，否则停止检查
         if (PermissionVersion.getTargetVersion(activity) < PermissionVersion.ANDROID_11) {
@@ -224,11 +234,13 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         try {
             PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(getPermissionName(), 0);
             if (permissionInfo != null) {
+                final int protectionLevel;
                 if (PermissionVersion.isAndroid9()) {
-                    return permissionInfo.getProtection() == PermissionInfo.PROTECTION_DANGEROUS;
+                    protectionLevel = permissionInfo.getProtection();
                 } else {
-                    return (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_MASK_BASE) == PermissionInfo.PROTECTION_DANGEROUS;
+                    protectionLevel = (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_MASK_BASE);
                 }
+                return protectionLevel == PermissionInfo.PROTECTION_DANGEROUS;
             }
         } catch (PackageManager.NameNotFoundException e) {
             // 没有这个权限时会抛出：android.content.pm.PackageManager$NameNotFoundException: com.android.permission.GET_INSTALLED_APPS
@@ -262,6 +274,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
      * 判断当前 OneUI 版本是否支持申请读取应用列表权限
      */
     @RequiresApi(PermissionVersion.ANDROID_6)
+    @SuppressWarnings("deprecation")
     private static boolean isSupportRequestPermissionByOneUi(@NonNull Context context) {
         if (!DeviceOs.isOneUi()) {
             return false;
@@ -269,11 +282,13 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         try {
             PermissionInfo permissionInfo = context.getPackageManager().getPermissionInfo(ONE_UI_GET_APP_LIST_PERMISSION_NAME, 0);
             if (permissionInfo != null) {
+                final int protectionLevel;
                 if (PermissionVersion.isAndroid9()) {
-                    return permissionInfo.getProtection() == PermissionInfo.PROTECTION_DANGEROUS;
+                    protectionLevel = permissionInfo.getProtection();
                 } else {
-                    return (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_MASK_BASE) == PermissionInfo.PROTECTION_DANGEROUS;
+                    protectionLevel = (permissionInfo.protectionLevel & PermissionInfo.PROTECTION_MASK_BASE);
                 }
+                return protectionLevel == PermissionInfo.PROTECTION_DANGEROUS;
             }
         } catch (PackageManager.NameNotFoundException e) {
             // 没有这个权限时会抛出：android.content.pm.PackageManager$NameNotFoundException: com.samsung.android.permission.GET_APP_LIST

@@ -51,7 +51,7 @@ public final class RequestInstallPackagesPermission extends SpecialPermission {
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_8;
     }
 

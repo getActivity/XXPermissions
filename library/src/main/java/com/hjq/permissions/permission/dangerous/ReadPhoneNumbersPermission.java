@@ -56,12 +56,12 @@ public final class ReadPhoneNumbersPermission extends DangerousPermission {
     }
 
     @Override
-    public String getPermissionGroup() {
+    public String getPermissionGroup(@NonNull Context context) {
         return PermissionGroups.PHONE;
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_8;
     }
 
@@ -90,7 +90,7 @@ public final class ReadPhoneNumbersPermission extends DangerousPermission {
                                             @Nullable PermissionManifestInfo currentPermissionInfo) {
         super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
-        if (getFromAndroidVersion() > getMinSdkVersion(activity, manifestInfo)) {
+        if (getFromAndroidVersion(activity) > getMinSdkVersion(activity, manifestInfo)) {
             checkPermissionRegistrationStatus(permissionInfoList, PermissionNames.READ_PHONE_STATE, PermissionVersion.ANDROID_7_1);
         }
     }

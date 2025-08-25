@@ -56,13 +56,13 @@ public final class NearbyWifiDevicesPermission extends DangerousPermission {
     }
 
     @Override
-    public String getPermissionGroup() {
+    public String getPermissionGroup(@NonNull Context context) {
         // 注意：在 Android 13 的时候，WIFI 相关的权限已经归到附近设备的权限组了，但是在 Android 13 之前，WIFI 相关的权限归属定位权限组
         return PermissionVersion.isAndroid13() ? PermissionGroups.NEARBY_DEVICES : PermissionGroups.LOCATION;
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_13;
     }
 
@@ -91,7 +91,7 @@ public final class NearbyWifiDevicesPermission extends DangerousPermission {
                                             @Nullable PermissionManifestInfo currentPermissionInfo) {
         super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
-        if (getFromAndroidVersion() > getMinSdkVersion(activity, manifestInfo)) {
+        if (getFromAndroidVersion(activity) > getMinSdkVersion(activity, manifestInfo)) {
             checkPermissionRegistrationStatus(permissionInfoList, PermissionNames.ACCESS_FINE_LOCATION, PermissionVersion.ANDROID_12_L);
         }
 
@@ -111,7 +111,7 @@ public final class NearbyWifiDevicesPermission extends DangerousPermission {
         // WIFI 权限：https://developer.android.google.cn/about/versions/13/features/nearby-wifi-devices-permission?hl=zh-cn#assert-never-for-location
         // 在以 Android 13 为目标平台时，请考虑您的应用是否会通过 WIFI API 推导物理位置，如果不会，则应坚定声明此情况。
         // 如需做出此声明，请在应用的清单文件中将 usesPermissionFlags 属性设为 neverForLocation
-        String maxSdkVersionString = (currentPermissionInfo.maxSdkVersion != Integer.MAX_VALUE) ?
+        String maxSdkVersionString = (currentPermissionInfo.maxSdkVersion != PermissionManifestInfo.DEFAULT_MAX_SDK_VERSION) ?
             "android:maxSdkVersion=\"" + currentPermissionInfo.maxSdkVersion + "\" " : "";
         // 根据不同的需求场景决定，解决方法分为两种：
         //   1. 不需要使用 WIFI 权限来获取物理位置：只需要在清单文件中注册的权限上面加上 android:usesPermissionFlags="neverForLocation" 即可

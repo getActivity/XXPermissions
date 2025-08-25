@@ -67,12 +67,12 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
     }
 
     @Override
-    public String getPermissionGroup() {
+    public String getPermissionGroup(@NonNull Context context) {
         return PermissionGroups.SENSORS;
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_13;
     }
 

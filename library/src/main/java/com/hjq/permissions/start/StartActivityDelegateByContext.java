@@ -11,7 +11,7 @@ import com.hjq.permissions.tools.PermissionUtils;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/05/20
- *    desc   : startActivity 委托 Context 实现
+ *    desc   : {@link android.content.Context} 跳转 Activity 实现
  */
 public final class StartActivityDelegateByContext implements IStartActivityDelegate {
 
@@ -23,10 +23,7 @@ public final class StartActivityDelegateByContext implements IStartActivityDeleg
     }
 
     @Override
-    public void startActivity(Intent intent) {
-        if (intent == null) {
-            return;
-        }
+    public void startActivity(@NonNull Intent intent) {
         Activity activity = PermissionUtils.findActivity(mContext);
         if (activity != null) {
             activity.startActivity(intent);
@@ -38,10 +35,7 @@ public final class StartActivityDelegateByContext implements IStartActivityDeleg
     }
 
     @Override
-    public void startActivityForResult(Intent intent, @IntRange(from = 1, to = 65535) int requestCode) {
-        if (intent == null) {
-            return;
-        }
+    public void startActivityForResult(@NonNull Intent intent, @IntRange(from = 1, to = 65535) int requestCode) {
         Activity activity = PermissionUtils.findActivity(mContext);
         if (activity != null) {
             activity.startActivityForResult(intent, requestCode);

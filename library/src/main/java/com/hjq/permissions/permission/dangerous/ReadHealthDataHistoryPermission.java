@@ -1,6 +1,7 @@
 package com.hjq.permissions.permission.dangerous;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
@@ -49,7 +50,7 @@ public final class ReadHealthDataHistoryPermission extends HealthDataBasePermiss
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_15;
     }
 

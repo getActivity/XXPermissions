@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import com.hjq.device.compat.DeviceOs;
 import com.hjq.permissions.manager.AlreadyRequestPermissionsManager;
 import com.hjq.permissions.permission.PermissionPageType;
-import com.hjq.permissions.permission.PermissionType;
+import com.hjq.permissions.permission.PermissionChannel;
 import com.hjq.permissions.permission.base.BasePermission;
 import com.hjq.permissions.tools.PermissionSettingPage;
 import com.hjq.permissions.tools.PermissionVersion;
@@ -33,8 +33,8 @@ public abstract class DangerousPermission extends BasePermission {
 
     @NonNull
     @Override
-    public PermissionType getPermissionType() {
-        return PermissionType.DANGEROUS;
+    public PermissionChannel getPermissionChannel(@NonNull Context context) {
+        return PermissionChannel.REQUEST_PERMISSIONS;
     }
 
     @NonNull
@@ -46,7 +46,7 @@ public abstract class DangerousPermission extends BasePermission {
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
         // 判断权限是不是在旧系统上面运行（权限出现的版本 > 当前系统的版本）
-        if (getFromAndroidVersion() > PermissionVersion.getCurrentVersion()) {
+        if (getFromAndroidVersion(context) > PermissionVersion.getCurrentVersion()) {
             return isGrantedPermissionByLowVersion(context, skipRequest);
         }
         return isGrantedPermissionByStandardVersion(context, skipRequest);
@@ -72,7 +72,7 @@ public abstract class DangerousPermission extends BasePermission {
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
         // 判断权限是不是在旧系统上面运行（权限出现的版本 > 当前系统的版本）
-        if (getFromAndroidVersion() > PermissionVersion.getCurrentVersion()) {
+        if (getFromAndroidVersion(activity) > PermissionVersion.getCurrentVersion()) {
             return isDoNotAskAgainPermissionByLowVersion(activity);
         }
         return isDoNotAskAgainPermissionByStandardVersion(activity);

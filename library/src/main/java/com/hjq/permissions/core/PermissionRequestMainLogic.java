@@ -9,7 +9,7 @@ import com.hjq.permissions.OnPermissionDescription;
 import com.hjq.permissions.OnPermissionInterceptor;
 import com.hjq.permissions.fragment.factory.PermissionFragmentFactory;
 import com.hjq.permissions.manager.ActivityOrientationManager;
-import com.hjq.permissions.permission.PermissionType;
+import com.hjq.permissions.permission.PermissionChannel;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.tools.PermissionApi;
 import com.hjq.permissions.tools.PermissionTaskHandler;
@@ -25,7 +25,7 @@ import java.util.List;
  *    time   : 2018/06/15
  *    desc   : 权限申请主要逻辑实现类
  */
-public final class RequestPermissionLogicPresenter {
+public final class PermissionRequestMainLogic {
 
     @NonNull
     private final Activity mActivity;
@@ -45,7 +45,7 @@ public final class RequestPermissionLogicPresenter {
     @Nullable
     private final OnPermissionCallback mCallBack;
 
-    public RequestPermissionLogicPresenter(@NonNull Activity activity,
+    public PermissionRequestMainLogic(@NonNull Activity activity,
                                            @NonNull List<IPermission> requestList,
                                            @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
                                            @NonNull OnPermissionInterceptor permissionInterceptor,
@@ -67,7 +67,7 @@ public final class RequestPermissionLogicPresenter {
             return;
         }
 
-        List<List<IPermission>> unauthorizedList = getUnauthorizedPermissions(mActivity, mRequestList);
+        List<List<IPermission>> unauthorizedList = getUnauthorizedList(mActivity, mRequestList);
         if (unauthorizedList.isEmpty()) {
             // 证明没有权限可以请求，直接处理权限请求结果
             handlePermissionRequestResult();
@@ -92,8 +92,9 @@ public final class RequestPermissionLogicPresenter {
         // 锁定 Activity 屏幕方向
         ActivityOrientationManager.lockActivityOrientation(activity);
 
-        // 发起权限请求
-        requestPermissions(activity, firstPermissions, fragmentFactory, permissionDescription, new Runnable() {
+        // 发起授权
+        requestPermissionsByFragment(activity, firstPermissions, fragmentFactory, permissionDescription, new Runnable() {
+
             @Override
             public void run() {
                 List<IPermission> nextPermissions = null;
@@ -167,22 +168,23 @@ public final class RequestPermissionLogicPresenter {
                 }
 
                 final List<IPermission> finalPermissions = nextPermissions;
-                int maxWaitTimeByPermissions = PermissionApi.getMaxIntervalTimeByPermissions(activity, nextPermissions);
-                if (maxWaitTimeByPermissions == 0) {
-                    requestPermissions(activity, finalPermissions, fragmentFactory, permissionDescription, this);
+                int maxWaitTime = PermissionApi.getMaxIntervalTimeByPermissions(activity, nextPermissions);
+                if (maxWaitTime == 0) {
+                    requestPermissionsByFragment(activity, finalPermissions, fragmentFactory, permissionDescription, this);
                 } else {
                     PermissionTaskHandler.sendTask(() ->
-                        requestPermissions(activity, finalPermissions, fragmentFactory, permissionDescription, this), maxWaitTimeByPermissions);
+                        requestPermissionsByFragment(activity, finalPermissions, fragmentFactory, permissionDescription, this), maxWaitTime);
                 }
             }
         });
     }
 
     /**
-     * 获取未授权的危险权限
+     * 获取未授权的权限列表
      */
-    private static List<List<IPermission>> getUnauthorizedPermissions(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
-        // 未授权的权限列表
+    @NonNull
+    private static List<List<IPermission>> getUnauthorizedList(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
+        // 需要请求的权限列表
         List<List<IPermission>> unauthorizedList = new ArrayList<>(requestList.size());
         // 已处理的权限列表
         List<IPermission> alreadyDoneList = new ArrayList<>(requestList.size());
@@ -207,18 +209,18 @@ public final class RequestPermissionLogicPresenter {
                 continue;
             }
 
-            // ---------------------------------- 下面处理特殊权限的逻辑 ------------------------------------------ //
+            // ------------ 下面是需要 startActivityForResult 才能授权的权限（一般为特殊权限）逻辑 ------------------ //
 
-            if (permission.getPermissionType() == PermissionType.SPECIAL) {
-                // 如果这是一个特殊权限，那么就作为单独的一次权限进行处理
+            if (permission.getPermissionChannel(activity) == PermissionChannel.START_ACTIVITY_FOR_RESULT) {
+                // 如果这是一个需要跳转页面才能授权的权限，那么就作为单独的一次权限进行处理
                 unauthorizedList.add(PermissionUtils.asArrayList(permission));
                 continue;
             }
 
-            // ---------------------------------- 下面处理危险权限的逻辑 ------------------------------------------ //
+            // ------------ 下面是需要 requestPermissions 才能授权的权限（一般为危险权限）逻辑 ------------------ //
 
             // 查询危险权限所在的权限组类型
-            String permissionGroup = permission.getPermissionGroup();
+            String permissionGroup = permission.getPermissionGroup(activity);
             if (TextUtils.isEmpty(permissionGroup)) {
                 // 如果权限组为空，则证明这个权限被没有被定义权限组，就直接单独做为一次权限申请
                 unauthorizedList.add(PermissionUtils.asArrayList(permission));
@@ -229,7 +231,7 @@ public final class RequestPermissionLogicPresenter {
             for (int j = i; j < requestList.size(); j++) {
                 IPermission todoPermission = requestList.get(j);
                 // 如果遍历到的权限对象不是同一个组别的，就继续找
-                if (!PermissionUtils.equalsString(todoPermission.getPermissionGroup(), permissionGroup)) {
+                if (!PermissionUtils.equalsString(todoPermission.getPermissionGroup(activity), permissionGroup)) {
                     continue;
                 }
 
@@ -280,7 +282,7 @@ public final class RequestPermissionLogicPresenter {
                 if (!todoPermission.isBackgroundPermission(activity)) {
                     continue;
                 }
-                // 将后台权限单独领出来放到另外一个集合中
+                // 将后台权限拎出来放到另外一个集合中，然后作为单独的一次权限请求
                 iterator.remove();
                 backgroundPermissions = new ArrayList<>();
                 backgroundPermissions.add(todoPermission);
@@ -304,26 +306,36 @@ public final class RequestPermissionLogicPresenter {
     }
 
     /**
-     * 发起一次权限请求
+     * 通过 Fragment 发起授权
      */
-    private static void requestPermissions(@NonNull Activity activity, List<IPermission> permissions,
-                                            @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
-                                            @NonNull OnPermissionDescription permissionDescription,
-                                            @NonNull Runnable finishRunnable) {
+    private static void requestPermissionsByFragment(@NonNull Activity activity,
+                                                     @NonNull List<IPermission> permissions,
+                                                     @NonNull PermissionFragmentFactory<?, ?> fragmentFactory,
+                                                     @NonNull OnPermissionDescription permissionDescription,
+                                                     @NonNull Runnable finishRunnable) {
         if (permissions.isEmpty()) {
             finishRunnable.run();
             return;
         }
 
-        PermissionType permissionType = PermissionApi.areAllDangerousPermission(permissions) ?
-                                        PermissionType.DANGEROUS : PermissionType.SPECIAL;
-        if (permissionType == PermissionType.DANGEROUS && !PermissionVersion.isAndroid6()) {
-            // 如果是 Android 6.0 以下，没有危险权限的概念
+        PermissionChannel permissionChannel = PermissionChannel.REQUEST_PERMISSIONS;
+        for (IPermission permission : permissions) {
+            if (permission.getPermissionChannel(activity) == PermissionChannel.REQUEST_PERMISSIONS) {
+                continue;
+            }
+            permissionChannel = PermissionChannel.START_ACTIVITY_FOR_RESULT;
+            break;
+        }
+
+        if (!PermissionVersion.isAndroid6() && permissionChannel == PermissionChannel.REQUEST_PERMISSIONS) {
+            // 如果是 Android 6.0 以下，则不能用 requestPermissions 来请求权限，所以直接跳过本次的权限请求，然后继续下一轮的权限请求
             finishRunnable.run();
             return;
         }
 
-        Runnable continueRequestRunnable = () -> fragmentFactory.createAndCommitFragment(permissions, permissionType, new OnPermissionFlowCallback() {
+        PermissionChannel finalPermissionChannel = permissionChannel;
+        Runnable continueRequestRunnable = () ->
+            fragmentFactory.createAndCommitFragment(permissions, finalPermissionChannel, new OnPermissionFragmentCallback() {
 
             @Override
             public void onRequestPermissionNow() {
@@ -364,9 +376,9 @@ public final class RequestPermissionLogicPresenter {
      * 处理权限请求结果
      */
     private void handlePermissionRequestResult() {
-        List<IPermission> requestList = mRequestList;
+        final Activity activity = mActivity;
 
-        Activity activity = mActivity;
+        final List<IPermission> requestList = mRequestList;
 
         // 如果当前 Activity 不可用，就不继续往下执行代码
         if (PermissionUtils.isActivityUnavailable(activity)) {
@@ -385,8 +397,7 @@ public final class RequestPermissionLogicPresenter {
         }
 
         // 权限申请结束
-        mPermissionInterceptor.onRequestPermissionEnd(activity, false, requestList,
-                                            grantedList, deniedList, mCallBack);
+        mPermissionInterceptor.onRequestPermissionEnd(activity, false, requestList, grantedList, deniedList, mCallBack);
 
         // 延迟解锁 Activity 屏幕方向
         postDelayedUnlockActivityOrientation(activity);

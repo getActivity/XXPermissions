@@ -12,15 +12,11 @@ import java.util.List;
  */
 public final class IntentFilterManifestInfo {
 
-    /**
-     * 动作列表
-     */
+    /** 动作列表 */
     @NonNull
     public final List<String> actionList = new ArrayList<>();
 
-    /**
-     * 分类列表
-     */
+    /** 分类列表 */
     @NonNull
     public final List<String> categoryList = new ArrayList<>();
 }

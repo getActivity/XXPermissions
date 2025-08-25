@@ -5,11 +5,11 @@ import android.app.FragmentManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.fragment.IFragmentMethod;
-import com.hjq.permissions.core.OnPermissionFlowCallback;
-import com.hjq.permissions.fragment.impl.app.PermissionFragmentAppByDangerous;
-import com.hjq.permissions.fragment.impl.app.PermissionFragmentAppBySpecial;
+import com.hjq.permissions.core.OnPermissionFragmentCallback;
+import com.hjq.permissions.fragment.impl.app.PermissionAppFragmentByRequestPermissions;
+import com.hjq.permissions.fragment.impl.app.PermissionAppFragmentByStartActivityForResult;
 import com.hjq.permissions.manager.PermissionRequestCodeManager;
-import com.hjq.permissions.permission.PermissionType;
+import com.hjq.permissions.permission.PermissionChannel;
 import com.hjq.permissions.permission.base.IPermission;
 import java.util.List;
 
@@ -27,19 +27,21 @@ public final class PermissionFragmentFactoryByApp extends PermissionFragmentFact
     }
 
     @Override
-    public void createAndCommitFragment(@NonNull List<IPermission> permissions, @NonNull PermissionType permissionType, @Nullable OnPermissionFlowCallback callback) {
+    public void createAndCommitFragment(@NonNull List<IPermission> permissions,
+                                        @NonNull PermissionChannel permissionChannel,
+                                        @Nullable OnPermissionFragmentCallback callback) {
         IFragmentMethod<Activity, FragmentManager> fragment;
-        if (permissionType == PermissionType.SPECIAL) {
-            fragment = new PermissionFragmentAppBySpecial();
+        if (permissionChannel == PermissionChannel.REQUEST_PERMISSIONS) {
+            fragment = new PermissionAppFragmentByRequestPermissions();
         } else {
-            fragment = new PermissionFragmentAppByDangerous();
+            fragment = new PermissionAppFragmentByStartActivityForResult();
         }
         int maxRequestCode = PermissionRequestCodeManager.REQUEST_CODE_LIMIT_HIGH_VALUE;
         int requestCode = PermissionRequestCodeManager.generateRandomRequestCode(maxRequestCode);
         fragment.setArguments(generatePermissionArguments(permissions, requestCode));
         fragment.setRetainInstance(true);
-        fragment.setRequestFlag(true);
-        fragment.setCallback(callback);
-        fragment.commitAttach(getFragmentManager());
+        fragment.setNonSystemRestartMark(true);
+        fragment.setPermissionFragmentCallback(callback);
+        fragment.commitFragmentAttach(getFragmentManager());
     }
 }

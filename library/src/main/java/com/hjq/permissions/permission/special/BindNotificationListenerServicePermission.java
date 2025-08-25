@@ -81,7 +81,7 @@ public final class BindNotificationListenerServicePermission extends SpecialPerm
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_4_3;
     }
 

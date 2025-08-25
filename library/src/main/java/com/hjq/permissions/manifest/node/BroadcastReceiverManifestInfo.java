@@ -12,27 +12,19 @@ import java.util.List;
  */
 public final class BroadcastReceiverManifestInfo {
 
-    /**
-     * 广播的类名
-     */
+    /** BroadcastReceiver 的类名 */
     @NonNull
     public String name = "";
 
-    /**
-     * 广播所使用到的权限
-     */
+    /** 所使用到的权限 */
     @Nullable
     public String permission;
 
-    /**
-     * 意图过滤器列表
-     */
+    /** 意图过滤器列表 */
     @Nullable
     public List<IntentFilterManifestInfo> intentFilterInfoList;
 
-    /**
-     * MetaData 列表
-     */
+    /** MetaData 列表 */
     @Nullable
     public List<MetaDataManifestInfo> metaDataInfoList;
 }

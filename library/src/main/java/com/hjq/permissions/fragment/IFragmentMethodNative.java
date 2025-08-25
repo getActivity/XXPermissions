@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.hjq.permissions.start.IStartActivityDelegate;
 
 /**
@@ -15,19 +16,21 @@ import com.hjq.permissions.start.IStartActivityDelegate;
 public interface IFragmentMethodNative<A extends Activity> extends IStartActivityDelegate {
 
     /** 获得 Activity 对象 */
+    @Nullable
     A getActivity();
 
     /** 请求权限 */
     void requestPermissions(@NonNull String[] permissions, @IntRange(from = 1, to = 65535) int requestCode);
 
     /** 获得参数集 */
+    @Nullable
     Bundle getArguments();
 
     /** 设置参数集 */
-    void setArguments(Bundle args);
+    void setArguments(@NonNull Bundle arguments);
 
     /** 设置是否保存实例，如果设置保存，则不会因为屏幕方向或配置变化而重新创建 */
-    void setRetainInstance(boolean retain);
+    void setRetainInstance(boolean retainInstance);
 
     /** 当前 Fragment 是否已添加绑定 */
     boolean isAdded();

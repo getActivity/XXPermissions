@@ -12,20 +12,14 @@ import java.util.List;
  */
 public final class ApplicationManifestInfo {
 
-    /**
-     * 应用的类名
-     */
+    /** Application 的类名 */
     @NonNull
     public String name = "";
 
-    /**
-     * 是否忽略分区存储特性
-     */
+    /** 是否忽略分区存储特性 */
     public boolean requestLegacyExternalStorage;
 
-    /**
-     * MetaData 列表
-     */
+    /** MetaData 列表 */
     @Nullable
     public List<MetaDataManifestInfo> metaDataInfoList;
 }

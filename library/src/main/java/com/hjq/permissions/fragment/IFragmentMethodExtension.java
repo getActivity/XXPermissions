@@ -2,8 +2,8 @@ package com.hjq.permissions.fragment;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.hjq.permissions.core.OnPermissionFlowCallback;
-import com.hjq.permissions.core.RequestPermissionDelegateImpl;
+import com.hjq.permissions.core.OnPermissionFragmentCallback;
+import com.hjq.permissions.core.PermissionChannelImpl;
 
 /**
  *    author : Android 轮子哥
@@ -13,19 +13,29 @@ import com.hjq.permissions.core.RequestPermissionDelegateImpl;
  */
 public interface IFragmentMethodExtension<M> {
 
-    /** 获取请求权限的实现逻辑 */
+    /**
+     * 获取权限请求通道的实现逻辑
+     */
     @NonNull
-    RequestPermissionDelegateImpl getRequestPermissionDelegateImpl();
+    PermissionChannelImpl getPermissionChannelImpl();
 
-    /** 提交绑定 */
-    void commitAttach(@Nullable M fragmentManager);
+    /**
+     * 提交 Fragment 绑定
+     */
+    void commitFragmentAttach(@Nullable M fragmentManager);
 
-    /** 提交解绑 */
-    void commitDetach();
+    /**
+     * 提交 Fragment 解绑
+     */
+    void commitFragmentDetach();
 
-    /** 设置权限回调监听 */
-    void setCallback(@Nullable OnPermissionFlowCallback callback);
+    /**
+     * 设置权限请求流程回调
+     */
+    void setPermissionFragmentCallback(@Nullable OnPermissionFragmentCallback callback);
 
-    /** 设置权限申请标记 */
-    void setRequestFlag(boolean flag);
+    /**
+     * 设置非系统重启标记
+     */
+    void setNonSystemRestartMark(boolean nonSystemRestartMark);
 }

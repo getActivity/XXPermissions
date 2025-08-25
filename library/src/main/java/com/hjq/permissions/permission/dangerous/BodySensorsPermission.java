@@ -1,6 +1,7 @@
 package com.hjq.permissions.permission.dangerous;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionGroups;
@@ -49,12 +50,12 @@ public final class BodySensorsPermission extends DangerousPermission {
     }
 
     @Override
-    public String getPermissionGroup() {
+    public String getPermissionGroup(@NonNull Context context) {
         return PermissionGroups.SENSORS;
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_6;
     }
 
@@ -63,8 +64,9 @@ public final class BodySensorsPermission extends DangerousPermission {
         super.checkSelfByRequestPermissions(activity, requestList);
         // 当项目 targetSdkVersion >= 36 时，不能申请 BODY_SENSORS 权限，应该请求在读取心率数据权限：READ_HEART_RATE
         if (PermissionVersion.getTargetVersion(activity) >= PermissionVersion.ANDROID_16) {
-            throw new IllegalArgumentException("When the project targetSdkVersion is greater than or equal to " + PermissionVersion.ANDROID_16 +
-                ", the \"" + getPermissionName() + "\" permission cannot be requested, but the \"" +
+            throw new IllegalArgumentException("When the project targetSdkVersion is greater than or equal to " +
+                PermissionVersion.ANDROID_16 + ", the \"" + getPermissionName() +
+                "\" permission cannot be requested, but the \"" +
                 PermissionNames.READ_HEART_RATE + "\" permission should be requested instead");
         }
     }

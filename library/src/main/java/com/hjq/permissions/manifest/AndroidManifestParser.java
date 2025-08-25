@@ -68,7 +68,10 @@ public final class AndroidManifestParser {
     private static final String ATTR_SUPPORTS_PICTURE_IN_PICTURE = "supportsPictureInPicture";
     private static final String ATTR_PERMISSION = "permission";
 
-    private AndroidManifestParser() {}
+    /** 私有化构造函数 */
+    private AndroidManifestParser() {
+        // default implementation ignored
+    }
 
     /**
      * 获取当前应用的清单文件信息
@@ -236,7 +239,7 @@ public final class AndroidManifestParser {
         PermissionManifestInfo permissionInfo = new PermissionManifestInfo();
         permissionInfo.name = parser.getAttributeValue(ANDROID_NAMESPACE_URI, ATTR_NAME);
         permissionInfo.maxSdkVersion = parser.getAttributeIntValue(ANDROID_NAMESPACE_URI,
-            ATTR_MAX_SDK_VERSION, Integer.MAX_VALUE);
+            ATTR_MAX_SDK_VERSION, PermissionManifestInfo.DEFAULT_MAX_SDK_VERSION);
         permissionInfo.usesPermissionFlags = parser.getAttributeIntValue(ANDROID_NAMESPACE_URI,
             ATTR_USES_PERMISSION_FLAGS, 0);
         return permissionInfo;

@@ -1,5 +1,6 @@
 package com.hjq.permissions.permission.dangerous;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import java.util.Objects;
@@ -54,7 +55,7 @@ public final class StandardHealthRecordsPermission extends HealthDataBasePermiss
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return mFromAndroidVersion;
     }
 }

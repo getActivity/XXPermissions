@@ -88,22 +88,34 @@ public final class WindowLifecycleManager {
         public abstract void onWindowDismiss();
 
         @Override
-        public final void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {}
+        public final void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
+            // default implementation ignored
+        }
 
         @Override
-        public final void onActivityStarted(@NonNull Activity activity) {}
+        public final void onActivityStarted(@NonNull Activity activity) {
+            // default implementation ignored
+        }
 
         @Override
-        public final void onActivityResumed(@NonNull Activity activity) {}
+        public final void onActivityResumed(@NonNull Activity activity) {
+            // default implementation ignored
+        }
 
         @Override
-        public final void onActivityPaused(@NonNull Activity activity) {}
+        public final void onActivityPaused(@NonNull Activity activity) {
+            // default implementation ignored
+        }
 
         @Override
-        public final void onActivityStopped(@NonNull Activity activity) {}
+        public final void onActivityStopped(@NonNull Activity activity) {
+            // default implementation ignored
+        }
 
         @Override
-        public final void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {}
+        public final void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+            // default implementation ignored
+        }
 
         @Override
         public final void onActivityDestroyed(@NonNull Activity activity) {

@@ -11,20 +11,14 @@ import android.support.annotation.Nullable;
  */
 public final class MetaDataManifestInfo {
 
-    /**
-     * MetaData 的名称
-     */
+    /** MetaData 的名称 */
     @NonNull
     public String name = "";
 
-    /**
-     * MetaData 的值
-     */
+    /** MetaData 的值 */
     @Nullable
     public String value;
 
-    /**
-     * MetaData 的资源 ID
-     */
+    /** MetaData 的资源 ID */
     public int resource;
 }

@@ -9,7 +9,7 @@ import android.support.v4.app.Fragment;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/05/20
- *    desc   : startActivity 委托 Support 包下的 Fragment 实现
+ *    desc   : {@link android.support.v4.app.Fragment} 跳转 Activity 实现
  */
 public final class StartActivityDelegateByFragmentSupport implements IStartActivityDelegate {
 
@@ -21,18 +21,12 @@ public final class StartActivityDelegateByFragmentSupport implements IStartActiv
     }
 
     @Override
-    public void startActivity(Intent intent) {
-        if (intent == null) {
-            return;
-        }
+    public void startActivity(@NonNull Intent intent) {
         mFragment.startActivity(intent);
     }
 
     @Override
-    public void startActivityForResult(Intent intent, @IntRange(from = 1, to = 65535) int requestCode) {
-        if (intent == null) {
-            return;
-        }
+    public void startActivityForResult(@NonNull Intent intent, @IntRange(from = 1, to = 65535) int requestCode) {
         mFragment.startActivityForResult(intent, requestCode);
     }
 }

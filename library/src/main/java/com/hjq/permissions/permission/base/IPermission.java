@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.permission.PermissionPageType;
-import com.hjq.permissions.permission.PermissionType;
+import com.hjq.permissions.permission.PermissionChannel;
 import com.hjq.permissions.tools.PermissionVersion;
 import java.util.List;
 
@@ -34,10 +34,10 @@ public interface IPermission extends Parcelable {
     }
 
     /**
-     * 获取权限的类型
+     * 获取权限请求通道
      */
     @NonNull
-    PermissionType getPermissionType();
+    PermissionChannel getPermissionChannel(@NonNull Context context);
 
     /**
      * 获取权限页面的类型
@@ -49,7 +49,7 @@ public interface IPermission extends Parcelable {
      * 获取权限的组别
      */
     @Nullable
-    default String getPermissionGroup() {
+    default String getPermissionGroup(@NonNull Context context) {
         // 返回空表示没有组别
         return null;
     }
@@ -57,13 +57,13 @@ public interface IPermission extends Parcelable {
     /**
      * 获取权限出现的 Android 版本
      */
-    int getFromAndroidVersion();
+    int getFromAndroidVersion(@NonNull Context context);
 
     /**
      * 获取使用这个权限最低要求的 targetSdk 版本
      */
-    default int getMinTargetSdkVersion() {
-        return getFromAndroidVersion();
+    default int getMinTargetSdkVersion(@NonNull Context context) {
+        return getFromAndroidVersion(context);
     }
 
     /**
@@ -101,7 +101,7 @@ public interface IPermission extends Parcelable {
     default boolean isSupportRequestPermission(@NonNull Context context) {
         // 如果当前权限是否在低版本（不受支持的版本）上面运行，则证明不支持请求该权限
         // 例如 MANAGE_EXTERNAL_STORAGE 权限是 Android 11 才出现的权限，在 Android 10 上面肯定是不支持申请
-        return getFromAndroidVersion() <= PermissionVersion.getCurrentVersion();
+        return getFromAndroidVersion(context) <= PermissionVersion.getCurrentVersion();
     }
 
     /**
@@ -164,5 +164,7 @@ public interface IPermission extends Parcelable {
      */
     default void checkCompliance(@NonNull Activity activity,
                                  @NonNull List<IPermission> requestList,
-                                 @Nullable AndroidManifestInfo manifestInfo) {}
+                                 @Nullable AndroidManifestInfo manifestInfo) {
+        // default implementation ignored
+    }
 }

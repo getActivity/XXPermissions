@@ -52,7 +52,7 @@ public final class AccessMediaLocationPermission extends DangerousPermission {
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_10;
     }
 

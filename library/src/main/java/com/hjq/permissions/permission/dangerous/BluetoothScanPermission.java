@@ -57,18 +57,18 @@ public final class BluetoothScanPermission extends DangerousPermission {
     }
 
     @Override
-    public String getPermissionGroup() {
+    public String getPermissionGroup(@NonNull Context context) {
         // 注意：在 Android 12 的时候，蓝牙相关的权限已经归到附近设备的权限组了，但是在 Android 12 之前，蓝牙相关的权限归属定位权限组
         return PermissionVersion.isAndroid12() ? PermissionGroups.NEARBY_DEVICES : PermissionGroups.LOCATION;
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_12;
     }
 
     @Override
-    public int getMinTargetSdkVersion() {
+    public int getMinTargetSdkVersion(@NonNull Context context) {
         // 部分厂商修改了蓝牙权限机制，在 targetSdk 不满足条件的情况下（小于 31），仍需要让应用申请这个权限，相关的 issue 地址：
         // 1. https://github.com/getActivity/XXPermissions/issues/123
         // 2. https://github.com/getActivity/XXPermissions/issues/302
@@ -100,7 +100,7 @@ public final class BluetoothScanPermission extends DangerousPermission {
                                            @Nullable PermissionManifestInfo currentPermissionInfo) {
         super.checkSelfByManifestFile(activity, requestList, manifestInfo, permissionInfoList, currentPermissionInfo);
         // 如果权限出现的版本小于 minSdkVersion，则证明该权限可能会在旧系统上面申请，需要在 AndroidManifest.xml 文件注册一下旧版权限
-        if (getFromAndroidVersion() > getMinSdkVersion(activity, manifestInfo)) {
+        if (getFromAndroidVersion(activity) > getMinSdkVersion(activity, manifestInfo)) {
             checkPermissionRegistrationStatus(permissionInfoList, Manifest.permission.BLUETOOTH_ADMIN, PermissionVersion.ANDROID_11);
             // 这是 Android 12 之前遗留的问题，获取扫描蓝牙的结果需要精确定位权限
             checkPermissionRegistrationStatus(permissionInfoList, PermissionNames.ACCESS_FINE_LOCATION, PermissionVersion.ANDROID_11);
@@ -122,7 +122,7 @@ public final class BluetoothScanPermission extends DangerousPermission {
         // 蓝牙权限：https://developer.android.google.cn/guide/topics/connectivity/bluetooth/permissions?hl=zh-cn#assert-never-for-location
         // 如果您的应用不使用蓝牙扫描结果来获取物理位置，则您可以断言您的应用从不使用蓝牙权限来获取物理位置。为此，请完成以下步骤：
         // 将该属性添加 android:usesPermissionFlags 到您的 BLUETOOTH_SCAN 权限声明中，并将该属性的值设置为 neverForLocation
-        String maxSdkVersionString = (currentPermissionInfo.maxSdkVersion != Integer.MAX_VALUE) ?
+        String maxSdkVersionString = (currentPermissionInfo.maxSdkVersion != PermissionManifestInfo.DEFAULT_MAX_SDK_VERSION) ?
             "android:maxSdkVersion=\"" + currentPermissionInfo.maxSdkVersion + "\" " : "";
         // 根据不同的需求场景决定，解决方法分为两种：
         //   1. 不需要使用蓝牙权限来获取物理位置：只需要在清单文件中注册的权限上面加上 android:usesPermissionFlags="neverForLocation" 即可

@@ -17,6 +17,11 @@ public final class AlreadyRequestPermissionsManager {
     /** 已请求过的权限集 */
     private static final List<String> ALREADY_REQUEST_PERMISSIONS_LIST = new ArrayList<>();
 
+    /** 私有化构造函数 */
+    private AlreadyRequestPermissionsManager() {
+        // default implementation ignored
+    }
+
     /**
      * 添加已申请过的权限
      */

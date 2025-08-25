@@ -51,7 +51,7 @@ public final class WriteSettingsPermission extends SpecialPermission {
     }
 
     @Override
-    public int getFromAndroidVersion() {
+    public int getFromAndroidVersion(@NonNull Context context) {
         return PermissionVersion.ANDROID_6;
     }
 

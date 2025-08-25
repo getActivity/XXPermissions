@@ -12,26 +12,18 @@ import java.util.List;
  */
 public final class ActivityManifestInfo {
 
-    /**
-     * 活动的类名
-     */
+    /** Activity 的类名 */
     @NonNull
     public String name = "";
 
-    /**
-     * 窗口是否支持画中画
-     */
-    public boolean supportsPictureInPicture;
+    /** 是否支持画中画 */
+    public boolean supportsPictureInPicture = false;
 
-    /**
-     * 意图过滤器列表
-     */
+    /** 意图过滤器列表 */
     @Nullable
     public List<IntentFilterManifestInfo> intentFilterInfoList;
 
-    /**
-     * MetaData 列表
-     */
+    /** MetaData 列表 */
     @Nullable
     public List<MetaDataManifestInfo> metaDataInfoList;
 }

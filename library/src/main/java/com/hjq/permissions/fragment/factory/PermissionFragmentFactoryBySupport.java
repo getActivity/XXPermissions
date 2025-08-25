@@ -5,11 +5,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import com.hjq.permissions.fragment.IFragmentMethod;
-import com.hjq.permissions.core.OnPermissionFlowCallback;
-import com.hjq.permissions.fragment.impl.support.PermissionFragmentSupportByDangerous;
-import com.hjq.permissions.fragment.impl.support.PermissionFragmentSupportBySpecial;
+import com.hjq.permissions.core.OnPermissionFragmentCallback;
+import com.hjq.permissions.fragment.impl.support.PermissionSupportFragmentByRequestPermissions;
+import com.hjq.permissions.fragment.impl.support.PermissionSupportFragmentByStartActivityForResult;
 import com.hjq.permissions.manager.PermissionRequestCodeManager;
-import com.hjq.permissions.permission.PermissionType;
+import com.hjq.permissions.permission.PermissionChannel;
 import com.hjq.permissions.permission.base.IPermission;
 import java.util.List;
 
@@ -17,7 +17,7 @@ import java.util.List;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/05/20
- *    desc   : 权限 Fragment 生产工厂（Support 包下的 Fragment）
+ *    desc   : 权限 Fragment 生产工厂（Support 库中的 Fragment）
  */
 public final class PermissionFragmentFactoryBySupport extends PermissionFragmentFactory<FragmentActivity, FragmentManager> {
 
@@ -26,12 +26,14 @@ public final class PermissionFragmentFactoryBySupport extends PermissionFragment
     }
 
     @Override
-    public void createAndCommitFragment(@NonNull List<IPermission> permissions, @NonNull PermissionType permissionType, @Nullable OnPermissionFlowCallback callback) {
+    public void createAndCommitFragment(@NonNull List<IPermission> permissions,
+                                        @NonNull PermissionChannel permissionChannel,
+                                        @Nullable OnPermissionFragmentCallback callback) {
         IFragmentMethod<FragmentActivity, FragmentManager> fragment;
-        if (permissionType == PermissionType.SPECIAL) {
-            fragment = new PermissionFragmentSupportBySpecial();
+        if (permissionChannel == PermissionChannel.REQUEST_PERMISSIONS) {
+            fragment = new PermissionSupportFragmentByRequestPermissions();
         } else {
-            fragment = new PermissionFragmentSupportByDangerous();
+            fragment = new PermissionSupportFragmentByStartActivityForResult();
         }
         // 新版本的 Support 库限制请求码必须小于 65536（不能包含 65536），所以实际的取值区间在：1 ~ 65535
         // java.lang.IllegalArgumentException: Can only use lower 16 bits for requestCode
@@ -42,8 +44,8 @@ public final class PermissionFragmentFactoryBySupport extends PermissionFragment
         // 2. https://github.com/domoticz/domoticz-android/issues/92
         // 3. https://github.com/journeyapps/zxing-android-embedded/issues/117
         int maxRequestCode;
-        // 判断当前是不是申请的危险权限
-        if (permissionType == PermissionType.DANGEROUS) {
+        // 判断当前是不是通过 requestPermissions 申请的权限
+        if (permissionChannel == PermissionChannel.REQUEST_PERMISSIONS) {
             try {
                 FragmentActivity activity = getActivity();
                 // 检查一下大值的 requestCode 会不会超过 FragmentActivity 类中的设定
@@ -77,8 +79,8 @@ public final class PermissionFragmentFactoryBySupport extends PermissionFragment
         int requestCode = PermissionRequestCodeManager.generateRandomRequestCode(maxRequestCode);
         fragment.setArguments(generatePermissionArguments(permissions, requestCode));
         fragment.setRetainInstance(true);
-        fragment.setRequestFlag(true);
-        fragment.setCallback(callback);
-        fragment.commitAttach(getFragmentManager());
+        fragment.setNonSystemRestartMark(true);
+        fragment.setPermissionFragmentCallback(callback);
+        fragment.commitFragmentAttach(getFragmentManager());
     }
 }

@@ -21,7 +21,7 @@ import java.util.List;
 public final class PermissionChecker {
 
     /**
-     * 检查 Activity 的状态是否正常
+     * 检查 {@link android.app.Activity} 对象的状态是否正常
      */
     public static void checkActivityStatus(@Nullable Activity activity) {
         // 检查当前 Activity 状态是否是正常的，如果不是则不请求权限
@@ -46,7 +46,7 @@ public final class PermissionChecker {
     }
 
     /**
-     * 检查 Fragment 的状态是否正常（Support 包版本）
+     * 检查 {@link android.support.v4.app.Fragment} 对象的状态是否正常
      */
     public static void checkSupportFragmentStatus(@NonNull android.support.v4.app.Fragment supportFragment) {
         if (!supportFragment.isAdded()) {
@@ -63,7 +63,7 @@ public final class PermissionChecker {
     }
 
     /**
-     * 检查 Fragment 的状态是否正常（App 包版本）
+     * 检查 {@link android.app.Fragment} 对象的状态是否正常
      */
     @SuppressWarnings("deprecation")
     public static void checkAppFragmentStatus(@NonNull Fragment appFragment) {

@@ -11,7 +11,7 @@ import com.hjq.permissions.fragment.factory.PermissionFragmentFactory;
 import com.hjq.permissions.fragment.factory.PermissionFragmentFactoryByApp;
 import com.hjq.permissions.fragment.factory.PermissionFragmentFactoryBySupport;
 import com.hjq.permissions.manifest.AndroidManifestParser;
-import com.hjq.permissions.permission.PermissionType;
+import com.hjq.permissions.permission.PermissionChannel;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.start.StartActivityAgent;
 import com.hjq.permissions.tools.PermissionApi;
@@ -125,7 +125,7 @@ public final class XXPermissions {
     @Nullable
     private Fragment mAppFragment;
 
-    /** Support 包下的 Fragment 对象 */
+    /** Support 库中的 Fragment 对象 */
     @Nullable
     private android.support.v4.app.Fragment mSupportFragment;
 
@@ -262,23 +262,24 @@ public final class XXPermissions {
         // 判断要申请的权限是否都授予了
         if (PermissionApi.isGrantedPermissions(context, requestList)) {
             // 如果是的话，就不申请权限，而是通知权限申请成功
-            permissionInterceptor.onRequestPermissionEnd(activity, true, requestList,
-                                                          requestList, new ArrayList<>(), callback);
+            permissionInterceptor.onRequestPermissionEnd(activity, true, requestList, requestList, new ArrayList<>(), callback);
             return;
         }
 
-        // 检查 App 包下的 Fragment 是不是不可用
-        if (appFragment != null && PermissionUtils.isFragmentUnavailable(appFragment)) {
-            return;
+        final PermissionFragmentFactory<?, ?> fragmentFactory;
+        if (supportFragment != null) {
+            if (PermissionUtils.isFragmentUnavailable(supportFragment)) {
+                return;
+            }
+            fragmentFactory = generatePermissionFragmentFactory(activity, supportFragment);
+        } else if (appFragment != null) {
+            if (PermissionUtils.isFragmentUnavailable(appFragment)) {
+                return;
+            }
+            fragmentFactory = generatePermissionFragmentFactory(activity, appFragment);
+        } else {
+            fragmentFactory = generatePermissionFragmentFactory(activity);
         }
-
-        // 检查 Support 包下的 Fragment 是不是不可用
-        if (supportFragment != null && PermissionUtils.isFragmentUnavailable(supportFragment)) {
-            return;
-        }
-
-        // 创建 Fragment 工厂
-        final PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, supportFragment, appFragment);
 
         // 申请没有授予过的权限
         permissionInterceptor.onRequestPermissionStart(activity, requestList, fragmentFactory, permissionDescription, callback);
@@ -450,7 +451,7 @@ public final class XXPermissions {
             return;
         }
         PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity);
-        fragmentFactory.createAndCommitFragment(permissions, PermissionType.SPECIAL, () -> {
+        fragmentFactory.createAndCommitFragment(permissions, PermissionChannel.START_ACTIVITY_FOR_RESULT, () -> {
             if (PermissionUtils.isActivityUnavailable(activity)) {
                 return;
             }
@@ -513,7 +514,7 @@ public final class XXPermissions {
             return;
         }
         PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, appFragment);
-        fragmentFactory.createAndCommitFragment(permissions, PermissionType.SPECIAL, () -> {
+        fragmentFactory.createAndCommitFragment(permissions, PermissionChannel.START_ACTIVITY_FOR_RESULT, () -> {
             if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(appFragment)) {
                 return;
             }
@@ -576,7 +577,7 @@ public final class XXPermissions {
             return;
         }
         PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, supportFragment);
-        fragmentFactory.createAndCommitFragment(permissions, PermissionType.SPECIAL, () -> {
+        fragmentFactory.createAndCommitFragment(permissions, PermissionChannel.START_ACTIVITY_FOR_RESULT, () -> {
             if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(supportFragment)) {
                 return;
             }
@@ -587,23 +588,26 @@ public final class XXPermissions {
     /**
      * 创建 Fragment 工厂
      */
+    @NonNull
     private static PermissionFragmentFactory<?, ?> generatePermissionFragmentFactory(@NonNull Activity activity) {
         return generatePermissionFragmentFactory(activity, null, null);
     }
 
+    @NonNull
     private static PermissionFragmentFactory<?, ?> generatePermissionFragmentFactory(@NonNull Activity activity,
-                                                                                    @Nullable android.support.v4.app.Fragment supportFragment) {
+                                                                                     @Nullable android.support.v4.app.Fragment supportFragment) {
         return generatePermissionFragmentFactory(activity, supportFragment, null);
     }
 
+    @NonNull
     private static PermissionFragmentFactory<?, ?> generatePermissionFragmentFactory(@NonNull Activity activity,
-                                                                                    @Nullable Fragment appFragment) {
+                                                                                     @Nullable Fragment appFragment) {
         return generatePermissionFragmentFactory(activity, null, appFragment);
     }
 
     private static PermissionFragmentFactory<?, ?> generatePermissionFragmentFactory(@NonNull Activity activity,
-                                                                                    @Nullable android.support.v4.app.Fragment supportFragment,
-                                                                                    @Nullable Fragment appFragment) {
+                                                                                     @Nullable android.support.v4.app.Fragment supportFragment,
+                                                                                     @Nullable Fragment appFragment) {
         final PermissionFragmentFactory<?, ?> fragmentFactory;
         if (supportFragment != null) {
             fragmentFactory = new PermissionFragmentFactoryBySupport(supportFragment.getActivity(), supportFragment.getChildFragmentManager());
