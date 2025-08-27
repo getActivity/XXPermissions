@@ -60,20 +60,12 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
     @NonNull
     @Override
     public PermissionPageType getPermissionPageType(@NonNull Context context) {
-        // 后台定位权限在 HyperOS 或者 MIUI 上面一直是透明的 Activity
-        if (DeviceOs.isHyperOs() || DeviceOs.isMiui()) {
-            return PermissionPageType.TRANSPARENT_ACTIVITY;
-        }
-        // 后台定位权限在 MagicOS 上面一直是透明的 Activity
-        if (DeviceOs.isMagicOs()) {
-            return PermissionPageType.TRANSPARENT_ACTIVITY;
-        }
-        // 后台定位权限在 HarmonyOS 上面一直是透明的 Activity
-        if (DeviceOs.isHarmonyOs()) {
-            return PermissionPageType.TRANSPARENT_ACTIVITY;
-        }
         // 后台定位权限申请页在 Android 10 还是透明的 Activity，到了 Android 11 就变成了不透明的 Activity
-        if (PermissionVersion.isAndroid10() && !PermissionVersion.isAndroid11()) {
+        if (PermissionVersion.getCurrentVersion() == getFromAndroidVersion(context)) {
+            return PermissionPageType.TRANSPARENT_ACTIVITY;
+        }
+        // 后台定位权限在 HyperOS、MIUI、MagicOS、HarmonyOS、EMUI 上面一直是透明的 Activity
+        if (DeviceOs.isHyperOs() || DeviceOs.isMiui() || DeviceOs.isMagicOs() || DeviceOs.isHarmonyOs() || DeviceOs.isEmui()) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
         return PermissionPageType.OPAQUE_ACTIVITY;
