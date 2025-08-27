@@ -60,7 +60,8 @@ public final class BodySensorsBackgroundPermission extends DangerousPermission {
     @NonNull
     @Override
     public PermissionPageType getPermissionPageType(@NonNull Context context) {
-        if (DeviceOs.isHyperOs() || DeviceOs.isMiui()) {
+        // 后台传感器权限在 HyperOS、MIUI、MagicOS、HarmonyOS、EMUI 上面一直是透明的 Activity
+        if (DeviceOs.isHyperOs() || DeviceOs.isMiui() || DeviceOs.isMagicOs() || DeviceOs.isHarmonyOs() || DeviceOs.isEmui()) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
         return PermissionPageType.OPAQUE_ACTIVITY;
