@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import com.hjq.device.compat.DeviceBrand;
 import com.hjq.device.compat.DeviceOs;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.common.SpecialPermission;
@@ -90,7 +91,8 @@ public final class AccessNotificationPolicyPermission extends SpecialPermission 
         // 荣耀 X20 SE Android 11  MagicOS 4.1
         // 荣耀 Play5 Android 10  MagicOS 4.0
         // 华为 nova 8 Android 10  EMUI 11.0
-        if (PermissionVersion.isAndroid10() && !(DeviceOs.isHarmonyOs() || DeviceOs.isMagicOs() || DeviceOs.isEmui())) {
+        if (PermissionVersion.isAndroid10() && !(DeviceOs.isHarmonyOs() || DeviceOs.isMagicOs() || DeviceOs.isEmui() ||
+                                                 DeviceBrand.isHuaWei() || DeviceBrand.isHonor())) {
             // android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS
             intent = new Intent("android.settings.NOTIFICATION_POLICY_ACCESS_DETAIL_SETTINGS");
             intent.setData(getPackageNameUri(context));
