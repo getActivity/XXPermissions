@@ -15,9 +15,9 @@ import android.support.annotation.RequiresApi;
 import com.hjq.device.compat.DeviceOs;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
 import com.hjq.permissions.manifest.node.PermissionManifestInfo;
+import com.hjq.permissions.permission.PermissionChannel;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.PermissionPageType;
-import com.hjq.permissions.permission.PermissionChannel;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.permission.common.DangerousPermission;
 import com.hjq.permissions.tools.PermissionSettingPage;
@@ -68,21 +68,31 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
         return PERMISSION_NAME;
     }
 
-    @Override
-    public String getRequestPermissionName(Context context) {
-        if (PermissionVersion.isAndroid6() &&
-            !isSupportRequestPermissionBySystem(context) &&
-            isSupportRequestPermissionByOneUi(context)) {
-            return ONE_UI_GET_APP_LIST_PERMISSION_NAME;
-        }
-        return super.getRequestPermissionName(context);
-    }
-
     @NonNull
     @Override
     public PermissionChannel getPermissionChannel(@NonNull Context context) {
-        if (PermissionVersion.isAndroid6() && (isSupportRequestPermissionBySystem(context) || isSupportRequestPermissionByOneUi(context))) {
-            return PermissionChannel.REQUEST_PERMISSIONS;
+        if (PermissionVersion.isAndroid6()) {
+            if (isSupportRequestPermissionBySystem(context)) {
+                return PermissionChannel.REQUEST_PERMISSIONS;
+            } else if (isSupportRequestPermissionByOneUi(context)) {
+                // 疑问答疑：读取应用列表在三星手机上面明明是一个危险权限，但为什么不用 requestPermissions，而是用 startActivity 方式去申请呢？
+                // 这是因为在三星的 OneUI 上面，这个权限虽然是危险权限，用系统 requestPermissions 也能发起申请权限，
+                // 但是权限名称不是 com.android.permission.GET_INSTALLED_APPS 而是 com.samsung.android.permission.GET_APP_LIST，
+                // 这里就牵扯出来一个问题，读取应用列表权限有两个名称，一个是工信部定义的，另外一个是 OneUI 自己定义的，
+                // 而 requestPermissions 方法只能传入一个权限名称，那么就会出现一个问题，要传哪个去申请？
+                // 到这里你可能会说，用代码判断一下，如果当前设备是 OneUI 的就传三星定义的，否则就传工信部定义的不就好了？
+                // 这个想法很美好，实践过程会有一个问题，这样就会导致 getPermissionName 的值获取到的返回值变成动态的，失去了唯一性，
+                // 目前框架判断是否为同一个权限，主要的是依靠 PermissionName 这个特征来判断，如果改成动态的方式，
+                // 那么将不能作为权限的唯一标识，因为要在 OneUI 上面判断是否支持这个权限通过 Context 对象判断，
+                // 在 List 或者 Map 这种集合中，判断两个对象是否为同一个，主要是调用对象的 equals 方法来判断，equals 方法没有 Context 参数，
+                // 假设换成动态获取的，则需要 equals 方法能传 Context 对象，但是这个显然不太现实，因为 equals 是 Object 类中的方法，
+                // 还有另外一个致命的问题就是，外层调用者通过权限对象判断是哪个权限时，会用 PermissionName 来判断权限是不是同一个，
+                // 假设换成动态获取的，就会导致外层调用者出现漏判，也就是只判断了工信部定义的，但是没有判断 OneUI 定义的，这难道不是在挖坑？
+                // 虽然这个问题也有其他办法解决，那就是新增一个 PermissionId 概念，然后将判断权限的唯一性从 PermissionName 拆分出来，
+                // 但是这样就会导致框架的复杂度提升，毕竟问题只在 OneUI 出现，权衡利弊之下，还是选择用 startActivity 的方式去申请权限，
+                // 当然最好的解决方式：是让三星那边支持用工信部定义的权限名称来申请这个权限，关于这个问题我已经反馈给他们了，具体做不做就是他们的事情了。
+                return PermissionChannel.START_ACTIVITY_FOR_RESULT;
+            }
         }
         return PermissionChannel.START_ACTIVITY_FOR_RESULT;
     }
@@ -90,7 +100,7 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
     @NonNull
     @Override
     public PermissionPageType getPermissionPageType(@NonNull Context context) {
-        if (this.getPermissionChannel(context) == PermissionChannel.REQUEST_PERMISSIONS) {
+        if (getPermissionChannel(context) == PermissionChannel.REQUEST_PERMISSIONS) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
         return PermissionPageType.OPAQUE_ACTIVITY;
@@ -121,8 +131,12 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @Override
     public boolean isGrantedPermission(@NonNull Context context, boolean skipRequest) {
-        if (PermissionVersion.isAndroid6() && (isSupportRequestPermissionBySystem(context) || isSupportRequestPermissionByOneUi(context))) {
-            return checkSelfPermission(context, getRequestPermissionName(context));
+        if (PermissionVersion.isAndroid6()) {
+            if (isSupportRequestPermissionBySystem(context)) {
+                return checkSelfPermission(context, getPermissionName());
+            } else if (isSupportRequestPermissionByOneUi(context)) {
+                return checkSelfPermission(context, ONE_UI_GET_APP_LIST_PERMISSION_NAME);
+            }
         }
 
         if (PermissionVersion.isAndroid4_4() && isSupportRequestPermissionByMiui()) {
@@ -142,9 +156,12 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
 
     @Override
     public boolean isDoNotAskAgainPermission(@NonNull Activity activity) {
-        if (PermissionVersion.isAndroid6() && (isSupportRequestPermissionBySystem(activity) || isSupportRequestPermissionByOneUi(activity))) {
-            // 如果支持申请，那么再去判断权限是否永久拒绝
-            return isDoNotAskAgainPermissionByStandardVersion(activity);
+        if (PermissionVersion.isAndroid6()) {
+            if (isSupportRequestPermissionBySystem(activity)) {
+                return isDoNotAskAgainPermissionByStandardVersion(activity);
+            } else if (isSupportRequestPermissionByOneUi(activity)) {
+                return false;
+            }
         }
 
         if (PermissionVersion.isAndroid4_4() && DeviceOs.isMiui() && isSupportRequestPermissionByMiui()) {

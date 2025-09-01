@@ -7,8 +7,8 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.manifest.AndroidManifestInfo;
-import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.PermissionChannel;
+import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.tools.PermissionVersion;
 import java.util.List;
 
@@ -25,13 +25,6 @@ public interface IPermission extends Parcelable {
      */
     @NonNull
     String getPermissionName();
-
-    /**
-     * 获取请求时的权限名称（默认为权限的名称）
-     */
-    default String getRequestPermissionName(Context context) {
-        return getPermissionName();
-    }
 
     /**
      * 获取权限请求通道

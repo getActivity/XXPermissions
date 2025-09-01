@@ -8,8 +8,8 @@ import com.hjq.permissions.fragment.IFragmentMethod;
 import com.hjq.permissions.manager.AlreadyRequestPermissionsManager;
 import com.hjq.permissions.manager.PermissionRequestCodeManager;
 import com.hjq.permissions.permission.base.IPermission;
-import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.util.List;
 
 /**
@@ -35,7 +35,7 @@ public final class PermissionChannelImplByRequestPermissions extends PermissionC
         }
 
         // 如果不需要的话就直接申请全部的危险权限
-        requestPermissions(PermissionUtils.convertPermissionArray(activity, permissions), requestCode);
+        requestPermissions(PermissionUtils.convertPermissionArray(permissions), requestCode);
         // 记录一下已申请过的权限（用于更加精准地判断用户是否勾选了《不再询问》）
         AlreadyRequestPermissionsManager.addAlreadyRequestPermissions(permissions);
     }
