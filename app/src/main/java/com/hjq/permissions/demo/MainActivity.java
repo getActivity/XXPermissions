@@ -32,12 +32,16 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnApplyWindowInsetsListener;
 import android.view.WindowInsets;
+import android.widget.TextView;
 import com.hjq.bar.OnTitleBarListener;
 import com.hjq.bar.TitleBar;
+import com.hjq.device.compat.DeviceBrand;
+import com.hjq.device.compat.DeviceOs;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.XXPermissions;
 import com.hjq.permissions.demo.example.ExampleAccessibilityService;
@@ -124,6 +128,18 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_accessibility_service_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_get_installed_apps_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_start_permission_activity).setOnClickListener(this);
+
+        if (!TextUtils.isEmpty(DeviceOs.getOsName())) {
+            TextView deviceInfoView = findViewById(R.id.tv_main_device_info);
+            deviceInfoView.setVisibility(View.VISIBLE);
+            StringBuilder stringBuilder = new StringBuilder()
+                .append("BrandName: " + DeviceBrand.getBrandName())
+                .append("\nOsName: " + DeviceOs.getOsName())
+                .append("\nOsVersionName: " + DeviceOs.getOsVersionName())
+                .append("\nAndroidVersion: Android " + Build.VERSION.RELEASE)
+                .append("\nAndroidApiLevel: " + Build.VERSION.SDK_INT);
+            deviceInfoView.setText(stringBuilder);
+        }
     }
 
     @Override

@@ -15,10 +15,10 @@
         android:background="@android:color/black"
         app:leftIcon="@null"
         app:lineVisible="false"
-        app:titleHorizontalPadding="15dp"
         app:title="XXPermissions"
         app:titleColor="@android:color/white"
         app:titleGravity="left|center"
+        app:titleHorizontalPadding="15dp"
         app:titleSize="20sp" />
 
     <android.support.v4.widget.NestedScrollView
@@ -258,8 +258,16 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="5dp"
-                    android:layout_marginBottom="10dp"
                     android:text="@string/demo_start_app_details_activity" />
+
+                <TextView
+                    android:id="@+id/tv_main_device_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
