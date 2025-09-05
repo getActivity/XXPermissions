@@ -9,6 +9,7 @@ import android.content.pm.PermissionInfo;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.Settings;
+import android.provider.Settings.Secure;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
@@ -92,6 +93,8 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
                 // 但是这样就会导致框架的复杂度提升，毕竟问题只在 OneUI 出现，权衡利弊之下，还是选择用 startActivity 的方式去申请权限，
                 // 当然最好的解决方式：是让三星那边支持用工信部定义的权限名称来申请这个权限，关于这个问题我已经反馈给他们了，具体做不做就是他们的事情了。
                 return PermissionChannel.START_ACTIVITY_FOR_RESULT;
+            } else if (isSupportRequestPermissionByFlyme()) {
+                return PermissionChannel.START_ACTIVITY_FOR_RESULT;
             }
         }
         return PermissionChannel.START_ACTIVITY_FOR_RESULT;
@@ -136,6 +139,15 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
                 return checkSelfPermission(context, getPermissionName());
             } else if (isSupportRequestPermissionByOneUi(context)) {
                 return checkSelfPermission(context, ONE_UI_GET_APP_LIST_PERMISSION_NAME);
+            } else if (isSupportRequestPermissionByFlyme()) {
+                // 源码摘自 Flyme 10.5.0.1 Android 13 中 com.android.permissioncontroller 应用的
+                // com.meizu.safe.newpermission.data 包 FlymePermission 类 queryState 方法
+                int permissionState = Secure.getInt(context.getContentResolver(), getOpsNameByFlyme(context), -1);
+                // 默认的权限状态: -1（即前面代码传入的默认值）
+                // 允许的权限状态: 4
+                // 使用时的权限状态: 6
+                // 拒绝时的的权限状态: 3
+                return permissionState == 4 || permissionState == 6;
             }
         }
 
@@ -314,5 +326,30 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
             e.printStackTrace();
         }
         return false;
+    }
+
+    /**
+     * 判断当前 Flyme 版本是否支持申请读取应用列表权限
+     */
+    @RequiresApi(PermissionVersion.ANDROID_6)
+    @SuppressWarnings("deprecation")
+    private static boolean isSupportRequestPermissionByFlyme() {
+        if (!DeviceOs.isFlyme()) {
+            return false;
+        }
+        // Flyme - 维基百科，自由的百科全书：https://zh.wikipedia.org/wiki/Flyme
+        // 读取应用列表权限，你会怎么选：http://www.360doc.com/content/20/0626/16/29478554_920626341.shtml
+        // 从新闻可以看出 Flyme 从 2020-06-26 就有读取应用列表权限的入口了，分析了一下 Flyme 版本的历史，最终决定在 Flyme 9 及以上才支持这个权限
+        return DeviceOs.getOsBigVersionCode() >= 9;
+    }
+
+    /**
+     * 获取 Flyme 系统的读取应用列表权限 Ops 名称
+     */
+    private String getOpsNameByFlyme(@NonNull Context context) {
+        // 源码摘自 Flyme 10.5.0.1 Android 13 中 com.android.permissioncontroller 应用的
+        // com.meizu.safe.newpermission.data 包 FlymePermission 类 getOpsName 方法
+        int flymePermissionId = 56;
+        return context.getPackageName() + "_op_" + flymePermissionId;
     }
 }
