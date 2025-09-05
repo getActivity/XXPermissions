@@ -5,15 +5,17 @@ import android.os.Bundle;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.FragmentActivity;
 import com.hjq.permissions.fragment.IFragmentCallback;
 import com.hjq.permissions.fragment.IFragmentMethod;
 import com.hjq.permissions.manager.ActivityOrientationManager;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.start.IStartActivityDelegate;
-import com.hjq.permissions.tools.PermissionVersion;
 import com.hjq.permissions.tools.PermissionApi;
 import com.hjq.permissions.tools.PermissionTaskHandler;
 import com.hjq.permissions.tools.PermissionUtils;
+import com.hjq.permissions.tools.PermissionVersion;
 import java.util.List;
 
 /**
@@ -85,10 +87,11 @@ public abstract class PermissionChannelImpl implements IFragmentCallback {
         return !mFragmentMethod.isAdded() || mFragmentMethod.isRemoving();
     }
 
+    @RequiresApi(PermissionVersion.ANDROID_6)
     protected void requestPermissions(@NonNull String[] permissions, @IntRange(from = 1, to = 65535) int requestCode) {
         try {
             mFragmentMethod.requestPermissions(permissions, requestCode);
-        } catch (Exception e) {
+        } catch (Exception e1) {
             // 在某些极端情况下，调用系统的 requestPermissions 方法时会出现崩溃，刚开始我还以为是 Android 6.0 以下的设备触发的 Bug，
             // 结果发现 Android 6.0 及以上也有这个问题，你永远无法想象现实到底有多魔幻，经过分析得出结论，出现这种情况有以下几种可能：
             //   1. 厂商开发工程师修改了 com.android.packageinstaller 系统应用的包名，但是没有自测好就上线了（概率较小）
@@ -126,7 +129,32 @@ public abstract class PermissionChannelImpl implements IFragmentCallback {
             //   17. https://github.com/hyb1996-guest/AutoJsIssueReport/issues/18264
             // android.content.ActivityNotFoundException: No Activity found to handle Intent
             // { act=android.content.pm.action.REQUEST_PERMISSIONS pkg=com.android.packageinstaller (has extras) }
-            e.printStackTrace();
+            e1.printStackTrace();
+
+            Activity activity = mFragmentMethod.getActivity();
+            // 如果这个 Activity 是 FragmentActivity 类型的话，则不用 activity.requestPermissions 发起重试
+            // 这是因为如果外层传入的是 FragmentActivity 对象，则会创建的 Support 库的 Fragment 对象，
+            // Support 库的 Fragment 对象的 requestPermissions 方法，最终还是调用的 activity.requestPermissions，
+            // 所以当外层传入的是 FragmentActivity 对象时，就不进行重试，避免重复调用一次 activity.requestPermissions 方法，
+            // 另外你可能会有疑问，这样做不是太阳能手电筒？脱裤子纯放屁？实则不然，因为真的有人反馈过这种奇怪的情况，
+            // 调用 android.app.Fragment 对象的 requestPermissions 方法来申请权限在极少数机型上面可能会出现崩溃，
+            // 换成 ActivityCompat.requestPermissions 或者 activity.requestPermissions 就没有问题了，
+            // 目前猜测可能是某些厂商对 android.app.Fragment 这个类做了修改导致的，但是没有做严格的测试导致出现的 Bug，
+            // 所以换成 activity.requestPermissions 来发起重试，虽然这样做会导致权限请求和权限回调没有对应上的问题，
+            // 因为前面 fragment.requestPermissions 失败了就会先触发回调，这里再调用 activity.requestPermissions 就没有办法接收到回调，
+            // 但是针对这种极端场景处理就不可能 100% 完美，给厂商擦屁股也只能擦到这种程度了，当然最好的解决方案还是厂商自己修复这个问题。
+            // 相关问题 issue 地址：https://github.com/getActivity/XXPermissions/issues/339
+            if (activity instanceof FragmentActivity) {
+                return;
+            }
+            if (PermissionUtils.isActivityUnavailable(activity)) {
+                return;
+            }
+            try {
+                activity.requestPermissions(permissions, requestCode);
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
         }
     }
 
