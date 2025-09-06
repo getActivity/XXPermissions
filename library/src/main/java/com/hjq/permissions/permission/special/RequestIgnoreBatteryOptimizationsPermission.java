@@ -63,8 +63,17 @@ public final class RequestIgnoreBatteryOptimizationsPermission extends SpecialPe
         if (PermissionVersion.isAndroid11() && (DeviceOs.isHyperOs() || DeviceOs.isMiui())) {
             return PermissionPageType.OPAQUE_ACTIVITY;
         }
-        // 请求忽略电池优化选项权限在 Android 15 及以上版本的 OPPO 系统上面是一个不透明的 Activity 页面
-        if (DeviceOs.isColorOs() && PermissionVersion.isAndroid15()) {
+        // 请求忽略电池优化选项权限在 ColorOS 上面会出现是一个不透明的 Activity 页面的情况，具体测试结果如下：
+        // ColorOS 16.0.0（Beta）Android 15 OPPO Find X8：透明的 Activity
+        // ColorOS 16.0.0（Beta）Android 15 一加 13：透明的 Activity
+        // ColorOS 15.0.2 Android 15 OPPO Find X8s+：不透明的 Activity
+        // ColorOS 15.0.1 Android 15 一加平板 2 Pro：不透明的 Activity
+        // ColorOS 15.0.0 Android 15 OPPO Pad2：不透明的 Activity
+        // ColorOS 15.0.0 Android 15 一加 12：不透明的 Activity
+        // ColorOS 14.1.0 Android 14 OPPO Find X7：透明的 Activity
+        // ColorOS 14.0.1 Android 14 OPPO A3 Pro 5G：透明的 Activity
+        // ColorOS 14.0.0 Android 14 Reno8 Pro：透明的 Activity
+        if (DeviceOs.isColorOs() && DeviceOs.getOsBigVersionCode() == 15) {
             return PermissionPageType.OPAQUE_ACTIVITY;
         }
         if (PermissionVersion.isAndroid6() && !isGrantedPermission(context)) {
