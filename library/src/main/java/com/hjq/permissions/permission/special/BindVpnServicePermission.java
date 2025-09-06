@@ -63,8 +63,18 @@ public final class BindVpnServicePermission extends SpecialPermission {
     @NonNull
     @Override
     public PermissionPageType getPermissionPageType(@NonNull Context context) {
-        // VPN 权限在 Android 15 及以上版本的 OPPO 系统上面是一个不透明的 Activity 页面
-        if (DeviceOs.isColorOs() && PermissionVersion.isAndroid15()) {
+        // VPN 权限在 ColorOS 上面会出现是一个不透明的 Activity 页面的情况，具体测试结果如下：
+        // ColorOS 16.0.0（Beta）Android 15 OPPO Find X8：不透明的 Activity
+        // ColorOS 16.0.0（Beta）Android 15 一加 13：不透明的 Activity
+        // ColorOS 15.0.2 Android 15 OPPO Find X8s+：透明的 Activity
+        // ColorOS 15.0.1 Android 15 一加平板 2 Pro：透明的 Activity
+        // ColorOS 15.0.0 Android 15 OPPO Pad2：不透明的 Activity
+        // ColorOS 15.0.0 Android 15 一加 12：不透明的 Activity
+        // ColorOS 14.1.0 Android 14 OPPO Find X7：透明的 Activity
+        // ColorOS 14.0.1 Android 14 OPPO A3 Pro 5G：透明的 Activity
+        // ColorOS 14.0.0 Android 14 Reno8 Pro：透明的 Activity
+        if (DeviceOs.isColorOs() && (DeviceOs.getOsBigVersionCode() >= 16 ||
+                                     PermissionUtils.equalsString(DeviceOs.getOsVersionName(), "15.0.0"))) {
             return PermissionPageType.OPAQUE_ACTIVITY;
         }
         return VpnService.prepare(context) != null ? PermissionPageType.TRANSPARENT_ACTIVITY : PermissionPageType.OPAQUE_ACTIVITY;
