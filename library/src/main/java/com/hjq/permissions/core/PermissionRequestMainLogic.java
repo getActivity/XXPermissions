@@ -211,7 +211,7 @@ public final class PermissionRequestMainLogic {
 
             // ------------ 下面是需要 startActivityForResult 才能授权的权限（一般为特殊权限）逻辑 ------------------ //
 
-            if (permission.getPermissionChannel(activity) == PermissionChannel.START_ACTIVITY_FOR_RESULT) {
+            if (permission.getPermissionChannel(activity) == PermissionChannel.START_ACTIVITY) {
                 // 如果这是一个需要跳转页面才能授权的权限，那么就作为单独的一次权限进行处理
                 unauthorizedList.add(PermissionUtils.asArrayList(permission));
                 continue;
@@ -323,7 +323,7 @@ public final class PermissionRequestMainLogic {
             if (permission.getPermissionChannel(activity) == PermissionChannel.REQUEST_PERMISSIONS) {
                 continue;
             }
-            permissionChannel = PermissionChannel.START_ACTIVITY_FOR_RESULT;
+            permissionChannel = PermissionChannel.START_ACTIVITY;
             break;
         }
 

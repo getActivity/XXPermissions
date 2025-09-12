@@ -29,7 +29,7 @@ public abstract class SpecialPermission extends BasePermission {
     @NonNull
     @Override
     public PermissionChannel getPermissionChannel(@NonNull Context context) {
-        return PermissionChannel.START_ACTIVITY_FOR_RESULT;
+        return PermissionChannel.START_ACTIVITY;
     }
 
     @NonNull

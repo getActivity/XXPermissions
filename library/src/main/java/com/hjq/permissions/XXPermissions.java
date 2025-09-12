@@ -451,7 +451,7 @@ public final class XXPermissions {
             return;
         }
         PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity);
-        fragmentFactory.createAndCommitFragment(permissions, PermissionChannel.START_ACTIVITY_FOR_RESULT, () -> {
+        fragmentFactory.createAndCommitFragment(permissions, PermissionChannel.START_ACTIVITY, () -> {
             if (PermissionUtils.isActivityUnavailable(activity)) {
                 return;
             }
@@ -514,7 +514,7 @@ public final class XXPermissions {
             return;
         }
         PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, appFragment);
-        fragmentFactory.createAndCommitFragment(permissions, PermissionChannel.START_ACTIVITY_FOR_RESULT, () -> {
+        fragmentFactory.createAndCommitFragment(permissions, PermissionChannel.START_ACTIVITY, () -> {
             if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(appFragment)) {
                 return;
             }
@@ -577,7 +577,7 @@ public final class XXPermissions {
             return;
         }
         PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, supportFragment);
-        fragmentFactory.createAndCommitFragment(permissions, PermissionChannel.START_ACTIVITY_FOR_RESULT, () -> {
+        fragmentFactory.createAndCommitFragment(permissions, PermissionChannel.START_ACTIVITY, () -> {
             if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(supportFragment)) {
                 return;
             }

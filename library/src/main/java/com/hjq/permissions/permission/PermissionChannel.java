@@ -13,5 +13,5 @@ public enum PermissionChannel {
     /** {@link android.app.Activity#requestPermissions(String[], int)} */
     REQUEST_PERMISSIONS,
     /** {@link android.app.Activity#startActivityForResult(Intent, int)} */
-    START_ACTIVITY_FOR_RESULT
+    START_ACTIVITY
 }

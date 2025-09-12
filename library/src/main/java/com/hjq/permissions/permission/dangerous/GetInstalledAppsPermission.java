@@ -92,12 +92,12 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
                 // 虽然这个问题也有其他办法解决，那就是新增一个 PermissionId 概念，然后将判断权限的唯一性从 PermissionName 拆分出来，
                 // 但是这样就会导致框架的复杂度提升，毕竟问题只在 OneUI 出现，权衡利弊之下，还是选择用 startActivity 的方式去申请权限，
                 // 当然最好的解决方式：是让三星那边支持用工信部定义的权限名称来申请这个权限，关于这个问题我已经反馈给他们了，具体做不做就是他们的事情了。
-                return PermissionChannel.START_ACTIVITY_FOR_RESULT;
+                return PermissionChannel.START_ACTIVITY;
             } else if (isSupportRequestPermissionByFlyme()) {
-                return PermissionChannel.START_ACTIVITY_FOR_RESULT;
+                return PermissionChannel.START_ACTIVITY;
             }
         }
-        return PermissionChannel.START_ACTIVITY_FOR_RESULT;
+        return PermissionChannel.START_ACTIVITY;
     }
 
     @NonNull

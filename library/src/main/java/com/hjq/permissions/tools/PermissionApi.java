@@ -34,7 +34,7 @@ public final class PermissionApi {
         }
 
         for (IPermission permission : permissions) {
-            if (permission.getPermissionChannel(context) == PermissionChannel.START_ACTIVITY_FOR_RESULT) {
+            if (permission.getPermissionChannel(context) == PermissionChannel.START_ACTIVITY) {
                 return true;
             }
         }
@@ -123,7 +123,7 @@ public final class PermissionApi {
             // 2. 如果旧版本列表不为空，并且当前权限对应的旧版本权限包含了需要通过 startActivityForResult 授权的权限，就剔除它对应的旧版本权限
             // 例如：POST_NOTIFICATIONS -> NOTIFICATION_SERVICE
             if (oldPermissions != null && !oldPermissions.isEmpty() &&
-                (permission.getPermissionChannel(context) == PermissionChannel.START_ACTIVITY_FOR_RESULT ||
+                (permission.getPermissionChannel(context) == PermissionChannel.START_ACTIVITY ||
                     containsPermissionByStartActivityForResult(context, oldPermissions))) {
                 realPermissions.removeAll(oldPermissions);
             }
