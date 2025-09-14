@@ -74,7 +74,7 @@ public final class BindVpnServicePermission extends SpecialPermission {
         // ColorOS 14.0.1 Android 14 OPPO A3 Pro 5G：透明的 Activity
         // ColorOS 14.0.0 Android 14 Reno8 Pro：透明的 Activity
         if (DeviceOs.isColorOs() && (DeviceOs.getOsBigVersionCode() >= 16 ||
-                                     PermissionUtils.equalsString(DeviceOs.getOsVersionName(), "15.0.0"))) {
+                                     DeviceOs.getOsVersionName().startsWith("15.0.0"))) {
             return PermissionPageType.OPAQUE_ACTIVITY;
         }
         return VpnService.prepare(context) != null ? PermissionPageType.TRANSPARENT_ACTIVITY : PermissionPageType.OPAQUE_ACTIVITY;
