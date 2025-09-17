@@ -3,12 +3,17 @@ package com.hjq.permissions.demo;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Insets;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -31,6 +36,7 @@ import android.os.OutcomeReceiver;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -55,9 +61,11 @@ import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.toast.Toaster;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.Executors;
@@ -126,6 +134,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         findViewById(R.id.btn_main_request_full_screen_notifications_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_device_admin_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_accessibility_service_permission).setOnClickListener(this);
+        findViewById(R.id.btn_main_request_manage_media_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_request_get_installed_apps_permission).setOnClickListener(this);
         findViewById(R.id.btn_main_start_permission_activity).setOnClickListener(this);
 
@@ -790,6 +799,59 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
                             return;
                         }
                         showGrantedPermissionsToast(grantedList);
+                    }
+                });
+
+        } else if (viewId == R.id.btn_main_request_manage_media_permission) {
+
+            XXPermissions.with(this)
+                .permission(PermissionLists.getManageMediaPermission())
+                .interceptor(new PermissionInterceptor())
+                .description(new PermissionDescription())
+                .request(new OnPermissionCallback() {
+
+                    @Override
+                    public void onResult(@NonNull List<IPermission> grantedList, @NonNull List<IPermission> deniedList) {
+                        boolean allGranted = deniedList.isEmpty();
+                        if (!allGranted) {
+                            return;
+                        }
+                        showGrantedPermissionsToast(grantedList);
+
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                            return;
+                        }
+
+                        ContentResolver contentResolver = getContentResolver();
+                        // 适配 Android 10 分区存储特性
+                        ContentValues values = new ContentValues();
+                        // 设置显示的文件名
+                        values.put(MediaStore.Images.Media.DISPLAY_NAME, "XXPermissionsLogo.png");
+                        // 生成一个新的 uri 路径
+                        Uri outputUri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                        if (outputUri == null) {
+                            return;
+                        }
+                        // 生成图片到本地
+                        try {
+                            Drawable drawable = ContextCompat.getDrawable(MainActivity.this, R.mipmap.ic_launcher);
+                            // w：写入模式，如果文件存在则覆盖，如果文件不存在则创建
+                            // wa：追加模式，如果文件存在则追加到文件末尾，如果文件不存在则创建
+                            OutputStream outputStream = contentResolver.openOutputStream(outputUri, "w");
+                            if (outputStream == null) {
+                                return;
+                            }
+                            if (!(drawable instanceof BitmapDrawable)) {
+                                return;
+                            }
+                            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+                            if (bitmapDrawable.getBitmap().compress(Bitmap.CompressFormat.PNG, 100, outputStream)) {
+                                outputStream.flush();
+                            }
+                            MediaStore.createWriteRequest(contentResolver, Collections.singletonList(outputUri));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
 

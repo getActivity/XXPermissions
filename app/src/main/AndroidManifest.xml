@@ -21,6 +21,9 @@
     <!-- 如果你的应用要上架 GooglePlay，那么需要慎重添加此权限，因为不是日历、闹钟、时钟这类应用添加这个权限很难通过 GooglePlay 上架审核 -->
     <!--<uses-permission android:name="android.permission.USE_EXACT_ALARM" />-->
 
+    <!-- 管理媒体权限（特殊权限，Android 12 新增的权限）-->
+    <uses-permission android:name="android.permission.MANAGE_MEDIA" tools:ignore="ProtectedPermissions" />
+
     <!-- 文件管理权限（特殊权限，Android 11 新增的权限）-->
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 

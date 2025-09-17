@@ -259,6 +259,7 @@ XXPermissions.setCheckMode(false);
 |                       `BIND_VPN_SERVICE`                     |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |                  `BIND_ACCESSIBILITY_SERVICE`                |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |                      `BIND_DEVICE_ADMIN`                     |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
+|                        `MANAGE_MEDIA`                        |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |             Intent Extreme Jump Fallback Mechanism           |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |     Compatibility with Permission Request API Crash Issues   |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |    Avoiding System Permission Callback Null Pointer Issues   |  ✅  |   ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |

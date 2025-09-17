@@ -25,6 +25,11 @@ public final class PermissionNames {
     public static final String SCHEDULE_EXACT_ALARM = "android.permission.SCHEDULE_EXACT_ALARM";
 
     /**
+     * 管理媒体权限，如需权限对象请调用 {@link PermissionLists#getManageMediaPermission()} 获取
+     */
+    public static final String MANAGE_MEDIA = "android.permission.MANAGE_MEDIA";
+
+    /**
      * 所有文件访问权限字符串常量，如需权限对象请调用 {@link PermissionLists#getManageExternalStoragePermission()} 获取
      */
     public static final String MANAGE_EXTERNAL_STORAGE = "android.permission.MANAGE_EXTERNAL_STORAGE";

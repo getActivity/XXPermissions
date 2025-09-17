@@ -37,6 +37,7 @@ import com.hjq.permissions.permission.special.BindDeviceAdminPermission;
 import com.hjq.permissions.permission.special.BindNotificationListenerServicePermission;
 import com.hjq.permissions.permission.special.BindVpnServicePermission;
 import com.hjq.permissions.permission.special.ManageExternalStoragePermission;
+import com.hjq.permissions.permission.special.ManageMediaPermission;
 import com.hjq.permissions.permission.special.NotificationServicePermission;
 import com.hjq.permissions.permission.special.PackageUsageStatsPermission;
 import com.hjq.permissions.permission.special.PictureInPicturePermission;
@@ -154,6 +155,26 @@ public final class PermissionLists {
             return permission;
         }
         return putCachePermission(new ScheduleExactAlarmPermission());
+    }
+
+    /**
+     * 管理媒体权限（特殊权限，Android 12 新增的权限）
+     *
+     * 用户可能会信任特定的应用来执行媒体管理，如频繁地修改媒体文件。
+     * 如果您的应用以 Android 11（API 级别 30）或更高版本为目标平台且不是设备的默认图库应用，
+     * 则每次您的应用尝试修改或删除文件时，您都必须向用户显示一个确认对话框。
+     * 如果您的应用以 Android 12 为目标平台，您可以请求用户向您的应用授予执行以下各项操作的权限，而无需针对每项文件操作提示用户。
+     * 请注意此权限不会直接授予读取或写入权限。它仅会阻止用户针对这些请求进行确认对话框。
+     *
+     * 具体介绍请看这里：https://developer.android.google.cn/reference/android/Manifest.permission#MANAGE_MEDIA
+     */
+    @NonNull
+    public static IPermission getManageMediaPermission() {
+        IPermission permission = getCachePermission(ManageMediaPermission.PERMISSION_NAME);
+        if (permission != null) {
+            return permission;
+        }
+        return putCachePermission(new ManageMediaPermission());
     }
 
     /**

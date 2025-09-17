@@ -142,4 +142,7 @@
     <string name="common_permission_vpn">\tVPN\t权限</string>
     <string name="common_permission_vpn_description">用于创建和管理 VPN 连接，例如访问内网资源、网络代理或加密网络传输。</string>
 
+    <string name="common_permission_manage_media">管理媒体权限</string>
+    <string name="common_permission_manage_media_description">允许应用在无需用户确认的情况下修改和删除此设备或任何连接的存储设备上的媒体文件。</string>
+
 </resources>

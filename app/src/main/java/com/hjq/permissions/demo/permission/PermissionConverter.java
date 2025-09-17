@@ -183,6 +183,9 @@ public final class PermissionConverter {
 
         PERMISSION_NAME_MAP.put(PermissionNames.BIND_ACCESSIBILITY_SERVICE, R.string.common_permission_accessibility_service);
         PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_accessibility_service, R.string.common_permission_accessibility_service_description);
+
+        PERMISSION_NAME_MAP.put(PermissionNames.MANAGE_MEDIA, R.string.common_permission_manage_media);
+        PERMISSION_DESCRIPTION_MAP.put(R.string.common_permission_manage_media, R.string.common_permission_manage_media_description);
     }
 
     /**

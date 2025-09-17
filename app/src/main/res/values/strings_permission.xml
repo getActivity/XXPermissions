@@ -141,4 +141,7 @@
     <string name="common_permission_vpn">\tvpn\tpermission</string>
     <string name="common_permission_vpn_description">allows creating and managing vpn connections for accessing internal networks, network proxy, or encrypted data transmission.</string>
 
+    <string name="common_permission_manage_media">manage media permission</string>
+    <string name="common_permission_manage_media_description">allows an application to modify and delete media files on this device or any connected storage device without user confirmation. </string>
+
 </resources>

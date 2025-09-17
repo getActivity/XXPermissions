@@ -47,6 +47,7 @@
     <string name="demo_request_full_screen_notifications_permission">申请全屏通知权限</string>
     <string name="demo_request_device_admin_permission">申请设备管理器权限</string>
     <string name="demo_request_accessibility_service_permission">申请无障碍服务权限</string>
+    <string name="demo_request_manage_media_permission">申请管理媒体权限</string>
     <string name="demo_request_get_installed_apps_permission">申请读取应用列表</string>
     <string name="demo_request_multiple_type_permission">申请危险权限和特殊权限</string>
     <string name="demo_start_app_details_activity">跳转到应用详情页</string>
