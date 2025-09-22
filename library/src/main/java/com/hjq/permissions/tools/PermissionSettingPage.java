@@ -26,12 +26,14 @@ public final class PermissionSettingPage {
     private static final String XiAO_MI_MOBILE_MANAGER_APP_PACKAGE_NAME = "com.miui.securitycenter";
 
     /** OPPO 安全中心 App 包名 */
-    private static final String OPPO_SAFE_CENTER_APP_PACKAGE_NAME_1 = "com.oppo.safe";
+    private static final String OPPO_SAFE_CENTER_APP_PACKAGE_NAME_1 = "com.coloros.safecenter";
     private static final String OPPO_SAFE_CENTER_APP_PACKAGE_NAME_2 = "com.color.safecenter";
     private static final String OPPO_SAFE_CENTER_APP_PACKAGE_NAME_3 = "com.oplus.safecenter";
+    private static final String OPPO_SAFE_CENTER_APP_PACKAGE_NAME_4 = "com.oppo.safe";
 
     /** vivo 安全中心 App 包名 */
-    private static final String VIVO_MOBILE_MANAGER_APP_PACKAGE_NAME = "com.iqoo.secure";
+    private static final String VIVO_MOBILE_MANAGER_APP_PACKAGE_NAME_1 = "com.bairenkeji.icaller";
+    private static final String VIVO_MOBILE_MANAGER_APP_PACKAGE_NAME_2 = "com.iqoo.secure";
 
     /** 锤子安全中心包名 */
     private static final String SMARTISAN_SECURITY_CENTER_APP_PACKAGE_NAME = "com.smartisanos.securitycenter";
@@ -116,6 +118,11 @@ public final class PermissionSettingPage {
             intentList.add(intent);
         }
 
+        intent = context.getPackageManager().getLaunchIntentForPackage(OPPO_SAFE_CENTER_APP_PACKAGE_NAME_4);
+        if (intent != null) {
+            intentList.add(intent);
+        }
+
         return intentList;
     }
 
@@ -127,7 +134,12 @@ public final class PermissionSettingPage {
         List<Intent> intentList = new ArrayList<>(1);
         Intent intent;
 
-        intent = context.getPackageManager().getLaunchIntentForPackage(VIVO_MOBILE_MANAGER_APP_PACKAGE_NAME);
+        intent = context.getPackageManager().getLaunchIntentForPackage(VIVO_MOBILE_MANAGER_APP_PACKAGE_NAME_1);
+        if (intent != null) {
+            intentList.add(intent);
+        }
+
+        intent = context.getPackageManager().getLaunchIntentForPackage(VIVO_MOBILE_MANAGER_APP_PACKAGE_NAME_2);
         if (intent != null) {
             intentList.add(intent);
         }
