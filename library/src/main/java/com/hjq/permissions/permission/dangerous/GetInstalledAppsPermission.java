@@ -198,6 +198,9 @@ public final class GetInstalledAppsPermission extends DangerousPermission {
             (DeviceOs.isMiuiByChina() && DeviceOs.isMiuiOptimization())) {
             intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
             intentList.add(intent);
+        } else if (DeviceOs.isFlyme()) {
+            intent = PermissionSettingPage.getMeiZuApplicationPermissionPageIntent(context);
+            intentList.add(intent);
         }
 
         intent = getApplicationDetailsSettingIntent(context);

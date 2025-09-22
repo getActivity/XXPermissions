@@ -148,6 +148,11 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
                 // 小米手机管家主页
                 intentList.addAll(PermissionSettingPage.getXiaoMiMobileManagerAppIntent(context));
 
+            }  else if (DeviceOs.isFlyme()) {
+
+                intent = PermissionSettingPage.getMeiZuApplicationPermissionPageIntent(context);
+                intentList.add(intent);
+
             } else if (DeviceOs.isColorOs()) {
                 // com.color.safecenter 是之前 oppo 安全中心的包名，而 com.oppo.safe 是 oppo 后面改的安全中心的包名
                 // 经过测试发现是在 ColorOs 2.1 的时候改的，Android 4.4 还是 com.color.safecenter，到了 Android 5.0 变成了 com.oppo.safe
@@ -206,7 +211,6 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
             }
 
             // 360 第一部发布的手机是 360 N4，Android 版本是 6.0 了，所以根本不需要跳转到指定的页面开启悬浮窗权限
-            // 经过测试，魅族手机 6.0 可以直接通过直接跳转到应用详情开启悬浮窗权限
         }
 
         intent = getApplicationDetailsSettingIntent(context);

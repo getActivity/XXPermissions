@@ -170,12 +170,21 @@ public final class PermissionSettingPage {
     /* ---------------------------------------------------------------------------------------- */
 
     /**
-     * 获取小米应用具体的权限设置页意图
+     * 获取小米手机的应用权限设置页意图
      */
     @NonNull
-    public static Intent getXiaoMiApplicationPermissionPageIntent(Context context) {
+    public static Intent getXiaoMiApplicationPermissionPageIntent(@NonNull Context context) {
         return new Intent("miui.intent.action.APP_PERM_EDITOR")
             .putExtra("extra_pkgname", context.getPackageName());
+    }
+
+    /**
+     * 获取魅族手机的应用权限设置页意图
+     */
+    @NonNull
+    public static Intent getMeiZuApplicationPermissionPageIntent(@NonNull Context context) {
+        return new Intent("com.meizu.safe.security.SHOW_APPSEC")
+            .putExtra("packageName", context.getPackageName());
     }
 
     /**

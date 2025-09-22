@@ -134,6 +134,9 @@ public abstract class DangerousPermission extends BasePermission {
                 intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
                 intentList.add(intent);
             }
+        } else if (DeviceOs.isFlyme()) {
+            intent = PermissionSettingPage.getMeiZuApplicationPermissionPageIntent(context);
+            intentList.add(intent);
         }
 
         intent = getApplicationDetailsSettingIntent(context);
