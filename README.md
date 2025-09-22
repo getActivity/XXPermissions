@@ -239,8 +239,6 @@ XXPermissions.setPermissionInterceptor(Class<? extends OnPermissionInterceptor> 
 XXPermissions.setCheckMode(false);
 ```
 
-#### [其他常见疑问请点击此处查看](HelpDoc-zh.md)
-
 #### 同类权限请求框架之间的对比
 
 |         适配细节         | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode-PermissionUtils](https://github.com/Blankj/AndroidUtilCode)   | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |  [Dexter](https://github.com/Karumi/Dexter) |
@@ -285,7 +283,9 @@ XXPermissions.setCheckMode(false);
 |      第三方厂商兼容性优化      |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |       支持检测代码错误       |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 
-#### [具体细节请点击这里查看](Highlights-zh.md)
+#### [具体实现细节请点击这里查看](Details-zh.md)
+
+#### [其他常见疑问请点击此处查看](HelpDoc-zh.md)
 
 #### 框架亮点
 

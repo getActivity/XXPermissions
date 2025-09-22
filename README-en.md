@@ -234,8 +234,6 @@ XXPermissions.setPermissionInterceptor(Class<? extends OnPermissionInterceptor> 
 XXPermissions.setCheckMode(false);
 ```
 
-#### [For other frequently asked questions, please click here](HelpDoc-en.md)
-
 #### Comparison between similar permission request frameworks
 
 |                       Adaptation details                     | [XXPermissions](https://github.com/getActivity/XXPermissions)  | [AndPermission](https://github.com/yanzhenjie/AndPermission) | [PermissionX](https://github.com/guolindev/PermissionX) |  [AndroidUtilCode-PermissionUtils](https://github.com/Blankj/AndroidUtilCode)   | [PermissionsDispatcher](https://github.com/permissions-dispatcher/PermissionsDispatcher) | [RxPermissions](https://github.com/tbruyelle/RxPermissions) |  [EasyPermissions](https://github.com/googlesamples/easypermissions) |  [Dexter](https://github.com/Karumi/Dexter) |
@@ -276,7 +274,9 @@ XXPermissions.setCheckMode(false);
 |                Fix Android 12 Memory Leak Issue              |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 |                Support for Code Error Detection              |  ✅  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |  ❌  |
 
-#### [For details, please click here to view](Highlights-en.md)
+#### [For specific implementation details, please click here to view](Details-en.md)
+
+#### [For other frequently asked questions, please click here](HelpDoc-en.md)
 
 #### Framework highlights
 
