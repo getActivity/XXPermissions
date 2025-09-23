@@ -26,9 +26,9 @@ public final class PermissionApi {
     }
 
     /**
-     * 判断某个权限集合是否包含需要通过 startActivityForResult 授权的权限
+     * 判断某个权限集合是否包含需要通过跳转 Activity 授权的权限
      */
-    public static boolean containsPermissionByStartActivityForResult(@NonNull Context context, @Nullable List<IPermission> permissions) {
+    public static boolean containsPermissionByStartActivity(@NonNull Context context, @Nullable List<IPermission> permissions) {
         if (permissions == null || permissions.isEmpty()) {
             return false;
         }
@@ -124,7 +124,7 @@ public final class PermissionApi {
             // 例如：POST_NOTIFICATIONS -> NOTIFICATION_SERVICE
             if (oldPermissions != null && !oldPermissions.isEmpty() &&
                 (permission.getPermissionChannel(context) == PermissionChannel.START_ACTIVITY ||
-                    containsPermissionByStartActivityForResult(context, oldPermissions))) {
+                    containsPermissionByStartActivity(context, oldPermissions))) {
                 realPermissions.removeAll(oldPermissions);
             }
         }

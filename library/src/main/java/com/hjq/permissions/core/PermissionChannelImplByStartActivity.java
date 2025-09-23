@@ -19,12 +19,12 @@ import java.util.List;
  *    time   : 2025/05/20
  *    desc   : 请求权限实现类（通过 {@link android.app.Activity#startActivityForResult(Intent, int)} 实现）
  */
-public final class PermissionChannelImplByStartActivityForResult extends PermissionChannelImpl {
+public final class PermissionChannelImplByStartActivity extends PermissionChannelImpl {
 
     /** 忽略 onActivityResult 回调的总次数 */
     private int mIgnoreActivityResultCount = 0;
 
-    public PermissionChannelImplByStartActivityForResult(@NonNull IFragmentMethod<?, ?> fragmentMethod) {
+    public PermissionChannelImplByStartActivity(@NonNull IFragmentMethod<?, ?> fragmentMethod) {
         super(fragmentMethod);
     }
 

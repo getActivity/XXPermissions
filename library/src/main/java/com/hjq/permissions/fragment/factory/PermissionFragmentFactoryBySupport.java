@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentManager;
 import com.hjq.permissions.fragment.IFragmentMethod;
 import com.hjq.permissions.core.OnPermissionFragmentCallback;
 import com.hjq.permissions.fragment.impl.support.PermissionSupportFragmentByRequestPermissions;
-import com.hjq.permissions.fragment.impl.support.PermissionSupportFragmentByStartActivityForResult;
+import com.hjq.permissions.fragment.impl.support.PermissionSupportFragmentByStartActivity;
 import com.hjq.permissions.manager.PermissionRequestCodeManager;
 import com.hjq.permissions.permission.PermissionChannel;
 import com.hjq.permissions.permission.base.IPermission;
@@ -33,7 +33,7 @@ public final class PermissionFragmentFactoryBySupport extends PermissionFragment
         if (permissionChannel == PermissionChannel.REQUEST_PERMISSIONS) {
             fragment = new PermissionSupportFragmentByRequestPermissions();
         } else {
-            fragment = new PermissionSupportFragmentByStartActivityForResult();
+            fragment = new PermissionSupportFragmentByStartActivity();
         }
         // 新版本的 Support 库限制请求码必须小于 65536（不能包含 65536），所以实际的取值区间在：1 ~ 65535
         // java.lang.IllegalArgumentException: Can only use lower 16 bits for requestCode

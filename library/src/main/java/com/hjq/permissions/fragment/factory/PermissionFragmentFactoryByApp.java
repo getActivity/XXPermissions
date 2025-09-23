@@ -7,7 +7,7 @@ import android.support.annotation.Nullable;
 import com.hjq.permissions.fragment.IFragmentMethod;
 import com.hjq.permissions.core.OnPermissionFragmentCallback;
 import com.hjq.permissions.fragment.impl.app.PermissionAppFragmentByRequestPermissions;
-import com.hjq.permissions.fragment.impl.app.PermissionAppFragmentByStartActivityForResult;
+import com.hjq.permissions.fragment.impl.app.PermissionAppFragmentByStartActivity;
 import com.hjq.permissions.manager.PermissionRequestCodeManager;
 import com.hjq.permissions.permission.PermissionChannel;
 import com.hjq.permissions.permission.base.IPermission;
@@ -34,7 +34,7 @@ public final class PermissionFragmentFactoryByApp extends PermissionFragmentFact
         if (permissionChannel == PermissionChannel.REQUEST_PERMISSIONS) {
             fragment = new PermissionAppFragmentByRequestPermissions();
         } else {
-            fragment = new PermissionAppFragmentByStartActivityForResult();
+            fragment = new PermissionAppFragmentByStartActivity();
         }
         int maxRequestCode = PermissionRequestCodeManager.REQUEST_CODE_LIMIT_HIGH_VALUE;
         int requestCode = PermissionRequestCodeManager.generateRandomRequestCode(maxRequestCode);
