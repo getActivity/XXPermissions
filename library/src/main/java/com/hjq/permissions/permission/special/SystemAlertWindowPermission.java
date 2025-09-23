@@ -94,6 +94,10 @@ public final class SystemAlertWindowPermission extends SpecialPermission {
                 // MIUI 做得比较人性化的，不会出现跳转不过去的问题，其他厂商就不一定了，就是不想让你跳转过去
                 intent = PermissionSettingPage.getXiaoMiApplicationPermissionPageIntent(context);
                 intentList.add(intent);
+            } else if (DeviceOs.isFlyme()) {
+                // 魅族手机可以直接跳转到权限设置页，这样就不需要在一大堆应用列表中找到自己的应用进行授权
+                intent = PermissionSettingPage.getMeiZuApplicationPermissionPageIntent(context);
+                intentList.add(intent);
             }
 
             intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
