@@ -6,6 +6,7 @@ import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.hjq.permissions.fragment.IFragmentMethod;
+import com.hjq.permissions.manager.AlreadyRequestPermissionsManager;
 import com.hjq.permissions.manager.PermissionRequestCodeManager;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.tools.PermissionApi;
@@ -34,6 +35,8 @@ public final class PermissionChannelImplByStartActivityForResult extends Permiss
         StartActivityAgent.startActivityForResult(activity, getStartActivityDelegate(),
                                 PermissionApi.getBestPermissionSettingIntent(activity, permissions, false),
                                 requestCode, () -> mIgnoreActivityResultCount++);
+        // 记录一下已申请过的权限
+        AlreadyRequestPermissionsManager.addAlreadyRequestPermissions(permissions);
     }
 
     @Override
