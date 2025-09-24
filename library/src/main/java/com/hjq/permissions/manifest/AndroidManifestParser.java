@@ -2,6 +2,7 @@ package com.hjq.permissions.manifest;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.XmlResourceParser;
 import android.support.annotation.NonNull;
@@ -78,22 +79,21 @@ public final class AndroidManifestParser {
      */
     @Nullable
     public static AndroidManifestInfo getAndroidManifestInfo(Context context) {
-        int apkPathCookie = AndroidManifestParser.findApkPathCookie(context, context.getApplicationInfo().sourceDir);
-        // 如果 cookie 为 0，证明获取失败
-        if (apkPathCookie == 0) {
-            return null;
-        }
-
         AndroidManifestInfo manifestInfo = null;
         try {
-            manifestInfo = AndroidManifestParser.parseAndroidManifest(context, apkPathCookie);
+            manifestInfo = parseAndroidManifest(context, context.getPackageName());
             // 如果读取到的包名和当前应用的包名不是同一个的话，证明这个清单文件的内容不是当前应用的
             // 具体案例：https://github.com/getActivity/XXPermissions/issues/102
-            if (!PermissionUtils.reverseEqualsString(context.getPackageName(), manifestInfo.packageName)) {
+            // 此处可以不做检查，因为我们不使用 cookie
+            /*if (!PermissionUtils.reverseEqualsString(context.getPackageName(), manifestInfo.packageName)) {
                 return null;
-            }
-        } catch (IOException | XmlPullParserException e) {
+            }*/
+        } catch (IOException | XmlPullParserException
+                | SecurityException e) {
             e.printStackTrace();
+        } catch (PackageManager.NameNotFoundException e) {
+            // 此 Exception 实际上不会发生，因为我们使用自己的 packageName
+            //e.printStackTrace();
         }
 
         return manifestInfo;
@@ -124,7 +124,7 @@ public final class AndroidManifestParser {
                     "findCookieForPath", new Class[]{String.class});
                 if (findCookieForPathMethod != null) {
                     findCookieForPathMethod.setAccessible(true);
-                    cookie = (Integer) findCookieForPathMethod.invoke(context.getAssets(), apkPath);
+                    cookie = (Integer) findCookieForPathMethod.invoke(assets, apkPath);
                     if (cookie != null) {
                         return cookie;
                     }
@@ -154,15 +154,15 @@ public final class AndroidManifestParser {
     /**
      * 解析 apk 包中的清单文件
      *
-     * @param context          上下文
-     * @param apkCookie        要解析 apk 的 cookie
+     * @see #parseApkAndroidManifest(Context, String) 通过 apk 查询 cookie 解析
+     * @see #parseAndroidManifest(Context, int) 通过 cookie 解析
+     * @see #parseAndroidManifest(Context, String) 通过包名解析
      */
     @NonNull
-    public static AndroidManifestInfo parseAndroidManifest(@NonNull Context context, int apkCookie) throws IOException, XmlPullParserException {
+    private static AndroidManifestInfo parseAndroidManifest(@NonNull XmlResourceParser xmlResourceParser) throws XmlPullParserException, IOException {
         AndroidManifestInfo manifestInfo = new AndroidManifestInfo();
 
-        try (XmlResourceParser parser = context.getAssets().
-            openXmlResourceParser(apkCookie, ANDROID_MANIFEST_FILE_NAME)) {
+        try (XmlResourceParser parser = xmlResourceParser) {
 
             do {
                 // 当前节点必须为标签头部
@@ -218,6 +218,68 @@ public final class AndroidManifestParser {
         }
 
         return manifestInfo;
+    }
+
+    /**
+     * 解析 apk 包中的清单文件
+     * <p>
+     * 这是 {@link #findApkPathCookie(Context, String)} 然后 {@link #parseAndroidManifest(Context, int)}
+     * 的一种便捷方式
+     *
+     * @param context          上下文
+     * @param apkPath          要解析 apk 的路径
+     */
+    @NonNull
+    public static AndroidManifestInfo parseApkAndroidManifest(@NonNull Context context, @NonNull String apkPath) throws IOException, XmlPullParserException {
+        int cookie = findApkPathCookie(context, apkPath);
+        if (cookie == 0)
+            throw new IOException("couldn't find apk path cookie for path: " + apkPath);
+
+        return parseAndroidManifest(context, cookie);
+    }
+
+    /**
+     * 解析已安装的应用程序中的清单文件
+     *
+     * @param context          上下文
+     * @param packageName      要解析的包名
+     */
+    @NonNull
+    public static AndroidManifestInfo parseAndroidManifest(@NonNull Context context, @NonNull String packageName) throws IOException, XmlPullParserException,
+            // createPackageContext 方法抛出的异常
+            PackageManager.NameNotFoundException, SecurityException {
+
+        Context packageContext;
+        if (context.getPackageName().equals(packageName)) {
+            packageContext = context;
+        } else {
+            packageContext = context.createPackageContext(packageName,
+                    // 此处创建的 Context 只用于 getAssets.openXmlResourceParser，不涉及其他操作
+                    // 无需 Context.CONTEXT_INCLUDE_CODE
+                    Context.CONTEXT_RESTRICTED);
+        }
+
+        // 除了 apk 文件外，已安装的 app 直接使用其 AssetManager
+        return parseAndroidManifest(packageContext.getAssets()
+                // 此 parser 由 parseAndroidManifest 关闭
+                .openXmlResourceParser(ANDROID_MANIFEST_FILE_NAME));
+    }
+
+
+    /**
+     * 解析 apk 包中的清单文件
+     * <p>
+     * 注意：需要检查 {@link AndroidManifestInfo} 结果的 {@link AndroidManifestInfo#packageName}
+     * 是否与预期匹配
+     *
+     * @param context          上下文
+     * @param apkCookie        要解析 apk 的 cookie（通过{@link #findApkPathCookie(Context, String)}）
+     */
+    @NonNull
+    public static AndroidManifestInfo parseAndroidManifest(@NonNull Context context, int apkCookie) throws IOException, XmlPullParserException {
+        return parseAndroidManifest(context.getAssets()
+                // 此 parser 由 parseAndroidManifest 关闭
+                .openXmlResourceParser(apkCookie, ANDROID_MANIFEST_FILE_NAME));
     }
 
     @NonNull
