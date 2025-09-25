@@ -65,7 +65,8 @@ public final class AccessBackgroundLocationPermission extends DangerousPermissio
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
         // 后台定位权限在 HyperOS、MIUI、MagicOS、HarmonyOS、EMUI 上面一直是透明的 Activity
-        if (DeviceOs.isHyperOs() || DeviceOs.isMiui() || DeviceOs.isMagicOs() || DeviceOs.isHarmonyOs() || DeviceOs.isEmui()) {
+        if (DeviceOs.isHyperOs() || DeviceOs.isMiui() || DeviceOs.isMagicOs() ||
+            DeviceOs.isHarmonyOs() || DeviceOs.isZytOnHarmonyOsNext() || DeviceOs.isEmui()) {
             return PermissionPageType.TRANSPARENT_ACTIVITY;
         }
         return PermissionPageType.OPAQUE_ACTIVITY;

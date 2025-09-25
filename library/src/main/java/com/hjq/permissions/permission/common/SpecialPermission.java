@@ -57,7 +57,7 @@ public abstract class SpecialPermission extends BasePermission {
             waitTime = 300;
         }
 
-        if (DeviceOs.isEmui() || DeviceOs.isHarmonyOs()) {
+        if (DeviceOs.isEmui() || DeviceOs.isHarmonyOs() || DeviceOs.isZytOnHarmonyOsNext()) {
             // 需要加长时间等待，不然某些华为机型授权了但是获取不到权限
             if (PermissionVersion.isAndroid8()) {
                 waitTime = 300;
