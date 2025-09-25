@@ -78,14 +78,15 @@ public final class AndroidManifestParser {
      * 获取当前应用的清单文件信息
      */
     @Nullable
-    public static AndroidManifestInfo getAndroidManifestInfo(Context context) {
+    public static AndroidManifestInfo getAndroidManifestInfo(@NonNull Context context) {
         AndroidManifestInfo manifestInfo = null;
         try {
-            manifestInfo = parseAndroidManifest(context, context.getPackageName());
+            String packageName = context.getPackageName();
+            manifestInfo = parseAndroidManifest(context, packageName);
             // 如果读取到的包名和当前应用的包名不是同一个的话，证明这个清单文件的内容不是当前应用的
             // 具体案例：https://github.com/getActivity/XXPermissions/issues/102
-            // 此处可以不做检查，因为我们不使用 cookie
-            /*if (!PermissionUtils.reverseEqualsString(context.getPackageName(), manifestInfo.packageName)) {
+            // 包名匹配移动到 #parseAndroidManifest
+            /*if (!isPackageNameMatched(packageName, manifestInfo)) {
                 return null;
             }*/
         } catch (IOException | XmlPullParserException
@@ -99,9 +100,16 @@ public final class AndroidManifestParser {
         return manifestInfo;
     }
 
+    private static boolean isPackageNameMatched(@NonNull String packageName, @NonNull AndroidManifestInfo manifestInfo) {
+        return PermissionUtils.reverseEqualsString(packageName, manifestInfo.packageName);
+    }
+
     /**
      * 获取当前应用 Apk 在 AssetManager 中的 Cookie，如果获取失败，则为 0
      */
+    // @Discouraged
+    // 由于 Non-SDK api 和可能的 asset 污染问题，不建议外部使用此方法，但库内部会继续依赖
+    // 建议迁移到标准 Package/ApplicationInfo api 或使用 AXmlReader
     @SuppressWarnings("JavaReflectionMemberAccess")
     @SuppressLint("PrivateApi")
     public static int findApkPathCookie(@NonNull Context context, @NonNull String apkPath) {
@@ -225,12 +233,17 @@ public final class AndroidManifestParser {
      * <p>
      * 这是 {@link #findApkPathCookie(Context, String)} 然后 {@link #parseAndroidManifest(Context, int)}
      * 的一种便捷方式
+     * <p>
+     * 此方法不会检查包名是否匹配，可使用 {@link #parseApkAndroidManifest(Context, String, String)} 来检查。
      *
      * @param context          上下文
      * @param apkPath          要解析 apk 的路径
      */
+    // @Discouraged
+    // 由于 Non-SDK api 和可能的 asset 污染问题，不建议外部使用此方法，但库内部会继续依赖
+    // 建议迁移到标准 Package/ApplicationInfo api 或使用 AXmlReader
     @NonNull
-    public static AndroidManifestInfo parseApkAndroidManifest(@NonNull Context context, @NonNull String apkPath) throws IOException, XmlPullParserException {
+    /*public*/ static AndroidManifestInfo parseApkAndroidManifest(@NonNull Context context, @NonNull String apkPath) throws IOException, XmlPullParserException {
         int cookie = findApkPathCookie(context, apkPath);
         if (cookie == 0)
             throw new IOException("couldn't find apk path cookie for path: " + apkPath);
@@ -239,30 +252,82 @@ public final class AndroidManifestParser {
     }
 
     /**
+     * 解析 apk 包中的清单文件
+     * <p>
+     * 这是 {@link #findApkPathCookie(Context, String)} 然后 {@link #parseAndroidManifest(Context, int)}
+     * 的一种便捷方式
+     *
+     * @param context          上下文
+     * @param packageName      预期的包名
+     * @param apkPath          要解析 apk 的路径
+     */
+    // @Discouraged
+    // 由于 Non-SDK api 和可能的 asset 污染问题，不建议外部使用此方法
+    // 建议迁移到标准 Package/ApplicationInfo api 或使用 AXmlReader
+    @NonNull
+    /*public*/ static AndroidManifestInfo parseApkAndroidManifest(@NonNull Context context, @NonNull String packageName, @NonNull String apkPath) throws IOException, XmlPullParserException,
+            PackageManager.NameNotFoundException {
+        AndroidManifestInfo manifestInfo = parseApkAndroidManifest(context, apkPath);
+
+        if (!isPackageNameMatched(packageName, manifestInfo)) {
+            throw new PackageManager.NameNotFoundException("couldn't find manifest for package: " + packageName);
+        }
+
+        return manifestInfo;
+    }
+
+    /**
      * 解析已安装的应用程序中的清单文件
      *
      * @param context          上下文
      * @param packageName      要解析的包名
      */
+    // @Discouraged
+    // 由于 Non-SDK api 和可能的 asset 污染问题，不建议外部使用此方法，但库内部会继续依赖
+    // 建议迁移到标准 Package/ApplicationInfo api 或使用 AXmlReader
     @NonNull
     public static AndroidManifestInfo parseAndroidManifest(@NonNull Context context, @NonNull String packageName) throws IOException, XmlPullParserException,
             // createPackageContext 方法抛出的异常
             PackageManager.NameNotFoundException, SecurityException {
 
-        Context packageContext;
-        if (context.getPackageName().equals(packageName)) {
-            packageContext = context;
-        } else {
-            packageContext = context.createPackageContext(packageName,
+        /*
+         * 对 PR https://github.com/getActivity/XXPermissions/pull/406 的追加解释
+         * 案例 https://github.com/getActivity/XXPermissions/issues/102 是因为使用了 WebView
+         *
+         * 使用 WebView 后，asset paths 会由
+         *      系统资源、系统 rro 资源包、自身 apk、rro 资源包
+         * 变为
+         *      系统资源、系统 rro 资源包、自身 apk、WebView 资源包（若干）、rro 资源包
+         * 导致优先读取了 WebView 的 Manifest
+         *
+         * 所以即使 packageName 是自己，我们仍使用 context.createPackageContext 来获取 raw assets
+         * 这样即使项目使用了 WebView 我们仍可以通过这种方法获取原始的 assets 内容
+         **/
+        // createPackageContext 路径
+        Context packageContext = context.createPackageContext(packageName,
                     // 此处创建的 Context 只用于 getAssets.openXmlResourceParser，不涉及其他操作
                     // 无需 Context.CONTEXT_INCLUDE_CODE
                     Context.CONTEXT_RESTRICTED);
-        }
 
-        // 除了 apk 文件外，已安装的 app 直接使用其 AssetManager
-        return parseAndroidManifest(packageContext.getAssets()
+        AndroidManifestInfo manifestInfo = parseAndroidManifest(packageContext.getAssets()
                 // 此 parser 由 parseAndroidManifest 关闭
                 .openXmlResourceParser(ANDROID_MANIFEST_FILE_NAME));
+
+        // cookie 反射路径
+        // 对 PR https://github.com/getActivity/XXPermissions/pull/406 的追加解释
+        // 如果使用者的 app manifest 没有像 com.android.chrome 声明 <uses-static-library> 的话可以不做此检查。
+        // 和使用 WebView 不同的是，<uses-static-library> 的 path 会包含于 context.createPackageContext 中，
+        // 且 <uses-static-library> 的 asset index 会比自身 apk 高。
+        // <uses-static-library> 是没有 documented 的，但声明了也会生效。
+        if (!isPackageNameMatched(packageName, manifestInfo)) {
+            // parseApkAndroidManifest 会再次检查包名匹配
+            //manifestInfo = parseApkAndroidManifest(context, packageName, packageContext.getApplicationInfo().sourceDir);
+
+            // 如果不考虑 <uses-static-library> 的情况，直接 throw
+            throw new PackageManager.NameNotFoundException("couldn't find manifest for package: " + packageName);
+        }
+
+        return manifestInfo;
     }
 
 
