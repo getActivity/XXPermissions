@@ -58,7 +58,7 @@ dependencies {
     implementation 'com.github.getActivity:DeviceCompat:2.3'
 
     // 吐司框架：https://github.com/getActivity/Toaster
-    implementation 'com.github.getActivity:Toaster:13.6'
+    implementation 'com.github.getActivity:Toaster:13.8'
 
     // 标题栏框架：https://github.com/getActivity/TitleBar
     implementation 'com.github.getActivity:TitleBar:10.6'
