@@ -6,13 +6,11 @@
 
 * 项目地址：[Github](https://github.com/getActivity/XXPermissions)
 
-* 博文地址：[一句代码搞定权限请求，从未如此简单](https://www.jianshu.com/p/c69ff8a445ed)
+* 博文地址：[月下载 40 万次的框架是怎么练成的？](https://juejin.cn/post/7547408384585629711)
 
 * 可以扫码下载 Demo 进行演示或者测试，如果扫码下载不了的，[点击此处可直接下载](https://github.com/getActivity/XXPermissions/releases/download/26.5/XXPermissions.apk)
 
 ![](picture/zh/download_demo_apk_qr_code.png)
-
-* 另外想对 Android 6.0 权限需要深入了解的，可以看这篇文章[Android 6.0 运行权限解析](https://www.jianshu.com/p/6a4dff744031)
 
 ![](picture/zh/demo_request_permission_activity.jpg) ![](picture/zh/demo_request_single_permission.jpg) ![](picture/zh/demo_request_group_permission.jpg)
 
@@ -236,7 +234,7 @@ XXPermissions.setPermissionDescription(Class<? extends OnPermissionDescription> 
 XXPermissions.setPermissionInterceptor(Class<? extends OnPermissionInterceptor> clazz);
 
 // 设置是否开启错误检测模式（全局设置）
-XXPermissions.setCheckMode(false);
+XXPermissions.setCheckMode(boolean checkMode);
 ```
 
 #### 同类权限请求框架之间的对比

@@ -231,7 +231,7 @@ XXPermissions.setPermissionDescription(Class<? extends OnPermissionDescription> 
 XXPermissions.setPermissionInterceptor(Class<? extends OnPermissionInterceptor> clazz);
 
 // Set whether to enable error detection mode (Global setting)
-XXPermissions.setCheckMode(false);
+XXPermissions.setCheckMode(boolean checkMode);
 ```
 
 #### Comparison between similar permission request frameworks
