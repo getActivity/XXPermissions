@@ -1,6 +1,6 @@
 package com.hjq.permissions.manager;
 
-import android.support.annotation.IntRange;
+import androidx.annotation.IntRange;
 import com.hjq.permissions.XXPermissions;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +41,10 @@ public final class PermissionRequestCodeManager {
         // 1. 请求码不能为 0 和负数
         // 2. 请求码不能等于 XXPermissions.REQUEST_CODE
         // 3. 尽量避免和当前项目的请求码出现冲突，所以需要抛弃小值的请求码，经过测试，发现以下问题：
-        //    a. 使用 App 包下的 Fragment 进行权限申请，不会触发宿主 Activity 回调 onActivityResult 和 onRequestPermissionsResult
-        //    b. 使用 Support 库中的 Fragment 进行权限申请，会触发宿主 Activity 回调 onActivityResult 和 onRequestPermissionsResult
-        //    这是因为 Support 库中的 Fragment 权限相关的回调是通过重写 Activity 类的 onActivityResult 和 onRequestPermissionsResult 实现的
-        //    而 App 包下 Fragment 的 onActivityResult 和 onRequestPermissionsResult 回调是直接在 Activity 类中的 dispatchActivityResult 中实现的
+        //    a. 使用系统包下的 Fragment 进行权限申请，不会触发宿主 Activity 回调 onActivityResult 和 onRequestPermissionsResult
+        //    b. 使用 AndroidX 库中的 Fragment 进行权限申请，会触发宿主 Activity 回调 onActivityResult 和 onRequestPermissionsResult
+        //    这是因为 AndroidX 库中的 Fragment 权限相关的回调是通过重写 Activity 类的 onActivityResult 和 onRequestPermissionsResult 实现的
+        //    而系统包下 Fragment 的 onActivityResult 和 onRequestPermissionsResult 回调是直接在 Activity 类中的 dispatchActivityResult 中实现的
         do {
             // maxRequestCode 目前只有两种值，255 和 65535
             // 1. 如果外层传入的是 255（可能性较低），那么请求码的取值范围为：(255 / 2 + 1) ~ (255 - 1) = 128 ~ 254

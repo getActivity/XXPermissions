@@ -3,7 +3,7 @@ package com.hjq.permissions.permission.dangerous;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.hjq.permissions.permission.PermissionNames;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.tools.PermissionApi;

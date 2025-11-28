@@ -1,7 +1,7 @@
 package com.hjq.permissions.fragment;
 
 import android.content.Intent;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  *    author : Android 轮子哥

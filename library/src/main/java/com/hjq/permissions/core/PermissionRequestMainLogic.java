@@ -1,9 +1,9 @@
 package com.hjq.permissions.core;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.OnPermissionDescription;
 import com.hjq.permissions.OnPermissionInterceptor;

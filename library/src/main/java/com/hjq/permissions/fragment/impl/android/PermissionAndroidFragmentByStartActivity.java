@@ -1,7 +1,7 @@
-package com.hjq.permissions.fragment.impl.app;
+package com.hjq.permissions.fragment.impl.android;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.hjq.permissions.core.PermissionChannelImpl;
 import com.hjq.permissions.core.PermissionChannelImplByStartActivity;
 
@@ -11,7 +11,7 @@ import com.hjq.permissions.core.PermissionChannelImplByStartActivity;
  *    time   : 2025/05/20
  *    desc   : 权限 Fragment 类（ {@link android.app.Fragment} + {@link android.app.Activity#startActivityForResult(Intent, int)} ）
  */
-public final class PermissionAppFragmentByStartActivity extends PermissionAppFragment {
+public final class PermissionAndroidFragmentByStartActivity extends PermissionAndroidFragment {
 
     @NonNull
     private final PermissionChannelImpl mPermissionChannelImpl = new PermissionChannelImplByStartActivity(this);

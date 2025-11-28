@@ -9,8 +9,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.ResolveInfoFlags;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.hjq.permissions.permission.base.IPermission;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,7 +66,7 @@ public final class PermissionUtils {
             } else if (context instanceof ContextWrapper) {
                 // android.content.ContextWrapper
                 // android.content.MutableContextWrapper
-                // android.support.v7.view.ContextThemeWrapper
+                // androidx.appcompat.view.ContextThemeWrapper
                 context = ((ContextWrapper) context).getBaseContext();
             } else {
                 return null;
@@ -83,19 +83,19 @@ public final class PermissionUtils {
     }
 
     /**
-     * 判断 Fragment 是不是不可用（Support 库的版本）
+     * 判断 Fragment 是不是不可用（AndroidX 库的版本）
      */
     @SuppressWarnings("deprecation")
-    public static boolean isFragmentUnavailable(@Nullable android.support.v4.app.Fragment supportFragment) {
-        return supportFragment == null || !supportFragment.isAdded() || supportFragment.isRemoving();
+    public static boolean isFragmentUnavailable(@Nullable androidx.fragment.app.Fragment xFragment) {
+        return xFragment == null || !xFragment.isAdded() || xFragment.isRemoving();
     }
 
     /**
-     * 判断 Fragment 是不是不可用（App 包的版本）
+     * 判断 Fragment 是不是不可用（系统包的版本）
      */
     @SuppressWarnings("deprecation")
-    public static boolean isFragmentUnavailable(@Nullable Fragment appFragment) {
-        return appFragment == null || !appFragment.isAdded() || appFragment.isRemoving();
+    public static boolean isFragmentUnavailable(@Nullable Fragment fragment) {
+        return fragment == null || !fragment.isAdded() || fragment.isRemoving();
     }
 
     /**

@@ -3,13 +3,13 @@ package com.hjq.permissions;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import com.hjq.permissions.fragment.factory.PermissionFragmentFactory;
-import com.hjq.permissions.fragment.factory.PermissionFragmentFactoryByApp;
-import com.hjq.permissions.fragment.factory.PermissionFragmentFactoryBySupport;
+import com.hjq.permissions.fragment.factory.PermissionFragmentFactoryByAndroid;
+import com.hjq.permissions.fragment.factory.PermissionFragmentFactoryByAndroidX;
 import com.hjq.permissions.manifest.AndroidManifestParser;
 import com.hjq.permissions.permission.PermissionChannel;
 import com.hjq.permissions.permission.base.IPermission;
@@ -51,12 +51,12 @@ public final class XXPermissions {
         return new XXPermissions(context);
     }
 
-    public static XXPermissions with(@NonNull Fragment appFragment) {
-        return new XXPermissions(appFragment);
+    public static XXPermissions with(@NonNull Fragment fragment) {
+        return new XXPermissions(fragment);
     }
 
-    public static XXPermissions with(@NonNull android.support.v4.app.Fragment supportFragment) {
-        return new XXPermissions(supportFragment);
+    public static XXPermissions with(@NonNull androidx.fragment.app.Fragment xFragment) {
+        return new XXPermissions(xFragment);
     }
 
     /**
@@ -121,13 +121,13 @@ public final class XXPermissions {
     @Nullable
     private final Context mContext;
 
-    /** App 包下的 Fragment 对象 */
+    /** 系统包下的 Fragment 对象 */
     @Nullable
-    private Fragment mAppFragment;
+    private Fragment mFragment;
 
-    /** Support 库中的 Fragment 对象 */
+    /** AndroidX 库中的 Fragment 对象 */
     @Nullable
-    private android.support.v4.app.Fragment mSupportFragment;
+    private androidx.fragment.app.Fragment mXFragment;
 
     /** 权限请求拦截器 */
     @Nullable
@@ -145,14 +145,14 @@ public final class XXPermissions {
         mContext = context;
     }
 
-    private XXPermissions(@NonNull Fragment appFragment) {
-        mAppFragment = appFragment;
-        mContext = appFragment.getActivity();
+    private XXPermissions(@NonNull Fragment fragment) {
+        mFragment = fragment;
+        mContext = fragment.getActivity();
     }
 
-    private XXPermissions(@NonNull android.support.v4.app.Fragment supportFragment) {
-        mSupportFragment = supportFragment;
-        mContext = supportFragment.getActivity();
+    private XXPermissions(@NonNull androidx.fragment.app.Fragment xFragment) {
+        mXFragment = xFragment;
+        mContext = xFragment.getActivity();
     }
 
     /**
@@ -225,9 +225,9 @@ public final class XXPermissions {
 
         final Context context = mContext;
 
-        final Fragment appFragment = mAppFragment;
+        final Fragment fragment = mFragment;
 
-        final android.support.v4.app.Fragment supportFragment = mSupportFragment;
+        final androidx.fragment.app.Fragment xFragment = mXFragment;
 
         final OnPermissionInterceptor permissionInterceptor = mPermissionInterceptor;
 
@@ -242,10 +242,10 @@ public final class XXPermissions {
         if (isCheckMode(context)) {
             // 检查传入的 Activity 或者 Fragment 状态是否正常
             PermissionChecker.checkActivityStatus(activity);
-            if (appFragment != null) {
-                PermissionChecker.checkAppFragmentStatus(appFragment);
-            } else if (supportFragment != null) {
-                PermissionChecker.checkSupportFragmentStatus(supportFragment);
+            if (fragment != null) {
+                PermissionChecker.checkAndroidFragmentStatus(fragment);
+            } else if (xFragment != null) {
+                PermissionChecker.checkAndroidXFragmentStatus(xFragment);
             }
             // 检查传入的权限是否正常
             PermissionChecker.checkPermissionList(activity, requestList, AndroidManifestParser.getAndroidManifestInfo(context));
@@ -267,16 +267,16 @@ public final class XXPermissions {
         }
 
         final PermissionFragmentFactory<?, ?> fragmentFactory;
-        if (supportFragment != null) {
-            if (PermissionUtils.isFragmentUnavailable(supportFragment)) {
+        if (xFragment != null) {
+            if (PermissionUtils.isFragmentUnavailable(xFragment)) {
                 return;
             }
-            fragmentFactory = generatePermissionFragmentFactory(activity, supportFragment);
-        } else if (appFragment != null) {
-            if (PermissionUtils.isFragmentUnavailable(appFragment)) {
+            fragmentFactory = generatePermissionFragmentFactory(activity, xFragment);
+        } else if (fragment != null) {
+            if (PermissionUtils.isFragmentUnavailable(fragment)) {
                 return;
             }
-            fragmentFactory = generatePermissionFragmentFactory(activity, appFragment);
+            fragmentFactory = generatePermissionFragmentFactory(activity, fragment);
         } else {
             fragmentFactory = generatePermissionFragmentFactory(activity);
         }
@@ -461,124 +461,124 @@ public final class XXPermissions {
 
     /* android.app.Fragment */
 
-    public static void startPermissionActivity(@NonNull Fragment appFragment) {
-        startPermissionActivity(appFragment, new ArrayList<>(0));
+    public static void startPermissionActivity(@NonNull Fragment fragment) {
+        startPermissionActivity(fragment, new ArrayList<>(0));
     }
 
-    public static void startPermissionActivity(@NonNull Fragment appFragment,
+    public static void startPermissionActivity(@NonNull Fragment fragment,
                                                @NonNull IPermission... permissions) {
-        startPermissionActivity(appFragment, PermissionUtils.asArrayList(permissions));
+        startPermissionActivity(fragment, PermissionUtils.asArrayList(permissions));
     }
 
-    public static void startPermissionActivity(@NonNull Fragment appFragment,
+    public static void startPermissionActivity(@NonNull Fragment fragment,
                                                @NonNull List<IPermission> permissions) {
-        startPermissionActivity(appFragment, permissions, REQUEST_CODE);
+        startPermissionActivity(fragment, permissions, REQUEST_CODE);
     }
 
-    public static void startPermissionActivity(@NonNull Fragment appFragment,
+    public static void startPermissionActivity(@NonNull Fragment fragment,
                                                @NonNull List<IPermission> permissions,
                                                @IntRange(from = 1, to = 65535) int requestCode) {
-        if (PermissionUtils.isFragmentUnavailable(appFragment)) {
+        if (PermissionUtils.isFragmentUnavailable(fragment)) {
             return;
         }
-        Activity activity = appFragment.getActivity();
-        if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(appFragment)) {
+        Activity activity = fragment.getActivity();
+        if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(fragment)) {
             return;
         }
         if (permissions.isEmpty()) {
-            StartActivityAgent.startActivity(appFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
+            StartActivityAgent.startActivity(fragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
             return;
         }
-        StartActivityAgent.startActivityForResult(appFragment,
+        StartActivityAgent.startActivityForResult(fragment,
             PermissionApi.getBestPermissionSettingIntent(activity, permissions, true), requestCode);
     }
 
-    public static void startPermissionActivity(@NonNull Fragment appFragment,
+    public static void startPermissionActivity(@NonNull Fragment fragment,
                                                 @NonNull IPermission permission,
                                                 @Nullable OnPermissionCallback callback) {
-        startPermissionActivity(appFragment, PermissionUtils.asArrayList(permission), callback);
+        startPermissionActivity(fragment, PermissionUtils.asArrayList(permission), callback);
     }
 
-    public static void startPermissionActivity(@NonNull Fragment appFragment,
+    public static void startPermissionActivity(@NonNull Fragment fragment,
                                                @NonNull List<IPermission> permissions,
                                                @Nullable OnPermissionCallback callback) {
-        if (PermissionUtils.isFragmentUnavailable(appFragment)) {
+        if (PermissionUtils.isFragmentUnavailable(fragment)) {
             return;
         }
-        Activity activity = appFragment.getActivity();
-        if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(appFragment)) {
+        Activity activity = fragment.getActivity();
+        if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(fragment)) {
             return;
         }
         if (permissions.isEmpty()) {
-            StartActivityAgent.startActivity(appFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
+            StartActivityAgent.startActivity(fragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
             return;
         }
-        PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, appFragment);
+        PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, fragment);
         fragmentFactory.createAndCommitFragment(permissions, PermissionChannel.START_ACTIVITY, () -> {
-            if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(appFragment)) {
+            if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(fragment)) {
                 return;
             }
             dispatchPermissionPageCallback(activity, permissions, callback);
         });
     }
 
-    /* android.support.v4.app.Fragment */
+    /* androidx.fragment.app.Fragment */
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment) {
-        startPermissionActivity(supportFragment, new ArrayList<>());
+    public static void startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment) {
+        startPermissionActivity(xFragment, new ArrayList<>());
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
+    public static void startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment,
                                                @NonNull IPermission... permissions) {
-        startPermissionActivity(supportFragment, PermissionUtils.asArrayList(permissions));
+        startPermissionActivity(xFragment, PermissionUtils.asArrayList(permissions));
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
+    public static void startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment,
                                                @NonNull List<IPermission> permissions) {
-        startPermissionActivity(supportFragment, permissions, REQUEST_CODE);
+        startPermissionActivity(xFragment, permissions, REQUEST_CODE);
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
+    public static void startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment,
                                                @NonNull List<IPermission> permissions,
                                                @IntRange(from = 1, to = 65535) int requestCode) {
-        if (PermissionUtils.isFragmentUnavailable(supportFragment)) {
+        if (PermissionUtils.isFragmentUnavailable(xFragment)) {
             return;
         }
-        Activity activity = supportFragment.getActivity();
-        if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(supportFragment)) {
+        Activity activity = xFragment.getActivity();
+        if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(xFragment)) {
             return;
         }
         if (permissions.isEmpty()) {
-            StartActivityAgent.startActivity(supportFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
+            StartActivityAgent.startActivity(xFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
             return;
         }
-        StartActivityAgent.startActivityForResult(supportFragment,
+        StartActivityAgent.startActivityForResult(xFragment,
             PermissionApi.getBestPermissionSettingIntent(activity, permissions, true), requestCode);
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
+    public static void startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment,
                                                @NonNull IPermission permission,
                                                @Nullable OnPermissionCallback callback) {
-        startPermissionActivity(supportFragment, PermissionUtils.asArrayList(permission), callback);
+        startPermissionActivity(xFragment, PermissionUtils.asArrayList(permission), callback);
     }
 
-    public static void startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment,
+    public static void startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment,
                                                @NonNull List<IPermission> permissions,
                                                @Nullable OnPermissionCallback callback) {
-        if (PermissionUtils.isFragmentUnavailable(supportFragment)) {
+        if (PermissionUtils.isFragmentUnavailable(xFragment)) {
             return;
         }
-        Activity activity = supportFragment.getActivity();
-        if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(supportFragment)) {
+        Activity activity = xFragment.getActivity();
+        if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(xFragment)) {
             return;
         }
         if (permissions.isEmpty()) {
-            StartActivityAgent.startActivity(supportFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
+            StartActivityAgent.startActivity(xFragment, PermissionSettingPage.getCommonPermissionSettingIntent(activity));
             return;
         }
-        PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, supportFragment);
+        PermissionFragmentFactory<?, ?> fragmentFactory = generatePermissionFragmentFactory(activity, xFragment);
         fragmentFactory.createAndCommitFragment(permissions, PermissionChannel.START_ACTIVITY, () -> {
-            if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(supportFragment)) {
+            if (PermissionUtils.isActivityUnavailable(activity) || PermissionUtils.isFragmentUnavailable(xFragment)) {
                 return;
             }
             dispatchPermissionPageCallback(activity, permissions, callback);
@@ -595,29 +595,29 @@ public final class XXPermissions {
 
     @NonNull
     private static PermissionFragmentFactory<?, ?> generatePermissionFragmentFactory(@NonNull Activity activity,
-                                                                                     @Nullable android.support.v4.app.Fragment supportFragment) {
-        return generatePermissionFragmentFactory(activity, supportFragment, null);
+                                                                                     @Nullable androidx.fragment.app.Fragment xFragment) {
+        return generatePermissionFragmentFactory(activity, xFragment, null);
     }
 
     @NonNull
     private static PermissionFragmentFactory<?, ?> generatePermissionFragmentFactory(@NonNull Activity activity,
-                                                                                     @Nullable Fragment appFragment) {
-        return generatePermissionFragmentFactory(activity, null, appFragment);
+                                                                                     @Nullable Fragment fragment) {
+        return generatePermissionFragmentFactory(activity, null, fragment);
     }
 
     private static PermissionFragmentFactory<?, ?> generatePermissionFragmentFactory(@NonNull Activity activity,
-                                                                                     @Nullable android.support.v4.app.Fragment supportFragment,
-                                                                                     @Nullable Fragment appFragment) {
+                                                                                     @Nullable androidx.fragment.app.Fragment xFragment,
+                                                                                     @Nullable Fragment fragment) {
         final PermissionFragmentFactory<?, ?> fragmentFactory;
-        if (supportFragment != null) {
-            fragmentFactory = new PermissionFragmentFactoryBySupport(supportFragment.getActivity(), supportFragment.getChildFragmentManager());
-        } else if (appFragment != null) {
-            fragmentFactory = new PermissionFragmentFactoryByApp(appFragment.getActivity(), appFragment.getChildFragmentManager());
+        if (xFragment != null) {
+            fragmentFactory = new PermissionFragmentFactoryByAndroidX(xFragment.getActivity(), xFragment.getChildFragmentManager());
+        } else if (fragment != null) {
+            fragmentFactory = new PermissionFragmentFactoryByAndroid(fragment.getActivity(), fragment.getChildFragmentManager());
         } else if (activity instanceof FragmentActivity) {
             FragmentActivity fragmentActivity = ((FragmentActivity) activity);
-            fragmentFactory = new PermissionFragmentFactoryBySupport(fragmentActivity, fragmentActivity.getSupportFragmentManager());
+            fragmentFactory = new PermissionFragmentFactoryByAndroidX(fragmentActivity, fragmentActivity.getSupportFragmentManager());
         } else {
-            fragmentFactory = new PermissionFragmentFactoryByApp(activity, activity.getFragmentManager());
+            fragmentFactory = new PermissionFragmentFactoryByAndroid(activity, activity.getFragmentManager());
         }
         return fragmentFactory;
     }

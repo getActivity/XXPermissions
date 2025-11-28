@@ -69,18 +69,24 @@ dependencies {
 }
 ```
 
-#### 支持库兼容
+#### Support 库兼容
 
-* 如果项目是基于 **AndroidX** 库，请在项目 `gradle.properties` 文件中加入以下配置，如果已经加入则可以忽略
+* 方案一：沿用旧版本框架的远程依赖
 
-```text
-# 表示使用 AndroidX
-android.useAndroidX = true
-# 表示将第三方库迁移到 AndroidX
-android.enableJetifier = true
+```
+dependencies {
+    // 设备兼容框架：https://github.com/getActivity/DeviceCompat
+    implementation 'com.github.getActivity:DeviceCompat:2.3'
+    // 权限请求框架：https://github.com/getActivity/XXPermissions
+    implementation 'com.github.getActivity:XXPermissions:26.8'
+}
 ```
 
-* 如果项目是基于 **Support** 库则不需要加入此配置
+* 方案二：如果你的项目仍处于 Support 阶段，目前不方便转到 **AndroidX** 中来，但又想用最新版本的框架，可以使用 **Google** 提供的 [JetifierStandalone](https://developer.android.google.cn/tools/jetifier?hl=zh-cn#install) 工具将已发布版本 [Release](https://github.com/getActivity/XXPermissions/releases) 中的 **aar** 包通过反向模式转成 **Support** 版本的 **aar** 包来使用。
+
+* 上述两种方案任选其一即可，但是仍旧不推荐你那样做，因为这些只是权宜之计，并非长久之计，框架后续的版本已不再支持 **Support** 项目，最好的方案是将项目迁移到 **AndroidX**。
+
+* 将项目从 **Support** 迁移 **AndroidX** 相关的教程：[AndroidX 踩坑指南](https://juejin.cn/post/7053773917495754782)
 
 #### 分区存储
 
@@ -211,21 +217,21 @@ XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<
 XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
 XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
 
-// 跳转到权限设置页（App Fragment 版本）
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment);
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull IPermission... permissions);
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions);
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
+// 跳转到权限设置页（Android Fragment 版本）
+XXPermissions.startPermissionActivity(@NonNull Fragment fragment);
+XXPermissions.startPermissionActivity(@NonNull Fragment fragment, @NonNull IPermission... permissions);
+XXPermissions.startPermissionActivity(@NonNull Fragment fragment, @NonNull List<IPermission> permissions);
+XXPermissions.startPermissionActivity(@NonNull Fragment fragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
+XXPermissions.startPermissionActivity(@NonNull Fragment fragment, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
+XXPermissions.startPermissionActivity(@NonNull Fragment fragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
 
-// 跳转到权限设置页（Support Fragment 版本）
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment);
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull IPermission... permissions);
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions);
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
+// 跳转到权限设置页（AndroidX Fragment 版本）
+XXPermissions.startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment);
+XXPermissions.startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment, @NonNull IPermission... permissions);
+XXPermissions.startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment, @NonNull List<IPermission> permissions);
+XXPermissions.startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
+XXPermissions.startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
+XXPermissions.startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
 
 // 设置权限描述器（全局设置）
 XXPermissions.setPermissionDescription(Class<? extends OnPermissionDescription> clazz);

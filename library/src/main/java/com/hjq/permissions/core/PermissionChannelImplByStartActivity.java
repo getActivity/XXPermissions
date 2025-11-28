@@ -2,15 +2,15 @@ package com.hjq.permissions.core;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.hjq.permissions.fragment.IFragmentMethod;
 import com.hjq.permissions.manager.AlreadyRequestPermissionsManager;
 import com.hjq.permissions.manager.PermissionRequestCodeManager;
 import com.hjq.permissions.permission.base.IPermission;
-import com.hjq.permissions.tools.PermissionApi;
 import com.hjq.permissions.start.StartActivityAgent;
+import com.hjq.permissions.tools.PermissionApi;
 import java.util.List;
 
 /**

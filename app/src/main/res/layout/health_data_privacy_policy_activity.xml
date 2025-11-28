@@ -18,7 +18,7 @@
         app:titleColor="@android:color/white"
         app:titleSize="20sp" />
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true">
@@ -32,6 +32,6 @@
             android:text="@string/privacy_policy_content"
             android:textSize="16sp" />
 
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

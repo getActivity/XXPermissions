@@ -3,10 +3,10 @@ package com.hjq.permissions.permission.common;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.hjq.device.compat.DeviceOs;
-import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.PermissionChannel;
+import com.hjq.permissions.permission.PermissionPageType;
 import com.hjq.permissions.permission.base.BasePermission;
 import com.hjq.permissions.tools.PermissionVersion;
 

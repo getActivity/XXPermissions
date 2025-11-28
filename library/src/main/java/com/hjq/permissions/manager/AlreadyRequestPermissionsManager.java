@@ -1,6 +1,6 @@
 package com.hjq.permissions.manager;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.hjq.permissions.permission.base.IPermission;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.ArrayList;

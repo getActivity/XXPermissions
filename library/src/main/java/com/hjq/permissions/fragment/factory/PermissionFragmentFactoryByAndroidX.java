@@ -1,13 +1,13 @@
 package com.hjq.permissions.fragment.factory;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import com.hjq.permissions.fragment.IFragmentMethod;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import com.hjq.permissions.core.OnPermissionFragmentCallback;
-import com.hjq.permissions.fragment.impl.support.PermissionSupportFragmentByRequestPermissions;
-import com.hjq.permissions.fragment.impl.support.PermissionSupportFragmentByStartActivity;
+import com.hjq.permissions.fragment.IFragmentMethod;
+import com.hjq.permissions.fragment.impl.androidx.PermissionAndroidXFragmentByRequestPermissions;
+import com.hjq.permissions.fragment.impl.androidx.PermissionAndroidXFragmentByStartActivity;
 import com.hjq.permissions.manager.PermissionRequestCodeManager;
 import com.hjq.permissions.permission.PermissionChannel;
 import com.hjq.permissions.permission.base.IPermission;
@@ -17,11 +17,11 @@ import java.util.List;
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/05/20
- *    desc   : 权限 Fragment 生产工厂（Support 库中的 Fragment）
+ *    desc   : 权限 Fragment 生产工厂（ {@link androidx.fragment.app.Fragment} ）
  */
-public final class PermissionFragmentFactoryBySupport extends PermissionFragmentFactory<FragmentActivity, FragmentManager> {
+public final class PermissionFragmentFactoryByAndroidX extends PermissionFragmentFactory<FragmentActivity, FragmentManager> {
 
-    public PermissionFragmentFactoryBySupport(@NonNull FragmentActivity activity, @NonNull FragmentManager fragmentManager) {
+    public PermissionFragmentFactoryByAndroidX(@NonNull FragmentActivity activity, @NonNull FragmentManager fragmentManager) {
         super(activity, fragmentManager);
     }
 
@@ -31,11 +31,11 @@ public final class PermissionFragmentFactoryBySupport extends PermissionFragment
                                         @Nullable OnPermissionFragmentCallback callback) {
         IFragmentMethod<FragmentActivity, FragmentManager> fragment;
         if (permissionChannel == PermissionChannel.REQUEST_PERMISSIONS) {
-            fragment = new PermissionSupportFragmentByRequestPermissions();
+            fragment = new PermissionAndroidXFragmentByRequestPermissions();
         } else {
-            fragment = new PermissionSupportFragmentByStartActivity();
+            fragment = new PermissionAndroidXFragmentByStartActivity();
         }
-        // 新版本的 Support 库限制请求码必须小于 65536（不能包含 65536），所以实际的取值区间在：1 ~ 65535
+        // 新版本的 AndroidX 库限制请求码必须小于 65536（不能包含 65536），所以实际的取值区间在：1 ~ 65535
         // java.lang.IllegalArgumentException: Can only use lower 16 bits for requestCode
         // 旧版本的 Support 库限制请求码必须小于 256（不能包含 256），所以实际的取值区间在：1 ~ 255
         // java.lang.IllegalArgumentException: Can only use lower 8 bits for requestCode

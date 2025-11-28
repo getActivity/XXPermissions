@@ -1,8 +1,7 @@
 package com.hjq.permissions.start;
 
 import android.content.Intent;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
+import androidx.annotation.IntRange;
 
 /**
  *    author : Android 轮子哥
@@ -15,10 +14,10 @@ public interface IStartActivityDelegate {
     /**
      * 跳转 Activity
      */
-    void startActivity(@NonNull Intent intent);
+    void startActivity(Intent intent);
 
     /**
      * 跳转 Activity（需要返回结果）
      */
-    void startActivityForResult(@NonNull Intent intent, @IntRange(from = 1, to = 65535) int requestCode);
+    void startActivityForResult(Intent intent, @IntRange(from = 1, to = 65535) int requestCode);
 }

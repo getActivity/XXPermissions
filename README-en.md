@@ -67,16 +67,20 @@ dependencies {
 
 #### Support library compatible
 
-* If the project is based on **AndroidX** package, please in the item `gradle.properties` file added, if you have already joined, you can ignore it
+* Option 1: Use remote dependencies of the old version framework
 
-```text
-# Indicates the use of AndroidX
-android.useAndroidX = true
-# Indicates migration of third-party libraries to AndroidX
-android.enableJetifier = true
+```groovy
+dependencies {
+    // Device compatibility framework：https://github.com/getActivity/DeviceCompat
+    implementation 'com.github.getActivity:DeviceCompat:2.3'
+    // Permission request framework：https://github.com/getActivity/XXPermissions
+    implementation 'com.github.getActivity:XXPermissions:26.8'
+}
 ```
 
-* If the project is based on **Support** Packages do not need to be added to this configuration
+* Option 2: If your project is still in the Support phase and it's not convenient to migrate to **AndroidX** yet, but you want to use the latest version of the framework, you can use the [JetifierStandalone](https://developer.android.com/tools/jetifier#install) tool provided by **Google** to convert the **aar** packages from the released Release versions into **Support-compatible aar** packages using reverse mode.
+
+* You can choose either of the above two options, but it's still not recommended. These are only stopgap measures, not long-term solutions. Subsequent versions of the framework will no longer support **Support** projects. The best approach is to migrate your project to **AndroidX**.
 
 #### scoped storage
 
@@ -208,21 +212,21 @@ XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<
 XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
 XXPermissions.startPermissionActivity(@NonNull Activity activity, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
 
-// Navigate to the permission settings page (App Fragment version)
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment);
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull IPermission... permissions);
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions);
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
-XXPermissions.startPermissionActivity(@NonNull Fragment appFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
+// Navigate to the permission settings page (Android Fragment version)
+XXPermissions.startPermissionActivity(@NonNull Fragment fragment);
+XXPermissions.startPermissionActivity(@NonNull Fragment fragment, @NonNull IPermission... permissions);
+XXPermissions.startPermissionActivity(@NonNull Fragment fragment, @NonNull List<IPermission> permissions);
+XXPermissions.startPermissionActivity(@NonNull Fragment fragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
+XXPermissions.startPermissionActivity(@NonNull Fragment fragment, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
+XXPermissions.startPermissionActivity(@NonNull Fragment fragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
 
-// Navigate to the permission settings page (Support Fragment version)
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment);
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull IPermission... permissions);
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions);
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
-XXPermissions.startPermissionActivity(@NonNull android.support.v4.app.Fragment supportFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
+// Navigate to the permission settings page (AndroidX Fragment version)
+XXPermissions.startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment);
+XXPermissions.startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment, @NonNull IPermission... permissions);
+XXPermissions.startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment, @NonNull List<IPermission> permissions);
+XXPermissions.startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment, @NonNull List<IPermission> permissions, @IntRange(from = 1, to = 65535) int requestCode);
+XXPermissions.startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment, @NonNull IPermission permission, @Nullable OnPermissionCallback callback);
+XXPermissions.startPermissionActivity(@NonNull androidx.fragment.app.Fragment xFragment, @NonNull List<IPermission> permissions, @Nullable OnPermissionCallback callback);
 
 // Set the permission description provider (Global setting)
 XXPermissions.setPermissionDescription(Class<? extends OnPermissionDescription> clazz);

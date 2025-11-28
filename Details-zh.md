@@ -210,17 +210,17 @@ public final class XxxActivity extends AppCompatActivity  {
 
     5. `FragmentActivity extends ComponentActivity extends Activity`
 
-* 这样就会出现一个问题，有些权限请求框架是用一个透明的 `Fragment` 获得权限申请的回调，如果这个权限请求框架用的是 `android.support.v4.app.Fragment`，那么就必须要求外层传入 `android.support.v4.app.FragmentActivity` 对象，假设这个时候你用的 `Activity` 并不是 `android.support.v4.app.FragmentActivity` 的子类，请问你该怎么办？那简单，我就修改当前 `Activity` 直接继承 `android.support.v4.app.FragmentActivity` 不就行了？那如果你目前的 `Activity` 是一定要继承 `FlutterActivity`、`ComposeActivity`、`UnityPlayerActivity`、`Cocos2dxActivity` 呢？请问你又该怎么改？难不成去改它们的源码？还是去改权限框架的源码？无论选哪种解决方案，改造的成本都会很大，后续也不好维护，这既不现实，也不科学。是不是突然感觉上天把路给你堵死了？难不成只能手写权限申请 API 的代码才能实现权限请求了？
+* 这样就会出现一个问题，有些权限请求框架是用一个透明的 `Fragment` 获得权限申请的回调，如果这个权限请求框架用的是 `androidx.fragment.app.Fragment`，那么就必须要求外层传入 `androidx.fragment.app.FragmentActivity` 对象，假设这个时候你用的 `Activity` 并不是 `androidx.fragment.app.FragmentActivity` 的子类，请问你该怎么办？那简单，我就修改当前 `Activity` 直接继承 `androidx.fragment.app.FragmentActivity` 不就行了？那如果你目前的 `Activity` 是一定要继承 `FlutterActivity`、`ComposeActivity`、`UnityPlayerActivity`、`Cocos2dxActivity` 呢？请问你又该怎么改？难不成去改它们的源码？还是去改权限框架的源码？无论选哪种解决方案，改造的成本都会很大，后续也不好维护，这既不现实，也不科学。是不是突然感觉上天把路给你堵死了？难不成只能手写权限申请 API 的代码才能实现权限请求了？
 
-* 其实这个问题框架已经想到了，并且已经帮你解决了，无需你做任何处理，具体的实现原理是：框架会判断你传入的 `Activity` 对象是不是 `android.support.v4.app.FragmentActivity` 的子类，如果是的话，则会用 `android.support.v4.app.Fragment` 进行权限申请，如果不是的话，则会用 `android.app.Fragment` 进行权限申请，这样无论你用哪种 `Activity`，框架都能自动进行适配。
+* 其实这个问题框架已经想到了，并且已经帮你解决了，无需你做任何处理，具体的实现原理是：框架会判断你传入的 `Activity` 对象是不是 `androidx.fragment.app.FragmentActivity` 的子类，如果是的话，则会用 `androidx.fragment.app.Fragment` 进行权限申请，如果不是的话，则会用 `android.app.Fragment` 进行权限申请，这样无论你用哪种 `Activity`，框架都能自动进行适配。
 
 #### 回调生命周期与宿主保持同步
 
-* 目前市面上大多数权限请求框架都会用单种 `Fragment` 处理权限请求回调，但是这样会导致一个问题，假设某个框架用的是 `android.support.v4.app.Fragment` 处理权限请求回调，但是你却是在 `android.app.Fragment` 发起的权限请求，又或者反过来，你用 `android.support.v4.app.Fragment` 框架用 `android.app.Fragment`，你无法把你自己的 `Fragment` 当做宿主，然后传给权限请求框架，只能通过 `fragment.getActivity()` 将 `Activity` 对象传给框架，这样 `Activity` 就成了宿主对象，这样都会导致一个生命周期不同步的问题，就是你自己的 `Fragment` 已经销毁的情况，但是框架仍会回调权限请求结果的监听器，轻则导致 `Memory leak`，重则会触发 `Exception`。
+* 目前市面上大多数权限请求框架都会用单种 `Fragment` 处理权限请求回调，但是这样会导致一个问题，假设某个框架用的是 `androidx.fragment.app.Fragment` 处理权限请求回调，但是你却是在 `android.app.Fragment` 发起的权限请求，又或者反过来，你用 `androidx.fragment.app.Fragment` 框架用 `android.app.Fragment`，你无法把你自己的 `Fragment` 当做宿主，然后传给权限请求框架，只能通过 `fragment.getActivity()` 将 `Activity` 对象传给框架，这样 `Activity` 就成了宿主对象，这样都会导致一个生命周期不同步的问题，就是你自己的 `Fragment` 已经销毁的情况，但是框架仍会回调权限请求结果的监听器，轻则导致 `Memory leak`，重则会触发 `Exception`。
 
 * 导致这个问题的原因是，第三方框架用的 `Fragment` 和你的 `Fragment` 实际上不是一个类型的，虽然它们的类名一样，但是它们所在的包名不一样，加上刚刚说的你只能通过 `fragment.getActivity()` 将 `Activity` 对象传给框架，这样你自己的 `Fragment` 无法和框架的 `Fragment` 之间无法形成一种有效的生命周期绑定，实际你想要的是绑定你自己 `Fragment` 的生命周期，但框架最终绑定的是 `Activity` 生命周期，这样很可能会触发 Crash，具体表现你可以看一下这个 issue：[XXPermissions/issues/365](https://github.com/getActivity/XXPermissions/issues/365)。
 
-* 其实这个问题框架已经想到了，并且已经帮你解决了，无需你做任何处理，解决这个问题的思路是：框架会根据你传入的对象类型，自动选择最佳类型的 `Fragment`，假设你传入的宿主是 `android.support.v4.app.FragmentActivity` 或者 `android.support.v4.app.Fragment` 对象，框架内部则会创建 `android.support.v4.app.Fragment` 来接收权限请求回调，假设你传入的宿主是普通的 `Activity` 或者 `android.app.Fragment`，框架内部则会创建 `android.app.Fragment` 来接收权限请求回调，这样无论你传入的是什么宿主对象，框架都会和它的生命周期做绑定，确保在回调权限请求结果给到最外层的时候，宿主对象仍处于正常的状态。
+* 其实这个问题框架已经想到了，并且已经帮你解决了，无需你做任何处理，解决这个问题的思路是：框架会根据你传入的对象类型，自动选择最佳类型的 `Fragment`，假设你传入的宿主是 `androidx.fragment.app.FragmentActivity` 或者 `androidx.fragment.app.Fragment` 对象，框架内部则会创建 `androidx.fragment.app.Fragment` 来接收权限请求回调，假设你传入的宿主是普通的 `Activity` 或者 `android.app.Fragment`，框架内部则会创建 `android.app.Fragment` 来接收权限请求回调，这样无论你传入的是什么宿主对象，框架都会和它的生命周期做绑定，确保在回调权限请求结果给到最外层的时候，宿主对象仍处于正常的状态。
 
 * 这个时候你可能会跳出来说，这个不用框架我也能实现，我自己在权限回调的方法中，自己手动判断一下 `Fragment` 的状态不就行了？不就是两三句代码的事情？框架为什么搞得那么麻烦？你的想法看似有道理，但实则经不起推敲，假设你的项目有十几处地方申请了权限，那么你需要在每个回调方法都考虑这个问题，另外后续申请新的权限，你也要考虑这个问题，你能确保自己改的时候不会出现漏网之鱼？还有假设这个需求是你的同事开发的，但是只有你知道这个事情，他并不知情的情况下，你知道这种情况下可能会发生什么吗？我相信你比我更懂。你提供的解决问题方法，虽然可以暂时解决问题，但是治标不治本，究其根本是解决的思路有问题，遵循的是有洞补洞的思维，而没有想从源头堵住漏洞。又或者你原本就知道怎么彻底根治，只不过选择了最轻松的方式来处理，但这无疑是给项目埋了一颗定时炸弹。
 

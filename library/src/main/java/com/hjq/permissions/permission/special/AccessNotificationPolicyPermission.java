@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcel;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.hjq.device.compat.DeviceBrand;
 import com.hjq.device.compat.DeviceOs;
 import com.hjq.permissions.permission.PermissionNames;

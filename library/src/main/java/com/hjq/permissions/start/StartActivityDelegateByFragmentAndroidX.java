@@ -1,23 +1,22 @@
 package com.hjq.permissions.start;
 
-import android.app.Fragment;
 import android.content.Intent;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 /**
  *    author : Android 轮子哥
  *    github : https://github.com/getActivity/XXPermissions
  *    time   : 2025/05/20
- *    desc   : {@link android.app.Fragment} 跳转 Activity 实现
+ *    desc   : {@link androidx.fragment.app.Fragment} 跳转 Activity 实现
  */
-@SuppressWarnings("deprecation")
-public final class StartActivityDelegateByFragmentApp implements IStartActivityDelegate {
+public final class StartActivityDelegateByFragmentAndroidX implements IStartActivityDelegate {
 
     @NonNull
     private final Fragment mFragment;
 
-    public StartActivityDelegateByFragmentApp(@NonNull Fragment fragment) {
+    public StartActivityDelegateByFragmentAndroidX(@NonNull Fragment fragment) {
         mFragment = fragment;
     }
 

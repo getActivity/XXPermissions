@@ -2,11 +2,11 @@ package com.hjq.permissions.core;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.FragmentActivity;
 import com.hjq.permissions.fragment.IFragmentCallback;
 import com.hjq.permissions.fragment.IFragmentMethod;
 import com.hjq.permissions.manager.ActivityOrientationManager;
@@ -133,8 +133,8 @@ public abstract class PermissionChannelImpl implements IFragmentCallback {
 
             Activity activity = mFragmentMethod.getActivity();
             // 如果这个 Activity 是 FragmentActivity 类型的话，则不用 activity.requestPermissions 发起重试
-            // 这是因为如果外层传入的是 FragmentActivity 对象，则会创建的 Support 库的 Fragment 对象，
-            // Support 库的 Fragment 对象的 requestPermissions 方法，最终还是调用的 activity.requestPermissions，
+            // 这是因为如果外层传入的是 FragmentActivity 对象，则会创建的 AndroidX 库的 Fragment 对象，
+            // AndroidX 库的 Fragment 对象的 requestPermissions 方法，最终还是调用的 activity.requestPermissions，
             // 所以当外层传入的是 FragmentActivity 对象时，就不进行重试，避免重复调用一次 activity.requestPermissions 方法，
             // 另外你可能会有疑问，这样做不是太阳能手电筒？脱裤子纯放屁？实则不然，因为真的有人反馈过这种奇怪的情况，
             // 调用 android.app.Fragment 对象的 requestPermissions 方法来申请权限在极少数机型上面可能会出现崩溃，

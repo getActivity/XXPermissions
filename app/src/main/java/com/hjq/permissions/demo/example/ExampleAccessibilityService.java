@@ -1,10 +1,10 @@
 package com.hjq.permissions.demo.example;
 
 import android.accessibilityservice.AccessibilityService;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
+import androidx.annotation.NonNull;
 
 /**
  *    author : Android 轮子哥

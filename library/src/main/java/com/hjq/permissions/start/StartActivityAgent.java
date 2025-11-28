@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.IntRange;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntRange;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.hjq.permissions.tools.PermissionSettingPage;
 import com.hjq.permissions.tools.PermissionUtils;
 import java.util.Iterator;
@@ -33,12 +33,12 @@ public final class StartActivityAgent {
     @SuppressWarnings("deprecation")
     public static void startActivity(@NonNull Fragment fragment,
                                      @NonNull List<Intent> intentList) {
-        startActivity(fragment.getActivity(), new StartActivityDelegateByFragmentApp(fragment), intentList);
+        startActivity(fragment.getActivity(), new StartActivityDelegateByFragmentAndroid(fragment), intentList);
     }
 
-    public static void startActivity(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startActivity(@NonNull androidx.fragment.app.Fragment fragment,
                                      @NonNull List<Intent> intentList) {
-        startActivity(fragment.getActivity(), new StartActivityDelegateByFragmentSupport(fragment), intentList);
+        startActivity(fragment.getActivity(), new StartActivityDelegateByFragmentAndroidX(fragment), intentList);
     }
 
     public static void startActivity(@NonNull Context context,
@@ -89,13 +89,13 @@ public final class StartActivityAgent {
     public static void startActivityForResult(@NonNull Fragment fragment,
                                               @NonNull List<Intent> intentList,
                                               @IntRange(from = 1, to = 65535) int requestCode) {
-        startActivityForResult(fragment.getActivity(), new StartActivityDelegateByFragmentApp(fragment), intentList, requestCode);
+        startActivityForResult(fragment.getActivity(), new StartActivityDelegateByFragmentAndroid(fragment), intentList, requestCode);
     }
 
-    public static void startActivityForResult(@NonNull android.support.v4.app.Fragment fragment,
+    public static void startActivityForResult(@NonNull androidx.fragment.app.Fragment fragment,
                                               @NonNull List<Intent> intentList,
                                               @IntRange(from = 1, to = 65535) int requestCode) {
-        startActivityForResult(fragment.getActivity(), new StartActivityDelegateByFragmentSupport(fragment), intentList, requestCode);
+        startActivityForResult(fragment.getActivity(), new StartActivityDelegateByFragmentAndroidX(fragment), intentList, requestCode);
     }
 
     public static void startActivityForResult(@NonNull Context context,

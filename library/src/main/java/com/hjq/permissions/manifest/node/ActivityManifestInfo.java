@@ -1,7 +1,7 @@
 package com.hjq.permissions.manifest.node;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -17,7 +17,7 @@ public final class ActivityManifestInfo {
     public String name = "";
 
     /** 是否支持画中画 */
-    public boolean supportsPictureInPicture = false;
+    public boolean supportsPictureInPicture;
 
     /** 意图过滤器列表 */
     @Nullable
