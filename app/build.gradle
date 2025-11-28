@@ -60,7 +60,7 @@ dependencies {
     implementation 'com.github.getActivity:Toaster:13.8'
 
     // 标题栏框架：https://github.com/getActivity/TitleBar
-    implementation 'com.github.getActivity:TitleBar:10.6'
+    implementation 'com.github.getActivity:TitleBar:10.8'
 
     // 内存泄漏检测：https://github.com/square/leakcanary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.12'
