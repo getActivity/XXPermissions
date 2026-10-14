@@ -31,6 +31,8 @@ public abstract class BasePermission implements IPermission {
     /** Op 权限模式：未知模式 */
     public static final int MODE_UNKNOWN = -1;
 
+    private static volatile Method sCheckOpNoThrowMethod;
+
     protected BasePermission() {
         // default implementation ignored
     }
@@ -357,7 +359,7 @@ public abstract class BasePermission implements IPermission {
             return MODE_UNKNOWN;
         }
         try {
-            Class<?> appOpsClass = Class.forName(AppOpsManager.class.getName());
+            Class<?> appOpsClass = AppOpsManager.class;
             int opValue;
             try {
                 Field opField = appOpsClass.getDeclaredField(opName);
@@ -365,7 +367,11 @@ public abstract class BasePermission implements IPermission {
             } catch (NoSuchFieldException e) {
                 opValue = opDefaultValue;
             }
-            Method checkOpNoThrowMethod = appOpsClass.getMethod("checkOpNoThrow", Integer.TYPE, Integer.TYPE, String.class);
+            Method checkOpNoThrowMethod = sCheckOpNoThrowMethod;
+            if (checkOpNoThrowMethod == null) {
+                checkOpNoThrowMethod = appOpsClass.getMethod("checkOpNoThrow", Integer.TYPE, Integer.TYPE, String.class);
+                sCheckOpNoThrowMethod = checkOpNoThrowMethod;
+            }
             return ((int) checkOpNoThrowMethod.invoke(appOpsManager, opValue, context.getApplicationInfo().uid, context.getPackageName()));
         } catch (Exception e) {
             e.printStackTrace();
