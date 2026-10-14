@@ -6,6 +6,7 @@ import android.content.res.AssetManager;
 import android.content.res.XmlResourceParser;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.collection.LruCache;
 import com.hjq.permissions.manifest.node.ActivityManifestInfo;
 import com.hjq.permissions.manifest.node.ApplicationManifestInfo;
 import com.hjq.permissions.manifest.node.BroadcastReceiverManifestInfo;
@@ -35,6 +36,9 @@ public final class AndroidManifestParser {
 
     /** Android 的命名空间 */
     private static final String ANDROID_NAMESPACE_URI = "http://schemas.android.com/apk/res/android";
+
+    /** 清单文件缓存，避免每次对象请求都重复解析 XML */
+    private static final LruCache<String, AndroidManifestInfo> ANDROID_MANIFEST_INFO_CACHE = new LruCache<>(2);
 
     private static final String TAG_MANIFEST = "manifest";
 
@@ -78,7 +82,13 @@ public final class AndroidManifestParser {
      */
     @Nullable
     public static AndroidManifestInfo getAndroidManifestInfo(Context context) {
-        int apkPathCookie = AndroidManifestParser.findApkPathCookie(context, context.getApplicationInfo().sourceDir);
+        String sourceDir = context.getApplicationInfo().sourceDir;
+        AndroidManifestInfo cachedManifestInfo = ANDROID_MANIFEST_INFO_CACHE.get(sourceDir);
+        if (cachedManifestInfo != null) {
+            return cachedManifestInfo;
+        }
+
+        int apkPathCookie = AndroidManifestParser.findApkPathCookie(context, sourceDir);
         // 如果 cookie 为 0，证明获取失败
         if (apkPathCookie == 0) {
             return null;
@@ -96,6 +106,9 @@ public final class AndroidManifestParser {
             e.printStackTrace();
         }
 
+        if (manifestInfo != null) {
+            ANDROID_MANIFEST_INFO_CACHE.put(sourceDir, manifestInfo);
+        }
         return manifestInfo;
     }
 
