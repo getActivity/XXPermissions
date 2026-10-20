@@ -11,6 +11,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *    author : Android 轮子哥
@@ -100,8 +101,14 @@ public final class PermissionChecker {
     /**
      * 检查权限序列化实现是否没问题
      */
+    private static final ConcurrentHashMap<Class<?>, Boolean> sValidatedParcelableClasses =
+        new ConcurrentHashMap<>();
+
     public static void checkPermissionParcelable(@NonNull IPermission permission) {
         Class<? extends IPermission> clazz = permission.getClass();
+        if (sValidatedParcelableClasses.containsKey(clazz)) {
+            return;
+        }
         String className = clazz.getName();
 
         // 获取 CREATOR 字段
@@ -170,5 +177,7 @@ public final class PermissionChecker {
             throw new IllegalArgumentException("The newArray method of the CREATOR field in this " + className +
                 " returns an empty value. This method cannot return an empty value");
         }
+
+        sValidatedParcelableClasses.put(clazz, Boolean.TRUE);
     }
 }
