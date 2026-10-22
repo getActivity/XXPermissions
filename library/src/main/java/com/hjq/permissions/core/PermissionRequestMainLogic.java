@@ -16,8 +16,10 @@ import com.hjq.permissions.tools.PermissionTaskHandler;
 import com.hjq.permissions.tools.PermissionUtils;
 import com.hjq.permissions.tools.PermissionVersion;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  *    author : Android 轮子哥
@@ -186,18 +188,17 @@ public final class PermissionRequestMainLogic {
     private static List<List<IPermission>> getUnauthorizedList(@NonNull Activity activity, @NonNull List<IPermission> requestList) {
         // 需要请求的权限列表
         List<List<IPermission>> unauthorizedList = new ArrayList<>(requestList.size());
-        // 已处理的权限列表
-        List<IPermission> alreadyDoneList = new ArrayList<>(requestList.size());
+        // 已处理的权限名称
+        Set<String> alreadyDonePermissionNames = new HashSet<>(requestList.size());
 
         // 遍历需要请求的权限列表
         for (int i = 0; i < requestList.size(); i++) {
             IPermission permission = requestList.get(i);
 
             // 如果这个权限在前面已经处理过了，就不再处理
-            if (PermissionUtils.containsPermission(alreadyDoneList, permission)) {
+            if (isPermissionAlreadyDone(alreadyDonePermissionNames, permission)) {
                 continue;
             }
-            alreadyDoneList.add(permission);
 
             // 如果这个权限不支持申请，就不纳入申请的范围内
             if (!permission.isSupportRequestPermission(activity)) {
@@ -256,11 +257,9 @@ public final class PermissionRequestMainLogic {
                 todoPermissions.add(todoPermission);
 
                 // 如果这个危险权限在前面已经处理过了，就不再添加
-                if (PermissionUtils.containsPermission(alreadyDoneList, todoPermission)) {
+                if (isPermissionAlreadyDone(alreadyDonePermissionNames, todoPermission)) {
                     continue;
                 }
-                // 添加到已处理的权限列表中
-                alreadyDoneList.add(todoPermission);
             }
 
             // 如果这个待处理的权限列表为空，证明剩余的权限是在高版本系统才会出现，这里无需再次发起申请
@@ -303,6 +302,12 @@ public final class PermissionRequestMainLogic {
         }
 
         return unauthorizedList;
+    }
+
+    private static boolean isPermissionAlreadyDone(@NonNull Set<String> permissionNames,
+                                                   @NonNull IPermission permission) {
+        String permissionName = permission.getPermissionName();
+        return permissionName != null && !permissionNames.add(permissionName);
     }
 
     /**
