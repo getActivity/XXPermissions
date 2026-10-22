@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *    author : Android 轮子哥
@@ -30,6 +31,9 @@ public abstract class BasePermission implements IPermission {
 
     /** Op 权限模式：未知模式 */
     public static final int MODE_UNKNOWN = -1;
+
+    private static final ConcurrentHashMap<String, Integer> sAppOpsOpValueCache = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Boolean> sMissingAppOpsOpValues = new ConcurrentHashMap<>();
 
     protected BasePermission() {
         // default implementation ignored
@@ -359,11 +363,20 @@ public abstract class BasePermission implements IPermission {
         try {
             Class<?> appOpsClass = Class.forName(AppOpsManager.class.getName());
             int opValue;
-            try {
-                Field opField = appOpsClass.getDeclaredField(opName);
-                opValue = opField.getInt(null);
-            } catch (NoSuchFieldException e) {
+            Integer cachedOpValue = sAppOpsOpValueCache.get(opName);
+            if (cachedOpValue != null) {
+                opValue = cachedOpValue;
+            } else if (sMissingAppOpsOpValues.containsKey(opName)) {
                 opValue = opDefaultValue;
+            } else {
+                try {
+                    int resolvedOpValue = appOpsClass.getDeclaredField(opName).getInt(null);
+                    Integer previousOpValue = sAppOpsOpValueCache.putIfAbsent(opName, resolvedOpValue);
+                    opValue = previousOpValue == null ? resolvedOpValue : previousOpValue;
+                } catch (NoSuchFieldException e) {
+                    sMissingAppOpsOpValues.put(opName, Boolean.TRUE);
+                    opValue = opDefaultValue;
+                }
             }
             Method checkOpNoThrowMethod = appOpsClass.getMethod("checkOpNoThrow", Integer.TYPE, Integer.TYPE, String.class);
             return ((int) checkOpNoThrowMethod.invoke(appOpsManager, opValue, context.getApplicationInfo().uid, context.getPackageName()));
