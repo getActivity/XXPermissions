@@ -938,7 +938,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
     private void getAppList() {
         try {
             PackageManager packageManager = getPackageManager();
-            int flags = PackageManager.GET_ACTIVITIES | PackageManager.GET_SERVICES;
+            int flags = 0;
             List<PackageInfo> packageInfoList;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 packageInfoList = packageManager.getInstalledPackages(PackageManager.PackageInfoFlags.of(flags));
